@@ -1,0 +1,68 @@
+﻿@model LostFilmMonitoring.BLL.Models.RegistrationViewModel
+
+<style>
+    .item-name {
+        color: green;
+    }
+    .item-quality {
+        color: darkblue;
+        padding-left: 5px;
+    }
+    .item-remove {
+        color:orangered; 
+        padding-left:5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+<div class="row">
+    <input type="hidden" asp-for="UserId" />
+    <div class="col-md-12">
+        <h2>Ваш персональный RSS Torrent Feed с сайта LostFilm.TV</h2>
+        @foreach (var item in Model.AllSerials.OrderBy(s => s))
+        {
+            var selected = Model.SelectedItems.FirstOrDefault(i => i.Serial == item);
+            var quantity = selected?.Quality;
+            <div>
+                <input type="checkbox" class="serial-item" name="@item" checked="@(selected != null)" />
+                <span>@item</span>
+                <select>
+                    @Html.Raw((quantity == "SD" ? "<option selected>SD</option>" : "<option>SD</option>"))
+                    @Html.Raw((quantity == "1080" ? "<option selected>1080</option>" : "<option>1080</option>"))
+                    @Html.Raw((quantity == "MP4" ? "<option selected>MP4</option>" : "<option>MP4</option>"))
+                </select>
+            </div>
+        }
+    </div>
+    <div class="col-md-12">
+        <label asp-for="Cookie">Значение Куки</label>
+        <input type="text" asp-for="Cookie" />
+        <input type="button" value="Отправить" onclick="submit()" />
+    </div>
+
+    @section Scripts {
+        <script>
+            var submit = function () {
+                var data = {
+                    Cookie: $('#Cookie').val(),
+                    UserId: $('#UserId').val(),
+                    SelectedItems: new Array()
+                }
+                var checkboxes = $('.serial-item:checkbox:checked');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    data.SelectedItems.push(
+                        {
+                            Serial: checkboxes[i].name,
+                            Quality: $(checkboxes[i]).parent().children('select').val()
+                        }
+                    );
+                }
+                $.post("/", data)
+                    .done(function (data) {
+                        alert("Data Loaded: " + data);
+                    });
+            }
+        </script>
+
+    }
