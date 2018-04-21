@@ -38,35 +38,8 @@ namespace LostFilmMonitoring.DAO
                           .First(i => i.Name.LocalName == "channel")
                           .Elements()
                           .Where(i => i.Name.LocalName == "item")
-                          select new FeedItem
-                          {
-                              Link = item
-                                    .Elements()
-                                    .First(i => i.Name.LocalName == "link")
-                                    .Value,
-                              PublishDate = item
-                                        .Elements()
-                                        .First(i => i.Name.LocalName == "pubDate")
-                                        .Value,
-                              PublishDateParsed = ParseDate(
-                                    item
-                                        .Elements()
-                                        .First(i => i.Name.LocalName == "pubDate")
-                                        .Value
-                                    ),
-                              Title = item.Elements()
-                                    .First(i => i.Name.LocalName == "title")
-                                    .Value
-                          };
+                          select new FeedItem(item);
             return new SortedSet<FeedItem>(entries);
-        }
-
-        private static DateTime ParseDate(string date)
-        {
-            if (DateTime.TryParse(date, out DateTime result))
-                return result;
-            else
-                return DateTime.MinValue;
         }
     }
 }

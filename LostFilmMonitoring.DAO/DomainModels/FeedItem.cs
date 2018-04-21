@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace LostFilmMonitoring.DAO.DomainModels
 {
@@ -8,6 +10,35 @@ namespace LostFilmMonitoring.DAO.DomainModels
         public string Link { get; set; }
         public DateTime PublishDateParsed { get; set; }
         public string PublishDate { get; set; }
+
+        public FeedItem()
+        {
+
+        }
+
+        public FeedItem(FeedItem item, string link)
+        {
+            Link = link;
+            PublishDate = item.PublishDate;
+            PublishDateParsed = item.PublishDateParsed;
+            Title = item.Title;
+        }
+
+        public FeedItem(XElement xElement)
+        {
+            Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
+            PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
+            PublishDateParsed = ParseDate(PublishDate);
+            Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
+        }
+
+        private static DateTime ParseDate(string date)
+        {
+            if (DateTime.TryParse(date, out DateTime result))
+                return result;
+            else
+                return DateTime.MinValue;
+        }
 
         public int CompareTo(FeedItem other)
         {

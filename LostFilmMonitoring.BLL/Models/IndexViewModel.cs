@@ -11,13 +11,15 @@ namespace LostFilmMonitoring.BLL.Models
 
         public RegistrationViewModel(IList<Serial> serials, User user)
         {
-            AllSerials = serials.Select(s => s.Name).ToArray();
-            SelectedItems = new SelectedFeedItem[1] { new SelectedFeedItem { Serial = "Миллиарды (Billions).", Quality = "1080" } };
+            AllSerials = serials
+                .OrderByDescending(s => s.LastEpisode)
+                .Select(s => new SerialViewModel { Name = s.Name, Escaped = s.Name.EscapePath() })
+                .ToArray();
             if(user != null)
             {
                 UserId = user.Id;
-                Cookie = string.Empty; // do not allow to see it
-                SelectedItems = user.Subscriptions.Select(s => new SelectedFeedItem()
+                Cookie = user.Cookie;
+                SelectedItems = user.Subscriptions?.Select(s => new SelectedFeedItem()
                 {
                     Serial = s.Serial,
                     Quality = s.Quality
@@ -25,13 +27,19 @@ namespace LostFilmMonitoring.BLL.Models
             }
         }
 
-        public string[] AllSerials { get; }
+        public SerialViewModel[] AllSerials { get; }
 
         public SelectedFeedItem[] SelectedItems { get; set; }
 
         public Guid UserId { get; set; }
 
         public string Cookie { get; set; }
+    }
+
+    public class SerialViewModel
+    {
+        public string Name { get; set; }
+        public string Escaped { get; set; }
     }
 
     public class SelectedFeedItem

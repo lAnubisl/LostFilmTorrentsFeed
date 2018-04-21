@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using LostFilmMonitoring.BLL.Models;
 using LostFilmMonitoring.BLL.Implementations;
+using Microsoft.AspNetCore.Http;
 
 namespace LostFilmMonitoring.Web.Controllers
 {
@@ -14,6 +15,10 @@ namespace LostFilmMonitoring.Web.Controllers
         [HttpGet, Route("{guid=}")]
         public async Task<ActionResult> Index(string guid)
         {
+            if (string.IsNullOrEmpty(guid) && Request.Cookies.ContainsKey("userId"))
+            {
+                return new RedirectToActionResult("Index", "Home", new { guid = Request.Cookies["userId"] });
+            }
             var userId = Guid.Empty;
             if (!string.IsNullOrEmpty(guid) && !Guid.TryParse(guid, out userId))
             {
@@ -24,10 +29,15 @@ namespace LostFilmMonitoring.Web.Controllers
         }
 
         [HttpPost, Route("")]
-        public async Task<ActionResult> Index(RegistrationViewModel model)
+        public async Task<JsonResult> Index(RegistrationViewModel model)
         {
-            var userid = await _presentationService.Register(model);
-            return RedirectToAction("Index", "Home", new { guid = userid.ToString() });
+            var userId = await _presentationService.Register(model);
+            if (userId == Guid.Empty) return new JsonResult(string.Empty);
+            Response.Cookies.Append(
+                "userId",
+                userId.ToString(),
+                new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddYears(1) });
+            return new JsonResult(userId);
         }
 
         [HttpGet, Route("/rss/{userId}")]
@@ -36,6 +46,12 @@ namespace LostFilmMonitoring.Web.Controllers
             var stream = await _feedService.GetRss(userId);
             if (stream == null) return new NotFoundResult();
             return new FileStreamResult(stream, "application/rss+xml");
+        }
+
+        [HttpGet, Route("/instructions")]
+        public ViewResult Instructions()
+        {
+            return View();
         }
     }
 }

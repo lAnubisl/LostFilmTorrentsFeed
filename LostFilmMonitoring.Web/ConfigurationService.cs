@@ -14,5 +14,10 @@ namespace LostFilmMonitoring.Web
         {
             return Startup.Configuration.GetConnectionString("default");
         }
+
+        public string GetImagesDirectory()
+        {
+            return Startup.Configuration.GetSection("AppSettings")["ImagesPath"];
+        }
     }
 }

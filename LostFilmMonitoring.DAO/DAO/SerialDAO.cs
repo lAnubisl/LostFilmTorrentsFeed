@@ -31,7 +31,17 @@ namespace LostFilmMonitoring.DAO.DAO
         {
             using (var ctx = OpenContext())
             {
-                ctx.Add(serial);
+                var existingSerial = await ctx.Serials.FirstOrDefaultAsync(s => s.Name == serial.Name);
+                if (existingSerial == null)
+                {
+                    ctx.Add(serial);
+                }
+                else
+                {
+                    existingSerial.LastEpisode = serial.LastEpisode;
+                    existingSerial.LastEpisodeLink = serial.LastEpisodeLink;
+                }
+
                 await ctx.SaveChangesAsync();
             }
         }

@@ -5,5 +5,7 @@
         string GetConnectionString();
 
         string GetBasePath();
+
+        string GetImagesDirectory();
     }
 }

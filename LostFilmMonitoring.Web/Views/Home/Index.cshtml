@@ -14,24 +14,49 @@
         font-weight: bold;
         cursor: pointer;
     }
+    .serial-item:checked + .serial-item-label {
+        font-weight: bold;
+        color:red;
+    }
+    .serial {
+        height: 250px;
+        margin: 3px;
+        overflow: hidden;
+        border: 1px solid white;
+    }
+
+    .serial-selected {
+        background-color: aquamarine;
+        border: 1px solid green;
+    }
+
+    input[type=checkbox] {
+        transform: scale(1.5);
+    }
+
 </style>
 
 <div class="row">
     <input type="hidden" asp-for="UserId" />
     <div class="col-md-12">
         <h2>Ваш персональный RSS Torrent Feed с сайта LostFilm.TV</h2>
-        @foreach (var item in Model.AllSerials.OrderBy(s => s))
+        @foreach (var item in Model.AllSerials)
         {
-            var selected = Model.SelectedItems.FirstOrDefault(i => i.Serial == item);
+            var selected = Model.SelectedItems?.FirstOrDefault(i => i.Serial == item.Name);
             var quantity = selected?.Quality;
-            <div>
-                <input type="checkbox" class="serial-item" name="@item" checked="@(selected != null)" />
-                <span>@item</span>
-                <select>
-                    @Html.Raw((quantity == "SD" ? "<option selected>SD</option>" : "<option>SD</option>"))
-                    @Html.Raw((quantity == "1080" ? "<option selected>1080</option>" : "<option>1080</option>"))
-                    @Html.Raw((quantity == "MP4" ? "<option selected>MP4</option>" : "<option>MP4</option>"))
-                </select>
+            <div class="col-md-2" style="padding:0;text-align:center;">
+                <div class="serial @(selected != null ? "serial-selected" : "")">
+                    <div style="height:40px">@item.Name</div>
+                    <img src="~/images/serials/@($"{item.Escaped}.jpg")" width="120" height="160" />
+                    <div style="text-align:left;margin-left:15px;">
+                        <input type="checkbox" class="serial-item" name="@item.Name" checked="@(selected != null)" onchange="check(this)" />
+                        <select style="display:@(selected != null ? "visible" : "none")">
+                            @Html.Raw((quantity == "SD" ? "<option selected>SD</option>" : "<option>SD</option>"))
+                            @Html.Raw((quantity == "1080" ? "<option selected>1080</option>" : "<option>1080</option>"))
+                            @Html.Raw((quantity == "MP4" ? "<option selected>MP4</option>" : "<option>MP4</option>"))
+                        </select>
+                    </div>
+                </div>
             </div>
         }
     </div>
@@ -43,6 +68,17 @@
 
     @section Scripts {
         <script>
+            var check = function (checkbox) {
+                if (checkbox.checked) {
+                    $($(checkbox).parent().parent()).addClass("serial-selected");
+                    $($(checkbox).parent().children()[1]).show();
+                } else {
+                    $($(checkbox).parent().parent()).removeClass("serial-selected");
+                    $($(checkbox).parent().children()[1]).hide();
+
+                }
+
+            }
             var submit = function () {
                 var data = {
                     Cookie: $('#Cookie').val(),
@@ -54,13 +90,15 @@
                     data.SelectedItems.push(
                         {
                             Serial: checkboxes[i].name,
-                            Quality: $(checkboxes[i]).parent().children('select').val()
+                            Quality: $(checkboxes[i]).parent().children()[1].value
                         }
                     );
                 }
                 $.post("/", data)
                     .done(function (data) {
-                        alert("Data Loaded: " + data);
+                        if (data != "") {
+                            window.location.href = '/' + data;
+                        }
                     });
             }
         </script>

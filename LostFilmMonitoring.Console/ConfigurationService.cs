@@ -13,5 +13,10 @@ namespace LostFilmMonitoring.Console
         {
             return Program.Configuration["ConnectionStrings"];
         }
+
+        public string GetImagesDirectory()
+        {
+            return Program.Configuration["ImagesPath"];
+        }
     }
 }
