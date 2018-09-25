@@ -33,6 +33,12 @@ namespace LostFilmMonitoring.BLL.Implementations
             return _feedDAO.LoadFeedRawAsync(userId.ToString());
         }
 
+        public async Task<SortedSet<FeedItem>> GetItems(Guid userId)
+        {
+            if (!await _userDAO.UpdateLastActivity(userId)) return null;
+            return await _feedDAO.LoadUserFeedAsync(userId);
+        }
+
         public async Task Update()
         {
             var newItems = LostFilmFeedService.Load();

@@ -40,6 +40,20 @@ namespace LostFilmMonitoring.Web.Controllers
             return new JsonResult(userId);
         }
 
+        [HttpGet, Route("About")]
+        public ViewResult About()
+        {
+            return View();
+        }
+
+        [HttpGet, Route("/online/{userId}")]
+        public async Task<IActionResult> Online(Guid userId)
+        {
+            var items = await _feedService.GetItems(userId);
+            if (items == null) return new NotFoundResult();
+            return View(items);
+        }
+
         [HttpGet, Route("/rss/{userId}")]
         public async Task<IActionResult> Rss(Guid userId)
         {

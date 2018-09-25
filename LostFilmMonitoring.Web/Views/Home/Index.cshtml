@@ -23,6 +23,12 @@
         margin: 3px;
         overflow: hidden;
         border: 1px solid white;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .serial-header {
+        height: 40px;
     }
 
     .serial-selected {
@@ -30,8 +36,11 @@
         border: 1px solid green;
     }
 
-    input[type=checkbox] {
-        transform: scale(1.5);
+    .hidden {
+        display:none;
+    }
+    .col-md-2 {
+        padding: 0;
     }
 
 </style>
@@ -39,22 +48,26 @@
 <div class="row">
     <input type="hidden" asp-for="UserId" />
     <div class="col-md-12">
-        <h2>Ваш персональный RSS Torrent Feed с сайта LostFilm.TV</h2>
+        <h2>Создайте ваш персональный RSS Torrent Feed с сайта LostFilm.TV</h2>
         @foreach (var item in Model.AllSerials)
         {
             var selected = Model.SelectedItems?.FirstOrDefault(i => i.Serial == item.Name);
-            var quantity = selected?.Quality;
-            <div class="col-md-2" style="padding:0;text-align:center;">
-                <div class="serial @(selected != null ? "serial-selected" : "")">
-                    <div style="height:40px">@item.Name</div>
-                    <img src="~/images/serials/@($"{item.Escaped}.jpg")" width="120" height="160" />
-                    <div style="text-align:left;margin-left:15px;">
-                        <input type="checkbox" class="serial-item" name="@item.Name" checked="@(selected != null)" onchange="check(this)" />
-                        <select style="display:@(selected != null ? "visible" : "none")">
-                            @Html.Raw((quantity == "SD" ? "<option selected>SD</option>" : "<option>SD</option>"))
-                            @Html.Raw((quantity == "1080" ? "<option selected>1080</option>" : "<option>1080</option>"))
-                            @Html.Raw((quantity == "MP4" ? "<option selected>MP4</option>" : "<option>MP4</option>"))
-                        </select>
+            var quality = selected?.Quality;
+            <div class="col-md-2">
+                <div class="serial @(selected != null ? "serial-selected" : "")" onclick="check(this)">
+                    <input type="hidden" name="@item.Name" value="@(selected != null)" />
+                    <div class="serial-header">@item.Title</div>
+                    <img src="~/images/serials/@($"{item.Escaped}.jpg")" />
+                    <div style="padding-top: 15px;">
+                        @Html.DropDownList(
+                            item.Name + "_quality",
+                            new SelectList(new[] { "SD", "1080", "MP4" }, quality),
+                            null,
+                            new {
+                                @class = selected != null ? "" : "hidden",
+                                onclick = "window.event.stopPropagation();"
+                            })
+                        <a target="_blank" onclick = "window.event.stopPropagation();" href="https://www.google.by/search?q=Сериал @item.Title трейлер">i</a>
                     </div>
                 </div>
             </div>
@@ -68,16 +81,18 @@
 
     @section Scripts {
         <script>
-            var check = function (checkbox) {
-                if (checkbox.checked) {
-                    $($(checkbox).parent().parent()).addClass("serial-selected");
-                    $($(checkbox).parent().children()[1]).show();
+            var check = function (div) {
+                var hidden = div.getElementsByTagName('input')[0];
+                var select = div.getElementsByTagName('select')[0];
+                if (hidden.value !== "") {
+                    div.classList.remove("serial-selected");
+                    select.classList.add("hidden");
+                    hidden.value = "";
                 } else {
-                    $($(checkbox).parent().parent()).removeClass("serial-selected");
-                    $($(checkbox).parent().children()[1]).hide();
-
+                    div.classList.add("serial-selected");
+                    select.classList.remove("hidden");
+                    hidden.value = "value";
                 }
-
             }
             var submit = function () {
                 var data = {
@@ -85,12 +100,13 @@
                     UserId: $('#UserId').val(),
                     SelectedItems: new Array()
                 }
-                var checkboxes = $('.serial-item:checkbox:checked');
-                for (var i = 0; i < checkboxes.length; i++) {
+                var hiddens = $('.serial').find('input[type=hidden]:first');
+                for (var i = 0; i < hiddens.length; i++) {
+                    if (hiddens[i].value === "") continue;
                     data.SelectedItems.push(
                         {
-                            Serial: checkboxes[i].name,
-                            Quality: $(checkboxes[i]).parent().children()[1].value
+                            Serial: hiddens[i].name,
+                            Quality: document.getElementsByName(hiddens[i].name + "_quality")[0].value
                         }
                     );
                 }
@@ -102,5 +118,4 @@
                     });
             }
         </script>
-
     }
