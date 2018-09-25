@@ -21,7 +21,7 @@ namespace LostFilmMonitoring.DAO.DAO
                     return await ctx.Serials.ToListAsync();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
