@@ -1,0 +1,19 @@
+﻿@model System.Guid
+<h2>Регистрация</h2>
+@if (Model == Guid.Empty)
+{
+<form method="post">
+    <img src="@Url.Action("Captcha")" />
+    <br />
+    <span>Введите число с картинки выше</span>
+    <br />
+    <input type="text" name="Captcha" />
+    <input type="submit" /><br />
+    @Html.ValidationMessage("error", new { style = "color:red" })
+</form>
+}
+else
+{
+    <span>Сохраните этот ключ</span>
+    @Model
+}

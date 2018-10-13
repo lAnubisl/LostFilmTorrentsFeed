@@ -3,7 +3,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace LostFilmMonitoring.DAO.DAO
 {
@@ -13,18 +13,22 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        public async Task DeleteOldUsersAsync()
+        public async Task<Guid[]> DeleteOldUsersAsync()
         {
+            var result = new Collection<Guid>();
             using (var ctx = OpenContext())
             {
                 var oldUsers = await ctx.Users.Where(u => u.LastActivity < DateTime.UtcNow.AddMonths(-1)).ToArrayAsync();
                 foreach(var user in oldUsers)
                 {
+                    result.Add(user.Id);
                     ctx.Remove(user);
                 }
 
                 await ctx.SaveChangesAsync();
             }
+
+            return result.ToArray();
         }
 
         public async Task<bool> UpdateLastActivity(Guid userId)
@@ -48,44 +52,12 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        public async Task<Guid> SaveAsync(User user)
+        public async Task<Guid> CreateAsync(User user)
         {
             using (var ctx = OpenContext())
             {
-                if (user.Id != Guid.Empty)
-                {
-                    var existingUser = await ctx.Users.Include(u => u.Subscriptions)
-                        .FirstOrDefaultAsync(u => u.Id == user.Id);
-                    if (existingUser == null) return Guid.Empty;
-                    existingUser.Cookie = user.Cookie;
-                    existingUser.LastActivity = DateTime.UtcNow;
-                    var subscriptionsToAdd = user.Subscriptions
-                        .Where(s => !existingUser.Subscriptions.Any(es => es.Serial == s.Serial));
-                    existingUser.Subscriptions.AddRange(subscriptionsToAdd);
-
-                    foreach(var subscriptionToUpdate in new List<Subscription>(existingUser.Subscriptions))
-                    {
-                        var update = user.Subscriptions
-                            .FirstOrDefault(s => subscriptionToUpdate.Serial == s.Serial);
-                        if(update == null)
-                        {
-                            existingUser.Subscriptions.Remove(subscriptionToUpdate);
-                        }
-                        else
-                        {
-                            subscriptionToUpdate.Quality = update.Quality;
-                        }
-                    }
-
-                    ctx.Update(existingUser);
-                }
-                else
-                {
-                    user.Id = new Guid();
-                    ctx.Add(user);
-                    ctx.AddRange(user.Subscriptions);
-                }
-
+                user.Id = new Guid();
+                ctx.Add(user);
                 await ctx.SaveChangesAsync();
                 return user.Id;
             }

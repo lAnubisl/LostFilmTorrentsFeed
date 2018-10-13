@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using LostFilmMonitoring.BLL.Implementations;
+using LostFilmMonitoring.BLL.Interfaces;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +22,12 @@ namespace LostFilmMonitoring.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ILostFilmRegistrationService, LostFilmRegistrationService>();
+            services.AddSingleton<IFeedService, FeedService>();
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IPresentationService, PresentationService>();
+            services.AddTransient<ICurrentUserProvider, CurrentUserProvider>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
         }
 

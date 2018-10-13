@@ -1,50 +1,85 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using LostFilmMonitoring.BLL.Models;
 using LostFilmMonitoring.BLL.Implementations;
-using Microsoft.AspNetCore.Http;
+using LostFilmMonitoring.BLL.Interfaces;
+using System.IO;
+using LostFilmMonitoring.BLL.Models;
 
 namespace LostFilmMonitoring.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly FeedService _feedService = new FeedService(new ConfigurationService());
-        private readonly PresentationService _presentationService = new PresentationService(new ConfigurationService());
+        private readonly IFeedService _feedService;
+        private readonly IPresentationService _presentationService;
+        private readonly ICurrentUserProvider _currentUserProvider;
+
+        public HomeController(IFeedService feedService, IPresentationService presentationService, ICurrentUserProvider currentUserProvider)
+        {
+            _feedService = feedService;
+            _presentationService = presentationService;
+            _currentUserProvider = currentUserProvider;
+        }
+
+        private readonly ILostFilmRegistrationService registrationService = new LostFilmRegistrationService();
 
         [HttpGet, Route("{guid=}")]
-        public async Task<ActionResult> Index(string guid)
+        public async Task<ActionResult> Index() => View(await _presentationService.GetIndexModel());
+
+        [HttpGet, Route("Login")]
+        public ViewResult Login() => View();
+
+        [HttpPost, Route("Login")]
+        public async Task<IActionResult> Login(Guid userId)
         {
-            if (string.IsNullOrEmpty(guid) && Request.Cookies.ContainsKey("userId"))
+            var success = await _presentationService.Authenticate(userId);
+            if (!success)
             {
-                return new RedirectToActionResult("Index", "Home", new { guid = Request.Cookies["userId"] });
-            }
-            var userId = Guid.Empty;
-            if (!string.IsNullOrEmpty(guid) && !Guid.TryParse(guid, out userId))
-            {
-                return new NotFoundResult();
+                ModelState.AddModelError("error", "К сожалению, мы не нашли пользователя с таким ключем. Либо у вас не верный ключ, либо пользователь с таким ключем был удалён из-за длительного отсутствия активности.");
+                return View();
             }
 
-            return View(await _presentationService.GetRegistrationViewModel(userId));
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet, Route("Register")]
+        public ViewResult Register() => View(_currentUserProvider.GetCurrentUserId());
+
+        [HttpPost, Route("Register")]
+        public async Task<RedirectToActionResult> Register(string captcha)
+        {
+            var cookie = Request.Cookies["captcha"];
+            if (cookie == null)
+            {
+                throw new Exception();
+            }
+
+            var result = await _presentationService.Register(captcha, cookie);
+            if (!result.Success)
+            {
+                ModelState.AddModelError("error", result.Error);
+            }
+
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet, Route("Captcha")]
+        public async Task<FileStreamResult> Captcha()
+        {
+            var captcha = await registrationService.GetNewCaptcha();
+            Response.Cookies.Append("captcha", captcha.SessionKey);
+            return new FileStreamResult(new MemoryStream(captcha.CaptchaGif), "image/gif");
         }
 
         [HttpPost, Route("")]
-        public async Task<JsonResult> Index(RegistrationViewModel model)
+        public async Task<EmptyResult> Index(UpdateSubscriptionModel model)
         {
-            var userId = await _presentationService.Register(model);
-            if (userId == Guid.Empty) return new JsonResult(string.Empty);
-            Response.Cookies.Append(
-                "userId",
-                userId.ToString(),
-                new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddYears(1) });
-            return new JsonResult(userId);
+            await _presentationService.UpdateSubscriptions(model?.SelectedItems);
+            return new EmptyResult();
         }
 
         [HttpGet, Route("About")]
-        public ViewResult About()
-        {
-            return View();
-        }
+        public ViewResult About() => View();
 
         [HttpGet, Route("/online/{userId}")]
         public async Task<IActionResult> Online(Guid userId)
@@ -63,9 +98,11 @@ namespace LostFilmMonitoring.Web.Controllers
         }
 
         [HttpGet, Route("/instructions")]
-        public ViewResult Instructions()
-        {
-            return View();
-        }
+        public ViewResult Instructions() => View();
+    }
+
+    public class UpdateSubscriptionModel
+    {
+        public SelectedFeedItem[] SelectedItems { get; set; }
     }
 }

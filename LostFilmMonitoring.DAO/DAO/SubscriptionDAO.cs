@@ -19,5 +19,29 @@ namespace LostFilmMonitoring.DAO.DAO
                 return await ctx.Subscriptions.Include(s => s.User).Where(s => s.Serial == serial).ToArrayAsync();
             }
         }
+
+        public async Task SaveAsync(Guid userId, Subscription[] subscriptions)
+        {
+            using (var ctx = OpenContext())
+            {
+                var existingSubscriptions = ctx.Subscriptions.Where(s => s.UserId == userId).ToList();
+                ctx.RemoveRange(existingSubscriptions.Where(e => subscriptions.All(s => s.Serial != e.Serial)));
+                foreach(var subscription in subscriptions)
+                {
+                    subscription.UserId = userId;
+                    var existingSubscription = existingSubscriptions.FirstOrDefault(s => s.Serial == subscription.Serial);
+                    if (existingSubscription == null)
+                    {
+                        ctx.Add(subscription);
+                    }
+                    else
+                    {
+                        existingSubscription.Quality = subscription.Quality;
+                    }
+                }
+
+                await ctx.SaveChangesAsync();
+            }
+        }
     }
 }

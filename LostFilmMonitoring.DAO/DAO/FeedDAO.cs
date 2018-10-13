@@ -42,6 +42,11 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
+        public void Delete(Guid userId)
+        {
+            File.Delete(GetPath(userId.ToString()));
+        }
+
         private async Task SaveFeedAsync(string fileName, FeedItem[] items)
         {
             var xml = items.GenerateXml();

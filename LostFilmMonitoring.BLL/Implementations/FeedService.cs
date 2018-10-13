@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LostFilmMonitoring.BLL.Implementations
 {
-    public class FeedService
+    public class FeedService : IFeedService
     {
         private readonly UserDAO _userDAO;
         private readonly FeedDAO _feedDAO;

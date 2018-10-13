@@ -16,7 +16,7 @@ namespace LostFilmMonitoring.Console
             Configuration = builder.Build();
 
             var configurationService = new ConfigurationService();
-            var userService = new PresentationService(configurationService);
+            var userService = new PresentationService(configurationService, null, null);
             userService.RemoveOldUsers().Wait();
             var updater = new FeedService(configurationService);
             updater.Update().Wait();

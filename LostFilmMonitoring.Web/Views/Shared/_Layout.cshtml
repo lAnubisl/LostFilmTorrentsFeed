@@ -30,9 +30,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">Зачем это всё?</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Online" asp-route-userId="08d59cc2-dfe1-2c6a-13c6-669cef6a11f7">Моя лента для потокового просмотра</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Rss" asp-route-userId="08d59cc2-dfe1-2c6a-13c6-669cef6a11f7">Мой фид для uTorrent</a></li>
+                    @await Component.InvokeAsync("Menu")
+                    @RenderSection("Menu", false)
                 </ul>
             </div>
         </div>
