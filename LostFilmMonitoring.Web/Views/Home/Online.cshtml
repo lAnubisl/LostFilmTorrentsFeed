@@ -1,7 +1,7 @@
 ﻿@model SortedSet<LostFilmMonitoring.DAO.DomainModels.FeedItem>
 
-<h2>Online</h2>
+<h2>Онлайн</h2>
 @foreach(var item in Model)
 {
-    <div>@item.PublishDateParsed <a href="@item.Link">@item.Title</a></div>
+    <div>@item.PublishDateParsed <a href="@item.Link" rel="noreferrer">@item.Title</a></div>
 }

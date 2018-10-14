@@ -74,8 +74,17 @@
     </div>
 
     @section Menu {
-        <li><a id="save" href="javascript:submit()" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Сохранить изменения</a></li>
-        <li><a id="saved" href="javascript:void(0)" style="font-weight:bold; color:chartreuse; font-size:16px; display:none;">Сохранено</a></li>
+        @if (Model.KnownUser)
+        {
+            <li><a id="save" href="javascript:submit()" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Сохранить изменения</a></li>
+            <li><a id="saved" href="javascript:void(0)" style="font-weight:bold; color:chartreuse; font-size:16px; display:none;">Сохранено</a></li>
+        }
+        else
+        {
+            <li><a id="save" href="javascript:void(0)" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Зарегистрируйтесь чтобы сохранить выбор</a></li>
+        }
+
+
     }
 
     @section Scripts {

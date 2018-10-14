@@ -23,8 +23,15 @@ namespace LostFilmMonitoring.Web.Controllers
 
         private readonly ILostFilmRegistrationService registrationService = new LostFilmRegistrationService();
 
-        [HttpGet, Route("{guid=}")]
+        [HttpGet, Route("")]
         public async Task<ActionResult> Index() => View(await _presentationService.GetIndexModel());
+
+        [HttpPost, Route("")]
+        public async Task<EmptyResult> Index(UpdateSubscriptionModel model)
+        {
+            await _presentationService.UpdateSubscriptions(model?.SelectedItems);
+            return new EmptyResult();
+        }
 
         [HttpGet, Route("Login")]
         public ViewResult Login() => View();
@@ -71,25 +78,21 @@ namespace LostFilmMonitoring.Web.Controllers
             return new FileStreamResult(new MemoryStream(captcha.CaptchaGif), "image/gif");
         }
 
-        [HttpPost, Route("")]
-        public async Task<EmptyResult> Index(UpdateSubscriptionModel model)
-        {
-            await _presentationService.UpdateSubscriptions(model?.SelectedItems);
-            return new EmptyResult();
-        }
-
         [HttpGet, Route("About")]
         public ViewResult About() => View();
 
-        [HttpGet, Route("/online/{userId}")]
-        public async Task<IActionResult> Online(Guid userId)
+        [HttpGet, Route("Online")]
+        public async Task<IActionResult> Online()
         {
-            var items = await _feedService.GetItems(userId);
+            var items = await _feedService.GetItems();
             if (items == null) return new NotFoundResult();
             return View(items);
         }
 
-        [HttpGet, Route("/rss/{userId}")]
+        [HttpGet, Route("Feed")]
+        public async Task<IActionResult> Feed() => View(_currentUserProvider.GetCurrentUserId());
+
+        [HttpGet, Route("Rss/{userId}")]
         public async Task<IActionResult> Rss(Guid userId)
         {
             var stream = await _feedService.GetRss(userId);
@@ -97,7 +100,7 @@ namespace LostFilmMonitoring.Web.Controllers
             return new FileStreamResult(stream, "application/rss+xml");
         }
 
-        [HttpGet, Route("/instructions")]
+        [HttpGet, Route("Instructions")]
         public ViewResult Instructions() => View();
     }
 

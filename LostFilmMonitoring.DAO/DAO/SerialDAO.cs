@@ -12,6 +12,21 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
+        public async Task<Serial> LoadAsync(string name)
+        {
+            try
+            {
+                using (var ctx = OpenContext())
+                {
+                    return await ctx.Serials.FirstOrDefaultAsync(s => s.Name == name);
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<List<Serial>> LoadAsync()
         {
             try

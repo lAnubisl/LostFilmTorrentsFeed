@@ -8,7 +8,7 @@ namespace LostFilmMonitoring.BLL.Interfaces
 {
     public interface IFeedService
     {
-        Task<SortedSet<FeedItem>> GetItems(Guid userId);
+        Task<SortedSet<FeedItem>> GetItems();
         Task<Stream> GetRss(Guid userId);
         Task Update();
     }

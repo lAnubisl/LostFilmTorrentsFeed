@@ -1,0 +1,5 @@
+﻿@model System.Guid
+<h2>Ссылка для Torrent клиента</h2>
+<a href="@Url.Action("Rss", "Home", new { userId = Model })" target="_blank">
+    @(Context.Request.Scheme + "://" + Context.Request.Host)@Url.Action("Rss", "Home", new { userId = Model })
+</a>

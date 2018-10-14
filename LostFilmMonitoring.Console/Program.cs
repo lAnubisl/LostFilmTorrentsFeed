@@ -18,7 +18,7 @@ namespace LostFilmMonitoring.Console
             var configurationService = new ConfigurationService();
             var userService = new PresentationService(configurationService, null, null);
             userService.RemoveOldUsers().Wait();
-            var updater = new FeedService(configurationService);
+            var updater = new FeedService(configurationService, null);
             updater.Update().Wait();
             System.Console.WriteLine("Hello World!");
         }

@@ -1,4 +1,5 @@
 ﻿using LostFilmMonitoring.BLL.Interfaces;
+using LostFilmMonitoring.BLL.Models;
 using LostFilmMonitoring.DAO.DAO;
 using LostFilmMonitoring.DAO.DomainModels;
 using System;
@@ -16,8 +17,9 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly SerialDAO _serialDao;
         private readonly SubscriptionDAO _subscriptionDAO;
         private readonly SerialCoverService _serialCoverService;
+        private readonly ICurrentUserProvider _currentUserProvider;
 
-        public FeedService(IConfigurationService configurationService)
+        public FeedService(IConfigurationService configurationService, ICurrentUserProvider currentUserProvider)
         {
             var connectionString = configurationService.GetConnectionString();
             _serialDao = new SerialDAO(connectionString);
@@ -25,6 +27,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _subscriptionDAO = new SubscriptionDAO(connectionString);
             _userDAO = new UserDAO(connectionString);
             _serialCoverService = new SerialCoverService(configurationService.GetImagesDirectory());
+            _currentUserProvider = currentUserProvider;
         }
 
         public async Task<Stream> GetRss(Guid userId)
@@ -33,8 +36,9 @@ namespace LostFilmMonitoring.BLL.Implementations
             return _feedDAO.LoadFeedRawAsync(userId.ToString());
         }
 
-        public async Task<SortedSet<FeedItem>> GetItems(Guid userId)
+        public async Task<SortedSet<FeedItem>> GetItems()
         {
+            var userId = _currentUserProvider.GetCurrentUserId();
             if (!await _userDAO.UpdateLastActivity(userId)) return null;
             return await _feedDAO.LoadUserFeedAsync(userId);
         }
@@ -69,6 +73,29 @@ namespace LostFilmMonitoring.BLL.Implementations
                 userFeed.Add(userFeedItem);
                 await _feedDAO.SaveUserFeedAsync(subscription.User.Id, userFeed.Take(15).ToArray());
             }
+        }
+
+        public async Task UpdateUserFeed(SelectedFeedItem[] selectedItems)
+        {
+            var userId = _currentUserProvider.GetCurrentUserId();
+            var user = await _userDAO.LoadAsync(userId);
+            var userFeedItems = await _feedDAO.LoadUserFeedAsync(userId);
+            var newItems = selectedItems.Where(i => userFeedItems.All(f => i.Serial != i.Serial)).ToList();
+            foreach(var newItem in newItems)
+            {
+                var serial = await _serialDao.LoadAsync(newItem.Serial);
+                var torrentLink = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, user.Cookie, newItem.Quality);
+                if (torrentLink == null) continue;
+                var userFeedItem = new FeedItem() {
+                    Link = torrentLink,
+                    Title = newItem.Serial,
+                    PublishDateParsed = DateTime.UtcNow,
+                    PublishDate = DateTime.UtcNow.ToString()
+                };
+                userFeedItems.Add(userFeedItem);
+            }
+
+            await _feedDAO.SaveUserFeedAsync(userId, userFeedItems.Take(15).ToArray());
         }
 
         private async Task UpdateSerialList(IEnumerable<FeedItem> feedItems)

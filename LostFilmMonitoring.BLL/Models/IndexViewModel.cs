@@ -6,10 +6,9 @@ namespace LostFilmMonitoring.BLL.Models
 {
     public class IndexModel
     {
-        public IndexModel() { }
-
         public IndexModel(IList<Serial> serials, User user)
         {
+            KnownUser = user != null;
             AllSerials = serials
                 .OrderByDescending(s => s.LastEpisode)
                 .Select(s => new SerialViewModel { Name = s.Name, Escaped = s.Name.EscapePath() })
@@ -24,8 +23,10 @@ namespace LostFilmMonitoring.BLL.Models
             }
         }
 
+        public bool KnownUser { get; }
+
         public SerialViewModel[] AllSerials { get; }
 
-        public SelectedFeedItem[] SelectedItems { get; set; }
+        public SelectedFeedItem[] SelectedItems { get; }
     }
 }
