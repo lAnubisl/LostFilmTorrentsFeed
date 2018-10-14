@@ -67,7 +67,7 @@ namespace LostFilmMonitoring.Web.Controllers
                 ModelState.AddModelError("error", result.Error);
             }
 
-            return RedirectToAction("Login");
+            return RedirectToAction("Register");
         }
 
         [HttpGet, Route("Captcha")]
