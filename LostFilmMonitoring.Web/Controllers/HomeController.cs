@@ -90,7 +90,7 @@ namespace LostFilmMonitoring.Web.Controllers
         }
 
         [HttpGet, Route("Feed")]
-        public async Task<IActionResult> Feed() => View(_currentUserProvider.GetCurrentUserId());
+        public IActionResult Feed() => View(_currentUserProvider.GetCurrentUserId());
 
         [HttpGet, Route("Rss/{userId}")]
         public async Task<IActionResult> Rss(Guid userId)

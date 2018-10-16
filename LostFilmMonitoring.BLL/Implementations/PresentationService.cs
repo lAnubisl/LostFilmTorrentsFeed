@@ -12,18 +12,18 @@ namespace LostFilmMonitoring.BLL.Implementations
     {
         private readonly SerialDAO _serialDAO;
         private readonly UserDAO _userDAO;
-        private readonly FeedDAO _feedDAO;
         private readonly SubscriptionDAO _subscriptionDAO;
-        private ILostFilmRegistrationService _registrationService;
-        private ICurrentUserProvider _currentUserProvider;
+        private readonly ILostFilmRegistrationService _registrationService;
+        private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly IFeedService _feedService;
 
-        public PresentationService(IConfigurationService configurationService, ILostFilmRegistrationService registrationService, ICurrentUserProvider currentUserProvider)
+        public PresentationService(IConfigurationService configurationService, ILostFilmRegistrationService registrationService, ICurrentUserProvider currentUserProvider, IFeedService feedService)
         {
             var connectionString = configurationService.GetConnectionString();
             _serialDAO = new SerialDAO(connectionString);
             _userDAO = new UserDAO(connectionString);
+            _feedService = feedService;
             _subscriptionDAO = new SubscriptionDAO(connectionString);
-            _feedDAO = new FeedDAO(configurationService.GetBasePath());
             _registrationService = registrationService;
             _currentUserProvider = currentUserProvider;
         }
@@ -60,15 +60,7 @@ namespace LostFilmMonitoring.BLL.Implementations
                 selectedItems?
                 .Select(s => new Subscription() { Quality = s.Quality, Serial = s.Serial })
                 .ToArray());
-        }
-
-        public async Task RemoveOldUsers()
-        {
-            var deletedUserIds = await _userDAO.DeleteOldUsersAsync();
-            foreach(var userId in deletedUserIds)
-            {
-                _feedDAO.Delete(userId);
-            }
+            await _feedService.UpdateUserFeed(selectedItems);
         }
 
         public async Task<bool> Authenticate(Guid userId)

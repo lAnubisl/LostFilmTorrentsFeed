@@ -9,7 +9,6 @@ namespace LostFilmMonitoring.BLL.Interfaces
         Task<IndexModel> GetIndexModel();
         Task<bool> Authenticate(Guid userId);
         Task<RegistrationResultModel> Register(string captcha, string captchaCookie);
-        Task RemoveOldUsers();
         Task UpdateSubscriptions(SelectedFeedItem[] selectedItems);
     }
 }

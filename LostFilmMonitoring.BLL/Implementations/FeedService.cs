@@ -18,10 +18,12 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly SubscriptionDAO _subscriptionDAO;
         private readonly SerialCoverService _serialCoverService;
         private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly IConfigurationService _configurationService;
 
         public FeedService(IConfigurationService configurationService, ICurrentUserProvider currentUserProvider)
         {
             var connectionString = configurationService.GetConnectionString();
+            _configurationService = configurationService;
             _serialDao = new SerialDAO(connectionString);
             _feedDAO = new FeedDAO(configurationService.GetBasePath());
             _subscriptionDAO = new SubscriptionDAO(connectionString);
@@ -80,7 +82,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             var userId = _currentUserProvider.GetCurrentUserId();
             var user = await _userDAO.LoadAsync(userId);
             var userFeedItems = await _feedDAO.LoadUserFeedAsync(userId);
-            var newItems = selectedItems.Where(i => userFeedItems.All(f => i.Serial != i.Serial)).ToList();
+            var newItems = selectedItems.Where(i => userFeedItems.All(f => !f.Title.StartsWith(i.Serial, StringComparison.OrdinalIgnoreCase))).ToList();
             foreach(var newItem in newItems)
             {
                 var serial = await _serialDao.LoadAsync(newItem.Serial);
@@ -101,27 +103,26 @@ namespace LostFilmMonitoring.BLL.Implementations
         private async Task UpdateSerialList(IEnumerable<FeedItem> feedItems)
         {
             var oldSerials = await _serialDao.LoadAsync();
+            var baseFeedCookie = _configurationService.BaseFeedCookie();
             foreach (var feedItem in feedItems)
             {
                 await _serialCoverService.EnsureImageDownloaded(feedItem);
                 var serial = new Serial()
                 {
                     Name = feedItem.Serial(),
+                    LastEpisodeName = feedItem.Title,
                     LastEpisode = feedItem.PublishDateParsed,
                     LastEpisodeLink = feedItem.Link
                 };
+
                 var oldSerial = oldSerials.FirstOrDefault(s => s.Name == serial.Name);
-                if (oldSerial == null)
-                {
-                    await _serialDao.SaveAsync(serial);
-                    oldSerials.Add(serial);
-                    continue;
-                }
-                if (oldSerial.LastEpisode < serial.LastEpisode)
-                {
-                    await _serialDao.SaveAsync(serial);
-                    oldSerial.LastEpisode = serial.LastEpisode;
-                }
+                //if (oldSerial != null && oldSerial.LastEpisode >= serial.LastEpisode) continue;
+                serial.LastEpisodeTorrentLinkSD = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "SD");
+                serial.LastEpisodeTorrentLink1080 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "1080");
+                serial.LastEpisodeTorrentLinkMP4 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
+                await _serialDao.SaveAsync(serial);
+                if (oldSerial == null) oldSerials.Add(serial);
+                if (oldSerial.LastEpisode < serial.LastEpisode) oldSerial.LastEpisode = serial.LastEpisode;
             }
         }
     }

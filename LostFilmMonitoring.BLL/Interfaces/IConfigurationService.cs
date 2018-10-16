@@ -6,6 +6,8 @@
 
         string GetBasePath();
 
+        string BaseFeedCookie();
+
         string GetImagesDirectory();
     }
 }

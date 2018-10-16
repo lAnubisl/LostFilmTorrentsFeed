@@ -34,12 +34,14 @@ namespace LostFilmMonitoring.DAO
                 .WithMany(u => u.Subscriptions)
                 .HasForeignKey(s => s.UserId)
                 .HasConstraintName("FK_Subscriptions_Users");
-
+            modelBuilder.Entity<Setting>()
+                .HasKey(s => s.Name);
             base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Serial> Serials { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Setting> Settings { get; set; }
     }
 }

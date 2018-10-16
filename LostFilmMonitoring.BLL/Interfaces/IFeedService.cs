@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using LostFilmMonitoring.BLL.Models;
 using LostFilmMonitoring.DAO.DomainModels;
 
 namespace LostFilmMonitoring.BLL.Interfaces
@@ -11,5 +12,6 @@ namespace LostFilmMonitoring.BLL.Interfaces
         Task<SortedSet<FeedItem>> GetItems();
         Task<Stream> GetRss(Guid userId);
         Task Update();
+        Task UpdateUserFeed(SelectedFeedItem[] selectedItems);
     }
 }
