@@ -32,7 +32,7 @@ namespace LostFilmMonitoring.Console
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine(ex.Message);
+                System.Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
             }
         }
     }
