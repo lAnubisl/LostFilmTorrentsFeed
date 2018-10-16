@@ -116,7 +116,7 @@ namespace LostFilmMonitoring.BLL.Implementations
                 };
 
                 var oldSerial = oldSerials.FirstOrDefault(s => s.Name == serial.Name);
-                //if (oldSerial != null && oldSerial.LastEpisode >= serial.LastEpisode) continue;
+                if (oldSerial != null && oldSerial.LastEpisode >= serial.LastEpisode) continue;
                 serial.LastEpisodeTorrentLinkSD = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "SD");
                 serial.LastEpisodeTorrentLink1080 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "1080");
                 serial.LastEpisodeTorrentLinkMP4 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
