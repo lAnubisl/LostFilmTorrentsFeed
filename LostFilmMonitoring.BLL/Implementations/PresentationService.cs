@@ -55,12 +55,12 @@ namespace LostFilmMonitoring.BLL.Implementations
         {
             var currentUserId = _currentUserProvider.GetCurrentUserId();
             if (currentUserId == Guid.Empty) return;
+            await _feedService.UpdateUserFeed(selectedItems);
             await _subscriptionDAO.SaveAsync(
                 currentUserId, 
                 selectedItems?
                 .Select(s => new Subscription() { Quality = s.Quality, Serial = s.Serial })
                 .ToArray());
-            await _feedService.UpdateUserFeed(selectedItems);
         }
 
         public async Task<bool> Authenticate(Guid userId)

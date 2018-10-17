@@ -80,24 +80,42 @@ namespace LostFilmMonitoring.BLL.Implementations
         public async Task UpdateUserFeed(SelectedFeedItem[] selectedItems)
         {
             var userId = _currentUserProvider.GetCurrentUserId();
+            if (userId == Guid.Empty) return;
             var user = await _userDAO.LoadAsync(userId);
+            if (user == null) return;
             var userFeedItems = await _feedDAO.LoadUserFeedAsync(userId);
-            var newItems = selectedItems.Where(i => userFeedItems.All(f => !f.Title.StartsWith(i.Serial, StringComparison.OrdinalIgnoreCase))).ToList();
-            foreach(var newItem in newItems)
+            if (userFeedItems == null) return;
+            if (user.Subscriptions == null) user.Subscriptions = new List<Subscription>();
+            var newItems = selectedItems.Where(
+                i => user.Subscriptions.All(
+                    s => !string.Equals(s.Serial, i.Serial, StringComparison.OrdinalIgnoreCase) || s.Quality != i.Quality)
+                ).ToList();
+            foreach (var newItem in newItems)
             {
                 var serial = await _serialDao.LoadAsync(newItem.Serial);
-                var torrentLink = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, user.Cookie, newItem.Quality);
-                if (torrentLink == null) continue;
-                var userFeedItem = new FeedItem() {
-                    Link = torrentLink,
-                    Title = newItem.Serial,
+                var newFeedItem = new FeedItem()
+                {
+                    Link = GetTorrentLink(newItem, serial),
+                    Title = serial.LastEpisodeName,
                     PublishDateParsed = DateTime.UtcNow,
                     PublishDate = DateTime.UtcNow.ToString()
                 };
-                userFeedItems.Add(userFeedItem);
+                userFeedItems.RemoveWhere(i => string.Equals(i.Title, newFeedItem.Title));
+                userFeedItems.Add(newFeedItem);
             }
 
             await _feedDAO.SaveUserFeedAsync(userId, userFeedItems.Take(15).ToArray());
+        }
+
+        private static string GetTorrentLink(SelectedFeedItem item, Serial serial)
+        {
+            switch (item.Quality)
+            {
+                case "SD": return serial.LastEpisodeTorrentLinkSD;
+                case "1080": return serial.LastEpisodeTorrentLink1080;
+                case "MP4": return serial.LastEpisodeTorrentLinkMP4;
+                default: throw new InvalidOperationException("Quality not supported");
+            }
         }
 
         private async Task UpdateSerialList(IEnumerable<FeedItem> feedItems)
