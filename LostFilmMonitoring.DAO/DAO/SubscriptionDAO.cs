@@ -22,6 +22,7 @@ namespace LostFilmMonitoring.DAO.DAO
 
         public async Task SaveAsync(Guid userId, Subscription[] subscriptions)
         {
+            if (subscriptions == null) subscriptions = new Subscription[0];
             using (var ctx = OpenContext())
             {
                 var existingSubscriptions = ctx.Subscriptions.Where(s => s.UserId == userId).ToList();

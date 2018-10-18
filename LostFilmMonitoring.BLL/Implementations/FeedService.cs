@@ -35,7 +35,7 @@ namespace LostFilmMonitoring.BLL.Implementations
         public async Task<Stream> GetRss(Guid userId)
         {
             if (!await _userDAO.UpdateLastActivity(userId)) return null;
-            return _feedDAO.LoadFeedRawAsync(userId.ToString());
+            return _feedDAO.LoadFeedRawAsync(userId);
         }
 
         public async Task<SortedSet<FeedItem>> GetItems()
@@ -79,6 +79,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task UpdateUserFeed(SelectedFeedItem[] selectedItems)
         {
+            if (selectedItems == null) return;
             var userId = _currentUserProvider.GetCurrentUserId();
             if (userId == Guid.Empty) return;
             var user = await _userDAO.LoadAsync(userId);

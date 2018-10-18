@@ -23,9 +23,9 @@ namespace LostFilmMonitoring.DAO.DAO
             return Path.Combine(_basePath, fileName + ".xml");
         }
 
-        public Stream LoadFeedRawAsync(string fileName)
+        public Stream LoadFeedRawAsync(Guid userId)
         {
-            var feedPath = GetPath(fileName);
+            var feedPath = GetPath(userId.ToString());
             if (!File.Exists(feedPath)) return null;
             return new FileStream(feedPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize: 4096, useAsync: true);
         }
