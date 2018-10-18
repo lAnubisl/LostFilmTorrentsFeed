@@ -104,16 +104,11 @@ namespace LostFilmMonitoring.Web.Controllers
         [HttpGet, Route("About")]
         public ViewResult About() => View();
 
-        [HttpGet, Route("Online")]
-        public async Task<IActionResult> Online()
-        {
-            var items = await _feedService.GetItems();
-            if (items == null) return new NotFoundResult();
-            return View(items);
-        }
-
         [HttpGet, Route("Feed")]
-        public IActionResult Feed() => View(_currentUserProvider.GetCurrentUserId());
+        public async Task<IActionResult> Feed()
+        {
+            return View(await _feedService.GetFeedViewModel());
+        }
 
         [HttpGet, Route("Rss/{userId}")]
         public async Task<IActionResult> Rss(Guid userId)

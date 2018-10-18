@@ -38,13 +38,6 @@ namespace LostFilmMonitoring.BLL.Implementations
             return _feedDAO.LoadFeedRawAsync(userId);
         }
 
-        public async Task<SortedSet<FeedItem>> GetItems()
-        {
-            var userId = _currentUserProvider.GetCurrentUserId();
-            if (!await _userDAO.UpdateLastActivity(userId)) return null;
-            return await _feedDAO.LoadUserFeedAsync(userId);
-        }
-
         public async Task Update()
         {
             var newItems = LostFilmFeedService.Load();
@@ -143,6 +136,13 @@ namespace LostFilmMonitoring.BLL.Implementations
                 if (oldSerial == null) oldSerials.Add(serial);
                 if (oldSerial.LastEpisode < serial.LastEpisode) oldSerial.LastEpisode = serial.LastEpisode;
             }
+        }
+
+        public async Task<FeedViewModel> GetFeedViewModel()
+        {
+            var userId = _currentUserProvider.GetCurrentUserId();
+            if (!await _userDAO.UpdateLastActivity(userId)) return null;
+            return new FeedViewModel(await _feedDAO.LoadUserFeedAsync(userId), userId);
         }
     }
 }
