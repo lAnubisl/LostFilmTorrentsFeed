@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.Web
             services.AddTransient<IFeedService, FeedService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IPresentationService, PresentationService>();
-            services.AddTransient<ICurrentUserProvider, CurrentUserProvider>();
+            services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
         }

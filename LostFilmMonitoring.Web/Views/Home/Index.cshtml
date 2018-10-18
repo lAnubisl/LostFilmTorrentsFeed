@@ -4,20 +4,24 @@
     .item-name {
         color: green;
     }
+
     .item-quality {
         color: darkblue;
         padding-left: 5px;
     }
+
     .item-remove {
-        color:orangered; 
-        padding-left:5px;
+        color: orangered;
+        padding-left: 5px;
         font-weight: bold;
         cursor: pointer;
     }
+
     .serial-item:checked + .serial-item-label {
         font-weight: bold;
-        color:red;
+        color: red;
     }
+
     .serial {
         height: 250px;
         margin: 3px;
@@ -29,7 +33,18 @@
 
     .serial-header {
         height: 40px;
+        font-weight: bold;
+        position: relative;
     }
+
+        .serial-header DIV {
+            bottom: 0;
+            left: 50%;
+            position: absolute;
+            margin-left: -75px;
+            width: 150px;
+        }
+
 
     .serial-selected {
         background-color: aquamarine;
@@ -37,12 +52,12 @@
     }
 
     .hidden {
-        display:none;
+        display: none;
     }
+
     .col-md-2 {
         padding: 0;
     }
-
 </style>
 
 <div class="row">
@@ -55,18 +70,19 @@
             <div class="col-md-2">
                 <div class="serial @(selected != null ? "serial-selected" : "")" onclick="check(this)">
                     <input type="hidden" name="@item.Name" value="@(selected != null)" />
-                    <div class="serial-header">@item.Title</div>
+                    <div class="serial-header"><div>@item.Title</div></div>
                     <img src="~/images/serials/@($"{item.Escaped}.jpg")" />
                     <div style="padding-top: 5px;">
                         <a target="_blank" onclick="window.event.stopPropagation();" href="https://www.google.by/search?q=Сериал @item.Title трейлер">Смотреть трейлер</a><br />
                         @Html.DropDownList(
-                            item.Name + "_quality",
-                            new SelectList(new[] { "SD", "1080", "MP4" }, quality),
-                            null,
-                            new {
-                                @class = selected != null ? "" : "hidden",
-                                onclick = "window.event.stopPropagation();changeQuality();"
-                            })
+             item.Name + "_quality",
+             new SelectList(new[] { "SD", "1080", "MP4" }, quality),
+             null,
+             new
+             {
+                 @class = selected != null ? "" : "hidden",
+                 onclick = "window.event.stopPropagation();changeQuality();"
+             })
                     </div>
                 </div>
             </div>
@@ -74,17 +90,8 @@
     </div>
 
     @section Menu {
-        @if (Model.KnownUser)
-        {
-            <li><a id="save" href="javascript:submit()" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Сохранить изменения</a></li>
-            <li><a id="saved" href="javascript:void(0)" style="font-weight:bold; color:chartreuse; font-size:16px; display:none;">Сохранено</a></li>
-        }
-        else
-        {
-            <li><a id="save" href="javascript:void(0)" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Зарегистрируйтесь чтобы сохранить выбор</a></li>
-        }
-
-
+        <li><a id="save" href="javascript:submit()" style="font-weight:bold; color:yellow; font-size:16px; display:none;">Сохранить изменения</a></li>
+        <li><a id="saved" href="javascript:void(0)" style="font-weight:bold; color:chartreuse; font-size:16px; display:none;">Сохранено</a></li>
     }
 
     @section Scripts {
@@ -106,7 +113,7 @@
                     hidden.value = "value";
                 }
             }
-            var submit = function () {
+            var collect = function () {
                 var data = new Array()
                 var hiddens = $('.serial').find('input[type=hidden]:first');
                 for (var i = 0; i < hiddens.length; i++) {
@@ -118,10 +125,29 @@
                         }
                     );
                 }
-                $.post("/", { SelectedItems: data }, function () {
-                    $('#save').hide();
-                    $('#saved').show(0).delay(1000).hide(0);
-                });
+                return data;
             }
+
         </script>
-    }
+
+        @if (Model.KnownUser)
+        {
+            <script>
+                var submit = function () {
+                    $.post("/", { SelectedItems: collect() }, function () {
+                        $('#save').hide();
+                        $('#saved').show(0).delay(1000).hide(0);
+                    });
+                }
+            </script>
+        }
+        else
+        {
+            <script>
+                var submit = function () {
+                    $.cookie("selected", JSON.stringify(collect()));
+                    location.href="@Url.Action("Register")"
+                }
+            </script>
+        }
+}

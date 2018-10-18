@@ -5,6 +5,7 @@ using LostFilmMonitoring.BLL.Implementations;
 using LostFilmMonitoring.BLL.Interfaces;
 using System.IO;
 using LostFilmMonitoring.BLL.Models;
+using Newtonsoft.Json;
 
 namespace LostFilmMonitoring.Web.Controllers
 {
@@ -53,7 +54,7 @@ namespace LostFilmMonitoring.Web.Controllers
         public ViewResult Register() => View(_currentUserProvider.GetCurrentUserId());
 
         [HttpPost, Route("Register")]
-        public async Task<RedirectToActionResult> Register(string captcha)
+        public async Task<ActionResult> Register(string captcha)
         {
             var cookie = Request.Cookies["captcha"];
             if (cookie == null)
@@ -65,6 +66,28 @@ namespace LostFilmMonitoring.Web.Controllers
             if (!result.Success)
             {
                 ModelState.AddModelError("error", result.Error);
+                return View(Guid.Empty);
+            }
+
+            if (Request.Cookies.ContainsKey("selected"))
+            {
+                var selectedJson = Request.Cookies["selected"];
+                SelectedFeedItem[] selected = null;
+                try
+                {
+                    selected = JsonConvert.DeserializeObject<SelectedFeedItem[]>(selectedJson);
+                }
+                catch
+                {
+                    // DO NOTHING
+                }
+
+                if (selected != null)
+                {
+                    await _presentationService.UpdateSubscriptions(selected);
+                }
+
+                Response.Cookies.Delete("selected");
             }
 
             return RedirectToAction("Register");
