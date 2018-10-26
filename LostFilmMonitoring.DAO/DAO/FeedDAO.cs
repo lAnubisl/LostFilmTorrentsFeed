@@ -1,4 +1,5 @@
-﻿using LostFilmMonitoring.DAO.DomainModels;
+﻿using LostFilmMonitoring.Common;
+using LostFilmMonitoring.DAO.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,10 +13,12 @@ namespace LostFilmMonitoring.DAO.DAO
     {
         private readonly string _basePath;
         private const string baseFeed = "base_feed";
+        private readonly ILogger _logger;
 
-        public FeedDAO(string basePath)
+        public FeedDAO(string basePath, ILogger logger)
         {
             _basePath = basePath;
+            _logger = logger.CreateScope(nameof(FeedDAO));
         }
 
         private string GetPath(string fileName)
@@ -45,6 +48,7 @@ namespace LostFilmMonitoring.DAO.DAO
         public void Delete(Guid userId)
         {
             File.Delete(GetPath(userId.ToString()));
+            _logger.Info($"User {userId} deleted");
         }
 
         private async Task SaveFeedAsync(string fileName, FeedItem[] items)

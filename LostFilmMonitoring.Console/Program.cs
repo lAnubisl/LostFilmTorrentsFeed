@@ -1,4 +1,5 @@
 ﻿using LostFilmMonitoring.BLL.Implementations;
+using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO.DAO;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -13,14 +14,17 @@ namespace LostFilmMonitoring.Console
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Production.json", true);
             Configuration = builder.Build();
+            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Console", Configuration.GetConnectionString("log"));
+            var logger = new Logger(nameof(Program));
             try
             {
                 var configurationService = new ConfigurationService();
-                var feedService = new FeedService(configurationService, null);
+                var feedService = new FeedService(configurationService, null, logger);
                 var userDao = new UserDAO(configurationService.GetConnectionString());
-                var feedDao = new FeedDAO(configurationService.GetBasePath());
+                var feedDao = new FeedDAO(configurationService.GetBasePath(), logger);
                 var deletedUserIds = userDao.DeleteOldUsersAsync().Result;
                 foreach (var userId in deletedUserIds)
                 {
@@ -28,10 +32,10 @@ namespace LostFilmMonitoring.Console
                 }
 
                 feedService.Update().Wait();
-                System.Console.WriteLine("Done!");
             }
             catch (Exception ex)
             {
+                logger.Log(ex);
                 System.Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
             }
         }

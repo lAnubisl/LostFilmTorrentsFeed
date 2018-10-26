@@ -1,5 +1,6 @@
 ﻿using LostFilmMonitoring.BLL.Interfaces;
 using LostFilmMonitoring.BLL.Models;
+using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO.DAO;
 using LostFilmMonitoring.DAO.DomainModels;
 using System;
@@ -16,8 +17,9 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly ILostFilmRegistrationService _registrationService;
         private readonly ICurrentUserProvider _currentUserProvider;
         private readonly IFeedService _feedService;
+        private readonly ILogger _logger;
 
-        public PresentationService(IConfigurationService configurationService, ILostFilmRegistrationService registrationService, ICurrentUserProvider currentUserProvider, IFeedService feedService)
+        public PresentationService(IConfigurationService configurationService, ILostFilmRegistrationService registrationService, ICurrentUserProvider currentUserProvider, IFeedService feedService, ILogger logger)
         {
             var connectionString = configurationService.GetConnectionString();
             _serialDAO = new SerialDAO(connectionString);
@@ -26,6 +28,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _subscriptionDAO = new SubscriptionDAO(connectionString);
             _registrationService = registrationService;
             _currentUserProvider = currentUserProvider;
+            _logger = logger.CreateScope(nameof(PresentationService));
         }
 
         public async Task<IndexModel> GetIndexModel()
@@ -48,6 +51,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
             var userId = await _userDAO.CreateAsync(user);
             _currentUserProvider.SetCurrentUserId(userId);
+            _logger.Info("New user registered.");
             return registrationResult;
         }
 
@@ -61,6 +65,7 @@ namespace LostFilmMonitoring.BLL.Implementations
                 selectedItems?
                 .Select(s => new Subscription() { Quality = s.Quality, Serial = s.Serial })
                 .ToArray());
+            _logger.Info($"Subscriptions updated for user {currentUserId}");
         }
 
         public async Task<bool> Authenticate(Guid userId)

@@ -1,7 +1,6 @@
 ﻿using LostFilmMonitoring.DAO.DomainModels;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 
 namespace LostFilmMonitoring.DAO.DAO
@@ -14,31 +13,17 @@ namespace LostFilmMonitoring.DAO.DAO
 
         public async Task<Serial> LoadAsync(string name)
         {
-            try
+            using (var ctx = OpenContext())
             {
-                using (var ctx = OpenContext())
-                {
-                    return await ctx.Serials.FirstOrDefaultAsync(s => s.Name == name);
-                }
-            }
-            catch (Exception)
-            {
-                return null;
+                return await ctx.Serials.FirstOrDefaultAsync(s => s.Name == name);
             }
         }
 
         public async Task<List<Serial>> LoadAsync()
         {
-            try
+            using (var ctx = OpenContext())
             {
-                using (var ctx = OpenContext())
-                {
-                    return await ctx.Serials.ToListAsync();
-                }
-            }
-            catch (Exception)
-            {
-                return null;
+                return await ctx.Serials.ToListAsync();
             }
         }
 

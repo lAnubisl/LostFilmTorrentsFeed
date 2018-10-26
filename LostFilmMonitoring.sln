@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Console"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Web", "LostFilmMonitoring.Web\LostFilmMonitoring.Web.csproj", "{AADB9050-2E53-46AB-A5FB-F8A18FAE1514}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.BLL.Tests", "LostFilmMonitoring.BLL.Tests\LostFilmMonitoring.BLL.Tests.csproj", "{54533A8E-6FEA-4026-9653-D6B6505E96F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.BLL.Tests", "LostFilmMonitoring.BLL.Tests\LostFilmMonitoring.BLL.Tests.csproj", "{54533A8E-6FEA-4026-9653-D6B6505E96F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.Common", "LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj", "{270FC57F-EA40-47BC-B0EF-866384DAA121}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{54533A8E-6FEA-4026-9653-D6B6505E96F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54533A8E-6FEA-4026-9653-D6B6505E96F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54533A8E-6FEA-4026-9653-D6B6505E96F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270FC57F-EA40-47BC-B0EF-866384DAA121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270FC57F-EA40-47BC-B0EF-866384DAA121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270FC57F-EA40-47BC-B0EF-866384DAA121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270FC57F-EA40-47BC-B0EF-866384DAA121}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

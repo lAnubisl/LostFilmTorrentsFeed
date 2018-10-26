@@ -1,5 +1,6 @@
 ﻿using LostFilmMonitoring.BLL.Interfaces;
 using LostFilmMonitoring.DAO.DAO;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,17 +22,17 @@ namespace LostFilmMonitoring.Console
 
         public string GetBasePath()
         {
-            return Program.Configuration["basePath"];
+            return Program.Configuration.GetSection("AppSettings")["basePath"];
         }
 
         public string GetConnectionString()
         {
-            return Program.Configuration["ConnectionStrings"];
+            return Program.Configuration.GetConnectionString("default");
         }
 
         public string GetImagesDirectory()
         {
-            return Program.Configuration["ImagesPath"];
+            return Program.Configuration.GetSection("AppSettings")["ImagesPath"];
         }
     }
 }

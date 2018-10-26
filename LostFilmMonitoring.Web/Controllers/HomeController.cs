@@ -6,6 +6,7 @@ using LostFilmMonitoring.BLL.Interfaces;
 using System.IO;
 using LostFilmMonitoring.BLL.Models;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LostFilmMonitoring.Web.Controllers
 {
