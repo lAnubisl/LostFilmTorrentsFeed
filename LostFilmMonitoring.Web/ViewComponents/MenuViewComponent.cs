@@ -1,7 +1,6 @@
 ﻿using LostFilmMonitoring.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Threading.Tasks;
 
 namespace LostFilmMonitoring.Web.ViewComponents
 {
