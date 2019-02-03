@@ -36,7 +36,10 @@ namespace LostFilmMonitoring.Console
             catch (Exception ex)
             {
                 logger.Log(ex);
-                System.Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    logger.Log(ex.InnerException);
+                }
             }
         }
     }

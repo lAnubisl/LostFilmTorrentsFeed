@@ -140,8 +140,15 @@ namespace LostFilmMonitoring.BLL.Implementations
                 serial.LastEpisodeTorrentLinkMP4 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
                 await _serialDao.SaveAsync(serial);
                 _logger.Info($"New serial detected: {serial.Name}");
-                if (existingSerial == null) existingSerials.Add(serial);
-                if (existingSerial.LastEpisode < serial.LastEpisode) existingSerial.LastEpisode = serial.LastEpisode;
+                if (existingSerial == null)
+                {
+                    existingSerials.Add(serial);
+                }
+
+                if (existingSerial != null && existingSerial.LastEpisode < serial.LastEpisode)
+                {
+                    existingSerial.LastEpisode = serial.LastEpisode;
+                }
             }
         }
 
