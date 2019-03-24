@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using LostFilmMonitoring.Common;
+using System;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -7,7 +9,13 @@ namespace LostFilmMonitoring.BLL
 {
     public class TorrentFilePathService
     {
-        public static async Task<string> GetTorrentLink(string feedLink, string cookie, string quantity)
+        private readonly ILogger logger;
+        public TorrentFilePathService(ILogger logger)
+        {
+            this.logger = logger.CreateScope(nameof(TorrentFilePathService));
+        }
+
+        public async Task<string> GetTorrentLink(string feedLink, string cookie, string quantity)
         {
             using (var httpClient = new HttpClient())
             {
@@ -18,6 +26,7 @@ namespace LostFilmMonitoring.BLL
                 var episodeIdMatch = Regex.Match(episodeContent, "PlayEpisode\\('(\\d+)'\\)");
                 if (!episodeIdMatch.Success)
                 {
+                    logger.Error($"Cannot get episodeId from: {Environment.NewLine}{episodeContent}");
                     return null;
                 }
 
@@ -30,6 +39,7 @@ namespace LostFilmMonitoring.BLL
                 var trackerLinkMatch = Regex.Match(linkResponseContent, "location.replace\\(\"([^\"]+)\"\\);");
                 if (!trackerLinkMatch.Success)
                 {
+                    logger.Error($"Cannot get tracker link from: {Environment.NewLine}{linkResponseContent}");
                     return null;
                 }
 
@@ -47,6 +57,7 @@ namespace LostFilmMonitoring.BLL
                     }
                 }
 
+                logger.Error($"Cannot get torrent link: {Environment.NewLine}{torrentFilesLinkContent}");
                 return null;
             }
         }

@@ -18,6 +18,7 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly SerialDAO _serialDao;
         private readonly SubscriptionDAO _subscriptionDAO;
         private readonly SerialCoverService _serialCoverService;
+        private readonly TorrentFilePathService _torrentFilePathService;
         private readonly ICurrentUserProvider _currentUserProvider;
         private readonly IConfigurationService _configurationService;
         private readonly ILogger _logger;
@@ -33,6 +34,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _userDAO = new UserDAO(connectionString);
             _serialCoverService = new SerialCoverService(configurationService.GetImagesDirectory());
             _currentUserProvider = currentUserProvider;
+            _torrentFilePathService = new TorrentFilePathService(logger);
         }
 
         public async Task<Stream> GetRss(Guid userId)
@@ -65,7 +67,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial {item.Serial()}");
             foreach (var subscription in subscriptions)
             {
-                var link = await TorrentFilePathService.GetTorrentLink(
+                var link = await _torrentFilePathService.GetTorrentLink(
                     item.Link, subscription.User.Cookie, subscription.Quality);
                 if (link == null) continue;
                 var userFeedItem = new FeedItem(item, link);
@@ -135,18 +137,21 @@ namespace LostFilmMonitoring.BLL.Implementations
 
                 var existingSerial = existingSerials.FirstOrDefault(s => s.Name == serial.Name);
                 if (existingSerial != null && existingSerial.LastEpisode >= serial.LastEpisode) continue;
-                serial.LastEpisodeTorrentLinkSD = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "SD");
-                serial.LastEpisodeTorrentLink1080 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "1080");
-                serial.LastEpisodeTorrentLinkMP4 = await TorrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
+                serial.LastEpisodeTorrentLinkSD = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "SD");
+                serial.LastEpisodeTorrentLink1080 = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "1080");
+                serial.LastEpisodeTorrentLinkMP4 = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
                 await _serialDao.SaveAsync(serial);
-                _logger.Info($"New serial detected: {serial.Name}");
+
+                
                 if (existingSerial == null)
                 {
+                    _logger.Info($"New serial detected: {serial.Name}");
                     existingSerials.Add(serial);
                 }
 
                 if (existingSerial != null && existingSerial.LastEpisode < serial.LastEpisode)
                 {
+                    _logger.Info($"New episode detected: {serial.Name}");
                     existingSerial.LastEpisode = serial.LastEpisode;
                 }
             }
