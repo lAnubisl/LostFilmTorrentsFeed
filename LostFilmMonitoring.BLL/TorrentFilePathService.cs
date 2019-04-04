@@ -47,7 +47,7 @@ namespace LostFilmMonitoring.BLL
                 var torrentFileLintsRequest = new HttpRequestMessage(HttpMethod.Get, trackerLink);
                 var torrentFilesLinkResponse = httpClient.SendAsync(torrentFileLintsRequest).Result;
                 var torrentFilesLinkContent = torrentFilesLinkResponse.Content.ReadAsStringAsync().Result;
-                var torrentLinksMatches = Regex.Matches(torrentFilesLinkContent, "\\>http:\\/\\/tracktor\\.in\\/td\\.php\\?s=([^<]+)\\<");
+                var torrentLinksMatches = Regex.Matches(torrentFilesLinkContent, "\\>http:\\/\\/tracktor\\.site\\/td\\.php\\?s=([^<]+)\\<");
                 var torrentQualityMatches = Regex.Matches(torrentFilesLinkContent, "<div class=\"inner-box--label\">([^<]+)");
                 for (int i = 0; i < torrentQualityMatches.Count; i++)
                 {
