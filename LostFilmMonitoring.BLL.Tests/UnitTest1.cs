@@ -1,4 +1,8 @@
+using LostFilmMonitoring.BLL.Implementations;
+using LostFilmMonitoring.Common;
+using Moq;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace LostFilmMonitoring.BLL.Tests
@@ -13,6 +17,15 @@ namespace LostFilmMonitoring.BLL.Tests
             var captcha = "";
             var result2 = service.Register(result.SessionKey, captcha).Result;
             Assert.Null(result);
+        }
+
+        [Fact]
+        public void Test2()
+        {
+            var logger = new Mock<ILogger>();
+            logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(logger.Object);
+            var service = new LostFilmFeedService(logger.Object);
+            var result = service.LoadFeedItems().Result;
         }
     }
 }

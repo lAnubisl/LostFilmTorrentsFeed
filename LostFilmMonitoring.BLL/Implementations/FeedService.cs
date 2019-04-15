@@ -21,6 +21,7 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly TorrentFilePathService _torrentFilePathService;
         private readonly ICurrentUserProvider _currentUserProvider;
         private readonly IConfigurationService _configurationService;
+        private readonly ILostFilmFeedService _lostFilmFeedService;
         private readonly ILogger _logger;
 
         public FeedService(IConfigurationService configurationService, ICurrentUserProvider currentUserProvider, ILogger logger)
@@ -35,6 +36,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _serialCoverService = new SerialCoverService(configurationService.GetImagesDirectory());
             _currentUserProvider = currentUserProvider;
             _torrentFilePathService = new TorrentFilePathService(logger);
+            _lostFilmFeedService = new LostFilmFeedService(logger);
         }
 
         public async Task<Stream> GetRss(Guid userId)
@@ -45,7 +47,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task Update()
         {
-            var newItems = LostFilmFeedService.Load();
+            var newItems = await _lostFilmFeedService.LoadFeedItems();
             await UpdateSerialList(newItems);
             var existingItems = await _feedDAO.LoadBaseFeedAsync();
             foreach (var item in newItems)

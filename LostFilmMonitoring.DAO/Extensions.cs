@@ -1,5 +1,4 @@
 ﻿using LostFilmMonitoring.DAO.DomainModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -34,6 +33,7 @@ namespace LostFilmMonitoring.DAO
 
         public static SortedSet<FeedItem> GetItems(this XDocument doc)
         {
+            if (doc == null) return null;
             var entries = from item in doc.Root.Descendants()
                           .First(i => i.Name.LocalName == "channel")
                           .Elements()
