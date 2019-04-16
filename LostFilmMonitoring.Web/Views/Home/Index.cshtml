@@ -1,4 +1,5 @@
-﻿@model LostFilmMonitoring.BLL.Models.IndexModel
+﻿@using LostFilmMonitoring.Web.ViewComponents;
+@model LostFilmMonitoring.BLL.Models.IndexModel
 
 <style>
     .item-name {
@@ -63,30 +64,9 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Создайте ваш персональный RSS Torrent Feed с сайта LostFilm.TV</h2>
-        @foreach (var item in Model.AllSerials)
-        {
-            var selected = Model.SelectedItems?.FirstOrDefault(i => i.Serial == item.Name);
-            var quality = selected?.Quality;
-            <div class="col-md-2">
-                <div class="serial @(selected != null ? "serial-selected" : "")" onclick="check(this)">
-                    <input type="hidden" name="@item.Name" value="@(selected != null)" />
-                    <div class="serial-header"><div>@item.Title</div></div>
-                    <img src="~/images/serials/@($"{item.Escaped}.jpg")" />
-                    <div style="padding-top: 5px;">
-                        <a target="_blank" onclick="window.event.stopPropagation();" href="https://www.google.by/search?q=Сериал @item.Title трейлер">Смотреть трейлер</a><br />
-                        @Html.DropDownList(
-             item.Name + "_quality",
-             new SelectList(new[] { "SD", "1080", "MP4" }, quality),
-             null,
-             new
-             {
-                 @class = selected != null ? "" : "hidden",
-                 onclick = "window.event.stopPropagation();changeQuality();"
-             })
-                    </div>
-                </div>
-            </div>
-        }
+        @await Component.InvokeAsync("Episodes", new Episodes("Обновления за последние сутки:", Model.Last24HoursItems))
+        @await Component.InvokeAsync("Episodes", new Episodes("Обновления за последние 7 дней:", Model.Last7DaysItems))
+        @await Component.InvokeAsync("Episodes", new Episodes("Старше 7 дней:", Model.OlderItems))
     </div>
 
     @section Menu {
@@ -150,4 +130,5 @@
                 }
             </script>
         }
-}
+    }
+</div>

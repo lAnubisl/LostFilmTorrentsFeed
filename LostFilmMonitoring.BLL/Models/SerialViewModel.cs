@@ -1,8 +1,21 @@
-﻿namespace LostFilmMonitoring.BLL.Models
+﻿using LostFilmMonitoring.DAO.DomainModels;
+using System.Linq;
+
+namespace LostFilmMonitoring.BLL.Models
 {
     public class SerialViewModel
     {
-        public string Name { get; set; }
+        public SerialViewModel(Serial s, SelectedFeedItem[] selectedFeedItems)
+        {
+            Name = s.Name;
+            var selectedItem = selectedFeedItems?.FirstOrDefault(i => i.Serial == s.Name);
+            Selected = selectedItem != null;
+            Quantity = selectedItem?.Quality;
+        }
+
+        public bool Selected { get; }
+        public string Name { get; }
+        public string Quantity { get; }
         public string Title
         {
             get
@@ -16,6 +29,6 @@
                 return Name;
             }
         }
-        public string Escaped { get; set; }
+        public string Escaped => Name.EscapePath();
     }
 }
