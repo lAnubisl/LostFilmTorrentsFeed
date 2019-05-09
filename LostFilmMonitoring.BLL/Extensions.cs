@@ -37,6 +37,11 @@ namespace LostFilmMonitoring.BLL
             var startIndex = feedItem.Title.LastIndexOf('[');
             var endIndex = feedItem.Title.LastIndexOf(']');
             var quality = feedItem.Title.Substring(startIndex + 1, endIndex - startIndex - 1);
+            if (quality == Quality.h1080 + "p")
+            {
+                quality = Quality.h1080;
+            }
+
             return quality;
         }
 
