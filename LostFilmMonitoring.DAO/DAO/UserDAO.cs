@@ -44,11 +44,40 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        public async Task<User> LoadAsync(Guid userId)
+        public async Task<User> LoadWithSubscriptionsAsync(Guid userId)
         {
             using (var ctx = OpenContext())
             {
                 return await ctx.Users.Include(u => u.Subscriptions).FirstOrDefaultAsync(u => u.Id == userId);
+            }
+        }
+
+        public async Task<User> LoadAsync(Guid userId)
+        {
+            using (var ctx = OpenContext())
+            {
+                return await ctx.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            }
+        }
+
+        public async Task<User[]> LoadAsync()
+        {
+            using (var ctx = OpenContext())
+            {
+                return await ctx.Users.ToArrayAsync();
+            }
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            using (var ctx = OpenContext())
+            {
+                var dbUser = await ctx.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+                if (dbUser == null) return;
+                dbUser.Usess = user.Usess;
+                dbUser.Uid = user.Uid;
+                dbUser.Cookie = user.Cookie;
+                await ctx.SaveChangesAsync();
             }
         }
 

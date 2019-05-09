@@ -35,7 +35,7 @@ namespace LostFilmMonitoring.BLL.Implementations
         {
             var serials = await _serialDAO.LoadAsync();
             var currentUserId = _currentUserProvider.GetCurrentUserId();
-            var user = currentUserId == Guid.Empty ? null : await _userDAO.LoadAsync(currentUserId);
+            var user = currentUserId == Guid.Empty ? null : await _userDAO.LoadWithSubscriptionsAsync(currentUserId);
             return new IndexModel(serials, user);
         }
 
@@ -47,6 +47,8 @@ namespace LostFilmMonitoring.BLL.Implementations
             {
                 Cookie = registrationResult.Cookie,
                 LastActivity = DateTime.UtcNow,
+                Usess = registrationResult.Usess,
+                Uid = registrationResult.Uid
             };
 
             var userId = await _userDAO.CreateAsync(user);
@@ -70,7 +72,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task<bool> Authenticate(Guid userId)
         {
-            var user = await _userDAO.LoadAsync(userId);
+            var user = await _userDAO.LoadWithSubscriptionsAsync(userId);
             if (user == null) return false;
             _currentUserProvider.SetCurrentUserId(userId);
             return true;

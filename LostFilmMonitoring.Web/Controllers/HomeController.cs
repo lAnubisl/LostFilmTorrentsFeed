@@ -6,7 +6,8 @@ using LostFilmMonitoring.BLL.Interfaces;
 using System.IO;
 using LostFilmMonitoring.BLL.Models;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
+using LostFilmMonitoring.Web.Models;
+using LostFilmMonitoring.Common;
 
 namespace LostFilmMonitoring.Web.Controllers
 {
@@ -15,15 +16,17 @@ namespace LostFilmMonitoring.Web.Controllers
         private readonly IFeedService _feedService;
         private readonly IPresentationService _presentationService;
         private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly ILogger _logger;
+        private readonly ILostFilmRegistrationService _registrationService;
 
-        public HomeController(IFeedService feedService, IPresentationService presentationService, ICurrentUserProvider currentUserProvider)
+        public HomeController(IFeedService feedService, IPresentationService presentationService, ICurrentUserProvider currentUserProvider, ILogger logger)
         {
             _feedService = feedService;
             _presentationService = presentationService;
             _currentUserProvider = currentUserProvider;
+            _logger = logger.CreateScope(nameof(HomeController));
+            _registrationService = new LostFilmRegistrationService(_logger);
         }
-
-        private readonly ILostFilmRegistrationService registrationService = new LostFilmRegistrationService();
 
         [HttpGet, Route("")]
         public async Task<ActionResult> Index() => View(await _presentationService.GetIndexModel());
@@ -91,13 +94,13 @@ namespace LostFilmMonitoring.Web.Controllers
                 Response.Cookies.Delete("selected");
             }
 
-            return RedirectToAction("Register");
+            return RedirectToAction("Feed");
         }
 
         [HttpGet, Route("Captcha")]
         public async Task<FileStreamResult> Captcha()
         {
-            var captcha = await registrationService.GetNewCaptcha();
+            var captcha = await _registrationService.GetNewCaptcha();
             Response.Cookies.Append("captcha", captcha.SessionKey);
             return new FileStreamResult(new MemoryStream(captcha.CaptchaGif), "image/gif");
         }
@@ -108,7 +111,9 @@ namespace LostFilmMonitoring.Web.Controllers
         [HttpGet, Route("Feed")]
         public async Task<IActionResult> Feed()
         {
-            return View(await _feedService.GetFeedViewModel());
+            var model = await _feedService.GetFeedViewModel();
+            if (model == null) return RedirectToAction("index");
+            return View(model);
         }
 
         [HttpGet, Route("Rss/{userId}")]
@@ -116,15 +121,18 @@ namespace LostFilmMonitoring.Web.Controllers
         {
             var stream = await _feedService.GetRss(userId);
             if (stream == null) return new NotFoundResult();
-            return new FileStreamResult(stream, "application/rss+xml");
+            return File(stream, "application/rss+xml", userId + ".xml");
+        }
+
+        [HttpGet, Route("Rss/{userId}/{id}")]
+        public async Task<IActionResult> RssItem(int id, Guid userId)
+        {
+            var result = await _feedService.GetRssItem(userId, id);
+            if (result == null) return new NotFoundResult();
+            return File(await result.Body, result.ContentType, result.FileName);
         }
 
         [HttpGet, Route("Instructions")]
         public ViewResult Instructions() => View();
-    }
-
-    public class UpdateSubscriptionModel
-    {
-        public SelectedFeedItem[] SelectedItems { get; set; }
     }
 }

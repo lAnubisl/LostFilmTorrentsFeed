@@ -30,9 +30,10 @@ namespace LostFilmMonitoring.Web
                 userId.ToString(),
                 new CookieOptions()
                 {
-                    Expires = DateTimeOffset.Now.AddYears(1),
+                    Expires = DateTimeOffset.Now.AddYears(userId != Guid.Empty ? 1 : -1),
                     HttpOnly = true,
-                });
+                }
+            );
         }
     }
 }

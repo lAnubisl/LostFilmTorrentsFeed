@@ -1,4 +1,6 @@
-﻿using LostFilmMonitoring.BLL.Interfaces;
+﻿using LostFilmMonitoring.BLL.Implementations.RssFeedService;
+using LostFilmMonitoring.BLL.Interfaces;
+using LostFilmMonitoring.BLL.Interfaces.Models;
 using LostFilmMonitoring.BLL.Models;
 using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO.DAO;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace LostFilmMonitoring.BLL.Implementations
@@ -18,10 +21,9 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly SerialDAO _serialDao;
         private readonly SubscriptionDAO _subscriptionDAO;
         private readonly SerialCoverService _serialCoverService;
-        private readonly TorrentFilePathService _torrentFilePathService;
         private readonly ICurrentUserProvider _currentUserProvider;
         private readonly IConfigurationService _configurationService;
-        private readonly ILostFilmFeedService _lostFilmFeedService;
+        private readonly IRssFeedService _rssFeedService;
         private readonly ILogger _logger;
 
         public FeedService(IConfigurationService configurationService, ICurrentUserProvider currentUserProvider, ILogger logger)
@@ -35,8 +37,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _userDAO = new UserDAO(connectionString);
             _serialCoverService = new SerialCoverService(configurationService.GetImagesDirectory());
             _currentUserProvider = currentUserProvider;
-            _torrentFilePathService = new TorrentFilePathService(logger);
-            _lostFilmFeedService = new LostFilmFeedService(logger);
+            _rssFeedService = new ReteOrgRssFeedService(logger);
         }
 
         public async Task<Stream> GetRss(Guid userId)
@@ -47,7 +48,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task Update()
         {
-            var newItems = await _lostFilmFeedService.LoadFeedItems();
+            var newItems = await _rssFeedService.LoadFeedItems();
             await UpdateSerialList(newItems);
             var existingItems = await _feedDAO.LoadBaseFeedAsync();
             foreach (var item in newItems)
@@ -55,7 +56,7 @@ namespace LostFilmMonitoring.BLL.Implementations
                 if (!existingItems.Contains(item))
                 {
                     existingItems.Add(item);
-                    await PrepareFeeds(item);
+                    await PrepareUserFeeds(item);
                 }
             }
 
@@ -63,21 +64,27 @@ namespace LostFilmMonitoring.BLL.Implementations
             _logger.Info("Base feed updated");
         }
 
-        private async Task PrepareFeeds(FeedItem item)
+        private async Task PrepareUserFeeds(FeedItem item)
         {
-            var subscriptions = await _subscriptionDAO.LoadAsync(item.Serial());
-            _logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial {item.Serial()}");
+            var serial = item.ParseSerial();
+            var quality = item.ParseQuality();
+            var subscriptions = await _subscriptionDAO.LoadAsync(serial.Name, quality);
+            _logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial {serial.Name}");
             foreach (var subscription in subscriptions)
             {
-                var link = await _torrentFilePathService.GetTorrentLink(
-                    item.Link, subscription.User.Cookie, subscription.Quality);
-                if (link == null) continue;
-                var userFeedItem = new FeedItem(item, link);
-                var userFeed = await _feedDAO.LoadUserFeedAsync(subscription.User.Id);
-                userFeed.Add(userFeedItem);
-                await _feedDAO.SaveUserFeedAsync(subscription.User.Id, userFeed.Take(15).ToArray());
-                _logger.Info($"Feed for user {subscription.User.Id} updated.");
+                await PrepareUserFeed(item, subscription);
             }
+        }
+
+        private async Task PrepareUserFeed(FeedItem item, Subscription subscription)
+        {
+            var torrentId = item.ParseId();
+            var link = Extensions.GenerateTorrentLink(subscription.UserId, torrentId);
+            var userFeedItem = new FeedItem(item, link);
+            var userFeed = await _feedDAO.LoadUserFeedAsync(subscription.UserId);
+            userFeed.Add(userFeedItem);
+            await _feedDAO.SaveUserFeedAsync(subscription.UserId, userFeed.Take(15).ToArray());
+            _logger.Info($"Feed for user {subscription.UserId} updated.");
         }
 
         public async Task UpdateUserFeed(SelectedFeedItem[] selectedItems)
@@ -85,7 +92,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             if (selectedItems == null) return;
             var userId = _currentUserProvider.GetCurrentUserId();
             if (userId == Guid.Empty) return;
-            var user = await _userDAO.LoadAsync(userId);
+            var user = await _userDAO.LoadWithSubscriptionsAsync(userId);
             if (user == null) return;
             var userFeedItems = await _feedDAO.LoadUserFeedAsync(userId);
             if (userFeedItems == null) return;
@@ -97,9 +104,10 @@ namespace LostFilmMonitoring.BLL.Implementations
             foreach (var newItem in newItems)
             {
                 var serial = await _serialDao.LoadAsync(newItem.Serial);
+                var torrentId = serial.GetTorrentId(newItem.Quality);
                 var newFeedItem = new FeedItem()
                 {
-                    Link = GetTorrentLink(newItem, serial),
+                    Link = Extensions.GenerateTorrentLink(userId, torrentId),
                     Title = serial.LastEpisodeName,
                     PublishDateParsed = DateTime.UtcNow,
                     PublishDate = DateTime.UtcNow.ToString()
@@ -111,59 +119,56 @@ namespace LostFilmMonitoring.BLL.Implementations
             await _feedDAO.SaveUserFeedAsync(userId, userFeedItems.Take(15).ToArray());
         }
 
-        private static string GetTorrentLink(SelectedFeedItem item, Serial serial)
-        {
-            switch (item.Quality)
-            {
-                case "SD": return serial.LastEpisodeTorrentLinkSD;
-                case "1080": return serial.LastEpisodeTorrentLink1080;
-                case "MP4": return serial.LastEpisodeTorrentLinkMP4;
-                default: throw new InvalidOperationException("Quality not supported");
-            }
-        }
-
         private async Task UpdateSerialList(IEnumerable<FeedItem> feedItems)
         {
             var existingSerials = await _serialDao.LoadAsync();
             var baseFeedCookie = _configurationService.BaseFeedCookie();
             foreach (var feedItem in feedItems)
             {
-                await _serialCoverService.EnsureImageDownloaded(feedItem);
-                var serial = new Serial()
-                {
-                    Name = feedItem.Serial(),
-                    LastEpisodeName = feedItem.Title,
-                    LastEpisode = feedItem.PublishDateParsed,
-                    LastEpisodeLink = feedItem.Link
-                };
-
+                var serial = feedItem.ParseSerial();
+                //await _serialCoverService.EnsureImageDownloaded(feedItem);
                 var existingSerial = existingSerials.FirstOrDefault(s => s.Name == serial.Name);
-                if (existingSerial != null && existingSerial.LastEpisode >= serial.LastEpisode) continue;
-                serial.LastEpisodeTorrentLinkSD = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "SD");
-                serial.LastEpisodeTorrentLink1080 = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "1080");
-                serial.LastEpisodeTorrentLinkMP4 = await _torrentFilePathService.GetTorrentLink(serial.LastEpisodeLink, baseFeedCookie, "MP4");
-                await _serialDao.SaveAsync(serial);
-
-                
+                if (existingSerial != null && existingSerial.LastEpisodeName == serial.LastEpisodeName && !serial.HasUpdatesComparedTo(existingSerial))
+                {
+                    continue;
+                }
+                          
                 if (existingSerial == null)
                 {
                     _logger.Info($"New serial detected: {serial.Name}");
                     existingSerials.Add(serial);
+                    await _serialDao.SaveAsync(serial);
+                    continue;
                 }
 
-                if (existingSerial != null && existingSerial.LastEpisode < serial.LastEpisode)
-                {
-                    _logger.Info($"New episode detected: {serial.Name}");
-                    existingSerial.LastEpisode = serial.LastEpisode;
-                }
+                existingSerial.Merge(serial);
+                await _serialDao.SaveAsync(existingSerial);
             }
         }
 
         public async Task<FeedViewModel> GetFeedViewModel()
         {
             var userId = _currentUserProvider.GetCurrentUserId();
-            if (!await _userDAO.UpdateLastActivity(userId)) return null;
+            if (!await _userDAO.UpdateLastActivity(userId))
+            {
+                _currentUserProvider.SetCurrentUserId(Guid.Empty);
+                return null;
+            }
+
             return new FeedViewModel(await _feedDAO.LoadUserFeedAsync(userId), userId);
+        }
+
+        public async Task<RssItemViewModel> GetRssItem(Guid userId, int id)
+        {
+            var user = await _userDAO.LoadAsync(userId);
+            if (user == null) return null;
+            using (var client = new HttpClient())
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, $"http://tracktor.in/rssdownloader.php?id={id}");
+                request.Headers.Add("Cookie", $"uid={user.Uid};usess={user.Usess}");
+                var response = await client.SendAsync(request);
+                return new RssItemViewModel(response);
+            }
         }
     }
 }

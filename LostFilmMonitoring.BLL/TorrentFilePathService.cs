@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace LostFilmMonitoring.BLL
 {
+    public class TorrentLink
+    {
+        public string Link { get; set; }
+        public string Quality { get; set; }
+    }
+
     public class TorrentFilePathService
     {
         private readonly ILogger logger;
@@ -15,7 +21,7 @@ namespace LostFilmMonitoring.BLL
             this.logger = logger.CreateScope(nameof(TorrentFilePathService));
         }
 
-        public async Task<string> GetTorrentLink(string feedLink, string cookie, string quantity)
+        public async Task<TorrentLink[]> GetTorrentLink(string feedLink, string cookie)
         {
             using (var httpClient = new HttpClient())
             {
@@ -49,16 +55,22 @@ namespace LostFilmMonitoring.BLL
                 var torrentFilesLinkContent = torrentFilesLinkResponse.Content.ReadAsStringAsync().Result;
                 var torrentLinksMatches = Regex.Matches(torrentFilesLinkContent, "\\>http:\\/\\/tracktor\\.in\\/td\\.php\\?s=([^<]+)\\<");
                 var torrentQualityMatches = Regex.Matches(torrentFilesLinkContent, "<div class=\"inner-box--label\">([^<]+)");
-                for (int i = 0; i < torrentQualityMatches.Count; i++)
+                var torrentLinks = new TorrentLink[torrentQualityMatches.Count];
+                if (torrentQualityMatches.Count < 3)
                 {
-                    if (torrentQualityMatches[i].Groups[1].Value.Trim().Equals(quantity))
-                    {
-                        return "http://tracktor.in/td.php?s=" + torrentLinksMatches[i].Groups[1].Value;
-                    }
+                    logger.Error($"Cannot get all torrent links: {Environment.NewLine}{torrentFilesLinkContent}");
                 }
 
-                logger.Error($"Cannot get torrent link: {Environment.NewLine}{torrentFilesLinkContent}");
-                return null;
+                for (int i = 0; i < torrentQualityMatches.Count; i++)
+                {
+                    torrentLinks[i] = new TorrentLink
+                    {
+                        Link = "http://tracktor.in/td.php?s=" + torrentLinksMatches[i].Groups[1].Value,
+                        Quality = torrentQualityMatches[i].Groups[1].Value.Trim()
+                    };
+                }
+
+                return torrentLinks;
             }
         }
     }

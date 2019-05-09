@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using LostFilmMonitoring.BLL.Interfaces.Models;
 using LostFilmMonitoring.BLL.Models;
 
 namespace LostFilmMonitoring.BLL.Interfaces
@@ -9,6 +10,7 @@ namespace LostFilmMonitoring.BLL.Interfaces
     {
         Task<FeedViewModel> GetFeedViewModel();
         Task<Stream> GetRss(Guid userId);
+        Task<RssItemViewModel> GetRssItem(Guid userId, int id);
         Task Update();
         Task UpdateUserFeed(SelectedFeedItem[] selectedItems);
     }

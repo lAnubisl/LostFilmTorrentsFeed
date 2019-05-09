@@ -44,7 +44,7 @@ namespace LostFilmMonitoring.DAO.DomainModels
         {
             if (PublishDateParsed < other.PublishDateParsed) return 1;
             if (PublishDateParsed > other.PublishDateParsed) return -1;
-            return 0;
+            return Title.CompareTo(other.Title);
         }
 
         public override bool Equals(object obj)

@@ -12,11 +12,11 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        public async Task<Subscription[]> LoadAsync(string serial)
+        public async Task<Subscription[]> LoadAsync(string serial, string quality)
         {
             using (var ctx = OpenContext())
             {
-                return await ctx.Subscriptions.Include(s => s.User).Where(s => s.Serial == serial).ToArrayAsync();
+                return await ctx.Subscriptions.Where(s => s.Serial == serial && s.Quality == quality).ToArrayAsync();
             }
         }
 

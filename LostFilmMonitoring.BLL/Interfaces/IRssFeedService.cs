@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LostFilmMonitoring.BLL.Interfaces
 {
-    public interface ILostFilmFeedService
+    public interface IRssFeedService
     {
         Task<SortedSet<FeedItem>> LoadFeedItems();
     }

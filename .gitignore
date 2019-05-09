@@ -286,16 +286,4 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-/LostFilmMonitoring.Web/wwwroot/images/serials/Террор (The Terror)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Стрела (Arrow)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Сверхъестественное (Supernatural)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Полиция Гавайев (Hawaii Five-0)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Лемони Сникет_ 33 несчастья (A Series of Unfortunate Events)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Затерянные в космосе (Lost in Space)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Заложница (Taken)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Джессика Джонс (Jessica Jones)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Готэм (Gotham)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Город и город (The City and the City)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Американская семейка (Modern Family)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/Агенты Щ.И.Т. (Agents of S.H.I.E.L.D.)..jpg
-/LostFilmMonitoring.Web/wwwroot/images/serials/9-1-1 (9-1-1)..jpg
+/LostFilmMonitoring.Web/wwwroot/images/serials/*.jpg
