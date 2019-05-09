@@ -90,6 +90,7 @@ namespace LostFilmMonitoring.BLL
             if (from.LastEpisodeName != to.LastEpisodeName || from.LastEpisodeTorrentLinkMP4 != null) to.LastEpisodeTorrentLinkMP4 = from.LastEpisodeTorrentLinkMP4;
             if (from.LastEpisodeName != to.LastEpisodeName || from.LastEpisodeTorrentLinkSD != null) to.LastEpisodeTorrentLinkSD = from.LastEpisodeTorrentLinkSD;
             to.LastEpisodeName = from.LastEpisodeName;
+            to.LastEpisode = from.LastEpisode;
         }
     }
 }
