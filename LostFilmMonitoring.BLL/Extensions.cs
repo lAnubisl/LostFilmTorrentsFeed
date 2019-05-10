@@ -18,7 +18,7 @@ namespace LostFilmMonitoring.BLL
             var quality = ParseQuality(feedItem);
             switch (quality)
             {
-                case Quality.h1080 + "p":
+                case Quality.h1080:
                     serial.LastEpisodeTorrentLink1080 = feedItem.Link;
                     break;
                 case Quality.h720:
@@ -79,7 +79,7 @@ namespace LostFilmMonitoring.BLL
         internal static string ParseId(string link)
         {
             //http://tracktor.in/rssdownloader.php?id=33572
-            if(link != null || link.IndexOf("rssdownloader.php") < 0)
+            if(link == null || link.IndexOf("rssdownloader.php") < 0)
             {
                 return null;
             }
