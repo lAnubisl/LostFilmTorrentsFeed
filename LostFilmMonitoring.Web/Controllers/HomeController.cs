@@ -129,7 +129,7 @@ namespace LostFilmMonitoring.Web.Controllers
         {
             var result = await _feedService.GetRssItem(userId, id);
             if (result == null) return new NotFoundResult();
-            return File(await result.Body, result.ContentType, result.FileName);
+            return File(result.Body, result.ContentType, result.FileName);
         }
 
         [HttpGet, Route("Instructions")]

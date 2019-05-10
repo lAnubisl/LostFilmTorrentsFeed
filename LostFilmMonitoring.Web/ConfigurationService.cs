@@ -34,5 +34,10 @@ namespace LostFilmMonitoring.Web
         {
             return Startup.Configuration.GetSection("AppSettings")["ImagesPath"];
         }
+
+        public string GetTorrentCachePath()
+        {
+            return Startup.Configuration.GetSection("AppSettings")["TorrentCachePath"];
+        }
     }
 }

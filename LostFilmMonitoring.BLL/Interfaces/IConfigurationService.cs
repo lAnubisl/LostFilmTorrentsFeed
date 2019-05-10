@@ -9,5 +9,7 @@
         string BaseFeedCookie();
 
         string GetImagesDirectory();
+
+        string GetTorrentCachePath();
     }
 }

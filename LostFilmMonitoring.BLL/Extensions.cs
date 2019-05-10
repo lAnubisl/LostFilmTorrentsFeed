@@ -79,6 +79,11 @@ namespace LostFilmMonitoring.BLL
         internal static string ParseId(string link)
         {
             //http://tracktor.in/rssdownloader.php?id=33572
+            if(link != null || link.IndexOf("rssdownloader.php") < 0)
+            {
+                return null;
+            }
+
             return link.Substring(link.IndexOf("=") + 1);
         }
 
