@@ -19,7 +19,7 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
             string rss;
             try
             {
-                rss = await DownloadRssText("http://a.retre.org/rssdd.xml")
+                rss = await DownloadRssText("http://a.retre.org/rssdd.xml");
             }
             catch (RemoteServiceUnavailableException)
             {
