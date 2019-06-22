@@ -23,10 +23,18 @@ namespace LostFilmMonitoring.Web
 
         public static IConfiguration Configuration => _configuration;
 
+        private static void ConfigureLogger()
+        {
+            var minLogLevel = Configuration.GetSection("AppSettings")["minLogLevel"];
+            var maxLogLevel = Configuration.GetSection("AppSettings")["maxLogLevel"];
+            var logConnectionString = Configuration.GetConnectionString("log");
+            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Web", logConnectionString, minLogLevel, maxLogLevel);
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Web", Configuration.GetConnectionString("log"));
+            ConfigureLogger();
             _logger = new Logger("Root");
             services.AddTransient<ILostFilmRegistrationService, LostFilmRegistrationService>();
             services.AddTransient<IFeedService, FeedService>();

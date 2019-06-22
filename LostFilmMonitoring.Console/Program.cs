@@ -17,7 +17,7 @@ namespace LostFilmMonitoring.Console
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("appsettings.Production.json", true);
             Configuration = builder.Build();
-            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Console", Configuration.GetConnectionString("log"));
+            ConfigureLogger();
             var logger = new Logger(nameof(Program));
             try
             {
@@ -41,6 +41,14 @@ namespace LostFilmMonitoring.Console
                     logger.Log(ex.InnerException);
                 }
             }
+        }
+
+        private static void ConfigureLogger()
+        {
+            var minLogLevel = Configuration.GetSection("AppSettings")["minLogLevel"];
+            var maxLogLevel = Configuration.GetSection("AppSettings")["maxLogLevel"];
+            var logConnectionString = Configuration.GetConnectionString("log");
+            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Web", logConnectionString, minLogLevel, maxLogLevel);
         }
     }
 }
