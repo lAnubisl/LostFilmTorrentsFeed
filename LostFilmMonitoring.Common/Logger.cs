@@ -37,7 +37,7 @@ namespace LostFilmMonitoring.Common
 
         public void Log(Exception ex)
         {
-            _logger.Error(ex.Message + Environment.CommandLine + ex.StackTrace);
+            _logger.Error(ex.GetType() + Environment.CommandLine + ex.Message + Environment.CommandLine + ex.StackTrace);
         }
 
         public void Warning(string message)

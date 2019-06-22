@@ -19,11 +19,14 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
 
         protected async Task<string> DownloadRssText(string rssUri)
         {
+            _logger.Info($"Call: {nameof(DownloadRssText)}({rssUri})");
             using (var client = new HttpClient())
             {
                 try
                 {
-                    return await client.GetStringAsync(rssUri);
+                    var rssText = await client.GetStringAsync(rssUri);
+                    _logger.Debug(rssText);
+                    return rssText;
                 }
                 catch (Exception ex)
                 {
@@ -35,6 +38,7 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
 
         protected SortedSet<FeedItem> GetItems(string rssText)
         {
+            _logger.Info($"Call: {nameof(GetItems)}(rssText)");
             XDocument document;
             try
             {

@@ -1,4 +1,5 @@
-﻿using LostFilmMonitoring.BLL.Interfaces;
+﻿using LostFilmMonitoring.BLL.Exceptions;
+using LostFilmMonitoring.BLL.Interfaces;
 using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO.DomainModels;
 using System.Collections.Generic;
@@ -14,8 +15,18 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
 
         public async Task<SortedSet<FeedItem>> LoadFeedItems()
         {
-            var rssText = await DownloadRssText("http://a.retre.org/rssdd.xml");
-            return GetItems(rssText);
+            _logger.Info($"Call: {nameof(LoadFeedItems)}()");
+            string rss;
+            try
+            {
+                rss = await DownloadRssText("http://a.retre.org/rssdd.xml")
+            }
+            catch (RemoteServiceUnavailableException)
+            {
+                return new SortedSet<FeedItem>();
+            }
+            
+            return GetItems(rss);
         }
     }
 }

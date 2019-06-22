@@ -50,7 +50,9 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task Update()
         {
+            _logger.Info($"Call {nameof(Update)}()");
             var newItems = await _rssFeedService.LoadFeedItems();
+            if (!newItems.Any()) return;
             await UpdateSerialList(newItems);
             var existingItems = await _feedDAO.LoadBaseFeedAsync();
             foreach (var item in newItems)
@@ -71,7 +73,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             var serial = item.ParseSerial();
             var quality = item.ParseQuality();
             var subscriptions = await _subscriptionDAO.LoadAsync(serial.Name, quality);
-            _logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial {serial.Name}");
+            _logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial '{serial.Name}' with quality '{quality}'");
             foreach (var subscription in subscriptions)
             {
                 await PrepareUserFeed(item, subscription);
