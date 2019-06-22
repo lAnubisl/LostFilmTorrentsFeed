@@ -48,7 +48,7 @@ namespace LostFilmMonitoring.Console
             var minLogLevel = Configuration.GetSection("AppSettings")["minLogLevel"];
             var maxLogLevel = Configuration.GetSection("AppSettings")["maxLogLevel"];
             var logConnectionString = Configuration.GetConnectionString("log");
-            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Web", logConnectionString, minLogLevel, maxLogLevel);
+            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Console", logConnectionString, minLogLevel, maxLogLevel);
         }
     }
 }

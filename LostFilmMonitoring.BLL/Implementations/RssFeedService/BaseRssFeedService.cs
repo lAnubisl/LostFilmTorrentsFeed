@@ -1,4 +1,5 @@
-﻿using LostFilmMonitoring.Common;
+﻿using LostFilmMonitoring.BLL.Exceptions;
+using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO;
 using LostFilmMonitoring.DAO.DomainModels;
 using System;
@@ -27,6 +28,11 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
                     var rssText = await client.GetStringAsync(rssUri);
                     _logger.Debug(rssText);
                     return rssText;
+                }
+                catch (System.IO.IOException ex)
+                {
+                    _logger.Log(ex);
+                    throw new RemoteServiceUnavailableException();
                 }
                 catch (Exception ex)
                 {
