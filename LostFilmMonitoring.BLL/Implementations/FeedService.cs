@@ -50,7 +50,7 @@ namespace LostFilmMonitoring.BLL.Implementations
 
         public async Task Update()
         {
-            _logger.Info($"Call {nameof(Update)}()");
+            _logger.Info($"Call: {nameof(Update)}()");
             var newItems = await _rssFeedService.LoadFeedItems();
             if (!newItems.Any()) return;
             await UpdateSerialList(newItems);
@@ -64,7 +64,7 @@ namespace LostFilmMonitoring.BLL.Implementations
                 }
             }
 
-            await _feedDAO.SaveBaseFeedAsync(existingItems.Take(15).ToArray());
+            await _feedDAO.SaveBaseFeedAsync(existingItems.Take(30).ToArray());
             _logger.Info("Base feed updated");
         }
 
