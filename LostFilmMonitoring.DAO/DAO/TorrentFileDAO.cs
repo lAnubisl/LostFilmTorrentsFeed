@@ -18,9 +18,9 @@ namespace LostFilmMonitoring.DAO.DAO
 
         public async Task Save(TorrentFile torrentFile, int torrentId)
         {
-            var filePath = Path.Combine(_basePath, $"{torrentId}_{torrentFile.FileName}");
+            var fileName = $"{torrentId}_{torrentFile.FileName}";
             using (var fs = new FileStream(
-                filePath,
+                Path.Combine(_basePath, fileName),
                 FileMode.Create,
                 FileAccess.Write,
                 FileShare.None,
@@ -30,6 +30,8 @@ namespace LostFilmMonitoring.DAO.DAO
             {
                 await torrentFile.Stream.CopyToAsync(fs);
             }
+
+            _logger.Info($"File '{fileName}' downloaded.");
         }
 
         public TorrentFile TryFind(int torrentId)

@@ -66,7 +66,7 @@ namespace LostFilmMonitoring.BLL
                         responseBody = await response.Content.ReadAsStringAsync();
                     }
 
-                    _logger.Error($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. {responseBody}");
+                    _logger.Error($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. Response content is: '{responseBody}'.");
                     return;
                 }
 
