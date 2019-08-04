@@ -39,7 +39,6 @@ namespace LostFilmMonitoring.DAO.DAO
                 else
                 {
                     existingSerial.LastEpisode = serial.LastEpisode;
-                    existingSerial.LastEpisodeLink = serial.LastEpisodeLink;
                     existingSerial.LastEpisodeName = serial.LastEpisodeName;
                     existingSerial.LastEpisodeTorrentLinkSD = serial.LastEpisodeTorrentLinkSD;
                     existingSerial.LastEpisodeTorrentLinkMP4 = serial.LastEpisodeTorrentLinkMP4;

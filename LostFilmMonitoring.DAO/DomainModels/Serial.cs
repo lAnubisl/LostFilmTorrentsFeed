@@ -6,7 +6,6 @@ namespace LostFilmMonitoring.DAO.DomainModels
     {
         public string Name { get; set; }
         public DateTime LastEpisode { get; set; }
-        public string LastEpisodeLink { get; set; }
         public string LastEpisodeName { get; set; }
         public string LastEpisodeTorrentLinkSD { get; set; }
         public string LastEpisodeTorrentLinkMP4 { get; set; }

@@ -21,7 +21,7 @@ namespace LostFilmMonitoring.BLL.Implementations
         private readonly SerialDAO _serialDao;
         private readonly SubscriptionDAO _subscriptionDAO;
         private readonly SerialCoverService _serialCoverService;
-        private readonly TorrentFileDAO _torrentFileDAO;
+        private readonly TorrentFileDownloader _torrentFileDownloader;
         private readonly ICurrentUserProvider _currentUserProvider;
         private readonly IConfigurationService _configurationService;
         private readonly IRssFeedService _rssFeedService;
@@ -39,7 +39,7 @@ namespace LostFilmMonitoring.BLL.Implementations
             _serialCoverService = new SerialCoverService(configurationService.GetImagesDirectory());
             _currentUserProvider = currentUserProvider;
             _rssFeedService = new ReteOrgRssFeedService(logger);
-            _torrentFileDAO = new TorrentFileDAO(configurationService.GetTorrentCachePath(), logger);
+            _torrentFileDownloader = new TorrentFileDownloader(new TorrentFileDAO(configurationService.GetTorrentCachePath(), logger), logger);
         }
 
         public async Task<Stream> GetRss(Guid userId)
@@ -172,42 +172,9 @@ namespace LostFilmMonitoring.BLL.Implementations
             var user = await _userDAO.LoadAsync(userId);
             if (user == null) return null;
 
-            var cachedTorrent = _torrentFileDAO.TryFind(id);
-            if (cachedTorrent != null)
-            {
-                return new RssItemViewModel(cachedTorrent);
-            }
-
-            using (var client = new HttpClient())
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"http://tracktor.in/rssdownloader.php?id={id}");
-                request.Headers.Add("Cookie", $"uid={user.Uid};usess={user.Usess}");
-                var response = await client.SendAsync(request);
-                if (response.Content.Headers.ContentType.MediaType != "application/x-bittorrent")
-                {
-                    return null;
-                }
-
-                var torrentFile = new TorrentFile();
-                response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string> cd);
-                torrentFile.FileName = cd?.FirstOrDefault()?.Substring("attachment;filename=\"".Length + 1);
-                if (torrentFile.FileName == null)
-                {
-                    return null;
-                }
-
-                torrentFile.FileName = torrentFile.FileName.Substring(0, torrentFile.FileName.Length - 1);
-                torrentFile.Stream = await response.Content.ReadAsStreamAsync();
-                await _torrentFileDAO.Save(torrentFile, id);
-            }
-
-            cachedTorrent = _torrentFileDAO.TryFind(id);
-            if (cachedTorrent == null)
-            {
-                return null; 
-            }
-
-            return new RssItemViewModel(cachedTorrent);
+            var torrentFile = await _torrentFileDownloader.Download(user, id);
+            if (torrentFile == null) return null;
+            return new RssItemViewModel(torrentFile);
         }
     }
 }

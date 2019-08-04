@@ -4,6 +4,7 @@ using LostFilmMonitoring.DAO;
 using LostFilmMonitoring.DAO.DomainModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -29,7 +30,12 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
                     _logger.Debug(rssText);
                     return rssText;
                 }
-                catch (System.IO.IOException ex)
+                catch (TaskCanceledException ex)
+                {
+                    _logger.Log(ex);
+                    throw new RemoteServiceUnavailableException();
+                }
+                catch (IOException ex)
                 {
                     _logger.Log(ex);
                     throw new RemoteServiceUnavailableException();
@@ -53,7 +59,7 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
             catch (Exception ex)
             {
                 _logger.Log(ex);
-                return null;
+                return new SortedSet<FeedItem>();
             }
 
             return document.GetItems();
