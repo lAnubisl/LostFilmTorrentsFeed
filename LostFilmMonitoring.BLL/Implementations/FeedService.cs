@@ -171,7 +171,6 @@ namespace LostFilmMonitoring.BLL.Implementations
         {
             var user = await _userDAO.LoadAsync(userId);
             if (user == null) return null;
-
             var torrentFile = await _torrentFileDownloader.Download(user, id);
             if (torrentFile == null) return null;
             return new RssItemViewModel(torrentFile);

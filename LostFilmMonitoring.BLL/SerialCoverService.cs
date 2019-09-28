@@ -2,10 +2,11 @@
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using LostFilmMonitoring.DAO.DomainModels;
 
 namespace LostFilmMonitoring.BLL
 {
-    public class SerialCoverService
+    public class SerialCoverService : ISerialCoverService
     {
         private readonly string _serialCoversDirectory;
 
@@ -36,6 +37,11 @@ namespace LostFilmMonitoring.BLL
                     imageStream.CopyTo(fileStream);
                 }
             }
+        }
+
+        public Task EnsureImageDownloaded(FeedItem feedItem)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

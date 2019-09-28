@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using LostFilmMonitoring.DAO.Interfaces;
 
 namespace LostFilmMonitoring.DAO.DAO
 {
-    public class SerialDAO : BaseDAO
+    public class SerialDAO : BaseDAO, ISerialDAO
     {
         public SerialDAO(string connectionString) : base(connectionString)
         {

@@ -6,6 +6,19 @@ namespace LostFilmMonitoring.BLL
 {
     internal static class Extensions
     {
+        public static string EscapePath(this string path)
+        {
+            return path
+                .Replace(":", "_")
+                .Replace("*", "_")
+                .Replace("\"", "_")
+                .Replace("/", "_")
+                .Replace("?", "_")
+                .Replace(">", "_")
+                .Replace("<", "_")
+                .Replace("|", "_");
+        }
+
         internal static Serial ParseSerial(this FeedItem feedItem)
         {
             var serial = new Serial()

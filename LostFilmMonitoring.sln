@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.BLL", "LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj", "{7CA3C668-6229-490B-9623-1A36BCC2ED05}"
 EndProject
@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Web", "L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.BLL.Tests", "LostFilmMonitoring.BLL.Tests\LostFilmMonitoring.BLL.Tests.csproj", "{54533A8E-6FEA-4026-9653-D6B6505E96F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.Common", "LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj", "{270FC57F-EA40-47BC-B0EF-866384DAA121}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Common", "LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj", "{270FC57F-EA40-47BC-B0EF-866384DAA121}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

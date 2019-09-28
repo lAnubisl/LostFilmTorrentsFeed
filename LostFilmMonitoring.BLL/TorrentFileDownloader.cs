@@ -44,7 +44,7 @@ namespace LostFilmMonitoring.BLL
         {
             using (var client = new HttpClient())
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, $"http://tracktor.in/rssdownloader.php?id={torrentFileId}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"http://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
                 request.Headers.Add("Cookie", $"uid={user.Uid};usess={user.Usess}");
                 HttpResponseMessage response = null;
 
