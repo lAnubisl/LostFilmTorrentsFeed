@@ -1,10 +1,10 @@
 ﻿using LostFilmMonitoring.DAO.DomainModels;
 using System.Threading.Tasks;
 
-namespace LostFilmMonitoring.BLL
+namespace LostFilmMonitoring.BLL.Interfaces
 {
     public interface ISerialCoverService
     {
-        Task EnsureImageDownloaded(FeedItem feedItem);
+        Task EnsureImageDownloaded(string serial);
     }
 }

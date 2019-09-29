@@ -35,7 +35,7 @@ namespace LostFilmMonitoring.BLL
             foreach (var feedItem in feedItems)
             {
                 var serial = feedItem.ParseSerial();
-                await _serialCoverService.EnsureImageDownloaded(feedItem);
+                //await _serialCoverService.EnsureImageDownloaded(feedItem);
                 var existingSerial = existingSerials.FirstOrDefault(s => s.Name == serial.Name);
                 if (existingSerial != null) continue;
                 _logger.Info($"New serial detected: {serial.Name}");
