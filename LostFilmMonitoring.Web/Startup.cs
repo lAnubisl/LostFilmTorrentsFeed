@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -43,12 +44,14 @@ namespace LostFilmMonitoring.Web
             services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ILogger>(_logger);
-            services.AddMvc();
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest)
+                .AddMvcOptions(o => { o.EnableEndpointRouting = false; });
             _logger.Info("Application started.");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseExceptionHandler(new ExceptionHandlerOptions()
             {
@@ -64,7 +67,12 @@ namespace LostFilmMonitoring.Web
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
             app.UseStaticFiles();
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

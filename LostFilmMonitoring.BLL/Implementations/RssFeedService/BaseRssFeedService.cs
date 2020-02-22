@@ -54,7 +54,7 @@ namespace LostFilmMonitoring.BLL.Implementations.RssFeedService
             XDocument document;
             try
             {
-                document = XDocument.Parse(rssText);
+                document = RSSParser.Parse(rssText);
             }
             catch (Exception ex)
             {
