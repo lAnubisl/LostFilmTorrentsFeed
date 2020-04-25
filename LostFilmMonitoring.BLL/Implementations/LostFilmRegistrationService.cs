@@ -44,18 +44,19 @@ namespace LostFilmMonitoring.BLL.Implementations
         public async Task<RegistrationResultModel> Register(string captchaCookie, string captcha)
         {
             var guid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://www.lostfilm.tv/ajaxik.php");
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://www.lostfilm.tv/ajaxik.php");
             request.Headers.Add("Cookie", $"PHPSESSID={captchaCookie}");
             request.Content = new FormUrlEncodedContent(new Dictionary<string, string>() {
-                { "act", "users" },
-                { "type", "signup" },
-                { "login", guid },
-                { "mail", $"{guid}@gmail.com" },
-                { "pass", guid },
-                { "pass_check", guid },
-                { "rem", "1" },
-                { "captcha", captcha}
-            });
+                    { "act", "users" },
+                    { "type", "signup" },
+                    { "login", guid },
+                    { "mail", $"{guid}%40gmail.com" },
+                    { "pass", guid },
+                    { "pass_check", guid },
+                    { "rem", "1" },
+                    { "captcha", captcha}
+                });
+
             using (var client = new HttpClient())
             {
                 var response = await client.SendAsync(request);
