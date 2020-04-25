@@ -71,6 +71,12 @@ namespace LostFilmMonitoring.BLL.Implementations
                 cookie = cookie.Substring(cookie.IndexOf("=") + 1);
                 cookie = cookie.Substring(0, cookie.IndexOf(";"));
                 var userIds = await GetUserIds(cookie);
+                if (userIds == null)
+                {
+                    var message = "Произошла ошибка при регистрации. Обратитесь к администратору.";
+                    _logger.Warning(message);
+                    return new RegistrationResultModel() { Error = message };
+                }
                 return new RegistrationResultModel(cookie, userIds.Usess, userIds.Uid);
             }
         }
@@ -84,54 +90,60 @@ namespace LostFilmMonitoring.BLL.Implementations
                 return null;
             }
 
-            using (var client = new HttpClient())
+            foreach(var item in items)
             {
-                var episodeResponse = await client.SendAsync(AddCookies(new HttpRequestMessage(HttpMethod.Get, items.First().Link.Replace("lostfilm.tv", "www.lostfilm.tv")), cookie));
-                var episodeResponseContent = await episodeResponse.Content.ReadAsStringAsync();
-                var episodeIdMatch = Regex.Match(episodeResponseContent, "PlayEpisode\\('(\\d+)'\\)");
-                if (!episodeIdMatch.Success)
+                using (var client = new HttpClient())
                 {
-                    _logger.Error($"Cannot get episodeId from: {Environment.NewLine}{episodeResponseContent}");
-                    return null;
+                    var episodeResponse = await client.SendAsync(AddCookies(new HttpRequestMessage(HttpMethod.Get, item.Link.Replace("lostfilm.tv", "www.lostfilm.tv")), cookie));
+                    var episodeResponseContent = await episodeResponse.Content.ReadAsStringAsync();
+                    var episodeIdMatch = Regex.Match(episodeResponseContent, "PlayEpisode\\('(\\d+)'\\)");
+                    if (!episodeIdMatch.Success)
+                    {
+                        _logger.Warning($"Registration: Cannot get episodeId from: {Environment.NewLine}{episodeResponseContent}");
+                        continue;
+                    }
+
+                    var episodeId = episodeIdMatch.Groups[1].Value;
+                    var linkResponse = await client.SendAsync(AddCookies(new HttpRequestMessage(HttpMethod.Get, $"https://www.lostfilm.tv/v_search.php?a={episodeId}"), cookie));
+                    var linkResponseBytes = await linkResponse.Content.ReadAsByteArrayAsync();
+                    var linkResponseContent = Encoding.UTF8.GetString(linkResponseBytes);
+
+                    var linkMatch = Regex.Match(linkResponseContent, "url=([^\"]+)");
+                    if (!linkMatch.Success)
+                    {
+                        _logger.Error($"Cannot get link from: {Environment.NewLine}{linkResponseContent}");
+                        return null;
+                    }
+
+                    var link = linkMatch.Groups[1].Value;
+                    var uidMatch = Regex.Match(link, "u=([^&]+)");
+                    if (!uidMatch.Success)
+                    {
+                        _logger.Error($"Cannot get uid from: {Environment.NewLine}{link}");
+                        return null;
+                    }
+
+                    var uId = uidMatch.Groups[1].Value;
+                    var usessResponse = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, link));
+                    var usessResponseContent = await usessResponse.Content.ReadAsStringAsync();
+                    var usessMatch = Regex.Match(usessResponseContent, "this.innerHTML = '([^']+)'");
+                    if (!usessMatch.Success)
+                    {
+                        _logger.Error($"Cannot get usess from: {Environment.NewLine}{usessResponseContent}");
+                        return null;
+                    }
+
+                    var usess = usessMatch.Groups[1].Value;
+                    return new UserIds
+                    {
+                        Uid = uId,
+                        Usess = usess
+                    };
                 }
-
-                var episodeId = episodeIdMatch.Groups[1].Value;
-                var linkResponse = await client.SendAsync(AddCookies(new HttpRequestMessage(HttpMethod.Get, $"https://www.lostfilm.tv/v_search.php?a={episodeId}"), cookie));
-                var linkResponseBytes = await linkResponse.Content.ReadAsByteArrayAsync();
-                var linkResponseContent = Encoding.UTF8.GetString(linkResponseBytes);
-
-                var linkMatch = Regex.Match(linkResponseContent, "url=([^\"]+)");
-                if (!linkMatch.Success)
-                {
-                    _logger.Error($"Cannot get link from: {Environment.NewLine}{linkResponseContent}");
-                    return null;
-                }
-
-                var link = linkMatch.Groups[1].Value;
-                var uidMatch = Regex.Match(link, "u=([^&]+)");
-                if (!uidMatch.Success)
-                {
-                    _logger.Error($"Cannot get uid from: {Environment.NewLine}{link}");
-                    return null;
-                }
-
-                var uId = uidMatch.Groups[1].Value;
-                var usessResponse = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, link));
-                var usessResponseContent = await usessResponse.Content.ReadAsStringAsync();
-                var usessMatch = Regex.Match(usessResponseContent, "this.innerHTML = '([^']+)'");
-                if (!usessMatch.Success)
-                {
-                    _logger.Error($"Cannot get usess from: {Environment.NewLine}{usessResponseContent}");
-                    return null;
-                }
-
-                var usess = usessMatch.Groups[1].Value;
-                return new UserIds
-                {
-                    Uid = uId,
-                    Usess = usess
-                };
             }
+
+            _logger.Error($"Cannot get episodeId from any rss item");
+            return null;
         }
 
         private static HttpRequestMessage AddCookies(HttpRequestMessage httpRequestMessage, string cookie)
