@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Xml.Linq;
+using LostFilmTV.Client.Response;
 
 namespace LostFilmMonitoring.DAO.DomainModels
 {
@@ -9,35 +10,41 @@ namespace LostFilmMonitoring.DAO.DomainModels
         public string Title { get; set; }
         public string Link { get; set; }
         public DateTime PublishDateParsed { get; set; }
-        public string PublishDate { get; set; }
 
         public FeedItem()
         {
 
         }
 
-        public FeedItem(FeedItem item, string link)
+        public FeedItem(XElement xElement)
         {
-            Link = link;
-            PublishDate = item.PublishDate;
+            this.Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
+            this.PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
+            this.PublishDateParsed = ParseDate(this.PublishDate);
+            this.Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
+        }
+
+        /// <summary>
+        /// Gets or sets PublishDate.
+        /// </summary>
+        public string PublishDate { get; set; }
+
+
+        private static DateTime ParseDate(string date)
+        {
+            return DateTime.TryParse(date, out DateTime result) ? result : DateTime.MinValue;
+        }
+
+        public FeedItem(FeedItemResponse item)
+        {
+            Link = item.Link;
             PublishDateParsed = item.PublishDateParsed;
             Title = item.Title;
         }
 
-        public FeedItem(XElement xElement)
+        public FeedItem(FeedItemResponse item, string link) : this(item)
         {
-            Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
-            PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
-            PublishDateParsed = ParseDate(PublishDate);
-            Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
-        }
-
-        private static DateTime ParseDate(string date)
-        {
-            if (DateTime.TryParse(date, out DateTime result))
-                return result;
-            else
-                return DateTime.MinValue;
+            Link = link;
         }
 
         public int CompareTo(FeedItem other)
@@ -49,22 +56,14 @@ namespace LostFilmMonitoring.DAO.DomainModels
 
         public override bool Equals(object obj)
         {
-            var other = obj as FeedItem;
-            if (other == null) return false;
+            if (!(obj is FeedItem other)) return false;
             return string.Equals(Title, other.Title)
-                && string.Equals(Link, other.Link)
-                && PublishDate.Equals(other.PublishDate);
+                && string.Equals(Link, other.Link);
         }
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Title != null ? Title.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ (Link != null ? Link.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ PublishDate.GetHashCode();
-                return hashCode;
-            }
+            return HashCode.Combine(Title, Link);
         }
 
         public override string ToString()

@@ -1,4 +1,4 @@
-﻿using LostFilmMonitoring.BLL.Interfaces;
+﻿using LostFilmMonitoring.BLL;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

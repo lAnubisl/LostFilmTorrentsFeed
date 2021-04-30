@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LostFilmTV.Client</name>
+    </assembly>
+    <members>
+        <member name="T:LostFilmTV.Client.Client">
+            <summary>
+            Client for LostFilm.TV
+            This class is responsible for all interactions with lostfilm.tv website.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Client"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.GetRegistrationCaptcha">
+            <summary>
+            Returns captcha for new user registration.
+            </summary>
+            <returns>Captcha object which contains captcha cookie and image.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.RegisterNewAccount(System.String,System.String)">
+            <summary>
+            Creates new account on lostfilm.tv website.
+            </summary>
+            <param name="captchaCookie">Captcha cookie you got from <see cref="M:LostFilmTV.Client.Client.GetRegistrationCaptcha"/>.</param>
+            <param name="captcha">Captcha text from the image you got from <see cref="M:LostFilmTV.Client.Client.GetRegistrationCaptcha"/>.</param>
+            <returns>Registration object which contains all information about new user.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.GetEpisodeId(System.String,System.String)">
+            <summary>
+            Get's the episode id by episode link.
+            </summary>
+            <param name="episodeLink">Link to an episode.</param>
+            <param name="cookie_lf_session">User's cookie.</param>
+            <returns>Episode Id. Or Null.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.GetEpisodeLink(System.String,System.String)">
+            <summary>
+            GetEpisodeLink.
+            </summary>
+            <param name="episodeLink">Link to an episode.</param>
+            <param name="cookie_lf_session">User's cookie.</param>
+            <returns>Link.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.GetUserIdentity(System.String)">
+            <summary>
+            Get user identity.
+            </summary>
+            <param name="link">Link.</param>
+            <returns>User identity.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.DownloadSeriesCoverAsync(System.String)">
+            <summary>
+            Get series cover image by series name.
+            </summary>
+            <param name="seriesName">Series name.</param>
+            <returns>Cover image stream.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Client.DownloadTorrentFile(System.String,System.String,System.Int32)">
+            <summary>
+            Get torrent file for user.
+            </summary>
+            <param name="uid">User Id.</param>
+            <param name="usess">User ss key.</param>
+            <param name="torrentFileId">Torrent file Id.</param>
+            <returns>TorrentFile object which contain file name and content stream.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.LostFilmException">
+            <summary>
+            LostFilmException.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.LostFilmException.#ctor(System.String,System.Net.Http.HttpResponseMessage)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.LostFilmException"/> class.
+            sdfsdf.
+            </summary>
+            <param name="message">Exception message.</param>
+            <param name="response">Lostfilm http response.</param>
+        </member>
+        <member name="T:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException">
+            <summary>
+            RemoteServiceUnavailableException.
+            </summary>
+        </member>
+        <member name="T:LostFilmTV.Client.Extensions">
+            <summary>
+            Useful extensions.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Extensions.Parse(System.String)">
+            <summary>
+            Generages XDocument from input string.
+            </summary>
+            <param name="rssString">Input string.</param>
+            <returns>XDocument.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Extensions.GetItems(System.Xml.Linq.XDocument)">
+            <summary>
+            Read feed items from XDocument.
+            </summary>
+            <param name="doc">XDocument.</param>
+            <returns>Set of FeedItemResponse.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Extensions.GetTorrentId(System.String)">
+            <summary>
+            Extracts torrent id from ReteOrg url.
+            </summary>
+            <param name="reteOrgUrl">reteOrgUrl.</param>
+            <returns>Torrent Id.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.Response.CaptchaResponse">
+            <summary>
+            CaptchaResponse.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.CaptchaResponse.#ctor(System.String,System.Byte[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.CaptchaResponse"/> class.
+            </summary>
+            <param name="cookie">Cookie.</param>
+            <param name="captchaBytes">CaptchaBytes.</param>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.CaptchaResponse.CaptchaBytes">
+            <summary>
+            Gets CaptchaBytes.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.CaptchaResponse.Cookie">
+            <summary>
+            Gets Cookie.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.CaptchaResponse.Build(System.Net.Http.HttpResponseMessage)">
+            <summary>
+            Creates a ne instance of CaptchaResponse.
+            </summary>
+            <param name="response">HttpResponseMessage.</param>
+            <returns>CaptchaResponse.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.Response.FeedItemResponse">
+            <summary>
+            FeedItemResponse.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.#ctor(System.Xml.Linq.XElement)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.FeedItemResponse"/> class.
+            </summary>
+            <param name="xElement">element.</param>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Title">
+            <summary>
+            Gets or sets Title.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Link">
+            <summary>
+            Gets or sets Link.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.PublishDateParsed">
+            <summary>
+            Gets or sets PublishDateParsed.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.PublishDate">
+            <summary>
+            Gets or sets PublishDate.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.System#IComparable{LostFilmTV#Client#Response#FeedItemResponse}#CompareTo(LostFilmTV.Client.Response.FeedItemResponse)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetSerialName">
+            <summary>
+            Get Serial Name.
+            </summary>
+            <returns>Serial name.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetEpisodeName">
+            <summary>
+            Get Episode Name.
+            </summary>
+            <returns>Episode name.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetQuality">
+            <summary>
+            Get Episode Quality.
+            </summary>
+            <returns>Episode Quality.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetTorrentId">
+            <summary>
+            Get torrent file Id.
+            </summary>
+            <returns>Torrent file id.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.Response.RegistrationResponse">
+            <summary>
+            Object which contains registration request execution results.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Error">
+            <summary>
+            Gets or sets Error.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Name">
+            <summary>
+            Gets or sets Name.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.UserId">
+            <summary>
+            Gets or sets UserId.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Code">
+            <summary>
+            Gets or sets Code.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Success">
+            <summary>
+            Gets or sets a value indicating whether request was successful.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Result">
+            <summary>
+            Gets or sets Result.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.RegistrationResponse.Cookie">
+            <summary>
+            Gets or sets Cookie.
+            </summary>
+        </member>
+        <member name="T:LostFilmTV.Client.Response.TorrentFileResponse">
+            <summary>
+            Represents torrent file with content.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.TorrentFileResponse.#ctor(System.String,System.IO.Stream)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.TorrentFileResponse"/> class.
+            </summary>
+            <param name="fileName">File Name.</param>
+            <param name="content">Content stream.</param>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.TorrentFileResponse.FileName">
+            <summary>
+            Gets File Name.
+            </summary>
+        </member>
+        <member name="P:LostFilmTV.Client.Response.TorrentFileResponse.Content">
+            <summary>
+            Gets content stream.
+            </summary>
+        </member>
+        <member name="T:LostFilmTV.Client.RssFeed.BaseRssFeed">
+            <summary>
+            Represents base rss feed.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.BaseRssFeed.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.RssFeed.BaseRssFeed"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="P:LostFilmTV.Client.RssFeed.BaseRssFeed.Logger">
+            <summary>
+            Gets Logger.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.BaseRssFeed.DownloadRssText(System.String)">
+            <summary>
+            Downloads content by URL.
+            </summary>
+            <param name="rssUri">URL.</param>
+            <returns>Content.</returns>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.BaseRssFeed.GetItems(System.String)">
+            <summary>
+            Reads Feed item objects from RSS content.
+            </summary>
+            <param name="rssText">RSS content.</param>
+            <returns>Feed item objects.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.RssFeed.LostFilmRssFeed">
+            <summary>
+            LostFilmRssFeed.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.LostFilmRssFeed.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.RssFeed.LostFilmRssFeed"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.LostFilmRssFeed.LoadFeedItemsAsync">
+            <summary>
+            Reads Feed items.
+            </summary>
+            <returns>Feed items.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.RssFeed.ReteOrgRssFeed">
+            <summary>
+            ReteOrgRssFeedService.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.ReteOrgRssFeed.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.RssFeed.ReteOrgRssFeed"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmTV.Client.RssFeed.ReteOrgRssFeed.LoadFeedItemsAsync">
+            <summary>
+            Get FeedItemResponse from n.retre.org.
+            </summary>
+            <returns>Set of FeedItemResponse.</returns>
+        </member>
+        <member name="T:LostFilmTV.Client.IRssFeed">
+            <summary>
+            Interface that provides access to RSS feed.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.IRssFeed.LoadFeedItemsAsync">
+            <summary>
+            Get RSS feed items.
+            </summary>
+            <returns>Awaitable task with RSS feed items.</returns>
+        </member>
+    </members>
+</doc>

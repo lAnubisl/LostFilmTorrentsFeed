@@ -1,5 +1,5 @@
 ﻿ @using LostFilmMonitoring.Web.ViewComponents;
-@model LostFilmMonitoring.BLL.Models.IndexModel
+@model LostFilmMonitoring.BLL.Models.IndexViewModel
 
 <style>
     .item-name {
@@ -100,8 +100,8 @@
                     if (hiddens[i].value === "") continue;
                     data.push(
                         {
-                            Serial: hiddens[i].name,
-                            Quality: document.getElementsByName(hiddens[i].name + "_quality")[0].value
+                            @nameof(LostFilmMonitoring.BLL.Models.SelectedFeedItem.SeriesName): hiddens[i].name,
+                            @nameof(LostFilmMonitoring.BLL.Models.SelectedFeedItem.Quality): document.getElementsByName(hiddens[i].name + "_quality")[0].value
                         }
                     );
                 }

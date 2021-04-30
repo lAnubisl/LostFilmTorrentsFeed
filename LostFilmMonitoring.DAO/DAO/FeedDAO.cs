@@ -1,90 +1,90 @@
-﻿using LostFilmMonitoring.Common;
-using LostFilmMonitoring.DAO.DomainModels;
+﻿using LostFilmMonitoring.DAO.DomainModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace LostFilmMonitoring.DAO.DAO
 {
-    public class FeedDAO
+    public class FeedDAO : BaseDAO
     {
-        private readonly string _basePath;
-        private const string baseFeed = "base_feed";
-        private readonly ILogger _logger;
-
-        public FeedDAO(string basePath, ILogger logger)
+        public FeedDAO(string connectionString) : base(connectionString)
         {
-            _basePath = basePath;
-            _logger = logger.CreateScope(nameof(FeedDAO));
         }
 
-        private string GetPath(string fileName)
+        public async Task<string> LoadFeedRawAsync(Guid userId)
         {
-            return Path.Combine(_basePath, fileName + ".xml");
-        }
-
-        public Stream LoadFeedRawAsync(Guid userId)
-        {
-            var feedPath = GetPath(userId.ToString());
-            if (!File.Exists(feedPath)) return null;
-            return new FileStream(feedPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize: 4096, useAsync: true);
-        }
-
-        private async Task<SortedSet<FeedItem>> LoadFeedAsync(string fileName)
-        {
-            var feedPath = GetPath(fileName);
-            if (!File.Exists(feedPath)) return new SortedSet<FeedItem>();
-            using (var reader = File.OpenText(feedPath))
+            using (var ctx = OpenContext())
             {
-                var xml = await reader.ReadToEndAsync();
-                var document = XDocument.Parse(xml);
-                return document.GetItems();
+                return (await ctx.Feeds.FirstOrDefaultAsync(f => f.Id == userId))?.Data;
             }
         }
 
-        public void Delete(Guid userId)
+        private async Task<SortedSet<FeedItem>> LoadFeedAsync(Guid userId)
         {
-            File.Delete(GetPath(userId.ToString()));
-            _logger.Info($"User {userId} deleted");
+            string data = await this.LoadFeedRawAsync(userId);
+            if (string.IsNullOrEmpty(data))
+            {
+                return null;
+            }
+
+            var document = XDocument.Parse(data);
+            return document.GetItems();
         }
 
-        private async Task SaveFeedAsync(string fileName, FeedItem[] items)
+        public async Task DeleteAsync(Guid userId)
         {
-            var xml = items.GenerateXml();
-            byte[] bytes = Encoding.UTF8.GetBytes(xml);
-            using (var fs = new FileStream(
-                GetPath(fileName),
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true))
+            using (var ctx = OpenContext())
             {
-                await fs.WriteAsync(bytes, 0, bytes.Length);
+                var feed = await ctx.Feeds.FirstOrDefaultAsync(f => f.Id == userId);
+                if (feed == null)
+                {
+                    return;
+                }
+
+                ctx.Feeds.Remove(feed);
+                ctx.SaveChanges();
+            }
+        }
+
+        private async Task SaveFeedAsync(Guid userId, FeedItem[] items)
+        {
+            using (var ctx = OpenContext())
+            {
+                var entity = await ctx.Feeds.FirstOrDefaultAsync(f => f.Id == userId);
+                if (entity == null)
+                {
+                    entity = new Feed()
+                    {
+                        Id = userId
+                    };
+                    ctx.Feeds.Add(entity);
+                }
+
+                entity.Data = items.GenerateXml();
+                ctx.SaveChanges();
             }
         }
 
         public Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId)
         {
-            return LoadFeedAsync(userId.ToString());
+            return LoadFeedAsync(userId);
         }
 
         public Task<SortedSet<FeedItem>> LoadBaseFeedAsync()
         {
-            return LoadFeedAsync(baseFeed);
+            return LoadFeedAsync(Guid.Empty);
         }
 
         public Task SaveUserFeedAsync(Guid userId, FeedItem[] items)
         {
-            return SaveFeedAsync(userId.ToString(), items);
+            return SaveFeedAsync(userId, items);
         }
 
         public Task SaveBaseFeedAsync(FeedItem[] items)
         {
-            return SaveFeedAsync(baseFeed, items);
+            return SaveFeedAsync(Guid.Empty, items);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace LostFilmMonitoring.BLL.Tests
             var logger = new Mock<ILogger>();
             logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(logger.Object);
             var service = new ReteOrgRssFeedService(logger.Object);
-            var result = service.LoadFeedItems().Result;
+            var result = service.LoadFeedItemsAsync().Result;
             Assert.NotNull(result);
             Assert.True(result.Count == 15);
         }

@@ -1,19 +1,8 @@
-﻿@model System.Guid
+﻿@model LostFilmMonitoring.BLL.Models.RegistrationModel
 <h2>Регистрация</h2>
-@if (Model == Guid.Empty)
-{
 <form method="post">
-    <img src="@Url.Action("Captcha")" />
-    <br />
-    <span>Введите число с картинки выше</span>
-    <br />
-    <input type="text" name="Captcha" />
+    @Html.TextBoxFor(m => m.Uid)
+    @Html.TextBoxFor(m => m.Usess)
+    @Html.TextBoxFor(m => m.If_session)
     <input type="submit" /><br />
-    @Html.ValidationMessage("error", new { style = "color:red" })
 </form>
-}
-else
-{
-    <span>Сохраните этот ключ</span>
-    @Model
-}

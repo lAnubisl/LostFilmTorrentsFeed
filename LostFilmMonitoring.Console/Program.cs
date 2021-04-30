@@ -1,37 +1,28 @@
-﻿using LostFilmMonitoring.BLL.Implementations;
+﻿using LostFilmMonitoring.BLL;
 using LostFilmMonitoring.Common;
 using LostFilmMonitoring.DAO.DAO;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.IO;
 
 namespace LostFilmMonitoring.Console
 {
     class Program
     {
-        public static IConfigurationRoot Configuration { get; private set; }
         static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.Production.json", true);
-            Configuration = builder.Build();
             ConfigureLogger();
             var logger = new Logger(nameof(Program));
             try
             {
-                var configurationService = new ConfigurationService();
-                var feedService = new FeedService(configurationService, null, logger);
-                var userDao = new UserDAO(configurationService.GetConnectionString());
-                var feedDao = new FeedDAO(configurationService.GetBasePath(), logger);
+                var feedService = new RssFeedUpdaterService(logger);
+                var userDao = new UserDAO(Configuration.GetConnectionString());
+                var feedDao = new FeedDAO(Configuration.GetConnectionString());
                 var deletedUserIds = userDao.DeleteOldUsersAsync().Result;
                 foreach (var userId in deletedUserIds)
                 {
-                    feedDao.Delete(userId);
+                    feedDao.DeleteAsync(userId).Wait();
                 }
 
-                feedService.Update().Wait();
+                feedService.UpdateAsync().Wait();
             }
             catch (Exception ex)
             {
@@ -45,10 +36,9 @@ namespace LostFilmMonitoring.Console
 
         private static void ConfigureLogger()
         {
-            var minLogLevel = Configuration.GetSection("AppSettings")["minLogLevel"];
-            var maxLogLevel = Configuration.GetSection("AppSettings")["maxLogLevel"];
-            var logConnectionString = Configuration.GetConnectionString("log");
-            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Console", logConnectionString, minLogLevel, maxLogLevel);
+            var minLogLevel = "Debug";
+            var maxLogLevel = "Fatal";
+            LoggerConfiguration.ConfigureLogger(minLogLevel, maxLogLevel);
         }
     }
 }

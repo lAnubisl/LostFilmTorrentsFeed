@@ -1,0 +1,386 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LostFilmMonitoring.BLL</name>
+    </assembly>
+    <members>
+        <member name="T:LostFilmMonitoring.BLL.Configuration">
+            <summary>
+            Configuration.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.BaseFeedCookie">
+            <summary>
+            Get BaseFeedCookie.
+            </summary>
+            <returns>BaseFeedCookie.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.GetConnectionString">
+            <summary>
+            Get database connection string.
+            </summary>
+            <returns>Database connection string.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.GetImagesPath">
+            <summary>
+            Get physical path where series covers are stored.
+            </summary>
+            <returns>Physical path where series covers are stored.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.GetTorrentPath">
+            <summary>
+            Get physical path where torrent files are stored.
+            </summary>
+            <returns>Physical path where torrent files are stored.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.GetBaseUrl">
+            <summary>
+            Get base url where website is hosted.
+            </summary>
+            <returns>Base url where website is hosted.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Extensions">
+            <summary>
+            Usefull extensions.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.EscapePath(System.String)">
+            <summary>
+            Escapes danger characters.
+            </summary>
+            <param name="path">Original path.</param>
+            <returns>Escaped path.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.GenerateTorrentLink(System.Guid,System.String)">
+            <summary>
+            Generates torrent link for user's feed.
+            </summary>
+            <param name="userId">User Id.</param>
+            <param name="torrentId">Torrent Id.</param>
+            <returns>Torrent link.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.ICurrentUserProvider">
+            <summary>
+            Responsible for accessing current user Id.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.ICurrentUserProvider.GetCurrentUserId">
+            <summary>
+            Get current user id.
+            </summary>
+            <returns>UserID.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.ICurrentUserProvider.SetCurrentUserId(System.Guid)">
+            <summary>
+            Set current user id.
+            </summary>
+            <param name="userId">UserId.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.FeedViewModel">
+            <summary>
+            Represents data to be shown on 'My RSS Feed page'.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Models.FeedViewModel.#ctor(System.Collections.Generic.SortedSet{LostFilmMonitoring.DAO.DomainModels.FeedItem},System.Guid)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.FeedViewModel"/> class.
+            </summary>
+            <param name="feed">Feed items.</param>
+            <param name="userId">User Id.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.FeedViewModel.Feed">
+            <summary>
+            Gets feed items.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.FeedViewModel.UserId">
+            <summary>
+            Gets user id.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.IndexViewModel">
+            <summary>
+            Represents information to be shown in home screen.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Models.IndexViewModel.#ctor(System.Collections.Generic.IList{LostFilmMonitoring.DAO.DomainModels.Series},LostFilmMonitoring.DAO.DomainModels.User)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.IndexViewModel"/> class.
+            </summary>
+            <param name="series">Series.</param>
+            <param name="user">Current user.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.IndexViewModel.KnownUser">
+            <summary>
+            Gets a value indicating whether user is logged in.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.IndexViewModel.Last24HoursItems">
+            <summary>
+            Gets episodes updated within last 24 hours.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.IndexViewModel.Last7DaysItems">
+            <summary>
+            Gets episodes updated within last 7 days.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.IndexViewModel.OlderItems">
+            <summary>
+            Gets episodes older than 7 days..
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.RegistrationModel">
+            <summary>
+            Represents user registration data.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.RegistrationModel.Uid">
+            <summary>
+            Gets or Sets UserId.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.RegistrationModel.Usess">
+            <summary>
+            Gets or Sets ReteOrg user id.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.RegistrationModel.If_session">
+            <summary>
+            Gets or sets LostFilm Cookie value.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.SelectedFeedItem">
+            <summary>
+            Represents user selection.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SelectedFeedItem.SeriesName">
+            <summary>
+            Gets or sets Series Name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SelectedFeedItem.Quality">
+            <summary>
+            Gets or sets quality.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.SeriesViewModel">
+            <summary>
+            Represents a single series shown on home page.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Models.SeriesViewModel.#ctor(LostFilmMonitoring.DAO.DomainModels.Series,LostFilmMonitoring.BLL.Models.SelectedFeedItem[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.SeriesViewModel"/> class.
+            </summary>
+            <param name="series">Series.</param>
+            <param name="selectedFeedItems">Selected series.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SeriesViewModel.Selected">
+            <summary>
+            Gets a value indicating whether seris is selected by user.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SeriesViewModel.Name">
+            <summary>
+            Gets Series name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SeriesViewModel.Quantity">
+            <summary>
+            Gets series quality.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SeriesViewModel.Title">
+            <summary>
+            Gets series title.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.SeriesViewModel.Escaped">
+            <summary>
+            Gets series escaped name.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel">
+            <summary>
+            View model for individual rss item. Contains torrent file.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel.#ctor(LostFilmMonitoring.DAO.DomainModels.TorrentFile)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel"/> class.
+            </summary>
+            <param name="torrentFile">Torrent file.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel.TorrentFileBody">
+            <summary>
+            Gets Torrent file body.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel.TorrentFileName">
+            <summary>
+            Gets Torrent file name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Interfaces.Models.RssItemViewModel.ContentType">
+            <summary>
+            Gets Torrent file content type.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.PresentationService">
+            <summary>
+            Manages user presentation.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.PresentationService.#ctor(LostFilmMonitoring.BLL.ICurrentUserProvider,LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.PresentationService"/> class.
+            </summary>
+            <param name="currentUserProvider">CurrentUserProvider.</param>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.PresentationService.GetIndexModelAsync">
+            <summary>
+            Gets home page model.
+            </summary>
+            <returns>Home Page model.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.PresentationService.RegisterAsync(LostFilmMonitoring.BLL.Models.RegistrationModel)">
+            <summary>
+            Registers new user.
+            </summary>
+            <param name="model">Registration model.</param>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.PresentationService.UpdateSubscriptionsAsync(LostFilmMonitoring.BLL.Models.SelectedFeedItem[])">
+            <summary>
+            Updates user subscription based on new user choice.
+            </summary>
+            <param name="selectedItems">Selected series.</param>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.PresentationService.Authenticate(System.Guid)">
+            <summary>
+            Authenticates user.
+            </summary>
+            <param name="userId">UserId.</param>
+            <returns>True - Authentication succeeded. Otherwise false.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Quality">
+            <summary>
+            Represents different video qualities.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.BLL.Quality.SD">
+            <summary>
+            Standard quality.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.BLL.Quality.H1080">
+            <summary>
+            FullHd Quality.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.BLL.Quality.H720">
+            <summary>
+            720p quality.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.RssFeedService">
+            <summary>
+            Manages user feed.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedService.#ctor(LostFilmMonitoring.BLL.ICurrentUserProvider,LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.RssFeedService"/> class.
+            </summary>
+            <param name="currentUserProvider">CurrentUserProvider.</param>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedService.GetRss(System.Guid)">
+            <summary>
+            Gets user feed rss content by user id.
+            </summary>
+            <param name="userId">User Id.</param>
+            <returns>RSS feed content.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedService.UpdateUserSubscrptionAsync(LostFilmMonitoring.BLL.Models.SelectedFeedItem[])">
+            <summary>
+            Update user's subscription.
+            </summary>
+            <param name="selectedItems">Selected subscription items.</param>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedService.GetFeedViewModel">
+            <summary>
+            Gets the FeedViewModel.
+            </summary>
+            <returns>FeedViewModel.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedService.GetRssItem(System.Guid,System.Int32)">
+            <summary>
+            Gets RssItemViewModel which contains torrent file data.
+            </summary>
+            <param name="userId">userId.</param>
+            <param name="torrentFileId">torrentFileId.</param>
+            <returns>RssItemViewModel.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.RssFeedUpdaterService">
+            <summary>
+            Responsible for rss feeds update process.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedUpdaterService.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.RssFeedUpdaterService"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.RssFeedUpdaterService.UpdateAsync">
+            <summary>
+            Update rss feeds.
+            </summary>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.SeriesCoverService">
+            <summary>
+            Manages series cover images.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.SeriesCoverService.#ctor(LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.SeriesCoverService"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.SeriesCoverService.EnsureCoverDownloadedAsync(System.String)">
+            <summary>
+            Downloads series cover image if it was not previously downloaded.
+            </summary>
+            <param name="seriesName">Series name.</param>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.TorrentFileDownloader">
+            <summary>
+            TorrentFileDownloader.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.TorrentFileDownloader.#ctor(LostFilmMonitoring.DAO.DAO.TorrentFileDAO,LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.TorrentFileDownloader"/> class.
+            </summary>
+            <param name="torrentFileDAO">TorrentFileDAO.</param>
+            <param name="logger">Logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.TorrentFileDownloader.DownloadAsync(LostFilmMonitoring.DAO.DomainModels.User,System.Int32)">
+            <summary>
+            Downloads torrent file by id for particular user.
+            </summary>
+            <param name="user">Current user.</param>
+            <param name="torrentFileId">Torrent file id.</param>
+            <returns>Torrent file.</returns>
+        </member>
+    </members>
+</doc>

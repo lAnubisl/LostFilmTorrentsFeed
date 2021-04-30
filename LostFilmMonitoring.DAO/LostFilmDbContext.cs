@@ -7,6 +7,11 @@ namespace LostFilmMonitoring.DAO
     {
         private readonly string _connectionString;
 
+        public LostFilmDbContext() : base()
+        {
+            _connectionString = "Data Source = lostfilmtorrentfeed.db";
+        }
+
         public LostFilmDbContext(string connectionString) : base()
         {
             _connectionString = connectionString;
@@ -14,7 +19,7 @@ namespace LostFilmMonitoring.DAO
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(_connectionString);
+            optionsBuilder.UseSqlite(_connectionString);
             base.OnConfiguring(optionsBuilder);
         }
 
@@ -23,7 +28,10 @@ namespace LostFilmMonitoring.DAO
             modelBuilder.Entity<User>()
                 .ToTable("Users")
                 .HasKey(u => u.Id);
-            modelBuilder.Entity<Serial>()
+            modelBuilder.Entity<Feed>()
+                .ToTable("Feeds")
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Series>()
                 .ToTable("Serials")
                 .HasKey(s => s.Name);
             modelBuilder.Entity<Subscription>()
@@ -39,8 +47,9 @@ namespace LostFilmMonitoring.DAO
             base.OnModelCreating(modelBuilder);
         }
 
+        public DbSet<Feed> Feeds { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<Serial> Serials { get; set; }
+        public DbSet<Series> Serials { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Setting> Settings { get; set; }
     }

@@ -1,11 +1,40 @@
-﻿using LostFilmMonitoring.BLL.Implementations;
-using LostFilmMonitoring.DAO.DomainModels;
-using System;
+﻿// <copyright file="Extensions.cs" company="Alexander Panfilenok">
+// MIT License
+// Copyright (c) 2021 Alexander Panfilenok
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the 'Software'), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// </copyright>
 
 namespace LostFilmMonitoring.BLL
 {
+    using System;
+
+    /// <summary>
+    /// Usefull extensions.
+    /// </summary>
     internal static class Extensions
     {
+        /// <summary>
+        /// Escapes danger characters.
+        /// </summary>
+        /// <param name="path">Original path.</param>
+        /// <returns>Escaped path.</returns>
         public static string EscapePath(this string path)
         {
             return path
@@ -19,101 +48,15 @@ namespace LostFilmMonitoring.BLL
                 .Replace("|", "_");
         }
 
-        internal static Serial ParseSerial(this FeedItem feedItem)
-        {
-            var serial = new Serial()
-            {
-                Name = GetSerialName(feedItem.Title),
-                LastEpisodeName = GetEpisodeName(feedItem.Title),
-                LastEpisode = feedItem.PublishDateParsed
-            };
-
-            var quality = ParseQuality(feedItem);
-            switch (quality)
-            {
-                case Quality.h1080:
-                    serial.LastEpisodeTorrentLink1080 = feedItem.Link;
-                    break;
-                case Quality.h720:
-                    serial.LastEpisodeTorrentLinkMP4 = feedItem.Link;
-                    break;
-                case Quality.SD:
-                    serial.LastEpisodeTorrentLinkSD = feedItem.Link;
-                    break;
-            }
-
-            return serial;
-        }
-
-        internal static string ParseQuality(this FeedItem feedItem)
-        {
-            var startIndex = feedItem.Title.LastIndexOf('[');
-            var endIndex = feedItem.Title.LastIndexOf(']');
-            var quality = feedItem.Title.Substring(startIndex + 1, endIndex - startIndex - 1);
-            if (quality == Quality.h1080 + "p")
-            {
-                quality = Quality.h1080;
-            }
-
-            return quality;
-        }
-
-        internal static string GetTorrentId(this Serial serial, string quality)
-        {
-            switch (quality)
-            {
-                case Quality.SD: return ParseId(serial.LastEpisodeTorrentLinkSD);
-                case Quality.h1080: return ParseId(serial.LastEpisodeTorrentLink1080);
-                case Quality.h720: return ParseId(serial.LastEpisodeTorrentLinkMP4);
-                default: throw new InvalidOperationException("Quality not supported");
-            }
-        }
-
-        private static string GetSerialName(string feedItemTitle)
-        {
-            return feedItemTitle.Substring(0, feedItemTitle.IndexOf(").") + 2);
-        }
-
-        private static string GetEpisodeName(string feedItemTitle)
-        {
-            return feedItemTitle.Substring(0, feedItemTitle.IndexOf("["));
-        }
-
+        /// <summary>
+        /// Generates torrent link for user's feed.
+        /// </summary>
+        /// <param name="userId">User Id.</param>
+        /// <param name="torrentId">Torrent Id.</param>
+        /// <returns>Torrent link.</returns>
         internal static string GenerateTorrentLink(Guid userId, string torrentId)
         {
-            return $"https://lostfilmfeed.petproject.by/Rss/{userId}/{torrentId}";
-        }
-
-        public static string ParseId(this FeedItem feedItem)
-        {
-            return ParseId(feedItem.Link);
-        }
-
-        internal static string ParseId(string link)
-        {
-            //http://tracktor.in/rssdownloader.php?id=33572
-            if(link == null || link.IndexOf("rssdownloader.php") < 0)
-            {
-                return null;
-            }
-
-            return link.Substring(link.IndexOf("=") + 1);
-        }
-
-        internal static bool HasUpdatesComparedTo(this Serial newOne, Serial oldOne)
-        {
-            return (newOne.LastEpisodeTorrentLink1080 != null && oldOne.LastEpisodeTorrentLink1080 == null) ||
-                   (newOne.LastEpisodeTorrentLinkMP4 != null && oldOne.LastEpisodeTorrentLinkMP4 == null) ||
-                   (newOne.LastEpisodeTorrentLinkSD != null && oldOne.LastEpisodeTorrentLinkSD == null);
-        }
-
-        internal static void Merge(this Serial to, Serial from)
-        {
-            if (from.LastEpisodeName != to.LastEpisodeName || from.LastEpisodeTorrentLink1080 != null) to.LastEpisodeTorrentLink1080 = from.LastEpisodeTorrentLink1080;
-            if (from.LastEpisodeName != to.LastEpisodeName || from.LastEpisodeTorrentLinkMP4 != null) to.LastEpisodeTorrentLinkMP4 = from.LastEpisodeTorrentLinkMP4;
-            if (from.LastEpisodeName != to.LastEpisodeName || from.LastEpisodeTorrentLinkSD != null) to.LastEpisodeTorrentLinkSD = from.LastEpisodeTorrentLinkSD;
-            to.LastEpisodeName = from.LastEpisodeName;
-            to.LastEpisode = from.LastEpisode;
+            return $"{Configuration.GetBaseUrl()}/Rss/{userId}/{torrentId}";
         }
     }
 }

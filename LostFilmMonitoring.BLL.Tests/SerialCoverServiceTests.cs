@@ -1,4 +1,5 @@
 ﻿using LostFilmMonitoring.BLL.Implementations;
+using LostFilmMonitoring.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace LostFilmMonitoring.BLL.Tests
         [Fact]
         public async Task SearchCoverTest()
         {
-            var service = new SerialCoverService("C:/Torrents");
+            var service = new SerialCoverService("C:/Torrents", new Logger(nameof(SerialCoverService)));
             await service.EnsureImageDownloaded("Блудный Сын");
         }
     }

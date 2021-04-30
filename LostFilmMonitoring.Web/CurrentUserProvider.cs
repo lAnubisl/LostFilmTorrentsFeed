@@ -1,4 +1,4 @@
-﻿using LostFilmMonitoring.BLL.Interfaces;
+﻿using LostFilmMonitoring.BLL;
 using Microsoft.AspNetCore.Http;
 using System;
 
@@ -6,7 +6,7 @@ namespace LostFilmMonitoring.Web
 {
     public class CurrentUserProvider : ICurrentUserProvider
     {
-        private static string Key = "UserId";
+        private static readonly string Key = "UserId";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private Guid _userId;
 

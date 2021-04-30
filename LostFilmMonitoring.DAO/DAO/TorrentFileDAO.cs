@@ -16,9 +16,9 @@ namespace LostFilmMonitoring.DAO.DAO
             _logger = logger.CreateScope(nameof(TorrentFileDAO));
         }
 
-        public async Task Save(TorrentFile torrentFile, int torrentId)
+        public async Task SaveAsync(string fileName, Stream content, int torrentId)
         {
-            var fileName = $"{torrentId}_{torrentFile.FileName}";
+            fileName = $"{torrentId}_{fileName}";
             using (var fs = new FileStream(
                 Path.Combine(_basePath, fileName),
                 FileMode.Create,
@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.DAO
                 useAsync: true)
             )
             {
-                await torrentFile.Stream.CopyToAsync(fs);
+                await content.CopyToAsync(fs);
             }
 
             _logger.Info($"File '{fileName}' downloaded.");

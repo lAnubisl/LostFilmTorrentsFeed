@@ -1,5 +1,4 @@
-﻿using LostFilmMonitoring.BLL.Implementations;
-using LostFilmMonitoring.BLL.Interfaces;
+﻿using LostFilmMonitoring.BLL;
 using LostFilmMonitoring.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -26,10 +25,9 @@ namespace LostFilmMonitoring.Web
 
         private static void ConfigureLogger()
         {
-            var minLogLevel = Configuration.GetSection("AppSettings")["minLogLevel"];
-            var maxLogLevel = Configuration.GetSection("AppSettings")["maxLogLevel"];
-            var logConnectionString = Configuration.GetConnectionString("log");
-            LoggerConfiguration.ConfigureLogger("LostFilmFeed.Web", logConnectionString, minLogLevel, maxLogLevel);
+            var minLogLevel = "Debug";
+            var maxLogLevel = "Fatal";
+            LoggerConfiguration.ConfigureLogger(minLogLevel, maxLogLevel);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -37,10 +35,7 @@ namespace LostFilmMonitoring.Web
         {
             ConfigureLogger();
             _logger = new Logger("Root");
-            services.AddTransient<ILostFilmRegistrationService, LostFilmRegistrationService>();
-            services.AddTransient<IFeedService, FeedService>();
-            services.AddTransient<IConfigurationService, ConfigurationService>();
-            services.AddTransient<IPresentationService, PresentationService>();
+            services.AddTransient<PresentationService>();
             services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ILogger>(_logger);
@@ -67,12 +62,7 @@ namespace LostFilmMonitoring.Web
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
             app.UseStaticFiles();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }

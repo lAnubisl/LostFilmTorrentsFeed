@@ -12,7 +12,7 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        public async Task<Serial> LoadAsync(string name)
+        public async Task<Series> LoadAsync(string name)
         {
             using (var ctx = OpenContext())
             {
@@ -20,7 +20,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        public async Task<List<Serial>> LoadAsync()
+        public async Task<List<Series>> LoadAsync()
         {
             using (var ctx = OpenContext())
             {
@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        public async Task SaveAsync(Serial serial)
+        public async Task SaveAsync(Series serial)
         {
             using (var ctx = OpenContext())
             {
