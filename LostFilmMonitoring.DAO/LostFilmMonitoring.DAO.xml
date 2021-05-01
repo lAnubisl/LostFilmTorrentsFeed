@@ -467,5 +467,22 @@
             </summary>
             <param name="migrationBuilder">MigrationBuilder.</param>
         </member>
+        <member name="T:LostFilmMonitoring.DAO.Migrations.Refactoring">
+            <summary>
+            Refactoring
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.DAO.Migrations.Refactoring.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <summary>
+            Up migration.
+            </summary>
+            <param name="migrationBuilder">MigrationBuilder.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.DAO.Migrations.Refactoring.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <summary>
+            Down migration.
+            </summary>
+            <param name="migrationBuilder">MigrationBuilder.</param>
+        </member>
     </members>
 </doc>
