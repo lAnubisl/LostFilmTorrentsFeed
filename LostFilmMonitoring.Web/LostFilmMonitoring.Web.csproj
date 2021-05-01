@@ -6,6 +6,9 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\DEV\LostFilmTorrentsFeed\LostFilmMonitoring.Web\LostFilmMonitoring.Web.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="wwwroot\images\serials\**" />
     <Content Remove="wwwroot\images\serials\**" />
@@ -13,11 +16,21 @@
     <None Remove="wwwroot\images\serials\**" />
   </ItemGroup>
   <ItemGroup>
+    <Content Remove="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -29,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj" />
+    <ProjectReference Include="..\LostFilmMonitoring.Updater\LostFilmMonitoring.Updater.csproj" />
   </ItemGroup>
 
 </Project>

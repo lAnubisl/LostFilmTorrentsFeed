@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LostFilmMonitoring.Web</name>
+    </assembly>
+    <members>
+        <member name="T:LostFilmMonitoring.Web.Controllers.FeedController">
+            <summary>
+            Feed controller.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.FeedController.#ctor(LostFilmMonitoring.BLL.ICurrentUserProvider,LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.Controllers.FeedController"/> class.
+            </summary>
+            <param name="currentUserProvider">currentUserProvider.</param>
+            <param name="logger">logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.FeedController.Feed">
+            <summary>
+            Feed.
+            </summary>
+            <returns>IActionResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.FeedController.Rss(System.Guid)">
+            <summary>
+            Rss.
+            </summary>
+            <param name="userId">userId.</param>
+            <returns>IActionResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.FeedController.RssItem(System.Int32,System.Guid)">
+            <summary>
+            RssItem.
+            </summary>
+            <param name="id">id.</param>
+            <param name="userId">userId.</param>
+            <returns>IActionResult.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.Controllers.HomeController">
+            <summary>
+            HomeController.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.#ctor(LostFilmMonitoring.BLL.PresentationService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.Controllers.HomeController"/> class.
+            </summary>
+            <param name="presentationService">PresentationService.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Index">
+            <summary>
+            Index.
+            </summary>
+            <returns>ActionResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Index(LostFilmMonitoring.Web.Models.UpdateSubscriptionModel)">
+            <summary>
+            Index.
+            </summary>
+            <param name="model">UpdateSubscriptionModel.</param>
+            <returns>EmptyResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Login">
+            <summary>
+            Login.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Login(System.Guid)">
+            <summary>
+            Login.
+            </summary>
+            <param name="userId">UserId.</param>
+            <returns>IActionResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Register">
+            <summary>
+            Register.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Register(LostFilmMonitoring.BLL.Models.RegistrationModel)">
+            <summary>
+            Register.
+            </summary>
+            <param name="model">RegistrationModel.</param>
+            <returns>ActionResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.About">
+            <summary>
+            About.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Uid">
+            <summary>
+            Uid.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.Usess">
+            <summary>
+            Usess.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.HomeController.IfSession">
+            <summary>
+            IfSession.
+            </summary>
+            <returns>ViewResult.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.Controllers.ImagesController">
+            <summary>
+            ImagesController.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Controllers.ImagesController.Serials(System.String)">
+            <summary>
+            Serials.
+            </summary>
+            <param name="fileName">fileName.</param>
+            <returns>ActionResult.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.CurrentUserProvider">
+            <summary>
+            CurrentUserProvider.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.CurrentUserProvider.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.CurrentUserProvider"/> class.
+            </summary>
+            <param name="httpContextAccessor">IHttpContextAccessor.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.CurrentUserProvider.GetCurrentUserId">
+            <summary>
+            GetCurrentUserId.
+            </summary>
+            <returns>UserId.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.CurrentUserProvider.SetCurrentUserId(System.Guid)">
+            <summary>
+            SetCurrentUserId.
+            </summary>
+            <param name="userId">userId.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.ExceptionHandlerMiddleware">
+            <summary>
+            ExceptionHandlerMiddleware.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ExceptionHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,LostFilmMonitoring.Common.ILogger)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.ExceptionHandlerMiddleware"/> class.
+            </summary>
+            <param name="next">next.</param>
+            <param name="logger">logger.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ExceptionHandlerMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Invoke.
+            </summary>
+            <param name="context">context.</param>
+            <returns>Awaitable task.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.Models.UpdateSubscriptionModel">
+            <summary>
+            UpdateSubscriptionModel.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.Web.Models.UpdateSubscriptionModel.SelectedItems">
+            <summary>
+            Gets or sets SelectedItems.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.Program">
+            <summary>
+            Program.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Program.Main(System.String[])">
+            <summary>
+            Main.
+            </summary>
+            <param name="args">args.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Program.BuildWebHost(System.String[])">
+            <summary>
+            BuildWebHost.
+            </summary>
+            <param name="args">args.</param>
+            <returns>IWebHost.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.Startup">
+            <summary>
+            Startup.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.Startup"/> class.
+            </summary>
+            <param name="configuration">IConfiguration.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.Web.Startup.Configuration">
+            <summary>
+            Gets Configuration.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            ConfigureServices.
+            </summary>
+            <param name="services">IServiceCollection.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            Configure.
+            </summary>
+            <param name="app">IApplicationBuilder.</param>
+            <param name="env">IWebHostEnvironment.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.ViewComponents.Episodes">
+            <summary>
+            Episodes.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ViewComponents.Episodes.#ctor(System.String,LostFilmMonitoring.BLL.Models.SeriesViewModel[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.ViewComponents.Episodes"/> class.
+            </summary>
+            <param name="title">title.</param>
+            <param name="items">items.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.Web.ViewComponents.Episodes.Items">
+            <summary>
+            Gets section Items.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.Web.ViewComponents.Episodes.Title">
+            <summary>
+            Gets section title.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.ViewComponents.EpisodesViewComponent">
+            <summary>
+            EpisodesViewComponent.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ViewComponents.EpisodesViewComponent.Invoke(LostFilmMonitoring.Web.ViewComponents.Episodes)">
+            <summary>
+            Invoke.
+            </summary>
+            <param name="episodes">episodes.</param>
+            <returns>IViewComponentResult.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.Web.ViewComponents.MenuViewComponent">
+            <summary>
+            MenuViewComponent.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ViewComponents.MenuViewComponent.#ctor(LostFilmMonitoring.BLL.ICurrentUserProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Web.ViewComponents.MenuViewComponent"/> class.
+            </summary>
+            <param name="currentUserProvider">ICurrentUserProvider.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Web.ViewComponents.MenuViewComponent.Invoke">
+            <summary>
+            Invoke.
+            </summary>
+            <returns>IViewComponentResult.</returns>
+        </member>
+    </members>
+</doc>

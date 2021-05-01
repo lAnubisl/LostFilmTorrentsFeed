@@ -12,7 +12,9 @@ namespace LostFilmMonitoring.DAO.Migrations
     [Migration("20210430134733_move-feeds-in-db")]
     partial class movefeedsindb
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
 #pragma warning disable 612, 618
             modelBuilder

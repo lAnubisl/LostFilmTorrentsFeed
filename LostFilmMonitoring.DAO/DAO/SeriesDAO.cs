@@ -1,4 +1,4 @@
-﻿// <copyright file="SubscriptionDAO.cs" company="Alexander Panfilenok">
+﻿// <copyright file="SeriesDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -23,69 +23,71 @@
 
 namespace LostFilmMonitoring.DAO.DAO
 {
-    using System;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using LostFilmMonitoring.DAO.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// Provides functionality for managing subscription in storage.
+    /// Provides functionality for managing series.
     /// </summary>
-    public class SubscriptionDAO : BaseDAO
+    public class SeriesDAO : BaseDAO
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionDAO"/> class.
+        /// Initializes a new instance of the <see cref="SeriesDAO"/> class.
         /// </summary>
         /// <param name="connectionString">Database connection string.</param>
-        public SubscriptionDAO(string connectionString)
+        public SeriesDAO(string connectionString)
             : base(connectionString)
         {
         }
 
         /// <summary>
-        /// Load subscriptions by series name and quality.
+        /// Load series by name.
         /// </summary>
-        /// <param name="seriesName">SeriesName.</param>
-        /// <param name="quality">Quality.</param>
-        /// <returns>Subscriptions.</returns>
-        public async Task<Subscription[]> LoadAsync(string seriesName, string quality)
+        /// <param name="name">Series name.</param>
+        /// <returns>Series.</returns>
+        public async Task<Series> LoadAsync(string name)
         {
             using (var ctx = this.OpenContext())
             {
-                return await ctx.Subscriptions.Where(s => s.SeriesName == seriesName && s.Quality == quality).ToArrayAsync();
+                return await ctx.Series.FirstOrDefaultAsync(s => s.Name == name);
             }
         }
 
         /// <summary>
-        /// Save subscription.
+        /// Load series.
         /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <param name="subscriptions">Subscriptions.</param>
-        /// <returns>Awaitable task.</returns>
-        public async Task SaveAsync(Guid userId, Subscription[] subscriptions)
+        /// <returns>All series.</returns>
+        public async Task<List<Series>> LoadAsync()
         {
-            if (subscriptions == null)
-            {
-                subscriptions = new Subscription[0];
-            }
-
             using (var ctx = this.OpenContext())
             {
-                var existingSubscriptions = ctx.Subscriptions.Where(s => s.UserId == userId).ToList();
-                ctx.RemoveRange(existingSubscriptions.Where(e => subscriptions.All(s => s.SeriesName != e.SeriesName)));
-                foreach (var subscription in subscriptions)
+                return await ctx.Series.ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Save series.
+        /// </summary>
+        /// <param name="series">Series to save.</param>
+        /// <returns>Awaitable task.</returns>
+        public async Task SaveAsync(Series series)
+        {
+            using (var ctx = this.OpenContext())
+            {
+                var existingSerial = await ctx.Series.FirstOrDefaultAsync(s => s.Name == series.Name);
+                if (existingSerial == null)
                 {
-                    subscription.UserId = userId;
-                    var existingSubscription = existingSubscriptions.FirstOrDefault(s => s.SeriesName == subscription.SeriesName);
-                    if (existingSubscription == null)
-                    {
-                        ctx.Add(subscription);
-                    }
-                    else
-                    {
-                        existingSubscription.Quality = subscription.Quality;
-                    }
+                    ctx.Add(series);
+                }
+                else
+                {
+                    existingSerial.LastEpisode = series.LastEpisode;
+                    existingSerial.LastEpisodeName = series.LastEpisodeName;
+                    existingSerial.LastEpisodeTorrentLinkSD = series.LastEpisodeTorrentLinkSD;
+                    existingSerial.LastEpisodeTorrentLinkMP4 = series.LastEpisodeTorrentLinkMP4;
+                    existingSerial.LastEpisodeTorrentLink1080 = series.LastEpisodeTorrentLink1080;
                 }
 
                 await ctx.SaveChangesAsync();

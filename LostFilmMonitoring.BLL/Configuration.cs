@@ -43,7 +43,9 @@ namespace LostFilmMonitoring.BLL
             BaseFeedCookieValue = ReadEnvironmentVariable("BASEFEEDCOOKIE");
             BaseUrl = ReadEnvironmentVariable("BASEURL");
             ImagesPath = Path.Combine(basePath, "images");
+            EnsureDirectoryExists(ImagesPath);
             TorrentsPath = Path.Combine(basePath, "torrents");
+            EnsureDirectoryExists(TorrentsPath);
             var dbpath = Path.Combine(basePath, "lostfilmtorrentfeed.db");
             ConnectionString = $"Data Source = {dbpath}";
         }
@@ -88,6 +90,15 @@ namespace LostFilmMonitoring.BLL
 
             Environment.SetEnvironmentVariable(key, null);
             return value;
+        }
+
+        private static void EnsureDirectoryExists(string path)
+        {
+            var directory = new DirectoryInfo(path);
+            if (!directory.Exists)
+            {
+                directory.Create();
+            }
         }
     }
 }

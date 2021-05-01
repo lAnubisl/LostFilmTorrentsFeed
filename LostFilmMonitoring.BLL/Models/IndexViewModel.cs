@@ -46,7 +46,7 @@ namespace LostFilmMonitoring.BLL.Models
             {
                 this.selectedItems = user.Subscriptions?.Select(s => new SelectedFeedItem()
                 {
-                    SeriesName = s.Serial,
+                    SeriesName = s.SeriesName,
                     Quality = s.Quality,
                 }).ToArray();
             }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ExceptionHandlerMiddleware.cs" company="Alexander Panfilenok">
+﻿// <copyright file="UpdateFeedsJob.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,47 +21,57 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.Web
+namespace LostFilmMonitoring.Updater
 {
     using System;
     using System.Threading.Tasks;
+    using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
-    using Microsoft.AspNetCore.Http;
+    using LostFilmMonitoring.DAO.DAO;
+    using Quartz;
 
     /// <summary>
-    /// ExceptionHandlerMiddleware.
+    /// UpdateFeedsJob.
     /// </summary>
-    public class ExceptionHandlerMiddleware
+    public class UpdateFeedsJob : IJob
     {
-        private readonly RequestDelegate next;
-        private readonly ILogger logger;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionHandlerMiddleware"/> class.
+        /// Execute.
         /// </summary>
-        /// <param name="next">next.</param>
-        /// <param name="logger">logger.</param>
-        public ExceptionHandlerMiddleware(RequestDelegate next, ILogger logger)
-        {
-            this.next = next;
-            this.logger = logger.CreateScope(nameof(Web.ExceptionHandlerMiddleware));
-        }
-
-        /// <summary>
-        /// Invoke.
-        /// </summary>
-        /// <param name="context">context.</param>
+        /// <param name="context">IJobExecutionContext.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task Invoke(HttpContext context /* other dependencies */)
+        public async Task Execute(IJobExecutionContext context)
         {
+            ConfigureLogger();
+            var logger = new Logger(nameof(UpdateFeedsJob));
             try
             {
-                await this.next(context);
+                var feedService = new RssFeedUpdaterService(logger);
+                var userDao = new UserDAO(Configuration.GetConnectionString());
+                var feedDao = new FeedDAO(Configuration.GetConnectionString());
+                var deletedUserIds = await userDao.DeleteOldUsersAsync();
+                foreach (var userId in deletedUserIds)
+                {
+                    await feedDao.DeleteAsync(userId);
+                }
+
+                await feedService.UpdateAsync();
             }
             catch (Exception ex)
             {
-                this.logger.Log(ex);
+                logger.Log(ex);
+                if (ex.InnerException != null)
+                {
+                    logger.Log(ex.InnerException);
+                }
             }
+        }
+
+        private static void ConfigureLogger()
+        {
+            var minLogLevel = "Debug";
+            var maxLogLevel = "Fatal";
+            LoggerConfiguration.ConfigureLogger(minLogLevel, maxLogLevel);
         }
     }
 }

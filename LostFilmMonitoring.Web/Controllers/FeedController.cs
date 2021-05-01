@@ -21,46 +21,84 @@
 // SOFTWARE.
 // </copyright>
 
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using LostFilmMonitoring.BLL;
-using LostFilmMonitoring.Common;
-using Microsoft.AspNetCore.Mvc;
-
 namespace LostFilmMonitoring.Web.Controllers
 {
+    using System;
+    using System.Text;
+    using System.Threading.Tasks;
+    using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.Common;
+    using Microsoft.AspNetCore.Mvc;
+
+    /// <summary>
+    /// Feed controller.
+    /// </summary>
     public class FeedController : Controller
     {
         private readonly RssFeedService feedService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedController"/> class.
+        /// </summary>
+        /// <param name="currentUserProvider">currentUserProvider.</param>
+        /// <param name="logger">logger.</param>
         public FeedController(ICurrentUserProvider currentUserProvider, ILogger logger)
         {
             this.feedService = new RssFeedService(currentUserProvider, logger);
         }
 
-        [HttpGet, Route("Feed")]
+        /// <summary>
+        /// Feed.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("Feed")]
         public async Task<IActionResult> Feed()
         {
-            var model = await feedService.GetFeedViewModel();
-            if (model == null) return RedirectToAction("index");
-            return View(model);
+            var model = await this.feedService.GetFeedViewModel();
+            if (model == null)
+            {
+                return this.RedirectToAction("index", "Home");
+            }
+
+            return this.View(model);
         }
 
-        [HttpGet, Route("Rss/{userId}")]
+        /// <summary>
+        /// Rss.
+        /// </summary>
+        /// <param name="userId">userId.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("Rss/{userId}")]
         public async Task<IActionResult> Rss(Guid userId)
         {
-            var rssData = await feedService.GetRss(userId);
-            if (rssData == null) return new NotFoundResult();
-            return File(Encoding.UTF8.GetBytes(rssData), "application/rss+xml", userId + ".xml");
+            var rssData = await this.feedService.GetRss(userId);
+            if (rssData == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return this.File(Encoding.UTF8.GetBytes(rssData), "application/rss+xml", userId + ".xml");
         }
 
-        [HttpGet, Route("Rss/{userId}/{id}")]
+        /// <summary>
+        /// RssItem.
+        /// </summary>
+        /// <param name="id">id.</param>
+        /// <param name="userId">userId.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("Rss/{userId}/{id}")]
         public async Task<IActionResult> RssItem(int id, Guid userId)
         {
-            var result = await feedService.GetRssItem(userId, id);
-            if (result == null) return new NotFoundResult();
-            return File(result.TorrentFileBody, result.ContentType, result.TorrentFileName);
+            var result = await this.feedService.GetRssItem(userId, id);
+            if (result == null)
+            {
+                return new NotFoundResult();
+            }
+
+            return this.File(result.TorrentFileBody, result.ContentType, result.TorrentFileName);
         }
     }
 }

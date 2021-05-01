@@ -41,7 +41,7 @@ namespace LostFilmMonitoring.BLL
         private readonly ILogger logger;
         private readonly FeedDAO feedDAO;
         private readonly ReteOrgRssFeed reteOrgRssFeed;
-        private readonly SerialDAO serialDao;
+        private readonly SeriesDAO serialDao;
         private readonly SeriesCoverService serialCoverService;
         private readonly SubscriptionDAO subscriptionDAO;
 
@@ -56,7 +56,7 @@ namespace LostFilmMonitoring.BLL
             this.reteOrgRssFeed = new ReteOrgRssFeed(logger);
             this.feedDAO = new FeedDAO(connectionString);
             this.serialCoverService = new SeriesCoverService(logger);
-            this.serialDao = new SerialDAO(connectionString);
+            this.serialDao = new SeriesDAO(connectionString);
             this.subscriptionDAO = new SubscriptionDAO(connectionString);
         }
 
@@ -75,6 +75,11 @@ namespace LostFilmMonitoring.BLL
 
             await this.UpdateSerialList(feedItemResponses);
             var feedItems = await this.feedDAO.LoadBaseFeedAsync();
+            if (feedItems == null)
+            {
+                feedItems = new SortedSet<FeedItem>();
+            }
+
             foreach (var feedItemResponse in feedItemResponses)
             {
                 var feedItem = new FeedItem(feedItemResponse);

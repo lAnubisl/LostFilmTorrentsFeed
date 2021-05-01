@@ -1,4 +1,4 @@
-﻿// <copyright file="Updater.cs" company="Alexander Panfilenok">
+﻿// <copyright file="UpdateFeedsJobRunner.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,18 +21,33 @@
 // SOFTWARE.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace LostFilmMonitoring.Web
+namespace LostFilmMonitoring.Updater
 {
-    public class Updater
-    {
-        public static void Schedule()
-        {
+    using Quartz;
+    using Quartz.Impl;
 
+    /// <summary>
+    /// UpdateFeedsJobRunner.
+    /// </summary>
+    public static class UpdateFeedsJobRunner
+    {
+        /// <summary>
+        /// Run.
+        /// </summary>
+        public static void Run()
+        {
+            var factory = new StdSchedulerFactory();
+            var scheduler = factory.GetScheduler().Result;
+            scheduler.Start().Wait();
+            IJobDetail jobDetail = JobBuilder.Create<UpdateFeedsJob>()
+                .WithIdentity("UpdateFeedsJob", "Jobs")
+                .Build();
+            ITrigger trigger = TriggerBuilder.Create()
+                .WithIdentity("UpdateFeedsJobTrigger", "Triggers")
+                .WithCronSchedule("0 */1 * * * ?")
+                .ForJob("UpdateFeedsJob", "Jobs")
+                .Build();
+            scheduler.ScheduleJob(jobDetail, trigger);
         }
     }
 }

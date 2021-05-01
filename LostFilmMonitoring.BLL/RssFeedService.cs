@@ -41,7 +41,7 @@ namespace LostFilmMonitoring.BLL
     {
         private readonly UserDAO userDAO;
         private readonly FeedDAO feedDAO;
-        private readonly SerialDAO serialDao;
+        private readonly SeriesDAO serialDao;
         private readonly TorrentFileDownloader torrentFileDownloader;
         private readonly ICurrentUserProvider currentUserProvider;
 
@@ -52,7 +52,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="logger">Logger.</param>
         public RssFeedService(ICurrentUserProvider currentUserProvider, ILogger logger)
         {
-            this.serialDao = new SerialDAO(Configuration.GetConnectionString());
+            this.serialDao = new SeriesDAO(Configuration.GetConnectionString());
             this.feedDAO = new FeedDAO(Configuration.GetConnectionString());
             this.userDAO = new UserDAO(Configuration.GetConnectionString());
             this.currentUserProvider = currentUserProvider;
@@ -106,7 +106,7 @@ namespace LostFilmMonitoring.BLL
 
             var newItems = selectedItems.Where(
                 i => user.Subscriptions.All(
-                    s => !string.Equals(s.Serial, i.SeriesName, StringComparison.OrdinalIgnoreCase) || s.Quality != i.Quality))
+                    s => !string.Equals(s.SeriesName, i.SeriesName, StringComparison.OrdinalIgnoreCase) || s.Quality != i.Quality))
                 .ToList();
 
             foreach (var newItem in newItems)

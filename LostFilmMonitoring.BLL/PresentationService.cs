@@ -36,7 +36,7 @@ namespace LostFilmMonitoring.BLL
     /// </summary>
     public class PresentationService
     {
-        private readonly SerialDAO serialDAO;
+        private readonly SeriesDAO serialDAO;
         private readonly UserDAO userDAO;
         private readonly SubscriptionDAO subscriptionDAO;
         private readonly ICurrentUserProvider currentUserProvider;
@@ -51,7 +51,7 @@ namespace LostFilmMonitoring.BLL
         public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger)
         {
             var connectionString = Configuration.GetConnectionString();
-            this.serialDAO = new SerialDAO(connectionString);
+            this.serialDAO = new SeriesDAO(connectionString);
             this.userDAO = new UserDAO(connectionString);
             this.feedService = new RssFeedService(currentUserProvider, logger);
             this.subscriptionDAO = new SubscriptionDAO(connectionString);
@@ -107,7 +107,7 @@ namespace LostFilmMonitoring.BLL
             await this.feedService.UpdateUserSubscrptionAsync(selectedItems);
             await this.subscriptionDAO.SaveAsync(
                 currentUserId,
-                selectedItems?.Select(s => new Subscription() { Quality = s.Quality, Serial = s.SeriesName }).ToArray());
+                selectedItems?.Select(s => new Subscription() { Quality = s.Quality, SeriesName = s.SeriesName }).ToArray());
             this.logger.Info($"Subscriptions updated for user {currentUserId}");
         }
 

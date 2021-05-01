@@ -12,5 +12,8 @@
 <br />
 <h2>RSS Ссылка для Torrent клиента</h2>
 <a href="@Url.Action("Rss", "Home", new { userId = Model.UserId })" target="_blank">
-    @(Context.Request.Scheme + "://" + Context.Request.Host)@Url.Action("Rss", "Home", new { userId = Model.UserId })
+    @(Context.Request.Scheme + "://" + Context.Request.Host)@Url.Action("Rss", "Feed", new { userId = Model.UserId })
 </a>
+
+<h2>Ключ доя входа на сайт (он есть в ссылке для Torrent клиента)</h2>
+<span>@Model.UserId</span>
