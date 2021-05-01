@@ -31,54 +31,59 @@ namespace LostFilmMonitoring.BLL
     /// </summary>
     public static class Configuration
     {
-        private static readonly string ConnectionString;
-        private static readonly string ImagesPath;
-        private static readonly string TorrentsPath;
-        private static readonly string BaseFeedCookieValue;
-        private static readonly string BaseUrl;
+        private static string connectionString;
+        private static string imagesPath;
+        private static string torrentsPath;
+        private static string baseFeedCookieValue;
+        private static string baseUrlValue;
 
-        static Configuration()
+        /// <summary>
+        /// Initializes configuration.
+        /// </summary>
+        /// <param name="basePath">Base path.</param>
+        /// <param name="baseUrl">Base Url.</param>
+        /// <param name="baseFeedCookie">Base feed Cookie.</param>
+        public static void Init(string basePath, string baseUrl, string baseFeedCookie)
         {
-            var basePath = ReadEnvironmentVariable("BASEPATH");
-            BaseFeedCookieValue = ReadEnvironmentVariable("BASEFEEDCOOKIE");
-            BaseUrl = ReadEnvironmentVariable("BASEURL");
-            ImagesPath = Path.Combine(basePath, "images");
-            EnsureDirectoryExists(ImagesPath);
-            TorrentsPath = Path.Combine(basePath, "torrents");
-            EnsureDirectoryExists(TorrentsPath);
-            var dbpath = Path.Combine(basePath, "lostfilmtorrentfeed.db");
-            ConnectionString = $"Data Source = {dbpath}";
+            baseFeedCookieValue = baseFeedCookie;
+            imagesPath = Path.Combine(basePath, "data", "images");
+            baseUrlValue = baseUrl;
+            EnsureDirectoryExists(imagesPath);
+            torrentsPath = Path.Combine(basePath, "data", "torrents");
+            EnsureDirectoryExists(torrentsPath);
+            var dbpath = Path.Combine(basePath, "data", "lostfilmtorrentfeed.db");
+            connectionString = $"Data Source = {dbpath}";
         }
 
         /// <summary>
         /// Get BaseFeedCookie.
         /// </summary>
         /// <returns>BaseFeedCookie.</returns>
-        public static string BaseFeedCookie() => BaseFeedCookieValue;
+        public static string BaseFeedCookie() => baseFeedCookieValue;
 
         /// <summary>
         /// Get database connection string.
         /// </summary>
         /// <returns>Database connection string.</returns>
-        public static string GetConnectionString() => ConnectionString;
+        public static string GetConnectionString() => connectionString;
 
         /// <summary>
         /// Get physical path where series covers are stored.
         /// </summary>
         /// <returns>Physical path where series covers are stored.</returns>
-        public static string GetImagesPath() => ImagesPath;
+        public static string GetImagesPath() => imagesPath;
 
         /// <summary>
         /// Get physical path where torrent files are stored.
         /// </summary>
         /// <returns>Physical path where torrent files are stored.</returns>
-        public static string GetTorrentPath() => TorrentsPath;
+        public static string GetTorrentPath() => torrentsPath;
 
         /// <summary>
         /// Get base url where website is hosted.
         /// </summary>
         /// <returns>Base url where website is hosted.</returns>
-        public static string GetBaseUrl() => BaseUrl;
+        public static string GetBaseUrl() => baseUrlValue;
 
         private static string ReadEnvironmentVariable(string key)
         {

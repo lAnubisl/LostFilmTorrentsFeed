@@ -23,6 +23,7 @@
 
 namespace LostFilmMonitoring.Web
 {
+    using System;
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
@@ -84,6 +85,10 @@ namespace LostFilmMonitoring.Web
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 #pragma warning restore IDE0060 // Remove unused parameter
         {
+            BLL.Configuration.Init(
+                Environment.GetEnvironmentVariable("BASEPATH") ?? env.ContentRootPath,
+                Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000",
+                Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? "58eaf77d5fc3eeda277449d3a3cd9a4a.1874597");
             app.UseExceptionHandler(new ExceptionHandlerOptions()
             {
                 ExceptionHandler = (ctx) =>

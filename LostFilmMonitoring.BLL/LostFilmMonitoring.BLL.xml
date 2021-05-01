@@ -9,6 +9,14 @@
             Configuration.
             </summary>
         </member>
+        <member name="M:LostFilmMonitoring.BLL.Configuration.Init(System.String,System.String,System.String)">
+            <summary>
+            Initializes configuration.
+            </summary>
+            <param name="basePath">Base path.</param>
+            <param name="baseUrl">Base Url.</param>
+            <param name="baseFeedCookie">Base feed Cookie.</param>
+        </member>
         <member name="M:LostFilmMonitoring.BLL.Configuration.BaseFeedCookie">
             <summary>
             Get BaseFeedCookie.
