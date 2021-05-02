@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LostFilmMonitoring.Common</name>
+    </assembly>
+    <members>
+        <member name="T:LostFilmMonitoring.Common.ILogger">
+            <summary>
+            Logger interface.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.CreateScope(System.String)">
+            <summary>
+            Creates new logger scope.
+            </summary>
+            <param name="name">Scope name.</param>
+            <returns>New logger with new scope.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Debug(System.String)">
+            <summary>
+            Log Debug message.
+            </summary>
+            <param name="message">message.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Info(System.String)">
+            <summary>
+            Log Info message.
+            </summary>
+            <param name="message">message.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Warning(System.String)">
+            <summary>
+            Log Warning message.
+            </summary>
+            <param name="message">message.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Error(System.String)">
+            <summary>
+            Log Error message.
+            </summary>
+            <param name="message">message.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Fatal(System.String)">
+            <summary>
+            Log fatal message.
+            </summary>
+            <param name="message">message.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.ILogger.Log(System.Exception)">
+            <summary>
+            Log exception.
+            </summary>
+            <param name="ex">exception.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.Common.Logger">
+            <summary>
+            Logger implementation.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.Common.Logger"/> class.
+            </summary>
+            <param name="name">Scope name.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.CreateScope(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Debug(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Error(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Fatal(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Info(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Log(System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.Common.Logger.Warning(System.String)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

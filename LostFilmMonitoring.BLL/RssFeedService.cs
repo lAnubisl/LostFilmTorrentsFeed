@@ -27,7 +27,6 @@ namespace LostFilmMonitoring.BLL
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using LostFilmMonitoring.BLL.Interfaces;
     using LostFilmMonitoring.BLL.Interfaces.Models;
     using LostFilmMonitoring.BLL.Models;
     using LostFilmMonitoring.Common;
@@ -41,7 +40,7 @@ namespace LostFilmMonitoring.BLL
     {
         private readonly UserDAO userDAO;
         private readonly FeedDAO feedDAO;
-        private readonly SeriesDAO serialDao;
+        private readonly SeriesDAO seriesDAO;
         private readonly TorrentFileDownloader torrentFileDownloader;
         private readonly ICurrentUserProvider currentUserProvider;
 
@@ -52,7 +51,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="logger">Logger.</param>
         public RssFeedService(ICurrentUserProvider currentUserProvider, ILogger logger)
         {
-            this.serialDao = new SeriesDAO(Configuration.GetConnectionString());
+            this.seriesDAO = new SeriesDAO(Configuration.GetConnectionString());
             this.feedDAO = new FeedDAO(Configuration.GetConnectionString());
             this.userDAO = new UserDAO(Configuration.GetConnectionString());
             this.currentUserProvider = currentUserProvider;
@@ -111,8 +110,8 @@ namespace LostFilmMonitoring.BLL
 
             foreach (var newItem in newItems)
             {
-                var serial = await this.serialDao.LoadAsync(newItem.SeriesName);
-                var torrentId = this.GetTorrentId(serial, newItem.Quality);
+                var series = await this.seriesDAO.LoadAsync(newItem.SeriesName);
+                var torrentId = this.GetTorrentId(series, newItem.Quality);
                 if (torrentId == null)
                 {
                     continue;
@@ -121,7 +120,7 @@ namespace LostFilmMonitoring.BLL
                 var newFeedItem = new FeedItem()
                 {
                     Link = Extensions.GenerateTorrentLink(userId, torrentId),
-                    Title = serial.LastEpisodeName,
+                    Title = series.LastEpisodeName,
                     PublishDateParsed = DateTime.UtcNow,
                 };
                 userFeedItems.RemoveWhere(i => string.Equals(i.Title, newFeedItem.Title));

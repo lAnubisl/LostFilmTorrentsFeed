@@ -36,7 +36,7 @@ namespace LostFilmMonitoring.BLL
     /// </summary>
     public class PresentationService
     {
-        private readonly SeriesDAO serialDAO;
+        private readonly SeriesDAO seriesDAO;
         private readonly UserDAO userDAO;
         private readonly SubscriptionDAO subscriptionDAO;
         private readonly ICurrentUserProvider currentUserProvider;
@@ -51,7 +51,7 @@ namespace LostFilmMonitoring.BLL
         public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger)
         {
             var connectionString = Configuration.GetConnectionString();
-            this.serialDAO = new SeriesDAO(connectionString);
+            this.seriesDAO = new SeriesDAO(connectionString);
             this.userDAO = new UserDAO(connectionString);
             this.feedService = new RssFeedService(currentUserProvider, logger);
             this.subscriptionDAO = new SubscriptionDAO(connectionString);
@@ -65,10 +65,10 @@ namespace LostFilmMonitoring.BLL
         /// <returns>Home Page model.</returns>
         public async Task<IndexViewModel> GetIndexModelAsync()
         {
-            var serials = await this.serialDAO.LoadAsync();
+            var series = await this.seriesDAO.LoadAsync();
             var currentUserId = this.currentUserProvider.GetCurrentUserId();
             var user = currentUserId == Guid.Empty ? null : await this.userDAO.LoadWithSubscriptionsAsync(currentUserId);
-            return new IndexViewModel(serials, user);
+            return new IndexViewModel(series, user);
         }
 
         /// <summary>

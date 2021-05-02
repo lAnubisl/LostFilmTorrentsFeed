@@ -185,11 +185,11 @@
         <member name="M:LostFilmTV.Client.Response.FeedItemResponse.System#IComparable{LostFilmTV#Client#Response#FeedItemResponse}#CompareTo(LostFilmTV.Client.Response.FeedItemResponse)">
             <inheritdoc/>
         </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetSerialName">
+        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetSeriesName">
             <summary>
-            Get Serial Name.
+            Get Series Name.
             </summary>
-            <returns>Serial name.</returns>
+            <returns>Series name.</returns>
         </member>
         <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetEpisodeName">
             <summary>

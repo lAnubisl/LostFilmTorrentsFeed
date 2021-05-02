@@ -38,7 +38,7 @@ namespace LostFilmMonitoring.Web
         /// <param name="args">args.</param>
         public static void Main(string[] args)
         {
-            UpdateFeedsJobRunner.Run();
+            UpdateFeedsJobRunner.Schedule();
             BuildWebHost(args).Run();
         }
 

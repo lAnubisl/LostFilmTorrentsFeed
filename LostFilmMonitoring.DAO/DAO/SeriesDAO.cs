@@ -76,18 +76,18 @@ namespace LostFilmMonitoring.DAO.DAO
         {
             using (var ctx = this.OpenContext())
             {
-                var existingSerial = await ctx.Series.FirstOrDefaultAsync(s => s.Name == series.Name);
-                if (existingSerial == null)
+                var existingSeries = await ctx.Series.FirstOrDefaultAsync(s => s.Name == series.Name);
+                if (existingSeries == null)
                 {
                     ctx.Add(series);
                 }
                 else
                 {
-                    existingSerial.LastEpisode = series.LastEpisode;
-                    existingSerial.LastEpisodeName = series.LastEpisodeName;
-                    existingSerial.LastEpisodeTorrentLinkSD = series.LastEpisodeTorrentLinkSD;
-                    existingSerial.LastEpisodeTorrentLinkMP4 = series.LastEpisodeTorrentLinkMP4;
-                    existingSerial.LastEpisodeTorrentLink1080 = series.LastEpisodeTorrentLink1080;
+                    existingSeries.LastEpisode = series.LastEpisode;
+                    existingSeries.LastEpisodeName = series.LastEpisodeName;
+                    existingSeries.LastEpisodeTorrentLinkSD = series.LastEpisodeTorrentLinkSD;
+                    existingSeries.LastEpisodeTorrentLinkMP4 = series.LastEpisodeTorrentLinkMP4;
+                    existingSeries.LastEpisodeTorrentLink1080 = series.LastEpisodeTorrentLink1080;
                 }
 
                 await ctx.SaveChangesAsync();

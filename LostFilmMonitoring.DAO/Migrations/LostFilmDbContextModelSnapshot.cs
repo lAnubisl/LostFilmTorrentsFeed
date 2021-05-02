@@ -52,7 +52,7 @@ namespace LostFilmMonitoring.DAO.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Serials");
+                    b.ToTable("Series");
                 });
 
             modelBuilder.Entity("LostFilmMonitoring.DAO.DomainModels.Subscription", b =>

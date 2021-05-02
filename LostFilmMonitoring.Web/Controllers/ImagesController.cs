@@ -34,12 +34,12 @@ namespace LostFilmMonitoring.Web.Controllers
     public class ImagesController : Controller
     {
         /// <summary>
-        /// Serials.
+        /// Series.
         /// </summary>
         /// <param name="fileName">fileName.</param>
         /// <returns>ActionResult.</returns>
-        [Route("images/serials/{filename}")]
-        public ActionResult Serials(string fileName)
+        [Route("images/series/{filename}")]
+        public ActionResult Series(string fileName)
         {
             Stream stream;
             try

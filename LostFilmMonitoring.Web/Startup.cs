@@ -27,6 +27,7 @@ namespace LostFilmMonitoring.Web
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
+    using LostFilmMonitoring.Updater;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
@@ -64,7 +65,6 @@ namespace LostFilmMonitoring.Web
         /// <param name="services">IServiceCollection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureLogger();
             logger = new Logger("Root");
             services.AddTransient<PresentationService>();
             services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
@@ -73,7 +73,6 @@ namespace LostFilmMonitoring.Web
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest)
                 .AddMvcOptions(o => { o.EnableEndpointRouting = false; });
-            logger.Info("Application started.");
         }
 
         /// <summary>
@@ -81,14 +80,12 @@ namespace LostFilmMonitoring.Web
         /// </summary>
         /// <param name="app">IApplicationBuilder.</param>
         /// <param name="env">IWebHostEnvironment.</param>
-#pragma warning disable IDE0060 // Remove unused parameter
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-#pragma warning restore IDE0060 // Remove unused parameter
         {
             BLL.Configuration.Init(
                 Environment.GetEnvironmentVariable("BASEPATH") ?? env.ContentRootPath,
                 Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000",
-                Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? "58eaf77d5fc3eeda277449d3a3cd9a4a.1874597");
+                Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not set."));
             app.UseExceptionHandler(new ExceptionHandlerOptions()
             {
                 ExceptionHandler = (ctx) =>
@@ -104,13 +101,8 @@ namespace LostFilmMonitoring.Web
             });
             app.UseStaticFiles();
             app.UseMvc();
-        }
-
-        private static void ConfigureLogger()
-        {
-            var minLogLevel = "Debug";
-            var maxLogLevel = "Fatal";
-            LoggerConfiguration.ConfigureLogger(minLogLevel, maxLogLevel);
+            logger.Info("Application started.");
+            UpdateFeedsJobRunner.RunAsync().Wait();
         }
     }
 }

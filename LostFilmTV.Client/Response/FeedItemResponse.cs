@@ -106,10 +106,10 @@ namespace LostFilmTV.Client.Response
         }
 
         /// <summary>
-        /// Get Serial Name.
+        /// Get Series Name.
         /// </summary>
-        /// <returns>Serial name.</returns>
-        public virtual string GetSerialName()
+        /// <returns>Series name.</returns>
+        public virtual string GetSeriesName()
         {
             if (string.IsNullOrEmpty(this.Title))
             {

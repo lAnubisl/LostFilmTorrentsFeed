@@ -23,6 +23,11 @@
 
 namespace LostFilmMonitoring.Updater
 {
+    using System;
+    using System.Threading.Tasks;
+    using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.Common;
+    using LostFilmMonitoring.DAO.DAO;
     using Quartz;
     using Quartz.Impl;
 
@@ -34,7 +39,37 @@ namespace LostFilmMonitoring.Updater
         /// <summary>
         /// Run.
         /// </summary>
-        public static void Run()
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task RunAsync()
+        {
+            var logger = new Logger(nameof(UpdateFeedsJob));
+            try
+            {
+                var feedService = new RssFeedUpdaterService(logger);
+                var userDao = new UserDAO(Configuration.GetConnectionString());
+                var feedDao = new FeedDAO(Configuration.GetConnectionString());
+                var deletedUserIds = await userDao.DeleteOldUsersAsync();
+                foreach (var userId in deletedUserIds)
+                {
+                    await feedDao.DeleteAsync(userId);
+                }
+
+                await feedService.UpdateAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex);
+                if (ex.InnerException != null)
+                {
+                    logger.Log(ex.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Schedules recurring synchronization with LostFilm.tv.
+        /// </summary>
+        public static void Schedule()
         {
             var factory = new StdSchedulerFactory();
             var scheduler = factory.GetScheduler().Result;
@@ -44,7 +79,7 @@ namespace LostFilmMonitoring.Updater
                 .Build();
             ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity("UpdateFeedsJobTrigger", "Triggers")
-                .WithCronSchedule("0 */1 * * * ?")
+                .WithCronSchedule("0 */10 * * * ?")
                 .ForJob("UpdateFeedsJob", "Jobs")
                 .Build();
             scheduler.ScheduleJob(jobDetail, trigger);

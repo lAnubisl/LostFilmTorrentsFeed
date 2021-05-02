@@ -18,12 +18,12 @@
         cursor: pointer;
     }
 
-    .serial-item:checked + .serial-item-label {
+    .series-item:checked + .series-item-label {
         font-weight: bold;
         color: red;
     }
 
-    .serial {
+    .series {
         height: 250px;
         margin: 3px;
         overflow: hidden;
@@ -32,13 +32,13 @@
         text-align: center;
     }
 
-    .serial-header {
+    .series-header {
         height: 40px;
         font-weight: bold;
         position: relative;
     }
 
-        .serial-header DIV {
+        .series-header DIV {
             bottom: 0;
             left: 50%;
             position: absolute;
@@ -47,7 +47,7 @@
         }
 
 
-    .serial-selected {
+    .series-selected {
         background-color: aquamarine;
         border: 1px solid green;
     }
@@ -84,18 +84,18 @@
                 var hidden = div.getElementsByTagName('input')[0];
                 var select = div.getElementsByTagName('select')[0];
                 if (hidden.value !== "") {
-                    div.classList.remove("serial-selected");
+                    div.classList.remove("series-selected");
                     select.classList.add("hidden");
                     hidden.value = "";
                 } else {
-                    div.classList.add("serial-selected");
+                    div.classList.add("series-selected");
                     select.classList.remove("hidden");
                     hidden.value = "value";
                 }
             }
             var collect = function () {
                 var data = new Array()
-                var hiddens = $('.serial').find('input[type=hidden]:first');
+                var hiddens = $('.series').find('input[type=hidden]:first');
                 for (var i = 0; i < hiddens.length; i++) {
                     if (hiddens[i].value === "") continue;
                     data.push(

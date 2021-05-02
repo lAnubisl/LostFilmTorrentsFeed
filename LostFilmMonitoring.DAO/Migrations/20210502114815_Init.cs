@@ -1,4 +1,4 @@
-﻿// <copyright file="20201207145632_Init.cs" company="Alexander Panfilenok">
+﻿// <copyright file="20210502114815_Init.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -27,18 +27,30 @@ namespace LostFilmMonitoring.DAO.Migrations
     using Microsoft.EntityFrameworkCore.Migrations;
 
     /// <summary>
-    /// Migration.
+    /// Initial migration definition.
     /// </summary>
     public partial class Init : Migration
     {
         /// <summary>
-        /// Up migration.
+        /// Forward migration.
         /// </summary>
         /// <param name="migrationBuilder">MigrationBuilder.</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Serials",
+                name: "Feeds",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Data = table.Column<string>(type: "TEXT", nullable: true),
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feeds", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Series",
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "TEXT", nullable: false),
@@ -50,19 +62,7 @@ namespace LostFilmMonitoring.DAO.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Serials", x => x.Name);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Settings",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true),
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Settings", x => x.Name);
+                    table.PrimaryKey("PK_Series", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,12 +85,12 @@ namespace LostFilmMonitoring.DAO.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Serial = table.Column<string>(type: "TEXT", nullable: false),
+                    SeriesName = table.Column<string>(type: "TEXT", nullable: false),
                     Quality = table.Column<string>(type: "TEXT", nullable: true),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subscriptions", x => new { x.UserId, x.Serial });
+                    table.PrimaryKey("PK_Subscriptions", x => new { x.UserId, x.SeriesName });
                     table.ForeignKey(
                         name: "FK_Subscriptions_Users",
                         column: x => x.UserId,
@@ -101,16 +101,16 @@ namespace LostFilmMonitoring.DAO.Migrations
         }
 
         /// <summary>
-        /// Down migration.
+        /// Backward migration.
         /// </summary>
         /// <param name="migrationBuilder">MigrationBuilder.</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Serials");
+                name: "Feeds");
 
             migrationBuilder.DropTable(
-                name: "Settings");
+                name: "Series");
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");

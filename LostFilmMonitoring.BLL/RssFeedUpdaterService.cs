@@ -41,8 +41,8 @@ namespace LostFilmMonitoring.BLL
         private readonly ILogger logger;
         private readonly FeedDAO feedDAO;
         private readonly ReteOrgRssFeed reteOrgRssFeed;
-        private readonly SeriesDAO serialDao;
-        private readonly SeriesCoverService serialCoverService;
+        private readonly SeriesDAO seriesDAO;
+        private readonly SeriesCoverService seriesCoverService;
         private readonly SubscriptionDAO subscriptionDAO;
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace LostFilmMonitoring.BLL
             this.logger = logger != null ? logger.CreateScope(nameof(RssFeedUpdaterService)) : throw new ArgumentNullException(nameof(logger));
             this.reteOrgRssFeed = new ReteOrgRssFeed(logger);
             this.feedDAO = new FeedDAO(connectionString);
-            this.serialCoverService = new SeriesCoverService(logger);
-            this.serialDao = new SeriesDAO(connectionString);
+            this.seriesCoverService = new SeriesCoverService(logger);
+            this.seriesDAO = new SeriesDAO(connectionString);
             this.subscriptionDAO = new SubscriptionDAO(connectionString);
         }
 
@@ -73,7 +73,7 @@ namespace LostFilmMonitoring.BLL
                 return;
             }
 
-            await this.UpdateSerialList(feedItemResponses);
+            await this.UpdateSeriesList(feedItemResponses);
             var feedItems = await this.feedDAO.LoadBaseFeedAsync();
             if (feedItems == null)
             {
@@ -94,30 +94,30 @@ namespace LostFilmMonitoring.BLL
             this.logger.Info("Base feed updated");
         }
 
-        private async Task UpdateSerialList(IEnumerable<FeedItemResponse> feedItems)
+        private async Task UpdateSeriesList(IEnumerable<FeedItemResponse> feedItems)
         {
-            var existingSerials = await this.serialDao.LoadAsync();
+            var allSeries = await this.seriesDAO.LoadAsync();
             var baseFeedCookie = Configuration.BaseFeedCookie();
             foreach (var feedItem in feedItems)
             {
                 var series = this.ParseSeries(feedItem);
-                await this.serialCoverService.EnsureCoverDownloadedAsync(series.Name);
-                var existingSeries = existingSerials.FirstOrDefault(s => s.Name == series.Name);
-                if (existingSeries != null && existingSeries.LastEpisodeName == series.LastEpisodeName && !this.HasUpdatesComparedTo(series, existingSeries))
+                await this.seriesCoverService.EnsureCoverDownloadedAsync(series.Name);
+                var existing = allSeries.FirstOrDefault(s => s.Name == series.Name);
+                if (existing != null && existing.LastEpisodeName == series.LastEpisodeName && !this.HasUpdatesComparedTo(series, existing))
                 {
                     continue;
                 }
 
-                if (existingSeries == null)
+                if (existing == null)
                 {
                     this.logger.Info($"New series detected: {series.Name}");
-                    existingSerials.Add(series);
-                    await this.serialDao.SaveAsync(series);
+                    allSeries.Add(series);
+                    await this.seriesDAO.SaveAsync(series);
                     continue;
                 }
 
-                this.Merge(existingSeries, series);
-                await this.serialDao.SaveAsync(existingSeries);
+                this.Merge(existing, series);
+                await this.seriesDAO.SaveAsync(existing);
             }
         }
 
@@ -130,9 +130,9 @@ namespace LostFilmMonitoring.BLL
 
         private Series ParseSeries(FeedItemResponse feedItem)
         {
-            var serial = new Series()
+            var series = new Series()
             {
-                Name = feedItem.GetSerialName(),
+                Name = feedItem.GetSeriesName(),
                 LastEpisodeName = feedItem.GetEpisodeName(),
                 LastEpisode = feedItem.PublishDateParsed,
             };
@@ -141,17 +141,17 @@ namespace LostFilmMonitoring.BLL
             switch (quality)
             {
                 case Quality.H1080:
-                    serial.LastEpisodeTorrentLink1080 = feedItem.Link;
+                    series.LastEpisodeTorrentLink1080 = feedItem.Link;
                     break;
                 case Quality.H720:
-                    serial.LastEpisodeTorrentLinkMP4 = feedItem.Link;
+                    series.LastEpisodeTorrentLinkMP4 = feedItem.Link;
                     break;
                 case Quality.SD:
-                    serial.LastEpisodeTorrentLinkSD = feedItem.Link;
+                    series.LastEpisodeTorrentLinkSD = feedItem.Link;
                     break;
             }
 
-            return serial;
+            return series;
         }
 
         private void Merge(Series to, Series from)
@@ -177,10 +177,10 @@ namespace LostFilmMonitoring.BLL
 
         private async Task PrepareUserFeeds(FeedItemResponse item)
         {
-            var serial = item.GetSerialName();
+            var seriesName = item.GetSeriesName();
             var quality = item.GetQuality();
-            var subscriptions = await this.subscriptionDAO.LoadAsync(serial, quality);
-            this.logger.Info($"{subscriptions.Count()} subscriptions should be updated for serial '{serial}' with quality '{quality}'");
+            var subscriptions = await this.subscriptionDAO.LoadAsync(seriesName, quality);
+            this.logger.Info($"{subscriptions.Count()} subscriptions should be updated for series '{seriesName}' with quality '{quality}'");
             foreach (var subscription in subscriptions)
             {
                 var torrentId = item.GetTorrentId();

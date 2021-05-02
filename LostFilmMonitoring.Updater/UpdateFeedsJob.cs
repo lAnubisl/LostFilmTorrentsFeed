@@ -23,11 +23,7 @@
 
 namespace LostFilmMonitoring.Updater
 {
-    using System;
     using System.Threading.Tasks;
-    using LostFilmMonitoring.BLL;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
     using Quartz;
 
     /// <summary>
@@ -40,38 +36,9 @@ namespace LostFilmMonitoring.Updater
         /// </summary>
         /// <param name="context">IJobExecutionContext.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task Execute(IJobExecutionContext context)
+        public Task Execute(IJobExecutionContext context)
         {
-            ConfigureLogger();
-            var logger = new Logger(nameof(UpdateFeedsJob));
-            try
-            {
-                var feedService = new RssFeedUpdaterService(logger);
-                var userDao = new UserDAO(Configuration.GetConnectionString());
-                var feedDao = new FeedDAO(Configuration.GetConnectionString());
-                var deletedUserIds = await userDao.DeleteOldUsersAsync();
-                foreach (var userId in deletedUserIds)
-                {
-                    await feedDao.DeleteAsync(userId);
-                }
-
-                await feedService.UpdateAsync();
-            }
-            catch (Exception ex)
-            {
-                logger.Log(ex);
-                if (ex.InnerException != null)
-                {
-                    logger.Log(ex.InnerException);
-                }
-            }
-        }
-
-        private static void ConfigureLogger()
-        {
-            var minLogLevel = "Debug";
-            var maxLogLevel = "Fatal";
-            LoggerConfiguration.ConfigureLogger(minLogLevel, maxLogLevel);
+            return UpdateFeedsJobRunner.RunAsync();
         }
     }
 }

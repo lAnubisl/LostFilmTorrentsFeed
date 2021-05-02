@@ -435,54 +435,26 @@
         </member>
         <member name="T:LostFilmMonitoring.DAO.Migrations.Init">
             <summary>
-            Migration.
+            Initial migration definition.
             </summary>
         </member>
         <member name="M:LostFilmMonitoring.DAO.Migrations.Init.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <summary>
-            Up migration.
+            Forward migration.
             </summary>
             <param name="migrationBuilder">MigrationBuilder.</param>
         </member>
         <member name="M:LostFilmMonitoring.DAO.Migrations.Init.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
             <summary>
-            Down migration.
+            Backward migration.
             </summary>
             <param name="migrationBuilder">MigrationBuilder.</param>
         </member>
-        <member name="T:LostFilmMonitoring.DAO.Migrations.movefeedsindb">
+        <member name="M:LostFilmMonitoring.DAO.Migrations.Init.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <summary>
-            Migration.
+            BuildTargetModel.
             </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.DAO.Migrations.movefeedsindb.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <summary>
-            Up migration.
-            </summary>
-            <param name="migrationBuilder">MigrationBuilder.</param>
-        </member>
-        <member name="M:LostFilmMonitoring.DAO.Migrations.movefeedsindb.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <summary>
-            Down migration.
-            </summary>
-            <param name="migrationBuilder">MigrationBuilder.</param>
-        </member>
-        <member name="T:LostFilmMonitoring.DAO.Migrations.Refactoring">
-            <summary>
-            Refactoring.
-            </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.DAO.Migrations.Refactoring.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <summary>
-            Up migration.
-            </summary>
-            <param name="migrationBuilder">MigrationBuilder.</param>
-        </member>
-        <member name="M:LostFilmMonitoring.DAO.Migrations.Refactoring.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <summary>
-            Down migration.
-            </summary>
-            <param name="migrationBuilder">MigrationBuilder.</param>
+            <param name="modelBuilder">ModelBuilder.</param>
         </member>
     </members>
 </doc>

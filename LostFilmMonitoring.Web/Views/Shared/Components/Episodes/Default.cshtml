@@ -5,10 +5,10 @@
     @foreach (var item in Model.Items)
     {
         <div class="col-md-2">
-            <div class="serial @(item.Selected ? "serial-selected" : "")" onclick="check(this)">
+            <div class="series @(item.Selected ? "series-selected" : "")" onclick="check(this)">
                 <input type="hidden" name="@item.Name" value="@item.Selected" />
-                <div class="serial-header"><div>@item.Title</div></div>
-                <img src="~/images/serials/@($"{item.Escaped}.jpg")" />
+                <div class="series-header"><div>@item.Title</div></div>
+                <img src="~/images/series/@($"{item.Escaped}.jpg")" />
                 <div style="padding-top: 5px;">
                     <a target="_blank" onclick="window.event.stopPropagation();" href="https://www.google.by/search?q=Сериал @item.Title трейлер">Смотреть трейлер</a><br />
                     @Html.DropDownList(

@@ -267,15 +267,15 @@ namespace LostFilmTV.Client
             }
         }
 
-        private static string Filtered(string serial)
+        private static string Filtered(string series)
         {
-            var index = serial.IndexOf('(');
+            var index = series.IndexOf('(');
             if (index > 0)
             {
-                return serial.Substring(0, index).Trim();
+                return series.Substring(0, index).Trim();
             }
 
-            return serial;
+            return series;
         }
     }
 }

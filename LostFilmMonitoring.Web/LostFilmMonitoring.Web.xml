@@ -116,9 +116,9 @@
             ImagesController.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.Web.Controllers.ImagesController.Serials(System.String)">
+        <member name="M:LostFilmMonitoring.Web.Controllers.ImagesController.Series(System.String)">
             <summary>
-            Serials.
+            Series.
             </summary>
             <param name="fileName">fileName.</param>
             <returns>ActionResult.</returns>

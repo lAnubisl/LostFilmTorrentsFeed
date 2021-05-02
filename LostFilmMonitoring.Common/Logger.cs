@@ -30,7 +30,7 @@ namespace LostFilmMonitoring.Common
     /// </summary>
     public class Logger : ILogger
     {
-        private readonly NLog.Logger logger;
+        private readonly string scope;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Logger"/> class.
@@ -38,7 +38,7 @@ namespace LostFilmMonitoring.Common
         /// <param name="name">Scope name.</param>
         public Logger(string name)
         {
-            this.logger = NLog.LogManager.GetLogger(name);
+            this.scope = name;
         }
 
         /// <inheritdoc/>
@@ -50,37 +50,37 @@ namespace LostFilmMonitoring.Common
         /// <inheritdoc/>
         public void Debug(string message)
         {
-            this.logger.Debug(message);
+            Console.WriteLine($"DEBUG|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Error(string message)
         {
-            this.logger.Error(message);
+            Console.Error.WriteLine($"ERROR|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Fatal(string message)
         {
-            this.logger.Fatal(message);
+            Console.Error.WriteLine($"FATAL|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Info(string message)
         {
-            this.logger.Info(message);
+            Console.WriteLine($"INFO|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Log(Exception ex)
         {
-            this.logger.Error(ex.GetType() + Environment.NewLine + ex.Message + Environment.NewLine + ex.StackTrace);
+            this.Fatal(ex.GetType() + Environment.NewLine + ex.Message + Environment.NewLine + ex.StackTrace);
         }
 
         /// <inheritdoc/>
         public void Warning(string message)
         {
-            this.logger.Warn(message);
+            Console.WriteLine($"WARNING|{this.scope}|{message}");
         }
     }
 }

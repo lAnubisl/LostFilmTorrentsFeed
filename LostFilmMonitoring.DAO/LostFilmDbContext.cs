@@ -89,7 +89,7 @@ namespace LostFilmMonitoring.DAO
                 .ToTable("Feeds")
                 .HasKey(f => f.UserId);
             modelBuilder.Entity<Series>()
-                .ToTable("Serials")
+                .ToTable("Series")
                 .HasKey(s => s.Name);
             modelBuilder.Entity<Subscription>()
                 .ToTable("Subscriptions")
