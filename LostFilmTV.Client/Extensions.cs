@@ -25,6 +25,8 @@ namespace LostFilmTV.Client
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Web;
     using System.Xml.Linq;
     using LostFilmTV.Client.Response;
 
@@ -40,12 +42,12 @@ namespace LostFilmTV.Client
         /// <returns>XDocument.</returns>
         public static XDocument Parse(string rssString)
         {
-            // string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
-            // string result = Regex.Replace(rssString, pattern, m =>
-            //             m.Groups["start"].Value +
-            //             HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
-            //             m.Groups["end"].Value);
-            return XDocument.Parse(rssString);
+            string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
+            string result = Regex.Replace(rssString, pattern, m =>
+                        m.Groups["start"].Value +
+                        HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
+                        m.Groups["end"].Value);
+            return XDocument.Parse(result);
         }
 
         /// <summary>
