@@ -180,6 +180,17 @@ namespace LostFilmTV.Client
         /// <returns>Cover image stream.</returns>
         public async Task<Stream> DownloadSeriesCoverAsync(string seriesName)
         {
+            var cover = await this.DownloadSeriesCoverFromJsonAsync(seriesName);
+            if (cover == null)
+            {
+                cover = await this.DownloadSeriesCoverFromSearchAsync(seriesName);
+            }
+
+            return cover;
+        }
+
+        private async Task<Stream> DownloadSeriesCoverFromSearchAsync(string seriesName)
+        {
             var seriesSearchPageUri = $"{BaseUrl}/search/?q={Uri.EscapeUriString(Filtered(seriesName))}";
             var seriesSearchPage = await Execute(new HttpRequestMessage(HttpMethod.Get, seriesSearchPageUri));
             var match = Regex.Match(seriesSearchPage, "<a href=\"/series/([^\"]+)\"");
@@ -201,6 +212,47 @@ namespace LostFilmTV.Client
             using (var httpClient = new HttpClient())
             {
                 var imageRequest = new HttpRequestMessage(HttpMethod.Get, "https:" + match.Value);
+                var imageResponse = await httpClient.SendAsync(imageRequest);
+                return await imageResponse.Content.ReadAsStreamAsync();
+            }
+        }
+
+        private async Task<Stream> DownloadSeriesCoverFromJsonAsync(string seriesName)
+        {
+            // Extract original title from text formatted like: "Локализованное название (Original title)"
+            // because ajax search don't like both titles in query.
+            var match = Regex.Match(seriesName, "(.+?) \\((.+?)\\)");
+            if (!match.Success)
+            {
+                this.logger.Error($"Cannot find original title in '{seriesName}'");
+                return null;
+            }
+
+            var originalTitle = match.Groups[2].Value;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/ajaxik.php")
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>()
+                {
+                    { "act", "common" },
+                    { "type", "search" },
+                    { "val", originalTitle },
+                    { "session", "undefined" },
+                }),
+            };
+            var responseJson = await Execute(request);
+            var result = JsonConvert.DeserializeObject<SearchResponse>(responseJson);
+            var icon = result?.Data?.Series.FirstOrDefault(x => x.OriginalTitle == originalTitle)?.Icon;
+            if (icon == null)
+            {
+                this.logger.Error($"Cannot find data for series '{seriesName}'. The response is: '{responseJson}'");
+                return null;
+            }
+
+            var poster = $"https:{icon.Replace("icon.jpg", "t_shmoster_s1.jpg")}";
+            using (var httpClient = new HttpClient())
+            {
+                var imageRequest = new HttpRequestMessage(HttpMethod.Get, poster);
                 var imageResponse = await httpClient.SendAsync(imageRequest);
                 return await imageResponse.Content.ReadAsStreamAsync();
             }
