@@ -58,7 +58,6 @@ namespace LostFilmTV.Client.Tests
             try
             {
                 var items = Extensions.Parse(brokenXML);
-                Assert.Pass();
             }
             catch (Exception)
             {
