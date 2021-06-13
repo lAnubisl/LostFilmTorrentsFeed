@@ -85,18 +85,6 @@ namespace LostFilmMonitoring.BLL
         /// <returns>Base url where website is hosted.</returns>
         public static string GetBaseUrl() => baseUrlValue;
 
-        private static string ReadEnvironmentVariable(string key)
-        {
-            var value = Environment.GetEnvironmentVariable(key);
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new InvalidOperationException($"Environment variable '{key}' is missing.");
-            }
-
-            Environment.SetEnvironmentVariable(key, null);
-            return value;
-        }
-
         private static void EnsureDirectoryExists(string path)
         {
             var directory = new DirectoryInfo(path);

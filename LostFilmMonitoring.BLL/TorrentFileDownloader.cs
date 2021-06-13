@@ -33,7 +33,7 @@ namespace LostFilmMonitoring.BLL
     /// <summary>
     /// TorrentFileDownloader.
     /// </summary>
-    internal sealed class TorrentFileDownloader
+    public sealed class TorrentFileDownloader
     {
         private readonly TorrentFileDAO torrentFileDAO;
         private readonly Client client;
@@ -44,10 +44,11 @@ namespace LostFilmMonitoring.BLL
         /// </summary>
         /// <param name="torrentFileDAO">TorrentFileDAO.</param>
         /// <param name="logger">Logger.</param>
-        internal TorrentFileDownloader(TorrentFileDAO torrentFileDAO, ILogger logger)
+        /// <param name="client">Client.</param>
+        public TorrentFileDownloader(TorrentFileDAO torrentFileDAO, ILogger logger, Client client)
         {
             this.logger = logger != null ? logger.CreateScope(nameof(TorrentFileDownloader)) : throw new ArgumentNullException(nameof(logger));
-            this.client = new Client(logger);
+            this.client = client ?? throw new ArgumentNullException(nameof(client));
             this.torrentFileDAO = torrentFileDAO ?? throw new ArgumentNullException(nameof(torrentFileDAO));
         }
 

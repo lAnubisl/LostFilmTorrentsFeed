@@ -23,6 +23,7 @@
 
 namespace LostFilmMonitoring.BLL
 {
+    using System;
     using System.IO;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
@@ -35,15 +36,18 @@ namespace LostFilmMonitoring.BLL
     {
         private readonly string seriesCoverDirectoryPath;
         private readonly Client lostFileClient;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SeriesCoverService"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public SeriesCoverService(ILogger logger)
+        /// <param name="lostFileClient">Client.</param>
+        public SeriesCoverService(ILogger logger, Client lostFileClient)
         {
             this.seriesCoverDirectoryPath = Configuration.GetImagesPath();
-            this.lostFileClient = new Client(logger);
+            this.logger = logger == null ? throw new ArgumentNullException(nameof(logger)) : logger.CreateScope(nameof(SeriesCoverService));
+            this.lostFileClient = lostFileClient ?? throw new ArgumentNullException(nameof(lostFileClient));
         }
 
         /// <summary>
@@ -53,6 +57,7 @@ namespace LostFilmMonitoring.BLL
         /// <returns>Awaitable task.</returns>
         public async Task EnsureCoverDownloadedAsync(string seriesName)
         {
+            this.logger.Info($"Call: {nameof(this.EnsureCoverDownloadedAsync)}('{seriesName}')");
             var coverPath = Path.Combine(this.seriesCoverDirectoryPath, seriesName.EscapePath() + ".jpg");
             if (File.Exists(coverPath))
             {

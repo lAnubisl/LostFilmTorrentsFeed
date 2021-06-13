@@ -36,6 +36,8 @@ namespace LostFilmMonitoring.Updater
     /// </summary>
     public static class UpdateFeedsJobRunner
     {
+        private static IServiceProvider sp;
+
         /// <summary>
         /// Run.
         /// </summary>
@@ -45,9 +47,9 @@ namespace LostFilmMonitoring.Updater
             var logger = new Logger(nameof(UpdateFeedsJob));
             try
             {
-                var feedService = new RssFeedUpdaterService(logger);
-                var userDao = new UserDAO(Configuration.GetConnectionString());
-                var feedDao = new FeedDAO(Configuration.GetConnectionString());
+                var feedService = (RssFeedUpdaterService)sp.GetService(typeof(RssFeedUpdaterService));
+                var userDao = (UserDAO)sp.GetService(typeof(UserDAO));
+                var feedDao = (FeedDAO)sp.GetService(typeof(FeedDAO));
                 var deletedUserIds = await userDao.DeleteOldUsersAsync();
                 foreach (var userId in deletedUserIds)
                 {
@@ -69,8 +71,10 @@ namespace LostFilmMonitoring.Updater
         /// <summary>
         /// Schedules recurring synchronization with LostFilm.tv.
         /// </summary>
-        public static void Schedule()
+        /// <param name="serviceProvider">IServiceProvider.</param>
+        public static void Schedule(IServiceProvider serviceProvider)
         {
+            sp = serviceProvider;
             var factory = new StdSchedulerFactory();
             var scheduler = factory.GetScheduler().Result;
             scheduler.Start().Wait();

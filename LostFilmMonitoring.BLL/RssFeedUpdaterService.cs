@@ -49,15 +49,19 @@ namespace LostFilmMonitoring.BLL
         /// Initializes a new instance of the <see cref="RssFeedUpdaterService"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public RssFeedUpdaterService(ILogger logger)
+        /// <param name="reteOrgRssFeed">ReteOrgRssFeed.</param>
+        /// <param name="feedDAO">FeedDAO.</param>
+        /// <param name="seriesDAO">SeriesDAO.</param>
+        /// <param name="subscriptionDAO">SubscriptionDAO.</param>
+        /// <param name="seriesCoverService">SeriesCoverService.</param>
+        public RssFeedUpdaterService(ILogger logger, ReteOrgRssFeed reteOrgRssFeed, FeedDAO feedDAO, SeriesDAO seriesDAO, SubscriptionDAO subscriptionDAO, SeriesCoverService seriesCoverService)
         {
-            var connectionString = Configuration.GetConnectionString();
             this.logger = logger != null ? logger.CreateScope(nameof(RssFeedUpdaterService)) : throw new ArgumentNullException(nameof(logger));
-            this.reteOrgRssFeed = new ReteOrgRssFeed(logger);
-            this.feedDAO = new FeedDAO(connectionString);
-            this.seriesCoverService = new SeriesCoverService(logger);
-            this.seriesDAO = new SeriesDAO(connectionString);
-            this.subscriptionDAO = new SubscriptionDAO(connectionString);
+            this.reteOrgRssFeed = reteOrgRssFeed ?? throw new ArgumentNullException(nameof(reteOrgRssFeed));
+            this.feedDAO = feedDAO ?? throw new ArgumentNullException(nameof(feedDAO));
+            this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
+            this.subscriptionDAO = subscriptionDAO ?? throw new ArgumentNullException(nameof(subscriptionDAO));
+            this.seriesCoverService = seriesCoverService ?? throw new ArgumentNullException(nameof(seriesCoverService));
         }
 
         /// <summary>
