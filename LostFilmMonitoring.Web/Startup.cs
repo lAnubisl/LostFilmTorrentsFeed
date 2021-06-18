@@ -93,7 +93,6 @@ namespace LostFilmMonitoring.Web
             app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.ApplicationServices.GetService<ILogger>().Info("Application started.");
             UpdateFeedsJobRunner.Schedule(app.ApplicationServices);
-            UpdateFeedsJobRunner.RunAsync().Wait();
         }
     }
 }
