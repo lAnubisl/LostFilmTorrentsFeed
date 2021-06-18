@@ -28,65 +28,49 @@ namespace LostFilmMonitoring.Updater
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.DAO;
-    using Quartz;
-    using Quartz.Impl;
 
     /// <summary>
     /// UpdateFeedsJobRunner.
     /// </summary>
     public static class UpdateFeedsJobRunner
     {
-        private static IServiceProvider sp;
-
-        /// <summary>
-        /// Run.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task RunAsync()
-        {
-            var logger = new Logger(nameof(UpdateFeedsJob));
-            try
-            {
-                var feedService = (RssFeedUpdaterService)sp.GetService(typeof(RssFeedUpdaterService));
-                var userDao = (UserDAO)sp.GetService(typeof(UserDAO));
-                var feedDao = (FeedDAO)sp.GetService(typeof(FeedDAO));
-                var deletedUserIds = await userDao.DeleteOldUsersAsync();
-                foreach (var userId in deletedUserIds)
-                {
-                    await feedDao.DeleteAsync(userId);
-                }
-
-                await feedService.UpdateAsync();
-            }
-            catch (Exception ex)
-            {
-                logger.Log(ex);
-                if (ex.InnerException != null)
-                {
-                    logger.Log(ex.InnerException);
-                }
-            }
-        }
-
         /// <summary>
         /// Schedules recurring synchronization with LostFilm.tv.
         /// </summary>
         /// <param name="serviceProvider">IServiceProvider.</param>
         public static void Schedule(IServiceProvider serviceProvider)
         {
-            sp = serviceProvider;
-            var factory = new StdSchedulerFactory();
-            var scheduler = factory.GetScheduler().Result;
-            scheduler.Start().Wait();
-            IJobDetail jobDetail = JobBuilder.Create<UpdateFeedsJob>()
-                .WithIdentity("UpdateFeedsJob", "Jobs")
-                .Build();
-            ITrigger trigger = TriggerBuilder.Create()
-                .WithIdentity("UpdateFeedsJobTrigger", "Triggers")
-                .WithCronSchedule("0 */10 * * * ?")
-                .ForJob("UpdateFeedsJob", "Jobs")
-                .Build();
-            scheduler.ScheduleJob(jobDetail, trigger);
+            Task.Factory.StartNew(async () =>
+            {
+                var logger = (ILogger)serviceProvider.GetService(typeof(ILogger));
+                logger.CreateScope(nameof(UpdateFeedsJobRunner));
+                var feedService = (RssFeedUpdaterService)serviceProvider.GetService(typeof(RssFeedUpdaterService));
+                var userDao = (UserDAO)serviceProvider.GetService(typeof(UserDAO));
+                var feedDao = (FeedDAO)serviceProvider.GetService(typeof(FeedDAO));
+                while (true)
+                {
+                    try
+                    {
+                        var deletedUserIds = await userDao.DeleteOldUsersAsync();
+                        foreach (var userId in deletedUserIds)
+                        {
+                            await feedDao.DeleteAsync(userId);
+                        }
+
+                        await feedService.UpdateAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Log(ex);
+                        if (ex.InnerException != null)
+                        {
+                            logger.Log(ex.InnerException);
+                        }
+                    }
+
+                    await Task.Delay(TimeSpan.FromMinutes(10));
+                }
+            });
         }
     }
 }
