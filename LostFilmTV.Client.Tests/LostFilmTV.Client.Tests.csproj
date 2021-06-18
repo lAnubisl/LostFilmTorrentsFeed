@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +30,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LostFilmTV.Client\LostFilmTV.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

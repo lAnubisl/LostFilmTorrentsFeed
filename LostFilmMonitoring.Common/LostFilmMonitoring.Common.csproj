@@ -2,18 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\DEV\LostFilmTorrentsFeed\LostFilmMonitoring.Common\LostFilmMonitoring.Common.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Properties\**" />
-    <EmbeddedResource Remove="Properties\**" />
-    <None Remove="Properties\**" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
@@ -21,11 +15,17 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Sentry" Version="3.5.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>
