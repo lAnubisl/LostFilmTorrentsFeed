@@ -48,14 +48,17 @@ namespace LostFilmMonitoring.BLL
         /// </summary>
         /// <param name="currentUserProvider">CurrentUserProvider.</param>
         /// <param name="logger">Logger.</param>
-        public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger)
+        /// <param name="seriesDAO">SeriesDAO.</param>
+        /// <param name="userDAO">UserDAO.</param>
+        /// <param name="rssFeedService">RssFeedService.</param>
+        /// <param name="subscriptionDAO">SubscriptionDAO.</param>
+        public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger, SeriesDAO seriesDAO, UserDAO userDAO, RssFeedService rssFeedService, SubscriptionDAO subscriptionDAO)
         {
-            var connectionString = Configuration.GetConnectionString();
-            this.seriesDAO = new SeriesDAO(connectionString);
-            this.userDAO = new UserDAO(connectionString);
-            this.feedService = new RssFeedService(currentUserProvider, logger);
-            this.subscriptionDAO = new SubscriptionDAO(connectionString);
-            this.currentUserProvider = currentUserProvider;
+            this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
+            this.userDAO = userDAO ?? throw new ArgumentNullException(nameof(userDAO));
+            this.feedService = rssFeedService ?? throw new ArgumentNullException(nameof(rssFeedService));
+            this.subscriptionDAO = subscriptionDAO ?? throw new ArgumentNullException(nameof(subscriptionDAO));
+            this.currentUserProvider = currentUserProvider ?? throw new ArgumentNullException(nameof(currentUserProvider));
             this.logger = logger.CreateScope(nameof(PresentationService));
         }
 

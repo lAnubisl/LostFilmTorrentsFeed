@@ -31,11 +31,10 @@ namespace LostFilmMonitoring.Web
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Sentry.AspNetCore;
 
     /// <summary>
     /// Startup.
@@ -43,7 +42,6 @@ namespace LostFilmMonitoring.Web
     public class Startup
     {
         private static IConfiguration configuration;
-        private static ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
@@ -55,24 +53,14 @@ namespace LostFilmMonitoring.Web
         }
 
         /// <summary>
-        /// Gets Configuration.
-        /// </summary>
-        public static IConfiguration Configuration => configuration;
-
-        /// <summary>
         /// ConfigureServices.
         /// </summary>
         /// <param name="services">IServiceCollection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            logger = new Logger("Root");
-            services.AddTransient<PresentationService>();
-            services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<ILogger>(logger);
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                .AddMvcOptions(o => { o.EnableEndpointRouting = false; });
+            services.AddServices();
+            services.AddControllersWithViews();
+            services.AddHttpClient();
         }
 
         /// <summary>
@@ -82,7 +70,7 @@ namespace LostFilmMonitoring.Web
         /// <param name="env">IWebHostEnvironment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            BLL.Configuration.Init(
+            Configuration.Init(
                 Environment.GetEnvironmentVariable("BASEPATH") ?? env.ContentRootPath,
                 Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000",
                 Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not set."));
@@ -91,7 +79,7 @@ namespace LostFilmMonitoring.Web
                 ExceptionHandler = (ctx) =>
                 {
                     var feature = ctx.Features.Get<IExceptionHandlerFeature>();
-                    logger.Log(feature.Error);
+                    app.ApplicationServices.GetService<ILogger>().Log(feature.Error);
                     return Task.FromResult(0);
                 },
             });
@@ -100,9 +88,11 @@ namespace LostFilmMonitoring.Web
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
             });
             app.UseStaticFiles();
-            app.UseMvc();
-            logger.Info("Application started.");
-            UpdateFeedsJobRunner.RunAsync().Wait();
+            app.UseRouting();
+            app.UseSentryTracing();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.ApplicationServices.GetService<ILogger>().Info("Application started.");
+            UpdateFeedsJobRunner.Schedule(app.ApplicationServices);
         }
     }
 }

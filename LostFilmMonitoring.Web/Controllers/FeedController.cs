@@ -27,7 +27,6 @@ namespace LostFilmMonitoring.Web.Controllers
     using System.Text;
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
-    using LostFilmMonitoring.Common;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -40,11 +39,10 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedController"/> class.
         /// </summary>
-        /// <param name="currentUserProvider">currentUserProvider.</param>
-        /// <param name="logger">logger.</param>
-        public FeedController(ICurrentUserProvider currentUserProvider, ILogger logger)
+        /// <param name="rssFeedService">RssFeedService.</param>
+        public FeedController(RssFeedService rssFeedService)
         {
-            this.feedService = new RssFeedService(currentUserProvider, logger);
+            this.feedService = rssFeedService ?? throw new ArgumentNullException(nameof(rssFeedService));
         }
 
         /// <summary>

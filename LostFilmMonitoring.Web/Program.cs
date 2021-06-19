@@ -23,33 +23,42 @@
 
 namespace LostFilmMonitoring.Web
 {
-    using LostFilmMonitoring.Updater;
-    using Microsoft.AspNetCore;
+    using System;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
+    using Sentry.AspNetCore;
 
     /// <summary>
     /// Program.
     /// </summary>
     public class Program
     {
+        private static readonly Action<SentryAspNetCoreOptions> ConfigureSentry = sentryBuilder =>
+        {
+            sentryBuilder.BeforeSend = @event =>
+            {
+                // Never report server names
+                return @event;
+            };
+            sentryBuilder.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
+            sentryBuilder.Debug = true;
+            sentryBuilder.TracesSampleRate = 1;
+        };
+
         /// <summary>
         /// Main.
         /// </summary>
         /// <param name="args">args.</param>
         public static void Main(string[] args)
         {
-            UpdateFeedsJobRunner.Schedule();
-            BuildWebHost(args).Run();
-        }
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);
+            hostBuilder.ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseSentry(ConfigureSentry);
+            });
 
-        /// <summary>
-        /// BuildWebHost.
-        /// </summary>
-        /// <param name="args">args.</param>
-        /// <returns>IWebHost.</returns>
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+            hostBuilder.Build().Run();
+        }
     }
 }

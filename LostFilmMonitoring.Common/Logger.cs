@@ -24,6 +24,7 @@
 namespace LostFilmMonitoring.Common
 {
     using System;
+    using Sentry;
 
     /// <summary>
     /// Logger implementation.
@@ -50,24 +51,40 @@ namespace LostFilmMonitoring.Common
         /// <inheritdoc/>
         public void Debug(string message)
         {
+            SentrySdk.AddBreadcrumb(
+                message: message,
+                category: this.scope,
+                level: BreadcrumbLevel.Debug);
             Console.WriteLine($"DEBUG|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Error(string message)
         {
+            SentrySdk.AddBreadcrumb(
+                message: message,
+                category: this.scope,
+                level: BreadcrumbLevel.Error);
             Console.Error.WriteLine($"ERROR|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Fatal(string message)
         {
+            SentrySdk.AddBreadcrumb(
+                message: message,
+                category: this.scope,
+                level: BreadcrumbLevel.Critical);
             Console.Error.WriteLine($"FATAL|{this.scope}|{message}");
         }
 
         /// <inheritdoc/>
         public void Info(string message)
         {
+            SentrySdk.AddBreadcrumb(
+                message: message,
+                category: this.scope,
+                level: BreadcrumbLevel.Info);
             Console.WriteLine($"INFO|{this.scope}|{message}");
         }
 
@@ -80,6 +97,10 @@ namespace LostFilmMonitoring.Common
         /// <inheritdoc/>
         public void Warning(string message)
         {
+            SentrySdk.AddBreadcrumb(
+                message: message,
+                category: this.scope,
+                level: BreadcrumbLevel.Warning);
             Console.WriteLine($"WARNING|{this.scope}|{message}");
         }
     }

@@ -2,23 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>C:\DEV\LostFilmTorrentsFeed\LostFilmMonitoring.DAO\LostFilmMonitoring.DAO.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Properties\**" />
-    <EmbeddedResource Remove="Properties\**" />
-    <None Remove="Properties\**" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
@@ -35,6 +32,10 @@
   <ItemGroup>
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
     <ProjectReference Include="..\LostFilmTV.Client\LostFilmTV.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

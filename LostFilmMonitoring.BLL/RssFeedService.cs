@@ -43,19 +43,31 @@ namespace LostFilmMonitoring.BLL
         private readonly SeriesDAO seriesDAO;
         private readonly TorrentFileDownloader torrentFileDownloader;
         private readonly ICurrentUserProvider currentUserProvider;
+        private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RssFeedService"/> class.
         /// </summary>
         /// <param name="currentUserProvider">CurrentUserProvider.</param>
         /// <param name="logger">Logger.</param>
-        public RssFeedService(ICurrentUserProvider currentUserProvider, ILogger logger)
+        /// <param name="torrentFileDownloader">TorrentFileDownloader.</param>
+        /// <param name="userDAO">UserDAO.</param>
+        /// <param name="feedDAO">FeedDAO.</param>
+        /// <param name="seriesDAO">SeriesDAO.</param>
+        public RssFeedService(
+            ICurrentUserProvider currentUserProvider,
+            ILogger logger,
+            TorrentFileDownloader torrentFileDownloader,
+            UserDAO userDAO,
+            FeedDAO feedDAO,
+            SeriesDAO seriesDAO)
         {
-            this.seriesDAO = new SeriesDAO(Configuration.GetConnectionString());
-            this.feedDAO = new FeedDAO(Configuration.GetConnectionString());
-            this.userDAO = new UserDAO(Configuration.GetConnectionString());
-            this.currentUserProvider = currentUserProvider;
-            this.torrentFileDownloader = new TorrentFileDownloader(new TorrentFileDAO(Configuration.GetTorrentPath(), logger), logger);
+            this.logger = logger == null ? throw new ArgumentNullException(nameof(logger)) : logger.CreateScope(nameof(RssFeedService));
+            this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
+            this.feedDAO = feedDAO ?? throw new ArgumentNullException(nameof(feedDAO));
+            this.userDAO = userDAO ?? throw new ArgumentNullException(nameof(userDAO));
+            this.currentUserProvider = currentUserProvider ?? throw new ArgumentNullException(nameof(currentUserProvider));
+            this.torrentFileDownloader = torrentFileDownloader ?? throw new ArgumentNullException(nameof(torrentFileDownloader));
         }
 
         /// <summary>
@@ -65,6 +77,7 @@ namespace LostFilmMonitoring.BLL
         /// <returns>RSS feed content.</returns>
         public async Task<string> GetRss(Guid userId)
         {
+            this.logger.Info($"Call: {nameof(this.GetRss)}('{userId}')");
             if (!await this.userDAO.UpdateLastActivity(userId))
             {
                 return null;
@@ -80,6 +93,7 @@ namespace LostFilmMonitoring.BLL
         /// <returns>Awaitable task.</returns>
         public async Task UpdateUserSubscrptionAsync(SelectedFeedItem[] selectedItems)
         {
+            this.logger.Info($"Call: {nameof(this.UpdateUserSubscrptionAsync)}(SelectedFeedItem[])");
             if (selectedItems == null)
             {
                 return;
@@ -136,6 +150,7 @@ namespace LostFilmMonitoring.BLL
         /// <returns>FeedViewModel.</returns>
         public async Task<FeedViewModel> GetFeedViewModel()
         {
+            this.logger.Info($"Call: {nameof(this.GetFeedViewModel)}()");
             var userId = this.currentUserProvider.GetCurrentUserId();
             if (!await this.userDAO.UpdateLastActivity(userId))
             {
@@ -154,6 +169,7 @@ namespace LostFilmMonitoring.BLL
         /// <returns>RssItemViewModel.</returns>
         public async Task<RssItemViewModel> GetRssItem(Guid userId, int torrentFileId)
         {
+            this.logger.Info($"Call: {nameof(this.GetRssItem)}('{userId}', '{torrentFileId}')");
             var user = await this.userDAO.LoadAsync(userId);
             if (user == null)
             {
