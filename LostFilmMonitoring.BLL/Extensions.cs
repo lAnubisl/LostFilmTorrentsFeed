@@ -51,12 +51,13 @@ namespace LostFilmMonitoring.BLL
         /// <summary>
         /// Generates torrent link for user's feed.
         /// </summary>
+        /// <param name="baseUrl">Base website URL.</param>
         /// <param name="userId">User Id.</param>
         /// <param name="torrentId">Torrent Id.</param>
         /// <returns>Torrent link.</returns>
-        internal static string GenerateTorrentLink(Guid userId, string torrentId)
+        internal static string GenerateTorrentLink(string baseUrl, Guid userId, string torrentId)
         {
-            return $"{Configuration.GetBaseUrl()}/Rss/{userId}/{torrentId}";
+            return $"{baseUrl}/Rss/{userId}/{torrentId}";
         }
     }
 }

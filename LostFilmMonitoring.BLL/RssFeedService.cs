@@ -44,6 +44,7 @@ namespace LostFilmMonitoring.BLL
         private readonly TorrentFileDownloader torrentFileDownloader;
         private readonly ICurrentUserProvider currentUserProvider;
         private readonly ILogger logger;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RssFeedService"/> class.
@@ -54,13 +55,15 @@ namespace LostFilmMonitoring.BLL
         /// <param name="userDAO">UserDAO.</param>
         /// <param name="feedDAO">FeedDAO.</param>
         /// <param name="seriesDAO">SeriesDAO.</param>
+        /// <param name="configuration">IConfiguration.</param>
         public RssFeedService(
             ICurrentUserProvider currentUserProvider,
             ILogger logger,
             TorrentFileDownloader torrentFileDownloader,
             UserDAO userDAO,
             FeedDAO feedDAO,
-            SeriesDAO seriesDAO)
+            SeriesDAO seriesDAO,
+            IConfiguration configuration)
         {
             this.logger = logger == null ? throw new ArgumentNullException(nameof(logger)) : logger.CreateScope(nameof(RssFeedService));
             this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
@@ -68,6 +71,7 @@ namespace LostFilmMonitoring.BLL
             this.userDAO = userDAO ?? throw new ArgumentNullException(nameof(userDAO));
             this.currentUserProvider = currentUserProvider ?? throw new ArgumentNullException(nameof(currentUserProvider));
             this.torrentFileDownloader = torrentFileDownloader ?? throw new ArgumentNullException(nameof(torrentFileDownloader));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -133,7 +137,7 @@ namespace LostFilmMonitoring.BLL
 
                 var newFeedItem = new FeedItem()
                 {
-                    Link = Extensions.GenerateTorrentLink(userId, torrentId),
+                    Link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, userId, torrentId),
                     Title = series.LastEpisodeName,
                     PublishDateParsed = DateTime.UtcNow,
                 };

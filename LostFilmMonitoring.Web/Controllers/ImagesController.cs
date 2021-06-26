@@ -25,7 +25,7 @@ namespace LostFilmMonitoring.Web.Controllers
 {
     using System;
     using System.IO;
-    using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.Common;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -33,6 +33,17 @@ namespace LostFilmMonitoring.Web.Controllers
     /// </summary>
     public class ImagesController : Controller
     {
+        private readonly IConfiguration configuration;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImagesController"/> class.
+        /// </summary>
+        /// <param name="configuration">IConfiguration.</param>
+        public ImagesController(IConfiguration configuration)
+        {
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
         /// <summary>
         /// Series.
         /// </summary>
@@ -44,7 +55,7 @@ namespace LostFilmMonitoring.Web.Controllers
             Stream stream;
             try
             {
-                stream = System.IO.File.OpenRead(Path.Combine(Configuration.GetImagesPath(), fileName));
+                stream = System.IO.File.OpenRead(Path.Combine(this.configuration.ImagesPath, fileName));
             }
             catch (Exception)
             {

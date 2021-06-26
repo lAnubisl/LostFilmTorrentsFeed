@@ -24,66 +24,72 @@
 namespace LostFilmMonitoring.BLL
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using LostFilmMonitoring.Common;
 
-    /// <summary>
-    /// Configuration.
-    /// </summary>
-    public static class Configuration
+    /// <inheritdoc/>
+    public class Configuration : IConfiguration
     {
-        private static string connectionString;
-        private static string imagesPath;
-        private static string torrentsPath;
-        private static string baseFeedCookieValue;
-        private static string baseUrlValue;
+        private string[] torrentAnnounceListPatterns;
 
-        /// <summary>
-        /// Initializes configuration.
-        /// </summary>
-        /// <param name="basePath">Base path.</param>
-        /// <param name="baseUrl">Base Url.</param>
-        /// <param name="baseFeedCookie">Base feed Cookie.</param>
-        public static void Init(string basePath, string baseUrl, string baseFeedCookie)
+        /// <inheritdoc/>
+        public string BaseFeedCookie { get; private set; }
+
+        /// <inheritdoc/>
+        public string ConnectionString { get; private set; }
+
+        /// <inheritdoc/>
+        public string ImagesPath { get; private set; }
+
+        /// <inheritdoc/>
+        public string TorrentPath { get; private set; }
+
+        /// <inheritdoc/>
+        public string BaseUrl { get; private set; }
+
+        /// <inheritdoc/>
+        public string BaseLinkUID { get; private set; }
+
+        /// <inheritdoc/>
+        public IList<IList<string>> GetTorrentAnnounceList(string link_uid)
         {
-            baseFeedCookieValue = baseFeedCookie;
-            imagesPath = Path.Combine(basePath, "data", "images");
-            baseUrlValue = baseUrl;
-            EnsureDirectoryExists(imagesPath);
-            torrentsPath = Path.Combine(basePath, "data", "torrents");
-            EnsureDirectoryExists(torrentsPath);
-            var dbpath = Path.Combine(basePath, "data", "lostfilmtorrentfeed.db");
-            connectionString = $"Data Source = {dbpath}";
+            return this.torrentAnnounceListPatterns
+                .Select(p => string.Format(p, link_uid ?? this.BaseLinkUID))
+                .Select(s => new List<string> { s } as IList<string>)
+                .ToList();
         }
 
         /// <summary>
-        /// Get BaseFeedCookie.
+        /// Initializes the configuration.
         /// </summary>
-        /// <returns>BaseFeedCookie.</returns>
-        public static string BaseFeedCookie() => baseFeedCookieValue;
+        /// <param name="contentRootPath">contentRootPath.</param>
+        public void Init(string contentRootPath)
+        {
+            var basePath = Environment.GetEnvironmentVariable("BASEPATH") ?? contentRootPath;
+            var baseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000";
+            var baseFeedCookie = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not set.");
+            this.BaseLinkUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not set.");
+            this.torrentAnnounceListPatterns = Environment.GetEnvironmentVariable("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ??
+                new[]
+                {
+                    "http://bt.tracktor.in/tracker.php/{0}/announce",
+                    "http://bt99.tracktor.in/tracker.php/{0}/announce",
+                    "http://bt0.tracktor.in/tracker.php/{0}/announce",
+                    "http://user5.newtrack.info/tracker.php/{0}/announce",
+                    "http://user1.newtrack.info/tracker.php/{0}/announce",
+                };
 
-        /// <summary>
-        /// Get database connection string.
-        /// </summary>
-        /// <returns>Database connection string.</returns>
-        public static string GetConnectionString() => connectionString;
-
-        /// <summary>
-        /// Get physical path where series covers are stored.
-        /// </summary>
-        /// <returns>Physical path where series covers are stored.</returns>
-        public static string GetImagesPath() => imagesPath;
-
-        /// <summary>
-        /// Get physical path where torrent files are stored.
-        /// </summary>
-        /// <returns>Physical path where torrent files are stored.</returns>
-        public static string GetTorrentPath() => torrentsPath;
-
-        /// <summary>
-        /// Get base url where website is hosted.
-        /// </summary>
-        /// <returns>Base url where website is hosted.</returns>
-        public static string GetBaseUrl() => baseUrlValue;
+            this.BaseFeedCookie = baseFeedCookie;
+            this.ImagesPath = Path.Combine(basePath, "data", "images");
+            this.BaseUrl = baseUrl;
+            EnsureDirectoryExists(this.ImagesPath);
+            this.TorrentPath = Path.Combine(basePath, "data", "torrents");
+            EnsureDirectoryExists(this.TorrentPath);
+            var dbpath = Path.Combine(basePath, "data", "lostfilmtorrentfeed.db");
+            this.ConnectionString = $"Data Source = {dbpath}";
+        }
 
         private static void EnsureDirectoryExists(string path)
         {
