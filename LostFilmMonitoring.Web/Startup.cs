@@ -23,7 +23,6 @@
 
 namespace LostFilmMonitoring.Web
 {
-    using System;
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
@@ -32,7 +31,6 @@ namespace LostFilmMonitoring.Web
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpOverrides;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Sentry.AspNetCore;
 
@@ -41,17 +39,6 @@ namespace LostFilmMonitoring.Web
     /// </summary>
     public class Startup
     {
-        private static IConfiguration configuration;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
-        /// </summary>
-        /// <param name="configuration">IConfiguration.</param>
-        public Startup(IConfiguration configuration)
-        {
-            Startup.configuration = configuration;
-        }
-
         /// <summary>
         /// ConfigureServices.
         /// </summary>
@@ -70,10 +57,7 @@ namespace LostFilmMonitoring.Web
         /// <param name="env">IWebHostEnvironment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Configuration.Init(
-                Environment.GetEnvironmentVariable("BASEPATH") ?? env.ContentRootPath,
-                Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000",
-                Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not set."));
+            (app.ApplicationServices.GetService<IConfiguration>() as Configuration).Init(env.ContentRootPath);
             app.UseExceptionHandler(new ExceptionHandlerOptions()
             {
                 ExceptionHandler = (ctx) =>

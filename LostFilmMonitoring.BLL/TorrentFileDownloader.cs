@@ -79,7 +79,7 @@ namespace LostFilmMonitoring.BLL
 
         private async Task DownloadInternal(User user, int torrentFileId)
         {
-            var torrentFile = await this.client.DownloadTorrentFile(user.Uid, user.Usess, torrentFileId);
+            var torrentFile = await this.client.DownloadTorrentFile(user.Uid, null, user.Usess, torrentFileId);
             if (torrentFile == null)
             {
                 return;

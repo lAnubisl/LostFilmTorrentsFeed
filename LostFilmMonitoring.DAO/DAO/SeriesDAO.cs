@@ -25,6 +25,7 @@ namespace LostFilmMonitoring.DAO.DAO
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
@@ -36,9 +37,9 @@ namespace LostFilmMonitoring.DAO.DAO
         /// <summary>
         /// Initializes a new instance of the <see cref="SeriesDAO"/> class.
         /// </summary>
-        /// <param name="connectionString">Database connection string.</param>
-        public SeriesDAO(string connectionString)
-            : base(connectionString)
+        /// <param name="configuration">IConfiguration.</param>
+        public SeriesDAO(IConfiguration configuration)
+            : base(configuration.ConnectionString)
         {
         }
 

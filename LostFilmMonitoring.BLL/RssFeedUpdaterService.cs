@@ -44,6 +44,7 @@ namespace LostFilmMonitoring.BLL
         private readonly SeriesDAO seriesDAO;
         private readonly SeriesCoverService seriesCoverService;
         private readonly SubscriptionDAO subscriptionDAO;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RssFeedUpdaterService"/> class.
@@ -54,9 +55,11 @@ namespace LostFilmMonitoring.BLL
         /// <param name="seriesDAO">SeriesDAO.</param>
         /// <param name="subscriptionDAO">SubscriptionDAO.</param>
         /// <param name="seriesCoverService">SeriesCoverService.</param>
-        public RssFeedUpdaterService(ILogger logger, ReteOrgRssFeed reteOrgRssFeed, FeedDAO feedDAO, SeriesDAO seriesDAO, SubscriptionDAO subscriptionDAO, SeriesCoverService seriesCoverService)
+        /// <param name="configuration">IConfiguration.</param>
+        public RssFeedUpdaterService(ILogger logger, ReteOrgRssFeed reteOrgRssFeed, FeedDAO feedDAO, SeriesDAO seriesDAO, SubscriptionDAO subscriptionDAO, SeriesCoverService seriesCoverService, IConfiguration configuration)
         {
             this.logger = logger != null ? logger.CreateScope(nameof(RssFeedUpdaterService)) : throw new ArgumentNullException(nameof(logger));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.reteOrgRssFeed = reteOrgRssFeed ?? throw new ArgumentNullException(nameof(reteOrgRssFeed));
             this.feedDAO = feedDAO ?? throw new ArgumentNullException(nameof(feedDAO));
             this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
@@ -101,7 +104,7 @@ namespace LostFilmMonitoring.BLL
         private async Task UpdateSeriesList(IEnumerable<FeedItemResponse> feedItems)
         {
             var allSeries = await this.seriesDAO.LoadAsync();
-            var baseFeedCookie = Configuration.BaseFeedCookie();
+            var baseFeedCookie = this.configuration.BaseFeedCookie;
             foreach (var feedItem in feedItems)
             {
                 var series = this.ParseSeries(feedItem);
@@ -188,7 +191,7 @@ namespace LostFilmMonitoring.BLL
             foreach (var subscription in subscriptions)
             {
                 var torrentId = item.GetTorrentId();
-                var link = Extensions.GenerateTorrentLink(subscription.UserId, torrentId);
+                var link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, subscription.UserId, torrentId);
                 var userFeedItem = new FeedItem(item, link);
                 var userFeed = await this.feedDAO.LoadUserFeedAsync(subscription.UserId);
                 userFeed.Add(userFeedItem);

@@ -39,11 +39,11 @@ namespace LostFilmMonitoring.DAO.DAO
         /// <summary>
         /// Initializes a new instance of the <see cref="TorrentFileDAO"/> class.
         /// </summary>
-        /// <param name="torrentFilesDirectoryPath">Physical path where torrent files are stored.</param>
+        /// <param name="configuration">IConfiguration.</param>
         /// <param name="logger">Logger.</param>
-        public TorrentFileDAO(string torrentFilesDirectoryPath, ILogger logger)
+        public TorrentFileDAO(IConfiguration configuration, ILogger logger)
         {
-            this.torrentFilesDirectoryPath = torrentFilesDirectoryPath;
+            this.torrentFilesDirectoryPath = configuration.TorrentPath;
             this.logger = logger.CreateScope(nameof(TorrentFileDAO));
         }
 

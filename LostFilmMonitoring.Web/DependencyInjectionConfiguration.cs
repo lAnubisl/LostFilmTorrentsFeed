@@ -42,12 +42,13 @@ namespace LostFilmMonitoring.Web
         /// <param name="services">IServiceCollection.</param>
         internal static void AddServices(this IServiceCollection services)
         {
+            services.AddSingleton<IConfiguration, Configuration>();
             services.AddSingleton<ILogger>(new Logger("Root"));
-            services.AddSingleton(r => new TorrentFileDAO(Configuration.GetTorrentPath(), r.GetService<ILogger>()));
-            services.AddSingleton(r => new SeriesDAO(Configuration.GetConnectionString()));
-            services.AddSingleton(r => new FeedDAO(Configuration.GetConnectionString()));
-            services.AddSingleton(r => new UserDAO(Configuration.GetConnectionString()));
-            services.AddSingleton(r => new SubscriptionDAO(Configuration.GetConnectionString()));
+            services.AddSingleton<TorrentFileDAO>();
+            services.AddSingleton<SeriesDAO>();
+            services.AddSingleton<FeedDAO>();
+            services.AddSingleton<UserDAO>();
+            services.AddSingleton<SubscriptionDAO>();
             services.AddSingleton<TorrentFileDownloader>();
             services.AddSingleton<ReteOrgRssFeed>();
             services.AddSingleton<SeriesCoverService>();

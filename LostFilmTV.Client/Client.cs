@@ -44,16 +44,19 @@ namespace LostFilmTV.Client
         private const string BaseUrl = "https://www.lostfilm.tv";
         private readonly ILogger logger;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Client"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
-        public Client(ILogger logger, IHttpClientFactory httpClientFactory)
+        /// <param name="configuration">IConfiguration.</param>
+        public Client(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.logger = logger.CreateScope(nameof(Client));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -190,14 +193,15 @@ namespace LostFilmTV.Client
         /// Get torrent file for user.
         /// </summary>
         /// <param name="uid">User Id.</param>
+        /// <param name="link_uid">Torrent tracker user Id.</param>
         /// <param name="usess">User ss key.</param>
         /// <param name="torrentFileId">Torrent file Id.</param>
         /// <returns>TorrentFile object which contain file name and content stream.</returns>
-        public async Task<TorrentFileResponse> DownloadTorrentFile(string uid, string usess, int torrentFileId)
+        public async Task<TorrentFileResponse> DownloadTorrentFile(string uid, string link_uid, string usess, int torrentFileId)
         {
             var client = this.httpClientFactory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Get, $"http://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
-            request.Headers.Add("Cookie", $"uid={uid};usess={usess}");
+            request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
             HttpResponseMessage response = null;
 
             try
@@ -232,7 +236,7 @@ namespace LostFilmTV.Client
 
             fileName = fileName[0..^1];
             var stream = await response.Content.ReadAsStreamAsync();
-            return new TorrentFileResponse(fileName, stream);
+            return new TorrentFileResponse(fileName, this.FixTrackers(stream, link_uid));
         }
 
         private static string Filtered(string series)
@@ -244,6 +248,23 @@ namespace LostFilmTV.Client
             }
 
             return series;
+        }
+
+        private MemoryStream FixTrackers(Stream stream, string link_uid)
+        {
+            var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
+            var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(stream));
+            torrent.IsPrivate = false;
+            torrent.Trackers.Clear();
+            foreach (var x in this.configuration.GetTorrentAnnounceList(link_uid))
+            {
+                torrent.Trackers.Add(x);
+            }
+
+            var memoryStream = new MemoryStream();
+            torrent.EncodeTo(memoryStream);
+            memoryStream.Position = 0;
+            return memoryStream;
         }
 
         private async Task<Stream> DownloadSeriesCoverFromJsonAsync(string seriesName)

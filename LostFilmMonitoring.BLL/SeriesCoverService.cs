@@ -43,9 +43,10 @@ namespace LostFilmMonitoring.BLL
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="lostFileClient">Client.</param>
-        public SeriesCoverService(ILogger logger, Client lostFileClient)
+        /// <param name="configuration">IConfiguration.</param>
+        public SeriesCoverService(ILogger logger, Client lostFileClient, IConfiguration configuration)
         {
-            this.seriesCoverDirectoryPath = Configuration.GetImagesPath();
+            this.seriesCoverDirectoryPath = configuration.ImagesPath;
             this.logger = logger == null ? throw new ArgumentNullException(nameof(logger)) : logger.CreateScope(nameof(SeriesCoverService));
             this.lostFileClient = lostFileClient ?? throw new ArgumentNullException(nameof(lostFileClient));
         }
