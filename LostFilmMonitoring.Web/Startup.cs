@@ -24,14 +24,18 @@
 namespace LostFilmMonitoring.Web
 {
     using System.Threading.Tasks;
+    using HealthChecks.UI.Client;
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.Updater;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Sentry.AspNetCore;
 
     /// <summary>
@@ -46,6 +50,8 @@ namespace LostFilmMonitoring.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddServices();
+            services.AddHealthChecks()
+                .AddCheck<LastExceptionHealthCheck>("Last Exception");
             services.AddControllersWithViews();
             services.AddHttpClient();
         }
@@ -74,7 +80,21 @@ namespace LostFilmMonitoring.Web
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSentryTracing();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions()
+                {
+                    ResultStatusCodes =
+                    {
+                        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+                        [HealthStatus.Degraded] = StatusCodes.Status500InternalServerError,
+                        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
+                    },
+                    AllowCachingResponses = false,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                });
+            });
             app.ApplicationServices.GetService<ILogger>().Info("Application started.");
             UpdateFeedsJobRunner.Schedule(app.ApplicationServices);
         }

@@ -64,6 +64,7 @@ namespace LostFilmMonitoring.Web.Controllers
         [Route("")]
         public async Task<EmptyResult> Index(UpdateSubscriptionModel model)
         {
+            throw new Exception("Test");
             await this.presentationService.UpdateSubscriptionsAsync(model?.SelectedItems);
             return new EmptyResult();
         }

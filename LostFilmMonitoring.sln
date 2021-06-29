@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Updater", "LostFilmMonitoring.Updater\LostFilmMonitoring.Updater.csproj", "{CF84E0B4-F217-4AD0-BF74-A1F2485DB9EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmTV.Client.Tests", "LostFilmTV.Client.Tests\LostFilmTV.Client.Tests.csproj", "{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmTV.Client.Tests", "LostFilmTV.Client.Tests\LostFilmTV.Client.Tests.csproj", "{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -43,7 +43,8 @@ namespace LostFilmMonitoring.Web
         internal static void AddServices(this IServiceCollection services)
         {
             services.AddSingleton<IConfiguration, Configuration>();
-            services.AddSingleton<ILogger>(new Logger("Root"));
+            services.AddSingleton<HealthReporter>();
+            services.AddSingleton<ILogger>(provider => new Logger("ROOT", provider.GetService<HealthReporter>()));
             services.AddSingleton<TorrentFileDAO>();
             services.AddSingleton<SeriesDAO>();
             services.AddSingleton<FeedDAO>();
