@@ -1,4 +1,4 @@
-﻿// <copyright file="RegistrationModel.cs" company="Alexander Panfilenok">
+﻿// <copyright file="EditUserModel.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -24,9 +24,9 @@
 namespace LostFilmMonitoring.BLL.Models
 {
     /// <summary>
-    /// Represents user registration data.
+    /// Represents user data.
     /// </summary>
-    public class RegistrationModel
+    public class EditUserModel
     {
         /// <summary>
         /// Gets or Sets UserId.
@@ -42,5 +42,10 @@ namespace LostFilmMonitoring.BLL.Models
         /// Gets or sets LostFilm Cookie value.
         /// </summary>
         public string If_session { get; set; }
+
+        /// <summary>
+        /// Gets or sets unique user identity from the torrent tracker side.
+        /// </summary>
+        public string TrackerId { get; set; }
     }
 }

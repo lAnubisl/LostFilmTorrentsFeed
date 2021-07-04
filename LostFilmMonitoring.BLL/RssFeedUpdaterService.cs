@@ -194,6 +194,11 @@ namespace LostFilmMonitoring.BLL
                 var link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, subscription.UserId, torrentId);
                 var userFeedItem = new FeedItem(item, link);
                 var userFeed = await this.feedDAO.LoadUserFeedAsync(subscription.UserId);
+                if (userFeed == null)
+                {
+                    userFeed = new SortedSet<FeedItem>();
+                }
+
                 userFeed.Add(userFeedItem);
                 await this.feedDAO.SaveUserFeedAsync(subscription.UserId, userFeed.Take(15).ToArray());
                 this.logger.Info($"Feed for user {subscription.UserId} updated.");

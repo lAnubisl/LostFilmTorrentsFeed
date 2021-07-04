@@ -27,6 +27,7 @@ namespace LostFilmMonitoring.Web.Controllers
     using System.Text;
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.BLL.Models;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -35,14 +36,17 @@ namespace LostFilmMonitoring.Web.Controllers
     public class FeedController : Controller
     {
         private readonly RssFeedService feedService;
+        private readonly PresentationService presentationService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedController"/> class.
         /// </summary>
         /// <param name="rssFeedService">RssFeedService.</param>
-        public FeedController(RssFeedService rssFeedService)
+        /// <param name="presentationService">PresentationService.</param>
+        public FeedController(RssFeedService rssFeedService, PresentationService presentationService)
         {
             this.feedService = rssFeedService ?? throw new ArgumentNullException(nameof(rssFeedService));
+            this.presentationService = presentationService ?? throw new ArgumentNullException(nameof(presentationService));
         }
 
         /// <summary>
@@ -60,6 +64,19 @@ namespace LostFilmMonitoring.Web.Controllers
             }
 
             return this.View(model);
+        }
+
+        /// <summary>
+        /// Feed.
+        /// </summary>
+        /// <param name="model">EditUserModel.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpPost]
+        [Route("Feed")]
+        public async Task<RedirectToActionResult> Feed(EditUserModel model)
+        {
+            await this.presentationService.UpdateUserAsync(model);
+            return this.RedirectToAction("Feed");
         }
 
         /// <summary>

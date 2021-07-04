@@ -120,12 +120,25 @@ namespace LostFilmMonitoring.DAO.DAO
         /// </summary>
         /// <param name="user">User to create.</param>
         /// <returns>New user GUID.</returns>
-        public async Task<Guid> CreateAsync(User user)
+        public async Task<Guid> EditAsync(User user)
         {
             using (var ctx = this.OpenContext())
             {
-                user.Id = default;
-                ctx.Add(user);
+                if (user.Id == default)
+                {
+                    ctx.Add(user);
+                }
+                else
+                {
+                    var entity = await ctx.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+                    if (entity == null)
+                    {
+                        return user.Id;
+                    }
+
+                    ctx.Entry(entity).CurrentValues.SetValues(user);
+                }
+
                 await ctx.SaveChangesAsync();
                 return user.Id;
             }

@@ -79,7 +79,7 @@ namespace LostFilmMonitoring.BLL
         /// </summary>
         /// <param name="model">Registration model.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task RegisterAsync(RegistrationModel model)
+        public async Task RegisterAsync(EditUserModel model)
         {
             var user = new User
             {
@@ -87,11 +87,32 @@ namespace LostFilmMonitoring.BLL
                 LastActivity = DateTime.UtcNow,
                 Usess = model.Usess,
                 Uid = model.Uid,
+                TrackerId = model.TrackerId,
             };
 
-            var userId = await this.userDAO.CreateAsync(user);
+            var userId = await this.userDAO.EditAsync(user);
             this.currentUserProvider.SetCurrentUserId(userId);
             this.logger.Info("New user registered.");
+        }
+
+        /// <summary>
+        /// Updates user details in the database.
+        /// </summary>
+        /// <param name="model">EditUserModel.</param>
+        /// <returns>Awaitable task.</returns>
+        public Task UpdateUserAsync(EditUserModel model)
+        {
+            var user = new User
+            {
+                Id = this.currentUserProvider.GetCurrentUserId(),
+                Cookie = model.If_session,
+                LastActivity = DateTime.UtcNow,
+                Usess = model.Usess,
+                Uid = model.Uid,
+                TrackerId = model.TrackerId,
+            };
+
+            return this.userDAO.EditAsync(user);
         }
 
         /// <summary>

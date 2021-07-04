@@ -24,7 +24,6 @@
 namespace LostFilmMonitoring.BLL
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using LostFilmMonitoring.Common;
@@ -53,12 +52,12 @@ namespace LostFilmMonitoring.BLL
         public string BaseLinkUID { get; private set; }
 
         /// <inheritdoc/>
-        public IList<IList<string>> GetTorrentAnnounceList(string link_uid)
+        public string[] GetTorrentAnnounceList(string link_uid)
         {
             return this.torrentAnnounceListPatterns
                 .Select(p => string.Format(p, link_uid ?? this.BaseLinkUID))
-                .Select(s => new List<string> { s } as IList<string>)
-                .ToList();
+                .Select(s => s)
+                .ToArray();
         }
 
         /// <summary>
