@@ -23,6 +23,7 @@
 
 namespace LostFilmMonitoring.DAO.DomainModels
 {
+    using System.Collections.Generic;
     using System.IO;
 
     /// <summary>
@@ -39,5 +40,31 @@ namespace LostFilmMonitoring.DAO.DomainModels
         /// Gets or sets stream.
         /// </summary>
         public Stream Stream { get; set; }
+
+        /// <summary>
+        /// Original torrent files downloaded from LostFilm through their RSS are missing some announces and their parts.
+        /// This function should fix torrent file and add personalized announces for user.
+        /// </summary>
+        /// <param name="announces">Array of links to torrent tracker announces.</param>
+        public void FixTrackers(string[] announces)
+        {
+            var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
+            var memoryStream = new MemoryStream();
+            using (this.Stream)
+            {
+                var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(this.Stream));
+                torrent.IsPrivate = false;
+                torrent.Trackers.Clear();
+                foreach (var announce in announces)
+                {
+                    torrent.Trackers.Add(new List<string>() { announce });
+                }
+
+                torrent.EncodeTo(memoryStream);
+                memoryStream.Position = 0;
+            }
+
+            this.Stream = memoryStream;
+        }
     }
 }

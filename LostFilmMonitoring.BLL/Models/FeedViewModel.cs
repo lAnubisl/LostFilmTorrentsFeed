@@ -36,11 +36,15 @@ namespace LostFilmMonitoring.BLL.Models
         /// Initializes a new instance of the <see cref="FeedViewModel"/> class.
         /// </summary>
         /// <param name="feed">Feed items.</param>
-        /// <param name="userId">User Id.</param>
-        public FeedViewModel(SortedSet<FeedItem> feed, Guid userId)
+        /// <param name="user">User.</param>
+        public FeedViewModel(SortedSet<FeedItem> feed, User user)
         {
             this.Feed = feed;
-            this.UserId = userId;
+            this.UserId = user.Id;
+            this.If_session = user.Cookie;
+            this.Uid = user.Uid;
+            this.Usess = user.Usess;
+            this.TrackerId = user.TrackerId;
         }
 
         /// <summary>
@@ -52,5 +56,25 @@ namespace LostFilmMonitoring.BLL.Models
         /// Gets user id.
         /// </summary>
         public Guid UserId { get; }
+
+        /// <summary>
+        /// Gets If_session.
+        /// </summary>
+        public string If_session { get; }
+
+        /// <summary>
+        /// Gets Uid.
+        /// </summary>
+        public string Uid { get; }
+
+        /// <summary>
+        /// Gets Usess.
+        /// </summary>
+        public string Usess { get; }
+
+        /// <summary>
+        /// Gets TrackerId.
+        /// </summary>
+        public string TrackerId { get; }
     }
 }

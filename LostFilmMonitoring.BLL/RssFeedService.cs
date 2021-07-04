@@ -162,7 +162,15 @@ namespace LostFilmMonitoring.BLL
                 return null;
             }
 
-            return new FeedViewModel(await this.feedDAO.LoadUserFeedAsync(userId), userId);
+            var user = await this.userDAO.LoadAsync(userId);
+            if (user == null)
+            {
+                this.logger.Error($"User '{userId}' was not found in the database.");
+                this.currentUserProvider.SetCurrentUserId(Guid.Empty);
+                return null;
+            }
+
+            return new FeedViewModel(await this.feedDAO.LoadUserFeedAsync(userId), user);
         }
 
         /// <summary>

@@ -44,19 +44,16 @@ namespace LostFilmTV.Client
         private const string BaseUrl = "https://www.lostfilm.tv";
         private readonly ILogger logger;
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Client"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
-        /// <param name="configuration">IConfiguration.</param>
-        public Client(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public Client(ILogger logger, IHttpClientFactory httpClientFactory)
         {
             this.logger = logger.CreateScope(nameof(Client));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -236,7 +233,7 @@ namespace LostFilmTV.Client
 
             fileName = fileName[0..^1];
             var stream = await response.Content.ReadAsStreamAsync();
-            return new TorrentFileResponse(fileName, this.FixTrackers(stream, link_uid));
+            return new TorrentFileResponse(fileName, stream);
         }
 
         private static string Filtered(string series)
@@ -248,23 +245,6 @@ namespace LostFilmTV.Client
             }
 
             return series;
-        }
-
-        private MemoryStream FixTrackers(Stream stream, string link_uid)
-        {
-            var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
-            var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(stream));
-            torrent.IsPrivate = false;
-            torrent.Trackers.Clear();
-            foreach (var x in this.configuration.GetTorrentAnnounceList(link_uid))
-            {
-                torrent.Trackers.Add(x);
-            }
-
-            var memoryStream = new MemoryStream();
-            torrent.EncodeTo(memoryStream);
-            memoryStream.Position = 0;
-            return memoryStream;
         }
 
         private async Task<Stream> DownloadSeriesCoverFromJsonAsync(string seriesName)

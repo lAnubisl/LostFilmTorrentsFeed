@@ -38,6 +38,7 @@ namespace LostFilmMonitoring.BLL
         private readonly TorrentFileDAO torrentFileDAO;
         private readonly Client client;
         private readonly ILogger logger;
+        private readonly IConfiguration configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TorrentFileDownloader"/> class.
@@ -45,11 +46,13 @@ namespace LostFilmMonitoring.BLL
         /// <param name="torrentFileDAO">TorrentFileDAO.</param>
         /// <param name="logger">Logger.</param>
         /// <param name="client">Client.</param>
-        public TorrentFileDownloader(TorrentFileDAO torrentFileDAO, ILogger logger, Client client)
+        /// <param name="configuration">IConfiguration.</param>
+        public TorrentFileDownloader(TorrentFileDAO torrentFileDAO, ILogger logger, Client client, IConfiguration configuration)
         {
             this.logger = logger != null ? logger.CreateScope(nameof(TorrentFileDownloader)) : throw new ArgumentNullException(nameof(logger));
             this.client = client ?? throw new ArgumentNullException(nameof(client));
             this.torrentFileDAO = torrentFileDAO ?? throw new ArgumentNullException(nameof(torrentFileDAO));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -60,26 +63,24 @@ namespace LostFilmMonitoring.BLL
         /// <returns>Torrent file.</returns>
         internal async Task<TorrentFile> DownloadAsync(User user, int torrentFileId)
         {
-            var cachedTorrent = this.torrentFileDAO.TryFind(torrentFileId);
-            if (cachedTorrent != null)
+            var result = this.torrentFileDAO.TryFind(torrentFileId);
+            if (result == null)
             {
-                return cachedTorrent;
+                await this.DownloadInternal(user, torrentFileId);
+                result = this.torrentFileDAO.TryFind(torrentFileId);
+                if (result == null)
+                {
+                    this.logger.Error("Cannot download torrent file");
+                }
             }
 
-            await this.DownloadInternal(user, torrentFileId);
-
-            cachedTorrent = this.torrentFileDAO.TryFind(torrentFileId);
-            if (cachedTorrent == null)
-            {
-                this.logger.Error("Cannot download torrent file");
-            }
-
-            return cachedTorrent;
+            result.FixTrackers(this.configuration.GetTorrentAnnounceList(user.TrackerId));
+            return result;
         }
 
         private async Task DownloadInternal(User user, int torrentFileId)
         {
-            var torrentFile = await this.client.DownloadTorrentFile(user.Uid, null, user.Usess, torrentFileId);
+            var torrentFile = await this.client.DownloadTorrentFile(user.Uid, user.TrackerId, user.Usess, torrentFileId);
             if (torrentFile == null)
             {
                 return;
