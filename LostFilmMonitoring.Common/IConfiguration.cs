@@ -23,8 +23,6 @@
 
 namespace LostFilmMonitoring.Common
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Configuration.
     /// </summary>
@@ -71,6 +69,6 @@ namespace LostFilmMonitoring.Common
         /// </summary>
         /// <param name="link_uid">Torrent tracker user identifier.</param>
         /// <returns>List of torrent trackers for torrent file.</returns>
-        IList<IList<string>> GetTorrentAnnounceList(string link_uid);
+        string[] GetTorrentAnnounceList(string link_uid);
     }
 }

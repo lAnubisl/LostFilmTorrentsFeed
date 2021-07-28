@@ -102,7 +102,7 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <returns>ViewResult.</returns>
         [HttpGet]
         [Route("Register")]
-        public ViewResult Register() => this.View(new RegistrationModel());
+        public ViewResult Register() => this.View(new EditUserModel());
 
         /// <summary>
         /// Register.
@@ -111,7 +111,7 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <returns>ActionResult.</returns>
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult> Register(RegistrationModel model)
+        public async Task<ActionResult> Register(EditUserModel model)
         {
             await this.presentationService.RegisterAsync(model);
             if (this.Request.Cookies.ContainsKey("selected"))
@@ -169,5 +169,13 @@ namespace LostFilmMonitoring.Web.Controllers
         [HttpGet]
         [Route("IfSession")]
         public ViewResult IfSession() => this.View();
+
+        /// <summary>
+        /// TrackerId.
+        /// </summary>
+        /// <returns>ViewResult.</returns>
+        [HttpGet]
+        [Route("TrackerId")]
+        public ViewResult TrackerId() => this.View();
     }
 }
