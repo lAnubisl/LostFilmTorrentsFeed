@@ -5,7 +5,10 @@
 {
     @foreach (var item in Model.Feed)
     {
-        <div>@item.PublishDateParsed <a href="@item.Link" rel="noreferrer">@item.Title</a></div>
+        <div>
+            <span class="mytime" utc="@item.PublishDateParsed.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'")"></span>
+            <a href="@item.Link" rel="noreferrer">@item.Title</a>
+        </div>
     }
 }
 
@@ -40,3 +43,17 @@
     </div>
     <input type="submit" /><br />
 </form>
+
+@section Scripts{ 
+    <script>
+        $(function () {
+             $(".mytime").each(function (i, obj) {
+                var element = $(obj);
+                var utc = element.attr("utc");
+                var d = new Date(utc);
+                var l = d.toLocaleString();
+                element.text(l);
+            });
+        });
+    </script>
+}
