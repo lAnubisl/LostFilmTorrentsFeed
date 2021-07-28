@@ -136,7 +136,8 @@ namespace LostFilmMonitoring.DAO.DomainModels
 
         private static DateTime ParseDate(string date)
         {
-            return DateTime.TryParse(date, out DateTime result) ? result : DateTime.MinValue;
+            var dateTime = DateTime.TryParse(date, out DateTime result) ? result : DateTime.MinValue;
+            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
         }
     }
 }
