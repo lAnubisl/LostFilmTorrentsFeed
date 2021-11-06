@@ -42,7 +42,7 @@ namespace LostFilmMonitoring.Web
             };
             sentryBuilder.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
             sentryBuilder.Debug = true;
-            sentryBuilder.TracesSampleRate = 1;
+            sentryBuilder.TracesSampleRate = 0.01;
         };
 
         /// <summary>
