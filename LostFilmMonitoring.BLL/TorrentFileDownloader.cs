@@ -71,6 +71,7 @@ namespace LostFilmMonitoring.BLL
                 if (result == null)
                 {
                     this.logger.Error("Cannot download torrent file");
+                    return null;
                 }
             }
 
