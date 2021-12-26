@@ -54,7 +54,7 @@ namespace LostFilmTV.Client.RssFeed
             string rss;
             try
             {
-                rss = await this.DownloadRssText("http://n.retre.org/rssdd.xml");
+                rss = await this.DownloadRssText("http://insearch.site/rssdd.xml");
             }
             catch (RemoteServiceUnavailableException)
             {
