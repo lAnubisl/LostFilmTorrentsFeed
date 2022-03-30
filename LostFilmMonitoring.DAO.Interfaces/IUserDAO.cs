@@ -1,4 +1,4 @@
-﻿// <copyright file="Series.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IUserDao.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,43 +21,44 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DomainModels
-{
-    using System;
+using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
-    /// <summary>
-    /// Series.
-    /// </summary>
-    public class Series
+namespace LostFilmMonitoring.DAO.Interfaces
+{
+    public interface IUserDAO
     {
         /// <summary>
-        /// Gets or sets Name.
+        /// Delete users which were not be active for 1 month.
         /// </summary>
-        public string Name { get; set; }
+        /// <returns>User Ids which were deleted.</returns>
+        Task<Guid[]> DeleteOldUsersAsync();
 
         /// <summary>
-        /// Gets or sets LastEpisode Date.
+        /// Update user's last activity.
         /// </summary>
-        public DateTime LastEpisode { get; set; }
+        /// <param name="userId">UserId.</param>
+        /// <returns>True if user was found and updated. Otherwise false.</returns>
+        Task<bool> UpdateLastActivity(Guid userId);
 
         /// <summary>
-        /// Gets or sets Last episode name.
+        /// Load user with subscriptions.
         /// </summary>
-        public string LastEpisodeName { get; set; }
+        /// <param name="userId">UserId.</param>
+        /// <returns>User with subscriptions preloaded.</returns>
+        Task<User> LoadWithSubscriptionsAsync(Guid userId);
 
         /// <summary>
-        /// Gets or sets LastEpisodeTorrentLinkSD.
+        /// Load user.
         /// </summary>
-        public string LastEpisodeTorrentLinkSD { get; set; }
+        /// <param name="userId">UserId.</param>
+        /// <returns>User.</returns>
+        Task<User> LoadAsync(Guid userId);
 
         /// <summary>
-        /// Gets or sets LastEpisodeTorrentLinkMP4.
+        /// Create new user.
         /// </summary>
-        public string LastEpisodeTorrentLinkMP4 { get; set; }
-
-        /// <summary>
-        /// Gets or sets LastEpisodeTorrentLink1080.
-        /// </summary>
-        public string LastEpisodeTorrentLink1080 { get; set; }
+        /// <param name="user">User to create.</param>
+        /// <returns>New user GUID.</returns>
+        Task<Guid> EditAsync(User user);
     }
 }

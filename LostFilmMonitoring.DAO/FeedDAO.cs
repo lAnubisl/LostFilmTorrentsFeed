@@ -21,7 +21,7 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+namespace LostFilmMonitoring.DAO
 {
     using System;
     using System.Collections.Generic;
@@ -29,13 +29,14 @@ namespace LostFilmMonitoring.DAO.DAO
     using System.Threading.Tasks;
     using System.Xml.Linq;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Provides functionality for managing user's feeds in storage.
     /// </summary>
-    public class FeedDAO : BaseDAO
+    public class FeedDAO : BaseDAO, IFeedDAO
     {
         private static readonly Guid BaseFeedId = new Guid("96AFC9E2-C64D-4DDD-9003-016974D32100");
 
@@ -48,11 +49,7 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        /// <summary>
-        /// Loads users rss feed.
-        /// </summary>
-        /// <param name="userId">User Id.</param>
-        /// <returns>Rss feed content.</returns>
+        /// <inheritdoc/>
         public async Task<string> LoadFeedRawAsync(Guid userId)
         {
             using (var ctx = this.OpenContext())
@@ -61,11 +58,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Delete users rss feed.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <inheritdoc/>
         public async Task DeleteAsync(Guid userId)
         {
             using (var ctx = this.OpenContext())
@@ -81,41 +74,25 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Loads user's rss feed in form of items.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>Set of FeedItems.</returns>
+        /// <inheritdoc/>
         public Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId)
         {
             return this.LoadFeedAsync(userId);
         }
 
-        /// <summary>
-        /// Loads base rss feed.
-        /// </summary>
-        /// <returns>Set of FeedItems.</returns>
+        /// <inheritdoc/>
         public Task<SortedSet<FeedItem>> LoadBaseFeedAsync()
         {
             return this.LoadFeedAsync(BaseFeedId);
         }
 
-        /// <summary>
-        /// Save user's feed.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <param name="items">FeedItems to save.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <inheritdoc/>
         public Task SaveUserFeedAsync(Guid userId, FeedItem[] items)
         {
             return this.SaveFeedAsync(userId, items);
         }
 
-        /// <summary>
-        /// Save base feed.
-        /// </summary>
-        /// <param name="items">FeedItems to save.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <inheritdoc/>
         public Task SaveBaseFeedAsync(FeedItem[] items)
         {
             return this.SaveFeedAsync(BaseFeedId, items);
@@ -130,7 +107,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
 
             var document = XDocument.Parse(data);
-            return this.GetItems(document);
+            return FeedItem.GetItems(document);
         }
 
         private async Task SaveFeedAsync(Guid userId, FeedItem[] items)
@@ -147,46 +124,9 @@ namespace LostFilmMonitoring.DAO.DAO
                     ctx.Feeds.Add(entity);
                 }
 
-                entity.Data = this.GenerateXml(items);
+                entity.Data = FeedItem.GenerateXml(items);
                 ctx.SaveChanges();
             }
-        }
-
-        private SortedSet<FeedItem> GetItems(XDocument doc)
-        {
-            if (doc == null)
-            {
-                return null;
-            }
-
-            var entries = from item in doc.Root.Descendants()
-                          .First(i => i.Name.LocalName == "channel")
-                          .Elements()
-                          .Where(i => i.Name.LocalName == "item")
-                          select new FeedItem(item);
-            return new SortedSet<FeedItem>(entries);
-        }
-
-        private string GenerateXml(FeedItem[] items)
-        {
-            XDocument rss = new XDocument();
-            rss.Add(
-                new XElement(
-                    "rss",
-                    new XAttribute("version", "2.0"),
-                    new XElement("channel")));
-
-            foreach (var item in items)
-            {
-                rss.Element("rss").Element("channel").Add(
-                    new XElement(
-                        "item",
-                        new XElement("title", item.Title),
-                        new XElement("link", item.Link),
-                        new XElement("pubDate", item.PublishDateParsed)));
-            }
-
-            return rss.ToString();
         }
     }
 }

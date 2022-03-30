@@ -21,18 +21,19 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+namespace LostFilmMonitoring.DAO
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Provides functionality for managing series.
     /// </summary>
-    public class SeriesDAO : BaseDAO
+    public class SeriesDAO : BaseDAO, ISeriesDAO
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SeriesDAO"/> class.
@@ -43,11 +44,7 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        /// <summary>
-        /// Load series by name.
-        /// </summary>
-        /// <param name="name">Series name.</param>
-        /// <returns>Series.</returns>
+        /// <inheritdoc/>
         public async Task<Series> LoadAsync(string name)
         {
             using (var ctx = this.OpenContext())
@@ -56,10 +53,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Load series.
-        /// </summary>
-        /// <returns>All series.</returns>
+        /// <inheritdoc/>
         public async Task<List<Series>> LoadAsync()
         {
             using (var ctx = this.OpenContext())
@@ -68,11 +62,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Save series.
-        /// </summary>
-        /// <param name="series">Series to save.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <inheritdoc/>
         public async Task SaveAsync(Series series)
         {
             using (var ctx = this.OpenContext())

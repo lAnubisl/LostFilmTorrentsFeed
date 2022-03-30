@@ -1,4 +1,4 @@
-﻿// <copyright file="RssItemViewModel.cs" company="Alexander Panfilenok">
+﻿// <copyright file="BaseDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,39 +21,37 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Interfaces.Models
+namespace LostFilmMonitoring.DAO
 {
-    using System.IO;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// View model for individual rss item. Contains torrent file.
+    /// Common functionality for all DAOs.
     /// </summary>
-    public class RssItemViewModel
+    public abstract class BaseDAO
     {
+        private readonly string connectionString;
+        private readonly bool isMigrationApplied;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RssItemViewModel"/> class.
+        /// Initializes a new instance of the <see cref="BaseDAO"/> class.
         /// </summary>
-        /// <param name="torrentFile">Torrent file.</param>
-        public RssItemViewModel(TorrentFile torrentFile)
+        /// <param name="connectionString">Database connection string.</param>
+        public BaseDAO(string connectionString)
         {
-            this.TorrentFileBody = torrentFile.Stream;
-            this.TorrentFileName = torrentFile.FileName;
+            this.connectionString = connectionString;
+            if (!this.isMigrationApplied)
+            {
+                var ctx = new LostFilmDbContext(this.connectionString);
+                ctx.Database.Migrate();
+                this.isMigrationApplied = true;
+            }
         }
 
         /// <summary>
-        /// Gets Torrent file body.
+        /// Gets new database context.
         /// </summary>
-        public Stream TorrentFileBody { get; }
-
-        /// <summary>
-        /// Gets Torrent file name.
-        /// </summary>
-        public string TorrentFileName { get; }
-
-        /// <summary>
-        /// Gets Torrent file content type.
-        /// </summary>
-        public string ContentType { get; } = "application/x-bittorrent";
+        /// <returns>LostFilmDbContext.</returns>
+        protected LostFilmDbContext OpenContext() => new LostFilmDbContext(this.connectionString);
     }
 }

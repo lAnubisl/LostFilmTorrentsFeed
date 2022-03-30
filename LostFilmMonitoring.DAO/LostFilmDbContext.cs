@@ -23,7 +23,7 @@
 
 namespace LostFilmMonitoring.DAO
 {
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿// <copyright file="Feed.cs" company="Alexander Panfilenok">
+﻿// <copyright file="ISeriesDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,23 +21,35 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DomainModels
+namespace LostFilmMonitoring.DAO.Interfaces
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
-    /// Feed.
+    /// Provides functionality for managing series.
     /// </summary>
-    public class Feed
+    public interface ISeriesDAO
     {
         /// <summary>
-        /// Gets or sets UserId.
+        /// Load series by name.
         /// </summary>
-        public Guid UserId { get; set; }
+        /// <param name="name">Series name.</param>
+        /// <returns>Series.</returns>
+        Task<Series> LoadAsync(string name);
 
         /// <summary>
-        /// Gets or sets Data.
+        /// Load series.
         /// </summary>
-        public string Data { get; set; }
+        /// <returns>All series.</returns>
+        Task<List<Series>> LoadAsync();
+
+        /// <summary>
+        /// Save series.
+        /// </summary>
+        /// <param name="series">Series to save.</param>
+        /// <returns>Awaitable task.</returns>
+        Task SaveAsync(Series series);
     }
 }

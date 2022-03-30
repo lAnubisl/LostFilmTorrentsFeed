@@ -27,7 +27,7 @@ namespace LostFilmMonitoring.Updater
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
+    using LostFilmMonitoring.DAO.Interfaces;
 
     /// <summary>
     /// UpdateFeedsJobRunner.
@@ -45,32 +45,36 @@ namespace LostFilmMonitoring.Updater
                 var logger = (ILogger)serviceProvider.GetService(typeof(ILogger));
                 logger.CreateScope(nameof(UpdateFeedsJobRunner));
                 var feedService = (RssFeedUpdaterService)serviceProvider.GetService(typeof(RssFeedUpdaterService));
-                var userDao = (UserDAO)serviceProvider.GetService(typeof(UserDAO));
-                var feedDao = (FeedDAO)serviceProvider.GetService(typeof(FeedDAO));
+                var userDao = (IUserDAO)serviceProvider.GetService(typeof(IUserDAO));
+                var feedDao = (IFeedDAO)serviceProvider.GetService(typeof(IFeedDAO));
                 while (true)
                 {
-                    try
-                    {
-                        var deletedUserIds = await userDao.DeleteOldUsersAsync();
-                        foreach (var userId in deletedUserIds)
-                        {
-                            await feedDao.DeleteAsync(userId);
-                        }
-
-                        await feedService.UpdateAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Log(ex);
-                        if (ex.InnerException != null)
-                        {
-                            logger.Log(ex.InnerException);
-                        }
-                    }
-
+                    await RunUpdateProcess(userDao, feedDao, feedService, logger);
                     await Task.Delay(TimeSpan.FromMinutes(10));
                 }
             });
+        }
+
+        public static async Task RunUpdateProcess(IUserDAO userDao, IFeedDAO feedDao, RssFeedUpdaterService feedService, ILogger logger)
+        {
+            try
+            {
+                var deletedUserIds = await userDao.DeleteOldUsersAsync();
+                foreach (var userId in deletedUserIds)
+                {
+                    await feedDao.DeleteAsync(userId);
+                }
+
+                await feedService.UpdateAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex);
+                if (ex.InnerException != null)
+                {
+                    logger.Log(ex.InnerException);
+                }
+            }
         }
     }
 }

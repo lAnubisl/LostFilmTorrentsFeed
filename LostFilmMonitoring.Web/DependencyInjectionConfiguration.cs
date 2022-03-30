@@ -25,7 +25,8 @@ namespace LostFilmMonitoring.Web
 {
     using LostFilmMonitoring.BLL;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
+    using LostFilmMonitoring.DAO;
+    using LostFilmMonitoring.DAO.Interfaces;
     using LostFilmTV.Client;
     using LostFilmTV.Client.RssFeed;
     using Microsoft.AspNetCore.Http;
@@ -45,11 +46,11 @@ namespace LostFilmMonitoring.Web
             services.AddSingleton<IConfiguration, Configuration>();
             services.AddSingleton<HealthReporter>();
             services.AddSingleton<ILogger>(provider => new Logger("ROOT", provider.GetService<HealthReporter>()));
-            services.AddSingleton<TorrentFileDAO>();
-            services.AddSingleton<SeriesDAO>();
-            services.AddSingleton<FeedDAO>();
-            services.AddSingleton<UserDAO>();
-            services.AddSingleton<SubscriptionDAO>();
+            services.AddSingleton<ITorrentFileDAO, TorrentFileDAO>();
+            services.AddSingleton<ISeriesDAO, SeriesDAO>();
+            services.AddSingleton<IFeedDAO, FeedDAO>();
+            services.AddSingleton<IUserDAO, UserDAO>();
+            services.AddSingleton<ISubscriptionDAO, SubscriptionDAO>();
             services.AddSingleton<TorrentFileDownloader>();
             services.AddSingleton<ReteOrgRssFeed>();
             services.AddSingleton<SeriesCoverService>();

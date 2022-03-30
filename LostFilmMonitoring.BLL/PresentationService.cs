@@ -28,17 +28,17 @@ namespace LostFilmMonitoring.BLL
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL.Models;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Manages user presentation.
     /// </summary>
     public class PresentationService
     {
-        private readonly SeriesDAO seriesDAO;
-        private readonly UserDAO userDAO;
-        private readonly SubscriptionDAO subscriptionDAO;
+        private readonly ISeriesDAO seriesDAO;
+        private readonly IUserDAO userDAO;
+        private readonly ISubscriptionDAO subscriptionDAO;
         private readonly ICurrentUserProvider currentUserProvider;
         private readonly RssFeedService feedService;
         private readonly ILogger logger;
@@ -52,7 +52,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="userDAO">UserDAO.</param>
         /// <param name="rssFeedService">RssFeedService.</param>
         /// <param name="subscriptionDAO">SubscriptionDAO.</param>
-        public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger, SeriesDAO seriesDAO, UserDAO userDAO, RssFeedService rssFeedService, SubscriptionDAO subscriptionDAO)
+        public PresentationService(ICurrentUserProvider currentUserProvider, ILogger logger, ISeriesDAO seriesDAO, IUserDAO userDAO, RssFeedService rssFeedService, ISubscriptionDAO subscriptionDAO)
         {
             this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));
             this.userDAO = userDAO ?? throw new ArgumentNullException(nameof(userDAO));

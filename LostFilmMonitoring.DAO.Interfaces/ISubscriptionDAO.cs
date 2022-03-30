@@ -1,4 +1,4 @@
-﻿// <copyright file="Subscription.cs" company="Alexander Panfilenok">
+﻿// <copyright file="ISubscriptionDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,33 +21,31 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DomainModels
+namespace LostFilmMonitoring.DAO.Interfaces
 {
     using System;
+    using System.Threading.Tasks;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
-    /// Subscription.
+    /// Provides functionality for managing subscription in storage.
     /// </summary>
-    public class Subscription
+    public interface ISubscriptionDAO
     {
         /// <summary>
-        /// Gets or sets UserId.
+        /// Load subscriptions by series name and quality.
         /// </summary>
-        public Guid UserId { get; set; }
+        /// <param name="seriesName">SeriesName.</param>
+        /// <param name="quality">Quality.</param>
+        /// <returns>Subscriptions.</returns>
+        Task<Subscription[]> LoadAsync(string seriesName, string quality);
 
         /// <summary>
-        /// Gets or sets Series.
+        /// Save subscription.
         /// </summary>
-        public string SeriesName { get; set; }
-
-        /// <summary>
-        /// Gets or sets Quantity.
-        /// </summary>
-        public string Quality { get; set; }
-
-        /// <summary>
-        /// Gets or sets User.
-        /// </summary>
-        public User User { get; set; }
+        /// <param name="userId">UserId.</param>
+        /// <param name="subscriptions">Subscriptions.</param>
+        /// <returns>Awaitable task.</returns>
+        Task SaveAsync(Guid userId, Subscription[] subscriptions);
     }
 }

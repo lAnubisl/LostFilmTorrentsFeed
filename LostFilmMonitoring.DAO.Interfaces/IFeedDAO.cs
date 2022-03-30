@@ -1,4 +1,4 @@
-﻿// <copyright file="SeriesViewModel.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IFeedDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,64 +21,58 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models
+namespace LostFilmMonitoring.DAO.Interfaces
 {
-    using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
-    /// Represents a single series shown on home page.
+    /// Provides functionality for managing user's feeds in storage.
     /// </summary>
-    public class SeriesViewModel
+    public interface IFeedDAO
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SeriesViewModel"/> class.
+        /// Loads users rss feed.
         /// </summary>
-        /// <param name="series">Series.</param>
-        /// <param name="selectedFeedItems">Selected series.</param>
-        public SeriesViewModel(Series series, SelectedFeedItem[] selectedFeedItems)
-        {
-            this.Name = series.Name;
-            var selectedItem = selectedFeedItems?.FirstOrDefault(i => i.SeriesName == series.Name);
-            this.Selected = selectedItem != null;
-            this.Quantity = selectedItem?.Quality;
-        }
+        /// <param name="userId">User Id.</param>
+        /// <returns>Rss feed content.</returns>
+        Task<string> LoadFeedRawAsync(Guid userId);
 
         /// <summary>
-        /// Gets a value indicating whether seris is selected by user.
+        /// Delete users rss feed.
         /// </summary>
-        public bool Selected { get; }
+        /// <param name="userId">UserId.</param>
+        /// <returns>Awaitable task.</returns>
+        Task DeleteAsync(Guid userId);
 
         /// <summary>
-        /// Gets Series name.
+        /// Loads user's rss feed in form of items.
         /// </summary>
-        public string Name { get; }
+        /// <param name="userId">UserId.</param>
+        /// <returns>Set of FeedItems.</returns>
+        Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId);
 
         /// <summary>
-        /// Gets series quality.
+        /// Loads base rss feed.
         /// </summary>
-        public string Quantity { get; }
+        /// <returns>Set of FeedItems.</returns>
+        Task<SortedSet<FeedItem>> LoadBaseFeedAsync();
 
         /// <summary>
-        /// Gets series title.
+        /// Save user's feed.
         /// </summary>
-        public string Title
-        {
-            get
-            {
-                var index = this.Name.IndexOf('(');
-                if (index > 0)
-                {
-                    return this.Name.Substring(0, index);
-                }
-
-                return this.Name;
-            }
-        }
+        /// <param name="userId">UserId.</param>
+        /// <param name="items">FeedItems to save.</param>
+        /// <returns>Awaitable task.</returns>
+        Task SaveUserFeedAsync(Guid userId, FeedItem[] items);
 
         /// <summary>
-        /// Gets series escaped name.
+        /// Save base feed.
         /// </summary>
-        public string Escaped => this.Name.EscapePath();
+        /// <param name="items">FeedItems to save.</param>
+        /// <returns>Awaitable task.</returns>
+        Task SaveBaseFeedAsync(FeedItem[] items);
     }
 }

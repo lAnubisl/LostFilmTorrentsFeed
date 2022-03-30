@@ -24,6 +24,9 @@
 namespace LostFilmMonitoring.BLL
 {
     using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Usefull extensions.
@@ -58,6 +61,32 @@ namespace LostFilmMonitoring.BLL
         internal static string GenerateTorrentLink(string baseUrl, Guid userId, string torrentId)
         {
             return $"{baseUrl}/Rss/{userId}/{torrentId}";
+        }
+
+        /// <summary>
+        /// Original torrent files downloaded from LostFilm through their RSS are missing some announces and their parts.
+        /// This function should fix torrent file and add personalized announces for user.
+        /// </summary>
+        /// <param name="announces">Array of links to torrent tracker announces.</param>
+        public static void FixTrackers(this TorrentFile torrentFile, string[] announces)
+        {
+            var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
+            var memoryStream = new MemoryStream();
+            using (torrentFile.Stream)
+            {
+                var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(torrentFile.Stream));
+                torrent.IsPrivate = false;
+                torrent.Trackers.Clear();
+                foreach (var announce in announces)
+                {
+                    torrent.Trackers.Add(new List<string>() { announce });
+                }
+
+                torrent.EncodeTo(memoryStream);
+                memoryStream.Position = 0;
+            }
+
+            torrentFile.Stream = memoryStream;
         }
     }
 }

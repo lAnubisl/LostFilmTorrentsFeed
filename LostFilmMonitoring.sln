@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29209.62
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.BLL", "LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj", "{7CA3C668-6229-490B-9623-1A36BCC2ED05}"
 EndProject
@@ -22,6 +22,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.Updater", "LostFilmMonitoring.Updater\LostFilmMonitoring.Updater.csproj", "{CF84E0B4-F217-4AD0-BF74-A1F2485DB9EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmTV.Client.Tests", "LostFilmTV.Client.Tests\LostFilmTV.Client.Tests.csproj", "{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.Updater.AzureFunction", "LostFilmMonitoring.Updater.AzureFunction\LostFilmMonitoring.Updater.AzureFunction.csproj", "{81F56A40-B51D-4FF7-92D9-1E3BB0EC8616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.DAO.Interfaces", "LostFilmMonitoring.DAO.Interfaces\LostFilmMonitoring.DAO.Interfaces.csproj", "{F09BA236-C3C0-442F-8F82-8AEFAEB32DE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.DAO.Azure", "LostFilmMonitoring.DAO.Azure\LostFilmMonitoring.DAO.Azure.csproj", "{16FE8373-955B-4506-9CFB-2E34E33D0F14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,18 @@ Global
 		{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81F56A40-B51D-4FF7-92D9-1E3BB0EC8616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81F56A40-B51D-4FF7-92D9-1E3BB0EC8616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81F56A40-B51D-4FF7-92D9-1E3BB0EC8616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81F56A40-B51D-4FF7-92D9-1E3BB0EC8616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F09BA236-C3C0-442F-8F82-8AEFAEB32DE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F09BA236-C3C0-442F-8F82-8AEFAEB32DE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F09BA236-C3C0-442F-8F82-8AEFAEB32DE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F09BA236-C3C0-442F-8F82-8AEFAEB32DE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16FE8373-955B-4506-9CFB-2E34E33D0F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16FE8373-955B-4506-9CFB-2E34E33D0F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16FE8373-955B-4506-9CFB-2E34E33D0F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16FE8373-955B-4506-9CFB-2E34E33D0F14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

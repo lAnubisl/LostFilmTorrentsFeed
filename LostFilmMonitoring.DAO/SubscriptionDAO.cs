@@ -21,19 +21,20 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+namespace LostFilmMonitoring.DAO
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Provides functionality for managing subscription in storage.
     /// </summary>
-    public class SubscriptionDAO : BaseDAO
+    public class SubscriptionDAO : BaseDAO, ISubscriptionDAO
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionDAO"/> class.
@@ -44,12 +45,7 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        /// <summary>
-        /// Load subscriptions by series name and quality.
-        /// </summary>
-        /// <param name="seriesName">SeriesName.</param>
-        /// <param name="quality">Quality.</param>
-        /// <returns>Subscriptions.</returns>
+        /// <inheritdoc/>
         public async Task<Subscription[]> LoadAsync(string seriesName, string quality)
         {
             using (var ctx = this.OpenContext())
@@ -58,12 +54,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Save subscription.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <param name="subscriptions">Subscriptions.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <inheritdoc/>
         public async Task SaveAsync(Guid userId, Subscription[] subscriptions)
         {
             if (subscriptions == null)

@@ -1,4 +1,4 @@
-﻿// <copyright file="BaseDAO.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Settings.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,37 +21,20 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+using System;
+
+namespace LostFilmMonitoring.Updater.AzureFunction
 {
-    using Microsoft.EntityFrameworkCore;
-
-    /// <summary>
-    /// Common functionality for all DAOs.
-    /// </summary>
-    public abstract class BaseDAO
+    internal static class Settings
     {
-        private readonly string connectionString;
-        private readonly bool isMigrationApplied;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseDAO"/> class.
-        /// </summary>
-        /// <param name="connectionString">Database connection string.</param>
-        public BaseDAO(string connectionString)
+        static Settings()
         {
-            this.connectionString = connectionString;
-            if (!this.isMigrationApplied)
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("StorageAccountConnectionString")))
             {
-                var ctx = new LostFilmDbContext(this.connectionString);
-                ctx.Database.Migrate();
-                this.isMigrationApplied = true;
+                throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
             }
         }
 
-        /// <summary>
-        /// Gets new database context.
-        /// </summary>
-        /// <returns>LostFilmDbContext.</returns>
-        protected LostFilmDbContext OpenContext() => new LostFilmDbContext(this.connectionString);
+        public static string StorageAccountConnectionString => Environment.GetEnvironmentVariable("StorageAccountConnectionString");
     }
 }

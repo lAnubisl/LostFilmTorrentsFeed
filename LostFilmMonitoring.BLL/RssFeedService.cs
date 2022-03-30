@@ -30,17 +30,17 @@ namespace LostFilmMonitoring.BLL
     using LostFilmMonitoring.BLL.Interfaces.Models;
     using LostFilmMonitoring.BLL.Models;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Manages user feed.
     /// </summary>
     public class RssFeedService
     {
-        private readonly UserDAO userDAO;
-        private readonly FeedDAO feedDAO;
-        private readonly SeriesDAO seriesDAO;
+        private readonly IUserDAO userDAO;
+        private readonly IFeedDAO feedDAO;
+        private readonly ISeriesDAO seriesDAO;
         private readonly TorrentFileDownloader torrentFileDownloader;
         private readonly ICurrentUserProvider currentUserProvider;
         private readonly ILogger logger;
@@ -60,9 +60,9 @@ namespace LostFilmMonitoring.BLL
             ICurrentUserProvider currentUserProvider,
             ILogger logger,
             TorrentFileDownloader torrentFileDownloader,
-            UserDAO userDAO,
-            FeedDAO feedDAO,
-            SeriesDAO seriesDAO,
+            IUserDAO userDAO,
+            IFeedDAO feedDAO,
+            ISeriesDAO seriesDAO,
             IConfiguration configuration)
         {
             this.logger = logger == null ? throw new ArgumentNullException(nameof(logger)) : logger.CreateScope(nameof(RssFeedService));

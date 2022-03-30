@@ -1,4 +1,4 @@
-﻿// <copyright file="FeedViewModel.cs" company="Alexander Panfilenok">
+﻿// <copyright file="User.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,60 +21,55 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models
+namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
     using System;
     using System.Collections.Generic;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
-    /// Represents data to be shown on 'My RSS Feed page'.
+    /// User.
     /// </summary>
-    public class FeedViewModel
+    public class User
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FeedViewModel"/> class.
+        /// Gets or sets Id.
         /// </summary>
-        /// <param name="feed">Feed items.</param>
-        /// <param name="user">User.</param>
-        public FeedViewModel(SortedSet<FeedItem> feed, User user)
-        {
-            this.Feed = feed;
-            this.UserId = user.Id;
-            this.If_session = user.Cookie;
-            this.Uid = user.Uid;
-            this.Usess = user.Usess;
-            this.TrackerId = user.TrackerId;
-        }
+        public Guid Id { get; set; }
 
         /// <summary>
-        /// Gets feed items.
+        /// Gets or sets LostFilmCookie.
         /// </summary>
-        public SortedSet<FeedItem> Feed { get; }
+        public string Cookie { get; set; }
 
         /// <summary>
-        /// Gets user id.
+        /// Gets or sets Usess.
         /// </summary>
-        public Guid UserId { get; }
+        public string Usess { get; set; }
 
         /// <summary>
-        /// Gets If_session.
+        /// Gets or sets Uid.
         /// </summary>
-        public string If_session { get; }
+        public string Uid { get; set; }
 
         /// <summary>
-        /// Gets Uid.
+        /// Gets or sets user identifier which should be in link of torrent file announces.
+        /// <![CDATA[http://bt.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
+        ///          http://bt99.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
+        ///          http://bt0.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
+        ///          http://user5.newtrack.info/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
+        ///          http://user1.newtrack.info/tracker.php/1b07a52cb12a12945e15cca756f83789/announce]]>
+        /// Here '1b07a52cb12a12945e15cca756f83789' is the user id.
         /// </summary>
-        public string Uid { get; }
+        public string TrackerId { get; set; }
 
         /// <summary>
-        /// Gets Usess.
+        /// Gets or sets LastActivity.
         /// </summary>
-        public string Usess { get; }
+        public DateTime LastActivity { get; set; }
 
         /// <summary>
-        /// Gets TrackerId.
+        /// Gets or sets Subscriptions.
         /// </summary>
-        public string TrackerId { get; }
+        public List<Subscription> Subscriptions { get; set; }
     }
 }

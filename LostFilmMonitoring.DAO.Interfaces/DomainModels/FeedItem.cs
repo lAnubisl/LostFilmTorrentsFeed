@@ -21,12 +21,11 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DomainModels
+namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
     using System;
     using System.Linq;
     using System.Xml.Linq;
-    using LostFilmTV.Client.Response;
 
     /// <summary>
     /// FeedItem.
@@ -56,22 +55,11 @@ namespace LostFilmMonitoring.DAO.DomainModels
         /// Initializes a new instance of the <see cref="FeedItem"/> class.
         /// </summary>
         /// <param name="item">FeedItemResponse.</param>
-        public FeedItem(FeedItemResponse item)
-        {
-            this.Link = item.Link;
-            this.PublishDateParsed = item.PublishDateParsed;
-            this.Title = item.Title;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FeedItem"/> class.
-        /// </summary>
-        /// <param name="item">FeedItemResponse.</param>
-        /// <param name="link">Link.</param>
-        public FeedItem(FeedItemResponse item, string link)
-            : this(item)
+        public FeedItem(string title, string link, DateTime publishedDateTime)
         {
             this.Link = link;
+            this.PublishDateParsed = publishedDateTime;
+            this.Title = title;
         }
 
         /// <summary>
@@ -132,6 +120,48 @@ namespace LostFilmMonitoring.DAO.DomainModels
         public override string ToString()
         {
             return this.Title;
+        }
+
+        public static SortedSet<FeedItem> GetItems(string content)
+        {
+            return GetItems(new XDocument(content));
+        }
+
+        public static SortedSet<FeedItem> GetItems(XDocument doc)
+        {
+            if (doc == null)
+            {
+                return null;
+            }
+
+            var entries = from item in doc.Root.Descendants()
+                          .First(i => i.Name.LocalName == "channel")
+                          .Elements()
+                          .Where(i => i.Name.LocalName == "item")
+                          select new FeedItem(item);
+            return new SortedSet<FeedItem>(entries);
+        }
+
+        public static string GenerateXml(FeedItem[] items)
+        {
+            XDocument rss = new XDocument();
+            rss.Add(
+                new XElement(
+                    "rss",
+                    new XAttribute("version", "2.0"),
+                    new XElement("channel")));
+
+            foreach (var item in items)
+            {
+                rss.Element("rss").Element("channel").Add(
+                    new XElement(
+                        "item",
+                        new XElement("title", item.Title),
+                        new XElement("link", item.Link),
+                        new XElement("pubDate", item.PublishDateParsed)));
+            }
+
+            return rss.ToString();
         }
 
         private static DateTime ParseDate(string date)

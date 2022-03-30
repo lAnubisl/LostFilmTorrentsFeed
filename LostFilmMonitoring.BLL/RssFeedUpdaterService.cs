@@ -28,8 +28,8 @@ namespace LostFilmMonitoring.BLL
     using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using LostFilmTV.Client.Response;
     using LostFilmTV.Client.RssFeed;
 
@@ -39,11 +39,11 @@ namespace LostFilmMonitoring.BLL
     public class RssFeedUpdaterService
     {
         private readonly ILogger logger;
-        private readonly FeedDAO feedDAO;
+        private readonly IFeedDAO feedDAO;
         private readonly ReteOrgRssFeed reteOrgRssFeed;
-        private readonly SeriesDAO seriesDAO;
+        private readonly ISeriesDAO seriesDAO;
         private readonly SeriesCoverService seriesCoverService;
-        private readonly SubscriptionDAO subscriptionDAO;
+        private readonly ISubscriptionDAO subscriptionDAO;
         private readonly IConfiguration configuration;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="subscriptionDAO">SubscriptionDAO.</param>
         /// <param name="seriesCoverService">SeriesCoverService.</param>
         /// <param name="configuration">IConfiguration.</param>
-        public RssFeedUpdaterService(ILogger logger, ReteOrgRssFeed reteOrgRssFeed, FeedDAO feedDAO, SeriesDAO seriesDAO, SubscriptionDAO subscriptionDAO, SeriesCoverService seriesCoverService, IConfiguration configuration)
+        public RssFeedUpdaterService(ILogger logger, ReteOrgRssFeed reteOrgRssFeed, IFeedDAO feedDAO, ISeriesDAO seriesDAO, ISubscriptionDAO subscriptionDAO, SeriesCoverService seriesCoverService, IConfiguration configuration)
         {
             this.logger = logger != null ? logger.CreateScope(nameof(RssFeedUpdaterService)) : throw new ArgumentNullException(nameof(logger));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -89,7 +89,7 @@ namespace LostFilmMonitoring.BLL
 
             foreach (var feedItemResponse in feedItemResponses)
             {
-                var feedItem = new FeedItem(feedItemResponse);
+                var feedItem = new FeedItem(feedItemResponse.Title, feedItemResponse.Link, feedItemResponse.PublishDateParsed);
                 if (!feedItems.Contains(feedItem))
                 {
                     feedItems.Add(feedItem);
@@ -192,7 +192,7 @@ namespace LostFilmMonitoring.BLL
             {
                 var torrentId = item.GetTorrentId();
                 var link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, subscription.UserId, torrentId);
-                var userFeedItem = new FeedItem(item, link);
+                var userFeedItem = new FeedItem(item.Title, link, item.PublishDateParsed);
                 var userFeed = await this.feedDAO.LoadUserFeedAsync(subscription.UserId);
                 if (userFeed == null)
                 {

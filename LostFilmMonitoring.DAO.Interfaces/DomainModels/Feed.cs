@@ -1,4 +1,4 @@
-﻿// <copyright file="RssItemViewModel.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Feed.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,39 +21,23 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Interfaces.Models
+namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
-    using System.IO;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+    using System;
 
     /// <summary>
-    /// View model for individual rss item. Contains torrent file.
+    /// Feed.
     /// </summary>
-    public class RssItemViewModel
+    public class Feed
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RssItemViewModel"/> class.
+        /// Gets or sets UserId.
         /// </summary>
-        /// <param name="torrentFile">Torrent file.</param>
-        public RssItemViewModel(TorrentFile torrentFile)
-        {
-            this.TorrentFileBody = torrentFile.Stream;
-            this.TorrentFileName = torrentFile.FileName;
-        }
+        public Guid UserId { get; set; }
 
         /// <summary>
-        /// Gets Torrent file body.
+        /// Gets or sets Data.
         /// </summary>
-        public Stream TorrentFileBody { get; }
-
-        /// <summary>
-        /// Gets Torrent file name.
-        /// </summary>
-        public string TorrentFileName { get; }
-
-        /// <summary>
-        /// Gets Torrent file content type.
-        /// </summary>
-        public string ContentType { get; } = "application/x-bittorrent";
+        public string Data { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.BLL.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Represents information to be shown in home screen.

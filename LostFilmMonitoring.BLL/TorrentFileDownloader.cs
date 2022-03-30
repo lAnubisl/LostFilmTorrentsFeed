@@ -26,8 +26,8 @@ namespace LostFilmMonitoring.BLL
     using System;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DAO;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using LostFilmTV.Client;
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace LostFilmMonitoring.BLL
     /// </summary>
     public sealed class TorrentFileDownloader
     {
-        private readonly TorrentFileDAO torrentFileDAO;
+        private readonly ITorrentFileDAO torrentFileDAO;
         private readonly Client client;
         private readonly ILogger logger;
         private readonly IConfiguration configuration;
@@ -47,7 +47,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="logger">Logger.</param>
         /// <param name="client">Client.</param>
         /// <param name="configuration">IConfiguration.</param>
-        public TorrentFileDownloader(TorrentFileDAO torrentFileDAO, ILogger logger, Client client, IConfiguration configuration)
+        public TorrentFileDownloader(ITorrentFileDAO torrentFileDAO, ILogger logger, Client client, IConfiguration configuration)
         {
             this.logger = logger != null ? logger.CreateScope(nameof(TorrentFileDownloader)) : throw new ArgumentNullException(nameof(logger));
             this.client = client ?? throw new ArgumentNullException(nameof(client));

@@ -1,4 +1,4 @@
-﻿// <copyright file="TorrentFileDAO.cs" company="Alexander Panfilenok">
+﻿// <copyright file="ITorrentFileDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,32 +21,17 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+namespace LostFilmMonitoring.DAO.Interfaces
 {
     using System.IO;
     using System.Threading.Tasks;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Provides functionality for managing torrent files on disk.
     /// </summary>
-    public class TorrentFileDAO
+    public interface ITorrentFileDAO
     {
-        private readonly string torrentFilesDirectoryPath;
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TorrentFileDAO"/> class.
-        /// </summary>
-        /// <param name="configuration">IConfiguration.</param>
-        /// <param name="logger">Logger.</param>
-        public TorrentFileDAO(IConfiguration configuration, ILogger logger)
-        {
-            this.torrentFilesDirectoryPath = configuration.TorrentPath;
-            this.logger = logger.CreateScope(nameof(TorrentFileDAO));
-        }
-
         /// <summary>
         /// Save torrent file on disk.
         /// </summary>
@@ -54,42 +39,13 @@ namespace LostFilmMonitoring.DAO.DAO
         /// <param name="fileContentStream">FileContentStream.</param>
         /// <param name="torrentId">TorrentId.</param>
         /// <returns>Awaitable task.</returns>
-        public async Task SaveAsync(string fileName, Stream fileContentStream, int torrentId)
-        {
-            fileName = $"{torrentId}_{fileName}";
-            using (var fs = new FileStream(
-                Path.Combine(this.torrentFilesDirectoryPath, fileName),
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true))
-            {
-                await fileContentStream.CopyToAsync(fs);
-            }
-
-            this.logger.Info($"File '{fileName}' downloaded.");
-        }
+        Task SaveAsync(string fileName, Stream fileContentStream, int torrentId);
 
         /// <summary>
         /// Tries to find torrent file by torrent id.
         /// </summary>
         /// <param name="torrentId">Torrent id.</param>
         /// <returns>TorrentFile if it is found. Otherwise Null.</returns>
-        public TorrentFile TryFind(int torrentId)
-        {
-            var directory = new DirectoryInfo(this.torrentFilesDirectoryPath);
-            var files = directory.GetFiles($"{torrentId}_*.torrent");
-            if (files.Length == 0)
-            {
-                return null;
-            }
-
-            return new TorrentFile
-            {
-                Stream = files[0].OpenRead(),
-                FileName = files[0].Name,
-            };
-        }
+        TorrentFile TryFind(int torrentId);
     }
 }

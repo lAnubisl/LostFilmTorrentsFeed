@@ -21,20 +21,21 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DAO
+namespace LostFilmMonitoring.DAO
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.DomainModels;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
     /// Provides functionality for managing users in storage.
     /// </summary>
-    public class UserDAO : BaseDAO
+    public class UserDAO : BaseDAO, IUserDAO
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserDAO"/> class.
@@ -45,10 +46,7 @@ namespace LostFilmMonitoring.DAO.DAO
         {
         }
 
-        /// <summary>
-        /// Delete users which were not be active for 1 month.
-        /// </summary>
-        /// <returns>User Ids which were deleted.</returns>
+        /// <inheritdoc/>
         public async Task<Guid[]> DeleteOldUsersAsync()
         {
             var deleted = new Collection<Guid>();
@@ -67,11 +65,7 @@ namespace LostFilmMonitoring.DAO.DAO
             return deleted.ToArray();
         }
 
-        /// <summary>
-        /// Update user's last activity.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>True if user was found and updated. Otherwise false.</returns>
+        /// <inheritdoc/>
         public async Task<bool> UpdateLastActivity(Guid userId)
         {
             using (var ctx = this.OpenContext())
@@ -89,11 +83,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Load user with subscriptions.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>User with subscriptions preloaded.</returns>
+        /// <inheritdoc/>
         public async Task<User> LoadWithSubscriptionsAsync(Guid userId)
         {
             using (var ctx = this.OpenContext())
@@ -102,11 +92,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Load user.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>User.</returns>
+        /// <inheritdoc/>
         public async Task<User> LoadAsync(Guid userId)
         {
             using (var ctx = this.OpenContext())
@@ -115,11 +101,7 @@ namespace LostFilmMonitoring.DAO.DAO
             }
         }
 
-        /// <summary>
-        /// Create new user.
-        /// </summary>
-        /// <param name="user">User to create.</param>
-        /// <returns>New user GUID.</returns>
+        /// <inheritdoc/>
         public async Task<Guid> EditAsync(User user)
         {
             using (var ctx = this.OpenContext())

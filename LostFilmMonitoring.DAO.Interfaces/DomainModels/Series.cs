@@ -1,4 +1,4 @@
-﻿// <copyright file="User.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Series.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,55 +21,43 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.DomainModels
+namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
     using System;
-    using System.Collections.Generic;
 
     /// <summary>
-    /// User.
+    /// Series.
     /// </summary>
-    public class User
+    public class Series
     {
         /// <summary>
-        /// Gets or sets Id.
+        /// Gets or sets Name.
         /// </summary>
-        public Guid Id { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets LostFilmCookie.
+        /// Gets or sets LastEpisode Date.
         /// </summary>
-        public string Cookie { get; set; }
+        public DateTime LastEpisode { get; set; }
 
         /// <summary>
-        /// Gets or sets Usess.
+        /// Gets or sets Last episode name.
         /// </summary>
-        public string Usess { get; set; }
+        public string LastEpisodeName { get; set; }
 
         /// <summary>
-        /// Gets or sets Uid.
+        /// Gets or sets LastEpisodeTorrentLinkSD.
         /// </summary>
-        public string Uid { get; set; }
+        public string LastEpisodeTorrentLinkSD { get; set; }
 
         /// <summary>
-        /// Gets or sets user identifier which should be in link of torrent file announces.
-        /// <![CDATA[http://bt.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
-        ///          http://bt99.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
-        ///          http://bt0.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
-        ///          http://user5.newtrack.info/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
-        ///          http://user1.newtrack.info/tracker.php/1b07a52cb12a12945e15cca756f83789/announce]]>
-        /// Here '1b07a52cb12a12945e15cca756f83789' is the user id.
+        /// Gets or sets LastEpisodeTorrentLinkMP4.
         /// </summary>
-        public string TrackerId { get; set; }
+        public string LastEpisodeTorrentLinkMP4 { get; set; }
 
         /// <summary>
-        /// Gets or sets LastActivity.
+        /// Gets or sets LastEpisodeTorrentLink1080.
         /// </summary>
-        public DateTime LastActivity { get; set; }
-
-        /// <summary>
-        /// Gets or sets Subscriptions.
-        /// </summary>
-        public List<Subscription> Subscriptions { get; set; }
+        public string LastEpisodeTorrentLink1080 { get; set; }
     }
 }
