@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build-env
+WORKDIR /app
+
+COPY . ./
+RUN dotnet restore -r linux-x64
+RUN dotnet publish LostFilmMonitoring.Web/LostFilmMonitoring.Web.csproj -c Release -o out -r linux-x64 --self-contained false --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal-amd64
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["./LostFilmMonitoring.Web"]
