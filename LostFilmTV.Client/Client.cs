@@ -271,7 +271,22 @@ namespace LostFilmTV.Client
                 }),
             };
             var responseJson = await this.Execute(request);
-            var result = JsonConvert.DeserializeObject<SearchResponse>(responseJson);
+            if (responseJson == null)
+            {
+                return null;
+            }
+
+            SearchResponse result = null;
+            try
+            {
+                result = JsonConvert.DeserializeObject<SearchResponse>(responseJson);
+            }
+            catch (Exception ex)
+            {
+                this.logger.Log(ex);
+                return null;
+            }
+
             var icon = result?.Data?.Series.FirstOrDefault(x => x.OriginalTitle == originalTitle)?.Icon;
             if (icon == null)
             {
@@ -315,9 +330,17 @@ namespace LostFilmTV.Client
         private async Task<string> Execute(HttpRequestMessage httpRequestMessage)
         {
             var client = this.httpClientFactory.CreateClient();
-            var response = await client.SendAsync(httpRequestMessage);
-            var responseBytes = await response.Content.ReadAsByteArrayAsync();
-            return Encoding.UTF8.GetString(responseBytes);
+            try
+            {
+                var response = await client.SendAsync(httpRequestMessage);
+                var responseBytes = await response.Content.ReadAsByteArrayAsync();
+                return Encoding.UTF8.GetString(responseBytes);
+            }
+            catch (Exception ex)
+            {
+                this.logger.Log(ex);
+                return null;
+            }
         }
     }
 }

@@ -36,7 +36,6 @@ namespace LostFilmMonitoring.Web
     using Microsoft.AspNetCore.HttpOverrides;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
-    using Sentry.AspNetCore;
 
     /// <summary>
     /// Startup.
