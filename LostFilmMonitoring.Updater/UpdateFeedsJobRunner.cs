@@ -25,7 +25,7 @@ namespace LostFilmMonitoring.Updater
 {
     using System;
     using System.Threading.Tasks;
-    using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.BLL.Commands;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
 
@@ -44,28 +44,28 @@ namespace LostFilmMonitoring.Updater
             {
                 var logger = (ILogger)serviceProvider.GetService(typeof(ILogger));
                 logger.CreateScope(nameof(UpdateFeedsJobRunner));
-                var feedService = (RssFeedUpdaterService)serviceProvider.GetService(typeof(RssFeedUpdaterService));
+                var command = (UpdateFeedsCommand)serviceProvider.GetService(typeof(UpdateFeedsCommand));
                 var userDao = (IUserDAO)serviceProvider.GetService(typeof(IUserDAO));
                 var feedDao = (IFeedDAO)serviceProvider.GetService(typeof(IFeedDAO));
                 while (true)
                 {
-                    await RunUpdateProcess(userDao, feedDao, feedService, logger);
+                    await RunUpdateProcess(userDao, feedDao, command, logger);
                     await Task.Delay(TimeSpan.FromMinutes(10));
                 }
             });
         }
 
-        public static async Task RunUpdateProcess(IUserDAO userDao, IFeedDAO feedDao, RssFeedUpdaterService feedService, ILogger logger)
+        public static async Task RunUpdateProcess(IUserDAO userDao, IFeedDAO feedDao, UpdateFeedsCommand command, ILogger logger)
         {
             try
             {
-                var deletedUserIds = await userDao.DeleteOldUsersAsync();
-                foreach (var userId in deletedUserIds)
-                {
-                    await feedDao.DeleteAsync(userId);
-                }
+                //var deletedUserIds = await userDao.DeleteOldUsersAsync();
+                //foreach (var userId in deletedUserIds)
+                //{
+                //    await feedDao.DeleteAsync(userId);
+                //}
 
-                await feedService.UpdateAsync();
+                await command.ExecuteAsync();
             }
             catch (Exception ex)
             {

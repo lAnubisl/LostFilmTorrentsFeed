@@ -33,6 +33,6 @@ namespace LostFilmMonitoring.Web.Models
         /// <summary>
         /// Gets or sets SelectedItems.
         /// </summary>
-        public SelectedFeedItem[] SelectedItems { get; set; }
+        public SubscriptionItem[] SelectedItems { get; set; }
     }
 }

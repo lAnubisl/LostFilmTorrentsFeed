@@ -21,9 +21,9 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+    using LostFilmMonitoring.DAO.Sql.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>

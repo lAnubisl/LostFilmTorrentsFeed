@@ -21,14 +21,14 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -41,46 +41,50 @@ namespace LostFilmMonitoring.DAO
         /// </summary>
         /// <param name="configuration">IConfiguration.</param>
         public SubscriptionDAO(IConfiguration configuration)
-            : base(configuration.ConnectionString)
+            : base(configuration.SqlServerConnectionString)
         {
         }
 
         /// <inheritdoc/>
-        public async Task<Subscription[]> LoadAsync(string seriesName, string quality)
+        public async Task<string[]> LoadUsersIdsAsync(string seriesName, string quality)
         {
-            using (var ctx = this.OpenContext())
-            {
-                return await ctx.Subscriptions.Where(s => s.SeriesName == seriesName && s.Quality == quality).ToArrayAsync();
-            }
+            using var ctx = this.OpenContext();
+            return await ctx.Subscriptions.Where(s => s.SeriesName == seriesName && s.Quality == quality).Select(s => s.UserId.ToString()).ToArrayAsync();
         }
 
         /// <inheritdoc/>
-        public async Task SaveAsync(Guid userId, Subscription[] subscriptions)
+        public async Task SaveAsync(string userId, Interfaces.DomainModels.Subscription[] subscriptions)
         {
-            if (subscriptions == null)
+            var id = Guid.Parse(userId);
+            using var ctx = this.OpenContext();
+            var existingSubscriptions = ctx.Subscriptions.Where(s => s.UserId == id).ToList();
+            ctx.RemoveRange(existingSubscriptions.Where(e => subscriptions.All(s => s.SeriesName != e.SeriesName)));
+            foreach (var subscription in subscriptions)
             {
-                subscriptions = new Subscription[0];
+                AddOrUpdate(ctx, subscription, existingSubscriptions, id);
             }
 
-            using (var ctx = this.OpenContext())
-            {
-                var existingSubscriptions = ctx.Subscriptions.Where(s => s.UserId == userId).ToList();
-                ctx.RemoveRange(existingSubscriptions.Where(e => subscriptions.All(s => s.SeriesName != e.SeriesName)));
-                foreach (var subscription in subscriptions)
-                {
-                    subscription.UserId = userId;
-                    var existingSubscription = existingSubscriptions.FirstOrDefault(s => s.SeriesName == subscription.SeriesName);
-                    if (existingSubscription == null)
-                    {
-                        ctx.Add(subscription);
-                    }
-                    else
-                    {
-                        existingSubscription.Quality = subscription.Quality;
-                    }
-                }
+            await ctx.SaveChangesAsync();
+        }
 
-                await ctx.SaveChangesAsync();
+        /// <inheritdoc/>
+        public async Task<Interfaces.DomainModels.Subscription[]> LoadAsync(string userId)
+        {
+            var id = Guid.Parse(userId);
+            using var ctx = this.OpenContext();
+            return (await ctx.Subscriptions.Where(s => s.UserId == id).ToArrayAsync()).Select(Mapper.Map).ToArray();
+        }
+
+        private static void AddOrUpdate(LostFilmDbContext ctx, Interfaces.DomainModels.Subscription subscription, List<DomainModels.Subscription> existingSubscriptions, Guid userId)
+        {
+            var existingSubscription = existingSubscriptions.FirstOrDefault(s => s.SeriesName == subscription.SeriesName);
+            if (existingSubscription == null)
+            {
+                ctx.Add(Mapper.Map(subscription, userId));
+            }
+            else
+            {
+                existingSubscription.Quality = subscription.Quality;
             }
         }
     }

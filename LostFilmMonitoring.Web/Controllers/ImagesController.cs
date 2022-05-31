@@ -55,7 +55,7 @@ namespace LostFilmMonitoring.Web.Controllers
             Stream stream;
             try
             {
-                stream = System.IO.File.OpenRead(Path.Combine(this.configuration.ImagesPath, fileName));
+                stream = System.IO.File.OpenRead(Path.Combine(this.configuration.ImagesDirectory, fileName));
             }
             catch (Exception)
             {

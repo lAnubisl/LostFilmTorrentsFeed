@@ -23,7 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Interfaces
 {
-    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using LostFilmMonitoring.DAO.Interfaces.DomainModels;
@@ -38,21 +37,21 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// </summary>
         /// <param name="userId">User Id.</param>
         /// <returns>Rss feed content.</returns>
-        Task<string> LoadFeedRawAsync(Guid userId);
+        Task<string?> LoadFeedRawAsync(string userId);
 
         /// <summary>
         /// Delete users rss feed.
         /// </summary>
         /// <param name="userId">UserId.</param>
         /// <returns>Awaitable task.</returns>
-        Task DeleteAsync(Guid userId);
+        Task DeleteAsync(string userId);
 
         /// <summary>
         /// Loads user's rss feed in form of items.
         /// </summary>
         /// <param name="userId">UserId.</param>
         /// <returns>Set of FeedItems.</returns>
-        Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId);
+        Task<SortedSet<FeedItem>> LoadUserFeedAsync(string userId);
 
         /// <summary>
         /// Loads base rss feed.
@@ -66,7 +65,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// <param name="userId">UserId.</param>
         /// <param name="items">FeedItems to save.</param>
         /// <returns>Awaitable task.</returns>
-        Task SaveUserFeedAsync(Guid userId, FeedItem[] items);
+        Task SaveUserFeedAsync(string userId, FeedItem[] items);
 
         /// <summary>
         /// Save base feed.

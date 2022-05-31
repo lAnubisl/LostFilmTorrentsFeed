@@ -21,16 +21,14 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -38,93 +36,86 @@ namespace LostFilmMonitoring.DAO
     /// </summary>
     public class FeedDAO : BaseDAO, IFeedDAO
     {
-        private static readonly Guid BaseFeedId = new Guid("96AFC9E2-C64D-4DDD-9003-016974D32100");
+        private static readonly string BaseFeedId = "96AFC9E2-C64D-4DDD-9003-016974D32100";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedDAO"/> class.
         /// </summary>
         /// <param name="configuration">IConfiguration.</param>
         public FeedDAO(IConfiguration configuration)
-            : base(configuration.ConnectionString)
+            : base(configuration.SqlServerConnectionString)
         {
         }
 
-        /// <inheritdoc/>
-        public async Task<string> LoadFeedRawAsync(Guid userId)
+        public async Task<string> LoadFeedRawAsync(string userId)
         {
-            using (var ctx = this.OpenContext())
+            var id = Guid.Parse(userId);
+            using var ctx = this.OpenContext();
+            return (await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == id))?.Data;
+        }
+
+        public async Task DeleteAsync(string userId)
+        {
+            var id = Guid.Parse(userId);
+            using var ctx = this.OpenContext();
+            var feed = await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == id);
+            if (feed == null)
             {
-                return (await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == userId))?.Data;
+                return;
             }
+
+            ctx.Feeds.Remove(feed);
+            await ctx.SaveChangesAsync();
         }
 
-        /// <inheritdoc/>
-        public async Task DeleteAsync(Guid userId)
-        {
-            using (var ctx = this.OpenContext())
-            {
-                var feed = await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == userId);
-                if (feed == null)
-                {
-                    return;
-                }
-
-                ctx.Feeds.Remove(feed);
-                ctx.SaveChanges();
-            }
-        }
-
-        /// <inheritdoc/>
-        public Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId)
+        public Task<SortedSet<Interfaces.DomainModels.FeedItem>> LoadUserFeedAsync(string userId)
         {
             return this.LoadFeedAsync(userId);
         }
 
-        /// <inheritdoc/>
-        public Task<SortedSet<FeedItem>> LoadBaseFeedAsync()
+        public Task<SortedSet<Interfaces.DomainModels.FeedItem>> LoadBaseFeedAsync()
         {
             return this.LoadFeedAsync(BaseFeedId);
         }
 
-        /// <inheritdoc/>
-        public Task SaveUserFeedAsync(Guid userId, FeedItem[] items)
+        public Task SaveUserFeedAsync(string userId, Interfaces.DomainModels.FeedItem[] items)
         {
             return this.SaveFeedAsync(userId, items);
         }
 
-        /// <inheritdoc/>
-        public Task SaveBaseFeedAsync(FeedItem[] items)
+        public Task SaveBaseFeedAsync(Interfaces.DomainModels.FeedItem[] items)
         {
             return this.SaveFeedAsync(BaseFeedId, items);
         }
 
-        private async Task<SortedSet<FeedItem>> LoadFeedAsync(Guid userId)
+        private async Task<SortedSet<Interfaces.DomainModels.FeedItem>> LoadFeedAsync(string userId)
         {
-            string data = await this.LoadFeedRawAsync(userId);
+            var data = await this.LoadFeedRawAsync(userId);
             if (string.IsNullOrEmpty(data))
             {
                 return null;
             }
 
             var document = XDocument.Parse(data);
-            return FeedItem.GetItems(document);
+            return document.GetItems();
         }
 
-        private async Task SaveFeedAsync(Guid userId, FeedItem[] items)
+        private async Task SaveFeedAsync(string userId, Interfaces.DomainModels.FeedItem[] items)
         {
+            var id = Guid.Parse(userId);
             using (var ctx = this.OpenContext())
             {
-                var entity = await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == userId);
+                var entity = await ctx.Feeds.FirstOrDefaultAsync(f => f.UserId == id);
                 if (entity == null)
                 {
-                    entity = new Feed()
+                    entity = new DomainModels.Feed()
                     {
-                        UserId = userId,
+                        UserId = id,
                     };
                     ctx.Feeds.Add(entity);
                 }
 
-                entity.Data = FeedItem.GenerateXml(items);
+                entity.Data = items.GenerateXml();
                 ctx.SaveChanges();
             }
         }

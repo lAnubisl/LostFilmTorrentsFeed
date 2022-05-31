@@ -30,5 +30,13 @@ namespace LostFilmTV.Client.Exceptions
     /// </summary>
     public class RemoteServiceUnavailableException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoteServiceUnavailableException"/> class.
+        /// </summary>
+        /// <param name="innerException">Instance of <see cref="Exception"/>.</param>
+        public RemoteServiceUnavailableException(Exception innerException)
+            : base("Remote Service Unavailable", innerException)
+        {
+        }
     }
 }

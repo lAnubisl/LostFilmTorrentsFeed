@@ -101,7 +101,7 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <returns>ViewResult.</returns>
         [HttpGet]
         [Route("Register")]
-        public ViewResult Register() => this.View(new EditUserModel());
+        public ViewResult Register() => this.View(new EditUserRequestModel());
 
         /// <summary>
         /// Register.
@@ -110,16 +110,16 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <returns>ActionResult.</returns>
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult> Register(EditUserModel model)
+        public async Task<ActionResult> Register(EditUserRequestModel model)
         {
             await this.presentationService.RegisterAsync(model);
             if (this.Request.Cookies.ContainsKey("selected"))
             {
                 var selectedJson = this.Request.Cookies["selected"];
-                SelectedFeedItem[] selected = null;
+                SubscriptionItem[] selected = null;
                 try
                 {
-                    selected = JsonConvert.DeserializeObject<SelectedFeedItem[]>(selectedJson);
+                    selected = JsonConvert.DeserializeObject<SubscriptionItem[]>(selectedJson);
                 }
                 catch
                 {

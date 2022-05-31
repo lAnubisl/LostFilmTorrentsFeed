@@ -27,7 +27,10 @@ namespace LostFilmMonitoring.Web.Controllers
     using System.Text;
     using System.Threading.Tasks;
     using LostFilmMonitoring.BLL;
+    using LostFilmMonitoring.BLL.Commands;
     using LostFilmMonitoring.BLL.Models;
+    using LostFilmMonitoring.BLL.Models.Request;
+    using LostFilmMonitoring.BLL.Models.Response;
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -35,18 +38,14 @@ namespace LostFilmMonitoring.Web.Controllers
     /// </summary>
     public class FeedController : Controller
     {
-        private readonly RssFeedService feedService;
-        private readonly PresentationService presentationService;
+        private readonly ICommand<EditUserRequestModel, EditUserResponseModel> command;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedController"/> class.
         /// </summary>
-        /// <param name="rssFeedService">RssFeedService.</param>
-        /// <param name="presentationService">PresentationService.</param>
-        public FeedController(RssFeedService rssFeedService, PresentationService presentationService)
+        public FeedController(ICommand<EditUserRequestModel, EditUserResponseModel> command)
         {
-            this.feedService = rssFeedService ?? throw new ArgumentNullException(nameof(rssFeedService));
-            this.presentationService = presentationService ?? throw new ArgumentNullException(nameof(presentationService));
+            this.command = command ?? throw new ArgumentNullException(nameof(command));
         }
 
         /// <summary>
@@ -73,9 +72,9 @@ namespace LostFilmMonitoring.Web.Controllers
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("Feed")]
-        public async Task<RedirectToActionResult> Feed(EditUserModel model)
+        public async Task<RedirectToActionResult> Feed(EditUserRequestModel model)
         {
-            await this.presentationService.UpdateUserAsync(model);
+            var result = await this.command.ExecuteAsync(model);
             return this.RedirectToAction("Feed");
         }
 

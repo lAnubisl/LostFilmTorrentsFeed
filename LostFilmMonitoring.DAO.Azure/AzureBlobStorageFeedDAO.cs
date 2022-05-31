@@ -21,61 +21,81 @@
 // SOFTWARE.
 // </copyright>
 
-using LostFilmMonitoring.Common;
-using LostFilmMonitoring.DAO.Interfaces;
-using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
 namespace LostFilmMonitoring.DAO.Azure
 {
+    using System.Xml.Linq;
+    using LostFilmMonitoring.Common;
+    using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+
+    /// <summary>
+    /// Implements <see cref="IFeedDAO"/> for Azure Blob Storage.
+    /// </summary>
     public class AzureBlobStorageFeedDAO : IFeedDAO
     {
+        private static readonly string ConteinerName = "rssfeeds";
+        private static readonly string BaseFeedName = "baseFeed.xml";
         private readonly AzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
-        private static readonly string conteinerName = "rssfeeds";
-        private static readonly Guid BaseFeedId = new Guid("96AFC9E2-C64D-4DDD-9003-016974D32100");
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureBlobStorageFeedDAO"/> class.
+        /// </summary>
+        /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
+        /// <param name="logger">Instance of ILogger.</param>
         public AzureBlobStorageFeedDAO(AzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient;
             this.logger = logger.CreateScope(nameof(AzureBlobStorageFeedDAO));
         }
 
-        public Task DeleteAsync(Guid userId)
+        /// <inheritdoc/>
+        public Task DeleteAsync(string userId)
         {
-            this.logger.Info($"Call: {nameof(DeleteAsync)}('{userId}')");
-            return this.azureBlobStorageClient.DeleteAsync(conteinerName, userId.ToString());
+            this.logger.Info($"Call: {nameof(this.DeleteAsync)}('{userId}')");
+            return this.azureBlobStorageClient.DeleteAsync(ConteinerName, userId);
         }
 
+        /// <inheritdoc/>
         public async Task<SortedSet<FeedItem>> LoadBaseFeedAsync()
         {
-            this.logger.Info($"Call: {nameof(LoadBaseFeedAsync)}()");
-            string content = await this.azureBlobStorageClient.DownloadStringAsync(conteinerName, BaseFeedId.ToString());
-            return FeedItem.GetItems(content);
+            this.logger.Info($"Call: {nameof(this.LoadBaseFeedAsync)}()");
+            return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, BaseFeedName));
         }
 
-        public Task<string> LoadFeedRawAsync(Guid userId)
+        /// <inheritdoc/>
+        public Task<string?> LoadFeedRawAsync(string userId)
         {
-            this.logger.Info($"Call: {nameof(LoadFeedRawAsync)}('{userId}')");
-            return this.azureBlobStorageClient.DownloadStringAsync(conteinerName, userId.ToString());
+            this.logger.Info($"Call: {nameof(this.LoadFeedRawAsync)}('{userId}')");
+            return this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, GetUserFeedFileName(userId));
         }
 
-        public async Task<SortedSet<FeedItem>> LoadUserFeedAsync(Guid userId)
+        /// <inheritdoc/>
+        public async Task<SortedSet<FeedItem>> LoadUserFeedAsync(string userId)
         {
-            this.logger.Info($"Call: {nameof(LoadUserFeedAsync)}('{userId}')");
-            string content = await this.azureBlobStorageClient.DownloadStringAsync(conteinerName, userId.ToString());
-            return FeedItem.GetItems(content);
+            this.logger.Info($"Call: {nameof(this.LoadUserFeedAsync)}('{userId}')");
+            return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, GetUserFeedFileName(userId)));
         }
 
+        /// <inheritdoc/>
         public Task SaveBaseFeedAsync(FeedItem[] items)
         {
-            this.logger.Info($"Call: {nameof(SaveBaseFeedAsync)}(FeedItem[])");
-            return this.azureBlobStorageClient.UploadAsync(conteinerName, BaseFeedId.ToString(), FeedItem.GenerateXml(items));
+            this.logger.Info($"Call: {nameof(this.SaveBaseFeedAsync)}(FeedItem[])");
+            return this.azureBlobStorageClient.UploadAsync(ConteinerName, BaseFeedName, items.GenerateXml());
         }
 
-        public Task SaveUserFeedAsync(Guid userId, FeedItem[] items)
+        /// <inheritdoc/>
+        public Task SaveUserFeedAsync(string userId, FeedItem[] items)
         {
-            this.logger.Info($"Call: {nameof(SaveUserFeedAsync)}('{userId}', FeedItem[])");
-            return this.azureBlobStorageClient.UploadAsync(conteinerName, userId.ToString(), FeedItem.GenerateXml(items));
+            this.logger.Info($"Call: {nameof(this.SaveUserFeedAsync)}('{userId}', FeedItem[])");
+            return this.azureBlobStorageClient.UploadAsync(ConteinerName, GetUserFeedFileName(userId), items.GenerateXml(), "private, max-age=300");
         }
+
+        private static string GetUserFeedFileName(string userId) => $"{userId}.xml";
+
+        private static SortedSet<FeedItem> ToSortedSet(string? xml)
+            => xml == null
+                ? new SortedSet<FeedItem>()
+                : XDocument.Parse(xml).GetItems();
     }
 }

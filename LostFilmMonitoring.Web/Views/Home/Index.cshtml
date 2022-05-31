@@ -100,8 +100,8 @@
                     if (hiddens[i].value === "") continue;
                     data.push(
                         {
-                            @nameof(LostFilmMonitoring.BLL.Models.SelectedFeedItem.SeriesName): hiddens[i].name,
-                            @nameof(LostFilmMonitoring.BLL.Models.SelectedFeedItem.Quality): document.getElementsByName(hiddens[i].name + "_quality")[0].value
+                            @nameof(LostFilmMonitoring.BLL.Models.SubscriptionItem.SeriesName): hiddens[i].name,
+                            @nameof(LostFilmMonitoring.BLL.Models.SubscriptionItem.Quality): document.getElementsByName(hiddens[i].name + "_quality")[0].value
                         }
                     );
                 }

@@ -31,13 +31,24 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
     public class TorrentFile
     {
         /// <summary>
-        /// Gets or sets FileName.
+        /// Initializes a new instance of the <see cref="TorrentFile"/> class.
         /// </summary>
-        public string FileName { get; set; }
+        /// <param name="fileName">File name.</param>
+        /// <param name="stream">File content stream.</param>
+        public TorrentFile(string fileName, Stream stream)
+        {
+            this.FileName = fileName;
+            this.Stream = stream;
+        }
 
         /// <summary>
-        /// Gets or sets stream.
+        /// Gets FileName.
         /// </summary>
-        public Stream Stream { get; set; }
+        public string FileName { get; }
+
+        /// <summary>
+        /// Gets stream.
+        /// </summary>
+        public Stream Stream { get; }
     }
 }

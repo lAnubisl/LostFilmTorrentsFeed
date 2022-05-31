@@ -1,4 +1,4 @@
-﻿// <copyright file="IUserDao.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IUserDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,44 +21,27 @@
 // SOFTWARE.
 // </copyright>
 
-using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
 namespace LostFilmMonitoring.DAO.Interfaces
 {
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+
+    /// <summary>
+    /// Provides functionality for managing users in storage.
+    /// </summary>
     public interface IUserDAO
     {
-        /// <summary>
-        /// Delete users which were not be active for 1 month.
-        /// </summary>
-        /// <returns>User Ids which were deleted.</returns>
-        Task<Guid[]> DeleteOldUsersAsync();
-
-        /// <summary>
-        /// Update user's last activity.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>True if user was found and updated. Otherwise false.</returns>
-        Task<bool> UpdateLastActivity(Guid userId);
-
-        /// <summary>
-        /// Load user with subscriptions.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        /// <returns>User with subscriptions preloaded.</returns>
-        Task<User> LoadWithSubscriptionsAsync(Guid userId);
-
         /// <summary>
         /// Load user.
         /// </summary>
         /// <param name="userId">UserId.</param>
         /// <returns>User.</returns>
-        Task<User> LoadAsync(Guid userId);
+        Task<User?> LoadAsync(string userId);
 
         /// <summary>
         /// Create new user.
         /// </summary>
         /// <param name="user">User to create.</param>
         /// <returns>New user GUID.</returns>
-        Task<Guid> EditAsync(User user);
+        Task SaveAsync(User user);
     }
 }

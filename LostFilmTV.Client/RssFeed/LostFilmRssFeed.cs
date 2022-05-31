@@ -23,10 +23,13 @@
 
 namespace LostFilmTV.Client.RssFeed
 {
+    using System;
     using System.Collections.Generic;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmTV.Client;
+    using LostFilmTV.Client.Exceptions;
     using LostFilmTV.Client.Response;
 
     /// <summary>
@@ -34,13 +37,18 @@ namespace LostFilmTV.Client.RssFeed
     /// </summary>
     public class LostFilmRssFeed : BaseRssFeed, IRssFeed
     {
+        private readonly IConfiguration configuration;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LostFilmRssFeed"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public LostFilmRssFeed(ILogger logger)
-            : base(logger.CreateScope(nameof(ReteOrgRssFeed)))
+        /// <param name="httpClientFactory">httpClientFactory.</param>
+        /// <param name="configuration">configuration.</param>
+        public LostFilmRssFeed(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+            : base(logger.CreateScope(nameof(ReteOrgRssFeed)), httpClientFactory)
         {
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -49,7 +57,21 @@ namespace LostFilmTV.Client.RssFeed
         /// <returns>Feed items.</returns>
         public async Task<SortedSet<FeedItemResponse>> LoadFeedItemsAsync()
         {
-            var rssText = await this.DownloadRssText("https://www.lostfilm.tv/rss.xml");
+            var requestHeaders = new Dictionary<string, string>
+            {
+                { "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36" },
+            };
+
+            string rssText;
+            try
+            {
+                rssText = await this.DownloadRssTextAsync("https://www.lostfilm.tv/rss.xml", requestHeaders);
+            }
+            catch (RemoteServiceUnavailableException)
+            {
+                return new SortedSet<FeedItemResponse>();
+            }
+
             rssText = FixAmpBug(rssText);
             return this.GetItems(rssText);
         }
@@ -65,7 +87,7 @@ namespace LostFilmTV.Client.RssFeed
             var escapedAmpIndex = rss.IndexOf("&amp;");
             if (ampIndex == escapedAmpIndex)
             {
-                return rss.Substring(0, ampIndex + 1) + FixAmpBug(rss[(ampIndex + 1) ..]);
+                return rss[.. (ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1) ..]);
             }
 
             rss = rss.Insert(ampIndex + 1, "amp;");

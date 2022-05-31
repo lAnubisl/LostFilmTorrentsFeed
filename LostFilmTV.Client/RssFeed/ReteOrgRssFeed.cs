@@ -24,6 +24,7 @@
 namespace LostFilmTV.Client.RssFeed
 {
     using System.Collections.Generic;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmTV.Client;
@@ -39,8 +40,9 @@ namespace LostFilmTV.Client.RssFeed
         /// Initializes a new instance of the <see cref="ReteOrgRssFeed"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public ReteOrgRssFeed(ILogger logger)
-            : base(logger.CreateScope(nameof(ReteOrgRssFeed)))
+        /// <param name="httpClientFactory">httpClientFactory.</param>
+        public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
+            : base(logger.CreateScope(nameof(ReteOrgRssFeed)), httpClientFactory)
         {
         }
 
@@ -54,7 +56,7 @@ namespace LostFilmTV.Client.RssFeed
             string rss;
             try
             {
-                rss = await this.DownloadRssText("http://insearch.site/rssdd.xml");
+                rss = await this.DownloadRssTextAsync("http://insearch.site/rssdd.xml");
             }
             catch (RemoteServiceUnavailableException)
             {
