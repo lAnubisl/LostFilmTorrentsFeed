@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure;
-    using global::Azure.Data.Tables;
-    using LostFilmMonitoring.BLL.Exceptions;
-    using LostFilmMonitoring.Common;
-
     /// <summary>
     /// This class is responsible for managing access to Azure.Data.Tables.TableClient object instance.
     /// </summary>

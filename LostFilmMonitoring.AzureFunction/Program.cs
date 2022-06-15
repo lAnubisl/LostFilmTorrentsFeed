@@ -23,24 +23,6 @@
 
 namespace LostFilmMonitoring.AzureFunction
 {
-    using System;
-    using Azure.Data.Tables;
-    using Azure.Storage.Blobs;
-    using LostFilmMonitoring.BLL;
-    using LostFilmMonitoring.BLL.Commands;
-    using LostFilmMonitoring.BLL.Interfaces;
-    using LostFilmMonitoring.BLL.Models.Request;
-    using LostFilmMonitoring.BLL.Models.Response;
-    using LostFilmMonitoring.BLL.Validators;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Azure;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmTV.Client;
-    using LostFilmTV.Client.RssFeed;
-    using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-
     /// <summary>
     /// Program entry class.
     /// </summary>

@@ -23,9 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using LostFilmMonitoring.BLL.Interfaces;
-    using LostFilmMonitoring.Common;
-
     /// <summary>
     /// Implements <see cref="IFileSystem"/> for Azure Blob Storage.
     /// </summary>

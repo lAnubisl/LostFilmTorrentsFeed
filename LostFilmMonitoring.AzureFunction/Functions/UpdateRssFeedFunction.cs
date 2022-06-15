@@ -23,12 +23,6 @@
 
 namespace LostFilmMonitoring.AzureFunction.Functions
 {
-    using System;
-    using System.Threading.Tasks;
-    using LostFilmMonitoring.BLL.Commands;
-    using LostFilmMonitoring.Common;
-    using Microsoft.Azure.Functions.Worker;
-
     /// <summary>
     /// Responsible for updating RSS feeds.
     /// </summary>

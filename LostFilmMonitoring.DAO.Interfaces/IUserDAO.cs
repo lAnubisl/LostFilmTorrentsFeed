@@ -43,5 +43,11 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// <param name="user">User to create.</param>
         /// <returns>New user GUID.</returns>
         Task SaveAsync(User user);
+
+        /// <summary>
+        /// Load users.
+        /// </summary>
+        /// <returns>All users.</returns>
+        Task<User[]> LoadAsync();
     }
 }

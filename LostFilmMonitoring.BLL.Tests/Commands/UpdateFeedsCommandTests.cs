@@ -193,8 +193,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
 
             await command.ExecuteAsync();
 
-            this.logger.Verify(x => x.Error("No feed items were found."), Times.Once);
-            this.seriesDAO.Verify(x => x.LoadAsync(), Times.Never);
+            this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         [Test]
@@ -443,7 +442,9 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
                     "Флэш (The Flash). Падение смерти (S08E13) ",
                     null,
                     "http://n.tracktor.site/rssdownloader.php?id=51439",
-                    null)
+                    null,
+                    8, 8, 8,
+                    13, 13, 13)
             });
 
             await command.ExecuteAsync();

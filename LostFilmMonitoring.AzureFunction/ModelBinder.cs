@@ -23,10 +23,6 @@
 
 namespace LostFilmMonitoring.AzureFunction
 {
-    using System.IO;
-    using Microsoft.Azure.Functions.Worker.Http;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Responsible for binding <see cref="HttpRequestData"/> to model instance.
     /// </summary>

@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using System.Xml.Linq;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Implements <see cref="IFeedDAO"/> for Azure Blob Storage.
     /// </summary>

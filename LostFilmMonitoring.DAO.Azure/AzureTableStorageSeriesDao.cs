@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure.Data.Tables;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Implements <see cref="ISeriesDAO"/> for Azure Table Storage.
     /// </summary>
@@ -41,6 +36,26 @@ namespace LostFilmMonitoring.DAO.Azure
         public AzureTableStorageSeriesDao(TableServiceClient tableServiceClient, ILogger logger)
             : base(tableServiceClient, "series", logger?.CreateScope(nameof(AzureTableStorageUserDAO)))
         {
+        }
+
+        /// <inheritdoc/>
+        public async Task DeleteAsync(Series series)
+        {
+            this.Logger.Info($"Call: {nameof(this.DeleteAsync)}(series)");
+
+            if (series == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(series.Name), EscapeKey(series.Name)));
+            }
+            catch (ExternalServiceUnavailableException ex)
+            {
+                this.Logger.Log($"Error deleting series (Name='{series.Name}')", ex);
+            }
         }
 
         /// <inheritdoc/>

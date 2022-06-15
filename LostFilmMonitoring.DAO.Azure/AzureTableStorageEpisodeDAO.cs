@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure.Data.Tables;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Implements <see cref="IEpisodeDAO"/> for Azure Table Storage.
     /// </summary>

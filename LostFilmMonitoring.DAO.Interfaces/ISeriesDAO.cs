@@ -50,5 +50,12 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// <param name="series">Series to save.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task SaveAsync(Series series);
+
+        /// <summary>
+        /// Delete series.
+        /// </summary>
+        /// <param name="series">Series to delete.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task DeleteAsync(Series series);
     }
 }

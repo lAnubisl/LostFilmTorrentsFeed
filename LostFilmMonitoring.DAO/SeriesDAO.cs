@@ -27,6 +27,7 @@ namespace LostFilmMonitoring.DAO.Sql
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
+    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -41,6 +42,11 @@ namespace LostFilmMonitoring.DAO.Sql
         public SeriesDAO(IConfiguration configuration)
             : base(configuration.SqlServerConnectionString)
         {
+        }
+
+        public Task DeleteAsync(Series series)
+        {
+            throw new System.NotImplementedException();
         }
 
         /// <inheritdoc/>

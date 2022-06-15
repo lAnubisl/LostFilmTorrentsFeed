@@ -23,9 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure;
-    using global::Azure.Data.Tables;
-
     /// <summary>
     /// Describes Series in Azure Table Storage.
     /// </summary>

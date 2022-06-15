@@ -31,8 +31,19 @@ namespace LostFilmMonitoring.BLL.Models.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexViewModel"/> class.
         /// </summary>
+        public IndexViewModel()
+        {
+            // This constructor is required for JSON deserialization.
+            this.Last24HoursItems = Array.Empty<string>();
+            this.Last7DaysItems = Array.Empty<string>();
+            this.OlderItems = Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexViewModel"/> class.
+        /// </summary>
         /// <param name="series">Series.</param>
-        public IndexViewModel(IList<Series> series)
+        public IndexViewModel(ICollection<Series> series)
         {
             this.Last24HoursItems = Filter(series, s => s.LastEpisode >= DateTime.Now.AddHours(-24));
             this.Last7DaysItems = Filter(series, s => s.LastEpisode < DateTime.Now.AddHours(-24) && s.LastEpisode >= DateTime.Now.AddDays(-7));
@@ -40,21 +51,21 @@ namespace LostFilmMonitoring.BLL.Models.ViewModel
         }
 
         /// <summary>
-        /// Gets episodes updated within last 24 hours.
+        /// Gets or sets episodes updated within last 24 hours.
         /// </summary>
-        public string[] Last24HoursItems { get; }
+        public string[] Last24HoursItems { get; set; }
 
         /// <summary>
-        /// Gets episodes updated within last 7 days.
+        /// Gets or sets episodes updated within last 7 days.
         /// </summary>
-        public string[] Last7DaysItems { get; }
+        public string[] Last7DaysItems { get; set; }
 
         /// <summary>
-        /// Gets episodes older than 7 days..
+        /// Gets or sets episodes older than 7 days..
         /// </summary>
-        public string[] OlderItems { get; }
+        public string[] OlderItems { get; set; }
 
-        private static string[] Filter(IList<Series> series, Func<Series, bool> predicate)
+        private static string[] Filter(ICollection<Series> series, Func<Series, bool> predicate)
         {
             return series
                 .Where(predicate)

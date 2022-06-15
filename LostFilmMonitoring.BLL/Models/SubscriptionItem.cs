@@ -38,6 +38,12 @@ namespace LostFilmMonitoring.BLL.Models
         /// </summary>
         public string? Quality { get; set; }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{this.SeriesName} [{this.Quality}]";
+        }
+
         /// <summary>
         /// Map array of <see cref="SubscriptionItem"/> to an array of <see cref="Subscription"/>.
         /// </summary>
@@ -48,7 +54,7 @@ namespace LostFilmMonitoring.BLL.Models
 
         private static Subscription Map(SubscriptionItem s)
             => new (
-                s.SeriesName ?? throw new ArgumentNullException(nameof(Subscription.SeriesName)),
-                s.Quality ?? throw new ArgumentNullException(nameof(Subscription.Quality)));
+                s.SeriesName ?? throw new InvalidDataException(nameof(Subscription.SeriesName)),
+                s.Quality ?? throw new InvalidDataException(nameof(Subscription.Quality)));
     }
 }

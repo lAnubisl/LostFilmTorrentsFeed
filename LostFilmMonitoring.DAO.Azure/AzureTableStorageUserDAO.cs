@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure.Data.Tables;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Implements <see cref="IUserDAO"/> for Azure Table Storage.
     /// </summary>
@@ -52,6 +47,22 @@ namespace LostFilmMonitoring.DAO.Azure
                 var response = await tc.GetEntityAsync<UserTableEntity>(userId, userId);
                 return Mapper.Map(response.Value);
             });
+        }
+
+        /// <inheritdoc/>
+        public async Task<User[]> LoadAsync()
+        {
+            this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
+            return await this.TryGetEntityAsync(async (tc) =>
+            {
+                var result = new List<User>();
+                await foreach (var item in tc.QueryAsync<UserTableEntity>())
+                {
+                    result.Add(Mapper.Map(item));
+                }
+
+                return result.ToArray();
+            }) ?? Array.Empty<User>();
         }
 
         /// <inheritdoc/>

@@ -1,4 +1,4 @@
-﻿// <copyright file="EpisodeTableEntity.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,43 +21,17 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure
-{
-    /// <summary>
-    /// Describes Episode in Azure Table Storage.
-    /// </summary>
-    public class EpisodeTableEntity : ITableEntity
-    {
-        /// <inheritdoc/>
-        public string PartitionKey { get; set; } = null!;
-
-        /// <inheritdoc/>
-        public string RowKey { get; set; } = null!;
-
-        /// <inheritdoc/>
-        public DateTimeOffset? Timestamp { get; set; }
-
-        /// <inheritdoc/>
-        public ETag ETag { get; set; }
-
-        /// <summary>
-        /// Gets or sets Episode Name.
-        /// </summary>
-        public string EpisodeName { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets Quality.
-        /// </summary>
-        public string Quality { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets Season Number.
-        /// </summary>
-        public int SeasonNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets Episode Number.
-        /// </summary>
-        public int EpisodeNumber { get; set; }
-    }
-}
+#pragma warning disable SA1200 // Using directives should be placed correctly
+global using System.Text;
+global using System.Xml.Linq;
+global using Azure;
+global using Azure.Data.Tables;
+global using Azure.Storage.Blobs;
+global using Azure.Storage.Blobs.Models;
+global using LostFilmMonitoring.BLL.Exceptions;
+global using LostFilmMonitoring.BLL.Interfaces;
+global using LostFilmMonitoring.Common;
+global using LostFilmMonitoring.DAO.Interfaces;
+global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+global using Newtonsoft.Json;
+#pragma warning restore SA1200 // Using directives should be placed correctly

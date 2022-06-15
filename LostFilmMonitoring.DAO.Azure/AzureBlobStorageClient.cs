@@ -23,13 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using System.Text;
-    using global::Azure;
-    using global::Azure.Storage.Blobs;
-    using global::Azure.Storage.Blobs.Models;
-    using LostFilmMonitoring.BLL.Exceptions;
-    using LostFilmMonitoring.Common;
-
     /// <summary>
     /// Manages access to Azure Blob Storage.
     /// </summary>
@@ -60,12 +53,23 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
         public async Task UploadAsync(string containerName, string fileName, Stream? content, string cacheControl = "no-cache")
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
+
             this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', Stream)");
             var blobClient = this.GetBlobClient(containerName, fileName);
 
             try
             {
+                content.Position = 0;
                 await blobClient.UploadAsync(content, overwrite: true);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
+            {
+                await this.CreateContainerAsync(containerName);
+                await this.UploadAsync(containerName, fileName, content, cacheControl);
             }
             catch (Exception ex)
             {
@@ -183,7 +187,7 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger.Info($"Call: {nameof(this.DeleteAsync)}('{containerName}', '{fileName}')");
             try
             {
-                await this.GetBlobClient(containerName, fileName).DeleteAsync();
+                await this.GetBlobClient(containerName, fileName).DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
             }
             catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound")
             {
@@ -230,6 +234,18 @@ namespace LostFilmMonitoring.DAO.Azure
                 var message = $"Error checking if file '{fileName}' exists in container '{containerName}'.";
                 this.logger.Log(message, ex);
                 throw new ExternalServiceUnavailableException(message, ex);
+            }
+        }
+
+        private async Task CreateContainerAsync(string containerName)
+        {
+            try
+            {
+                await this.blobServiceClient.CreateBlobContainerAsync(containerName);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
+            {
+                return;
             }
         }
 

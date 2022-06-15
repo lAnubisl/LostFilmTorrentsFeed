@@ -23,9 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure;
-    using global::Azure.Data.Tables;
-
     /// <summary>
     /// Describes User Subscrition in Azure Table Storage.
     /// </summary>
@@ -42,16 +39,6 @@ namespace LostFilmMonitoring.DAO.Azure
 
         /// <inheritdoc/>
         public ETag ETag { get; set; }
-
-        /// <summary>
-        /// Gets or sets User Id.
-        /// </summary>
-        public string UserId { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets Series Name.
-        /// </summary>
-        public string SeriesName { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets Series Quality.

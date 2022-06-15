@@ -23,19 +23,6 @@
 
 namespace LostFilmMonitoring.AzureFunction.Functions
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using LostFilmMonitoring.BLL.Commands;
-    using LostFilmMonitoring.BLL.Models.Request;
-    using LostFilmMonitoring.BLL.Models.Response;
-    using LostFilmMonitoring.Common;
-    using Microsoft.Azure.Functions.Worker;
-    using Microsoft.Azure.Functions.Worker.Http;
-    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-    using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Responsible for registering user.
     /// </summary>

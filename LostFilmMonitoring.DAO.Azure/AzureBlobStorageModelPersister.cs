@@ -23,11 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using LostFilmMonitoring.BLL.Exceptions;
-    using LostFilmMonitoring.BLL.Interfaces;
-    using LostFilmMonitoring.Common;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Implements <see cref="IModelPersister"/> for Azure Blob Storage.
     /// </summary>

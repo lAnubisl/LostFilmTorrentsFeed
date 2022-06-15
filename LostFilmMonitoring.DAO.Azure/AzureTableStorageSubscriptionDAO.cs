@@ -23,12 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using global::Azure.Data.Tables;
-    using LostFilmMonitoring.BLL.Exceptions;
-    using LostFilmMonitoring.Common;
-    using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Implements <see cref="ISubscriptionDAO"/> for Azure Table Storage.
     /// </summary>
@@ -72,7 +66,7 @@ namespace LostFilmMonitoring.DAO.Azure
             return await this.TryGetEntityAsync(tc =>
             {
                 var query = tc.QueryAsync<SubscriptionTableEntity>(entity => entity.PartitionKey == seriesName && entity.Quality == quality);
-                return IterateAsync(query, item => item.UserId);
+                return IterateAsync(query, item => item.RowKey);
             }) ?? Array.Empty<string>();
         }
 

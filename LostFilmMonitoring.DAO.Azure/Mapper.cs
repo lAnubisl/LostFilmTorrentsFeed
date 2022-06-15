@@ -23,8 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Azure
 {
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Mapper.
     /// </summary>
@@ -36,7 +34,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="e">Instance of <see cref="SubscriptionTableEntity"/>.</param>
         /// <returns>Instance of <see cref="Subscription"/>.</returns>
         internal static Subscription Map(SubscriptionTableEntity e)
-            => new (e.SeriesName, e.Quality);
+            => new (e.PartitionKey, e.Quality);
 
         /// <summary>
         /// Map <see cref="Subscription"/> to <see cref="SubscriptionTableEntity"/>.
@@ -51,8 +49,6 @@ namespace LostFilmMonitoring.DAO.Azure
                 PartitionKey = subscription.SeriesName,
                 RowKey = userId,
                 Timestamp = DateTime.UtcNow,
-                UserId = userId,
-                SeriesName = subscription.SeriesName,
                 Quality = subscription.Quality,
             };
         }
@@ -98,12 +94,10 @@ namespace LostFilmMonitoring.DAO.Azure
                 PartitionKey = episode.SeriesName,
                 RowKey = episode.TorrentId,
                 Timestamp = DateTime.UtcNow,
-                SeriesName = episode.SeriesName,
                 EpisodeName = episode.EpisodeName,
                 SeasonNumber = episode.SeasonNumber ?? 0,
                 EpisodeNumber = episode.EpisodeNumber ?? 0,
                 Quality = episode.Quality,
-                TorrentId = episode.TorrentId,
             };
         }
 
