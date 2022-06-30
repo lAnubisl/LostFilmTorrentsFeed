@@ -237,6 +237,22 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
+        public async Task SetCacheControlAsync(string containerName, string fileName, string cacheControl)
+        {
+            this.logger.Info($"Call: {nameof(this.SetCacheControlAsync)}('{containerName}', '{fileName}', '{cacheControl}')");
+            var blobClient = this.GetBlobClient(containerName, fileName);
+            try
+            {
+                await SetCacheControlAsync(blobClient, cacheControl);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Error setting properties of file '{fileName}' in container '{containerName}'";
+                this.logger.Log(message, ex);
+                throw new ExternalServiceUnavailableException(message, ex);
+            }
+        }
+
         private async Task CreateContainerAsync(string containerName)
         {
             try

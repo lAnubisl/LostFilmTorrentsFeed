@@ -119,7 +119,7 @@ namespace LostFilmTV.Client.RssFeed
             }
             catch (Exception ex)
             {
-                this.Logger.Log(ex);
+                this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}{rssText}", ex);
                 return new SortedSet<FeedItemResponse>();
             }
 

@@ -83,7 +83,7 @@ namespace LostFilmMonitoring.DAO.Azure
         public Task SaveUserFeedAsync(string userId, FeedItem[] items)
         {
             this.logger.Info($"Call: {nameof(this.SaveUserFeedAsync)}('{userId}', FeedItem[])");
-            return this.azureBlobStorageClient.UploadAsync(ConteinerName, GetUserFeedFileName(userId), items.GenerateXml(), "private, max-age=300");
+            return this.azureBlobStorageClient.UploadAsync(ConteinerName, GetUserFeedFileName(userId), items.GenerateXml(), "public, max-age=300");
         }
 
         private static string GetUserFeedFileName(string userId) => $"{userId}.xml";

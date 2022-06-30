@@ -39,12 +39,12 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// <param name="linkSD">Link to torrent file SD.</param>
         /// <param name="linkMP4">Link to torrent file MP4.</param>
         /// <param name="link1080">Link to torrent file 1080.</param>
-        /// <param name="q1080SeasonNumber"></param>
-        /// <param name="qMP4SeasonNumber"></param>
-        /// <param name="qSDSeasonNumber"></param>
-        /// <param name="q1080EpisodeNumber"></param>
-        /// <param name="qMP4EpisodeNumber"></param>
-        /// <param name="qSDEpisodeNumber"></param>
+        /// <param name="q1080SeasonNumber">Season number for last episode of quality 1080p.</param>
+        /// <param name="qMP4SeasonNumber">Season number for last episode of quality 720p.</param>
+        /// <param name="qSDSeasonNumber">Season number for last episode of quality SD.</param>
+        /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
+        /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
+        /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
         public Series(
             string name,
             DateTime lastEposide,
@@ -103,16 +103,34 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// </summary>
         public string? LastEpisodeTorrentLink1080 { get; private set; }
 
+        /// <summary>
+        /// Gets season number for last episode of quality 1080p.
+        /// </summary>
         public int? Q1080SeasonNumber { get; private set; }
 
+        /// <summary>
+        /// Gets season number for last episode of quality 720p.
+        /// </summary>
         public int? QMP4SeasonNumber { get; private set; }
 
+        /// <summary>
+        /// Gets season number for last episode of quality SD.
+        /// </summary>
         public int? QSDSeasonNumber { get; private set; }
 
+        /// <summary>
+        /// Gets episode number for last episode of quality 1080p.
+        /// </summary>
         public int? Q1080EpisodeNumber { get; private set; }
 
+        /// <summary>
+        /// Gets episode number for last episode of quality 720p.
+        /// </summary>
         public int? QMP4EpisodeNumber { get; private set; }
 
+        /// <summary>
+        /// Gets episode number for last episode of quality SD.
+        /// </summary>
         public int? QSDEpisodeNumber { get; private set; }
 
         /// <summary>
