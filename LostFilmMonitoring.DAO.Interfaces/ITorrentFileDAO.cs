@@ -23,7 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Interfaces
 {
-    using System.IO;
     using System.Threading.Tasks;
     using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
@@ -33,19 +32,34 @@ namespace LostFilmMonitoring.DAO.Interfaces
     public interface ITorrentFileDAO
     {
         /// <summary>
-        /// Save torrent file on disk.
+        /// Save user torrent file to persistent storage.
         /// </summary>
-        /// <param name="fileName">FileName.</param>
-        /// <param name="fileContentStream">FileContentStream.</param>
-        /// <param name="torrentId">TorrentId.</param>
-        /// <returns>Awaitable task.</returns>
-        Task SaveAsync(string fileName, Stream fileContentStream, int torrentId);
+        /// <param name="userId">User Id.</param>
+        /// <param name="torrentFile">Torrent File.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SaveUserFileAsync(string userId, TorrentFile torrentFile);
 
         /// <summary>
-        /// Tries to find torrent file by torrent id.
+        /// Delete user torrent file from persistent storage.
+        /// </summary>
+        /// <param name="userId">User Id.</param>
+        /// <param name="torrentFileName">Torrent File Name.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task DeleteUserFileAsync(string userId, string torrentFileName);
+
+        /// <summary>
+        /// Save base torrent file to persistent storage.
+        /// </summary>
+        /// <param name="torrentId">TorrentId.</param>
+        /// <param name="torrentFile">Torrent File.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SaveBaseFileAsync(string torrentId, TorrentFile torrentFile);
+
+        /// <summary>
+        /// Loaf base torrent file from persistent storage.
         /// </summary>
         /// <param name="torrentId">Torrent id.</param>
         /// <returns>TorrentFile if it is found. Otherwise Null.</returns>
-        TorrentFile TryFind(int torrentId);
+        Task<TorrentFile?> LoadBaseFileAsync(string torrentId);
     }
 }

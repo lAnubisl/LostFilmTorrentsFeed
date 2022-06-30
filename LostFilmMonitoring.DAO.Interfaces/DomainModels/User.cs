@@ -23,36 +23,29 @@
 
 namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// User.
     /// </summary>
     public class User
     {
         /// <summary>
-        /// Gets or sets Id.
+        /// Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
-        public Guid Id { get; set; }
+        /// <param name="id">User Id.</param>
+        /// <param name="trackerId">Tracker Id.</param>
+        public User(string id, string trackerId)
+        {
+            this.Id = id;
+            this.TrackerId = trackerId;
+        }
 
         /// <summary>
-        /// Gets or sets LostFilmCookie.
+        /// Gets Id.
         /// </summary>
-        public string Cookie { get; set; }
+        public string Id { get; }
 
         /// <summary>
-        /// Gets or sets Usess.
-        /// </summary>
-        public string Usess { get; set; }
-
-        /// <summary>
-        /// Gets or sets Uid.
-        /// </summary>
-        public string Uid { get; set; }
-
-        /// <summary>
-        /// Gets or sets user identifier which should be in link of torrent file announces.
+        /// Gets user identifier which should be in link of torrent file announces.
         /// <![CDATA[http://bt.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
         ///          http://bt99.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
         ///          http://bt0.tracktor.in/tracker.php/1b07a52cb12a12945e15cca756f83789/announce
@@ -60,16 +53,6 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         ///          http://user1.newtrack.info/tracker.php/1b07a52cb12a12945e15cca756f83789/announce]]>
         /// Here '1b07a52cb12a12945e15cca756f83789' is the user id.
         /// </summary>
-        public string TrackerId { get; set; }
-
-        /// <summary>
-        /// Gets or sets LastActivity.
-        /// </summary>
-        public DateTime LastActivity { get; set; }
-
-        /// <summary>
-        /// Gets or sets Subscriptions.
-        /// </summary>
-        public List<Subscription> Subscriptions { get; set; }
+        public string TrackerId { get; }
     }
 }

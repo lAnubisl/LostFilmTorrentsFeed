@@ -26,11 +26,13 @@ namespace LostFilmTV.Client.RssFeed
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using System.Web;
     using System.Xml.Linq;
     using LostFilmMonitoring.Common;
-    using LostFilmTV.Client;
     using LostFilmTV.Client.Exceptions;
     using LostFilmTV.Client.Response;
 
@@ -39,13 +41,17 @@ namespace LostFilmTV.Client.RssFeed
     /// </summary>
     public abstract class BaseRssFeed
     {
+        private readonly IHttpClientFactory httpClientFactory;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseRssFeed"/> class.
         /// </summary>
         /// <param name="logger">Logger.</param>
-        public BaseRssFeed(ILogger logger)
+        /// <param name="httpClientFactory">IHttpClientFactory.</param>
+        public BaseRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
         {
             this.Logger = logger;
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         /// <summary>
@@ -57,32 +63,43 @@ namespace LostFilmTV.Client.RssFeed
         /// Downloads content by URL.
         /// </summary>
         /// <param name="rssUri">URL.</param>
+        /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
         /// <returns>Content.</returns>
-        protected async Task<string> DownloadRssText(string rssUri)
+        protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string> requestHeaders = null)
         {
-            this.Logger.Info($"Call: {nameof(this.DownloadRssText)}({rssUri})");
-            using (var client = new HttpClient())
+            this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
+            using (var client = this.httpClientFactory.CreateClient())
             {
+                var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
+                if (requestHeaders != null)
+                {
+                    foreach (var header in requestHeaders)
+                    {
+                        message.Headers.Add(header.Key, header.Value);
+                    }
+                }
+
                 try
                 {
-                    var rssText = await client.GetStringAsync(rssUri);
+                    var response = await client.SendAsync(message);
+                    var rssText = await response.Content.ReadAsStringAsync();
                     this.Logger.Debug(rssText);
                     return rssText;
                 }
                 catch (TaskCanceledException ex)
                 {
                     this.Logger.Log(ex);
-                    throw new RemoteServiceUnavailableException();
+                    throw new RemoteServiceUnavailableException(ex);
                 }
                 catch (IOException ex)
                 {
                     this.Logger.Log(ex);
-                    throw new RemoteServiceUnavailableException();
+                    throw new RemoteServiceUnavailableException(ex);
                 }
                 catch (Exception ex)
                 {
                     this.Logger.Log(ex);
-                    throw ex;
+                    throw new RemoteServiceUnavailableException(ex);
                 }
             }
         }
@@ -98,15 +115,52 @@ namespace LostFilmTV.Client.RssFeed
             XDocument document;
             try
             {
-                document = LostFilmTV.Client.Extensions.Parse(rssText);
+                document = Parse(rssText);
             }
             catch (Exception ex)
             {
-                this.Logger.Log(ex);
+                this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}{rssText}", ex);
                 return new SortedSet<FeedItemResponse>();
             }
 
-            return document.GetItems();
+            return GetItems(document);
+        }
+
+        /// <summary>
+        /// Generages XDocument from input string.
+        /// </summary>
+        /// <param name="rssString">Input string.</param>
+        /// <returns>XDocument.</returns>
+        private static XDocument Parse(string rssString)
+        {
+            string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
+            string result = Regex.Replace(rssString, pattern, m =>
+                        m.Groups["start"].Value +
+                        HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
+                        m.Groups["end"].Value);
+            try
+            {
+                return XDocument.Parse(result);
+            }
+            catch
+            {
+                return XDocument.Parse(rssString);
+            }
+        }
+
+        /// <summary>
+        /// Read feed items from XDocument.
+        /// </summary>
+        /// <param name="doc">XDocument.</param>
+        /// <returns>Set of FeedItemResponse.</returns>
+        private static SortedSet<FeedItemResponse> GetItems(XDocument doc)
+        {
+            var entries = from item in doc.Root.Descendants()
+                          .First(i => i.Name.LocalName == "channel")
+                          .Elements()
+                          .Where(i => i.Name.LocalName == "item")
+                          select new FeedItemResponse(item);
+            return new SortedSet<FeedItemResponse>(entries);
         }
     }
 }

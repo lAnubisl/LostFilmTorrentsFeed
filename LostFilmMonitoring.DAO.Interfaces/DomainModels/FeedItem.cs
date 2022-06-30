@@ -24,6 +24,7 @@
 namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Xml.Linq;
 
@@ -32,6 +33,8 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
     /// </summary>
     public class FeedItem : IComparable<FeedItem>
     {
+        private const string XmlDateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedItem"/> class.
         /// </summary>
@@ -47,44 +50,86 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         {
             this.Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
             this.PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
-            this.PublishDateParsed = ParseDate(this.PublishDate);
+            this.PublishDateParsed = DateTime.ParseExact(this.PublishDate, XmlDateFormat, CultureInfo.InvariantCulture);
+            this.PublishDateParsed = DateTime.SpecifyKind(this.PublishDateParsed, DateTimeKind.Utc);
             this.Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedItem"/> class.
         /// </summary>
-        /// <param name="item">FeedItemResponse.</param>
+        /// <param name="title">Feed Item Title.</param>
+        /// <param name="link">Feed Item Link.</param>
+        /// <param name="publishedDateTime">Feed Item Date.</param>
         public FeedItem(string title, string link, DateTime publishedDateTime)
         {
             this.Link = link;
             this.PublishDateParsed = publishedDateTime;
+            this.PublishDate = publishedDateTime.ToString(XmlDateFormat);
             this.Title = title;
         }
 
         /// <summary>
         /// Gets or sets PublishDate.
         /// </summary>
-        public string PublishDate { get; set; }
+        public string? PublishDate { get; set; }
 
         /// <summary>
         /// Gets or sets Title.
         /// </summary>
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         /// <summary>
         /// Gets or sets Link.
         /// </summary>
-        public string Link { get; set; }
+        public string? Link { get; set; }
 
         /// <summary>
         /// Gets or sets PublishDateParsed.
         /// </summary>
         public DateTime PublishDateParsed { get; set; }
 
-        /// <inheritdoc/>
-        public int CompareTo(FeedItem other)
+        /// <summary>
+        /// For user torrent feed item returns file name.
+        /// </summary>
+        /// <param name="userId">User Id.</param>
+        /// <returns>File name.</returns>
+        public string? GetUserFileName(string userId)
         {
+            if (string.IsNullOrEmpty(this?.Link))
+            {
+                return null;
+            }
+
+            var index = this.Link.IndexOf(userId);
+            if (index < 0)
+            {
+                return null;
+            }
+
+            var subStr = this.Link[(index + userId.Length) ..];
+            if (subStr.Length == 0)
+            {
+                return null;
+            }
+
+            var fileName = subStr[1..];
+            if (!fileName.EndsWith(".torrent"))
+            {
+                return null;
+            }
+
+            return fileName;
+        }
+
+        /// <inheritdoc/>
+        public int CompareTo(FeedItem? other)
+        {
+            if (other == null)
+            {
+                return -1;
+            }
+
             if (this.PublishDateParsed < other.PublishDateParsed)
             {
                 return 1;
@@ -95,13 +140,18 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
                 return -1;
             }
 
+            if (this.Title == null)
+            {
+                return 1;
+            }
+
             return this.Title.CompareTo(other.Title);
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (!(obj is FeedItem other))
+            if (obj is not FeedItem other)
             {
                 return false;
             }
@@ -119,55 +169,18 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// <inheritdoc/>
         public override string ToString()
         {
-            return this.Title;
+            return this.Title ?? string.Empty;
         }
 
-        public static SortedSet<FeedItem> GetItems(string content)
-        {
-            return GetItems(new XDocument(content));
-        }
-
-        public static SortedSet<FeedItem> GetItems(XDocument doc)
-        {
-            if (doc == null)
-            {
-                return null;
-            }
-
-            var entries = from item in doc.Root.Descendants()
-                          .First(i => i.Name.LocalName == "channel")
-                          .Elements()
-                          .Where(i => i.Name.LocalName == "item")
-                          select new FeedItem(item);
-            return new SortedSet<FeedItem>(entries);
-        }
-
-        public static string GenerateXml(FeedItem[] items)
-        {
-            XDocument rss = new XDocument();
-            rss.Add(
-                new XElement(
-                    "rss",
-                    new XAttribute("version", "2.0"),
-                    new XElement("channel")));
-
-            foreach (var item in items)
-            {
-                rss.Element("rss").Element("channel").Add(
-                    new XElement(
-                        "item",
-                        new XElement("title", item.Title),
-                        new XElement("link", item.Link),
-                        new XElement("pubDate", item.PublishDateParsed)));
-            }
-
-            return rss.ToString();
-        }
-
-        private static DateTime ParseDate(string date)
-        {
-            var dateTime = DateTime.TryParse(date, out DateTime result) ? result : DateTime.MinValue;
-            return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-        }
+        /// <summary>
+        /// Converts an instance to a XElement.
+        /// </summary>
+        /// <returns>XElement.</returns>
+        public XElement ToXElement()
+            => new (
+                "item",
+                new XElement("title", this.Title),
+                new XElement("link", this.Link),
+                new XElement("pubDate", this.PublishDateParsed.ToString(XmlDateFormat)));
     }
 }

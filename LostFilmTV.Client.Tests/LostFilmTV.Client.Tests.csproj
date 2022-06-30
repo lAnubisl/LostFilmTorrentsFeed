@@ -4,10 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="stylecop.json" />
+    <None Remove="TestData\BaseFeed1.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,9 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <EmbeddedResource Include="TestData\BaseFeed1.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.1.46">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LostFilmMonitoring.DAO.Azure\LostFilmMonitoring.DAO.Azure.csproj" />
+    <ProjectReference Include="..\LostFilmMonitoring.DAO.Interfaces\LostFilmMonitoring.DAO.Interfaces.csproj" />
     <ProjectReference Include="..\LostFilmTV.Client\LostFilmTV.Client.csproj" />
   </ItemGroup>
 

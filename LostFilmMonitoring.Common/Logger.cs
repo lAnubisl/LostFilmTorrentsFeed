@@ -104,6 +104,13 @@ namespace LostFilmMonitoring.Common
         }
 
         /// <inheritdoc/>
+        public void Log(string message, Exception ex)
+        {
+            this.Fatal(message + Environment.NewLine + ex.GetType() + Environment.NewLine + ex.Message + Environment.NewLine + ex.StackTrace);
+            this.healthReporter.ReportUnhealthy($"FATAL|{this.scope}|{ex.GetType() + Environment.NewLine + ex.Message}", ex);
+        }
+
+        /// <inheritdoc/>
         public void Warning(string message)
         {
             var m = $"WARNING|{this.scope}|{message}";

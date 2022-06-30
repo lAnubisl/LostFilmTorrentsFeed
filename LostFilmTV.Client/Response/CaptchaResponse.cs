@@ -58,7 +58,7 @@ namespace LostFilmTV.Client.Response
         /// </summary>
         /// <param name="response">HttpResponseMessage.</param>
         /// <returns>CaptchaResponse.</returns>
-        internal static async Task<CaptchaResponse> Build(HttpResponseMessage response)
+        internal static async Task<CaptchaResponse> BuildAsync(HttpResponseMessage response)
         {
             var content = await response.Content.ReadAsByteArrayAsync();
             var setCookieHeader = response.Headers.Where(h => h.Key == "Set-Cookie").Select(h => h.Value).FirstOrDefault()?.First();

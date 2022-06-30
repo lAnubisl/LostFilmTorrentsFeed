@@ -31,33 +31,125 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
     public class Series
     {
         /// <summary>
-        /// Gets or sets Name.
+        /// Initializes a new instance of the <see cref="Series"/> class.
         /// </summary>
-        public string Name { get; set; }
+        /// <param name="name">Series name.</param>
+        /// <param name="lastEposide">Last episode date.</param>
+        /// <param name="lastEpisodeName">Last episode name.</param>
+        /// <param name="linkSD">Link to torrent file SD.</param>
+        /// <param name="linkMP4">Link to torrent file MP4.</param>
+        /// <param name="link1080">Link to torrent file 1080.</param>
+        /// <param name="q1080SeasonNumber">Season number for last episode of quality 1080p.</param>
+        /// <param name="qMP4SeasonNumber">Season number for last episode of quality 720p.</param>
+        /// <param name="qSDSeasonNumber">Season number for last episode of quality SD.</param>
+        /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
+        /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
+        /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
+        public Series(
+            string name,
+            DateTime lastEposide,
+            string lastEpisodeName,
+            string? linkSD,
+            string? linkMP4,
+            string? link1080,
+            int? q1080SeasonNumber = null,
+            int? qMP4SeasonNumber = null,
+            int? qSDSeasonNumber = null,
+            int? q1080EpisodeNumber = null,
+            int? qMP4EpisodeNumber = null,
+            int? qSDEpisodeNumber = null)
+        {
+            this.Name = name;
+            this.LastEpisode = lastEposide;
+            this.LastEpisodeName = lastEpisodeName;
+            this.LastEpisodeTorrentLinkSD = linkSD;
+            this.LastEpisodeTorrentLinkMP4 = linkMP4;
+            this.LastEpisodeTorrentLink1080 = link1080;
+            this.Q1080EpisodeNumber = q1080EpisodeNumber;
+            this.QMP4EpisodeNumber = qMP4EpisodeNumber;
+            this.QSDEpisodeNumber = qSDEpisodeNumber;
+            this.Q1080SeasonNumber = q1080SeasonNumber;
+            this.QMP4SeasonNumber = qMP4SeasonNumber;
+            this.QSDSeasonNumber = qSDSeasonNumber;
+        }
 
         /// <summary>
-        /// Gets or sets LastEpisode Date.
+        /// Gets Name.
         /// </summary>
-        public DateTime LastEpisode { get; set; }
+        public string Name { get; }
 
         /// <summary>
-        /// Gets or sets Last episode name.
+        /// Gets LastEpisode Date.
         /// </summary>
-        public string LastEpisodeName { get; set; }
+        public DateTime LastEpisode { get; private set; }
 
         /// <summary>
-        /// Gets or sets LastEpisodeTorrentLinkSD.
+        /// Gets Last episode name.
         /// </summary>
-        public string LastEpisodeTorrentLinkSD { get; set; }
+        public string LastEpisodeName { get; private set; }
 
         /// <summary>
-        /// Gets or sets LastEpisodeTorrentLinkMP4.
+        /// Gets LastEpisodeTorrentLinkSD.
         /// </summary>
-        public string LastEpisodeTorrentLinkMP4 { get; set; }
+        public string? LastEpisodeTorrentLinkSD { get; private set; }
 
         /// <summary>
-        /// Gets or sets LastEpisodeTorrentLink1080.
+        /// Gets LastEpisodeTorrentLinkMP4.
         /// </summary>
-        public string LastEpisodeTorrentLink1080 { get; set; }
+        public string? LastEpisodeTorrentLinkMP4 { get; private set; }
+
+        /// <summary>
+        /// Gets LastEpisodeTorrentLink1080.
+        /// </summary>
+        public string? LastEpisodeTorrentLink1080 { get; private set; }
+
+        /// <summary>
+        /// Gets season number for last episode of quality 1080p.
+        /// </summary>
+        public int? Q1080SeasonNumber { get; private set; }
+
+        /// <summary>
+        /// Gets season number for last episode of quality 720p.
+        /// </summary>
+        public int? QMP4SeasonNumber { get; private set; }
+
+        /// <summary>
+        /// Gets season number for last episode of quality SD.
+        /// </summary>
+        public int? QSDSeasonNumber { get; private set; }
+
+        /// <summary>
+        /// Gets episode number for last episode of quality 1080p.
+        /// </summary>
+        public int? Q1080EpisodeNumber { get; private set; }
+
+        /// <summary>
+        /// Gets episode number for last episode of quality 720p.
+        /// </summary>
+        public int? QMP4EpisodeNumber { get; private set; }
+
+        /// <summary>
+        /// Gets episode number for last episode of quality SD.
+        /// </summary>
+        public int? QSDEpisodeNumber { get; private set; }
+
+        /// <summary>
+        /// Merge updates from <paramref name="from"/> to current instance.
+        /// </summary>
+        /// <param name="from">Instance of <see cref="Series"/> to merge changes from.</param>
+        public void MergeFrom(Series from)
+        {
+            this.LastEpisodeName = from.LastEpisodeName;
+            this.LastEpisode = from.LastEpisode;
+            this.LastEpisodeTorrentLink1080 = from.LastEpisodeTorrentLink1080 ?? this.LastEpisodeTorrentLink1080;
+            this.LastEpisodeTorrentLinkMP4 = from.LastEpisodeTorrentLinkMP4 ?? this.LastEpisodeTorrentLinkMP4;
+            this.LastEpisodeTorrentLinkSD = from.LastEpisodeTorrentLinkSD ?? this.LastEpisodeTorrentLinkSD;
+            this.Q1080SeasonNumber = from.Q1080SeasonNumber ?? this.Q1080SeasonNumber;
+            this.QMP4SeasonNumber = from.QMP4SeasonNumber ?? this.QMP4SeasonNumber;
+            this.QSDSeasonNumber = from.QSDSeasonNumber ?? this.QSDSeasonNumber;
+            this.Q1080EpisodeNumber = from.Q1080EpisodeNumber ?? this.Q1080EpisodeNumber;
+            this.QMP4EpisodeNumber = from.QMP4EpisodeNumber ?? this.QMP4EpisodeNumber;
+            this.QSDEpisodeNumber = from.QSDEpisodeNumber ?? this.QSDEpisodeNumber;
+        }
     }
 }

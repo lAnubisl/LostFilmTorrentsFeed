@@ -23,8 +23,6 @@
 
 namespace LostFilmMonitoring.BLL
 {
-    using System;
-
     /// <summary>
     /// Responsible for accessing current user Id.
     /// </summary>

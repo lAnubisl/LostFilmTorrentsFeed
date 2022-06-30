@@ -32,37 +32,36 @@ namespace LostFilmMonitoring.Common
         /// Gets Base torrent tracker user identifier.
         /// </summary>
         /// <returns>Base torrent tracker user identifier.</returns>
-        string BaseLinkUID { get; }
+        string BaseUID { get; }
 
         /// <summary>
         /// Gets BaseFeedCookie.
         /// </summary>
         /// <returns>BaseFeedCookie.</returns>
-        string BaseFeedCookie { get; }
-
-        /// <summary>
-        /// Gets database connection string.
-        /// </summary>
-        /// <returns>Database connection string.</returns>
-        string ConnectionString { get; }
+        string BaseUSESS { get; }
 
         /// <summary>
         /// Gets physical path where series covers are stored.
         /// </summary>
         /// <returns>Physical path where series covers are stored.</returns>
-        string ImagesPath { get; }
+        string ImagesDirectory { get; }
 
         /// <summary>
         /// Gets physical path where torrent files are stored.
         /// </summary>
         /// <returns>Physical path where torrent files are stored.</returns>
-        string TorrentPath { get; }
+        string TorrentsDirectory { get; }
 
         /// <summary>
         /// Gets base url where website is hosted.
         /// </summary>
         /// <returns>Base url where website is hosted.</returns>
         string BaseUrl { get; }
+
+        /// <summary>
+        /// Gets the SQL server connection string.
+        /// </summary>
+        string SqlServerConnectionString { get; }
 
         /// <summary>
         /// Get list of torrent trackers for torrent file.

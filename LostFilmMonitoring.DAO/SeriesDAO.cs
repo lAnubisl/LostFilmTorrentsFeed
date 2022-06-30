@@ -21,9 +21,9 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
@@ -40,49 +40,48 @@ namespace LostFilmMonitoring.DAO
         /// </summary>
         /// <param name="configuration">IConfiguration.</param>
         public SeriesDAO(IConfiguration configuration)
-            : base(configuration.ConnectionString)
+            : base(configuration.SqlServerConnectionString)
         {
         }
 
-        /// <inheritdoc/>
-        public async Task<Series> LoadAsync(string name)
+        public Task DeleteAsync(Series series)
         {
-            using (var ctx = this.OpenContext())
-            {
-                return await ctx.Series.FirstOrDefaultAsync(s => s.Name == name);
-            }
+            throw new System.NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public async Task<List<Series>> LoadAsync()
+        public async Task<Interfaces.DomainModels.Series> LoadAsync(string name)
         {
-            using (var ctx = this.OpenContext())
-            {
-                return await ctx.Series.ToListAsync();
-            }
+            using var ctx = this.OpenContext();
+            return Mapper.Map(await ctx.Series.FirstOrDefaultAsync(s => s.Name == name));
         }
 
         /// <inheritdoc/>
-        public async Task SaveAsync(Series series)
+        public async Task<Interfaces.DomainModels.Series[]> LoadAsync()
         {
-            using (var ctx = this.OpenContext())
-            {
-                var existingSeries = await ctx.Series.FirstOrDefaultAsync(s => s.Name == series.Name);
-                if (existingSeries == null)
-                {
-                    ctx.Add(series);
-                }
-                else
-                {
-                    existingSeries.LastEpisode = series.LastEpisode;
-                    existingSeries.LastEpisodeName = series.LastEpisodeName;
-                    existingSeries.LastEpisodeTorrentLinkSD = series.LastEpisodeTorrentLinkSD;
-                    existingSeries.LastEpisodeTorrentLinkMP4 = series.LastEpisodeTorrentLinkMP4;
-                    existingSeries.LastEpisodeTorrentLink1080 = series.LastEpisodeTorrentLink1080;
-                }
+            using var ctx = this.OpenContext();
+            return (await ctx.Series.ToArrayAsync()).Select(Mapper.Map).ToArray();
+        }
 
-                await ctx.SaveChangesAsync();
+        /// <inheritdoc/>
+        public async Task SaveAsync(Interfaces.DomainModels.Series series)
+        {
+            using var ctx = this.OpenContext();
+            var existingSeries = await ctx.Series.FirstOrDefaultAsync(s => s.Name == series.Name);
+            if (existingSeries == null)
+            {
+                ctx.Add(series);
             }
+            else
+            {
+                existingSeries.LastEpisode = series.LastEpisode;
+                existingSeries.LastEpisodeName = series.LastEpisodeName;
+                existingSeries.LastEpisodeTorrentLinkSD = series.LastEpisodeTorrentLinkSD;
+                existingSeries.LastEpisodeTorrentLinkMP4 = series.LastEpisodeTorrentLinkMP4;
+                existingSeries.LastEpisodeTorrentLink1080 = series.LastEpisodeTorrentLink1080;
+            }
+
+            await ctx.SaveChangesAsync();
         }
     }
 }

@@ -24,14 +24,27 @@
 namespace LostFilmTV.Client.Response
 {
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Xml.Linq;
 
     /// <summary>
     /// FeedItemResponse.
     /// </summary>
-    public class FeedItemResponse : IComparable<FeedItemResponse>
+    public class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable<FeedItemResponse>
     {
+        private const string RegexPattern = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\) \[(?<Quality>MP4|1080p|SD)\]";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeedItemResponse"/> class.
+        /// This constructor is required for JSON deserializer.
+        /// </summary>
+        public FeedItemResponse()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedItemResponse"/> class.
         /// </summary>
@@ -40,9 +53,39 @@ namespace LostFilmTV.Client.Response
         {
             this.Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
             this.PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
-            this.PublishDateParsed = ParseDate(this.PublishDate);
+            this.PublishDateParsed = DateTime.ParseExact(this.PublishDate, "ddd, dd MMM yyyy HH:mm:ss +0000", CultureInfo.InvariantCulture);
+            this.PublishDateParsed = DateTime.SpecifyKind(this.PublishDateParsed, DateTimeKind.Utc);
             this.Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
+            this.Description = xElement.Elements().FirstOrDefault(i => i.Name.LocalName == "description")?.Value;
+
+            var match = Regex.Match(this.Title, RegexPattern);
+            if (!match.Success)
+            {
+                return;
+            }
+
+            this.SeriesNameRu = match.Groups["SeriesNameRu"].Value;
+            this.SeriesNameEn = match.Groups["SeriesNameEng"].Value;
+            this.EpisodeName = match.Groups["EpisodeNameRu"].Value;
+            this.SeasonNumber = int.Parse(match.Groups["SeasonNumber"].Value);
+            this.EpisodeNumber = int.Parse(match.Groups["EpisodeNumber"].Value);
+            this.Quality = match.Groups["Quality"].Value.Replace("1080p", "1080");
+            this.SeriesName = $"{this.SeriesNameRu} ({this.SeriesNameEn})";
         }
+
+        public string SeriesNameRu { get; set; }
+
+        public string SeriesNameEn { get; set; }
+
+        public string SeriesName { get; set; }
+
+        public string EpisodeName { get; set; }
+
+        public int? EpisodeNumber { get; set; }
+
+        public int? SeasonNumber { get; set; }
+
+        public string Quality { get; set; }
 
         /// <summary>
         /// Gets or sets Title.
@@ -55,6 +98,11 @@ namespace LostFilmTV.Client.Response
         public string Link { get; set; }
 
         /// <summary>
+        /// Gets or sets Description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         /// Gets or sets PublishDateParsed.
         /// </summary>
         public DateTime PublishDateParsed { get; set; }
@@ -63,6 +111,47 @@ namespace LostFilmTV.Client.Response
         /// Gets or sets PublishDate.
         /// </summary>
         public string PublishDate { get; set; }
+
+        /// <summary>
+        /// Calculates if there are any updates in <paramref name="newItems"/> in comparison to <paramref name="oldItems"/>.
+        /// </summary>
+        /// <param name="newItems">Instance of <see cref="SortedSet{FeedItemResponse}"/> representing new items.</param>
+        /// <param name="oldItems">Instance of <see cref="SortedSet{FeedItemResponse}"/> representing old items.</param>
+        /// <returns>returns true in case when <paramref name="newItems"/> has updates in comparison to <paramref name="oldItems"/>, otherwise false.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
+        public static bool HasUpdates(SortedSet<FeedItemResponse> newItems, SortedSet<FeedItemResponse> oldItems)
+        {
+            if (newItems == null)
+            {
+                throw new ArgumentNullException(nameof(newItems));
+            }
+
+            if (oldItems == null)
+            {
+                throw new ArgumentNullException(nameof(oldItems));
+            }
+
+            if (newItems.Count != oldItems.Count)
+            {
+                return true;
+            }
+
+            var newEnum = newItems.GetEnumerator();
+            var oldEnum = oldItems.GetEnumerator();
+
+            for (int i = 0; i < newItems.Count; i++)
+            {
+                newEnum.MoveNext();
+                oldEnum.MoveNext();
+
+                if (!newEnum.Current.Equals(oldEnum.Current))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
@@ -79,15 +168,11 @@ namespace LostFilmTV.Client.Response
 
         /// <inheritdoc/>
         public override int GetHashCode()
-        {
-            return HashCode.Combine(this.Title, this.Link, this.PublishDate);
-        }
+            => HashCode.Combine(this.Title, this.Link, this.PublishDate);
 
         /// <inheritdoc/>
         public override string ToString()
-        {
-            return this.Title;
-        }
+            => this.Title;
 
         /// <inheritdoc/>
         int IComparable<FeedItemResponse>.CompareTo(FeedItemResponse that)
@@ -106,98 +191,31 @@ namespace LostFilmTV.Client.Response
         }
 
         /// <summary>
-        /// Get Series Name.
-        /// </summary>
-        /// <returns>Series name.</returns>
-        public virtual string GetSeriesName()
-        {
-            if (string.IsNullOrEmpty(this.Title))
-            {
-                return null;
-            }
-
-            string marker = ").";
-            int index = this.Title.IndexOf(marker);
-            if (index < 0)
-            {
-                return null;
-            }
-
-            return this.Title.Substring(0, index + marker.Length);
-        }
-
-        /// <summary>
-        /// Get Episode Name.
-        /// </summary>
-        /// <returns>Episode name.</returns>
-        public virtual string GetEpisodeName()
-        {
-            if (string.IsNullOrEmpty(this.Title))
-            {
-                return null;
-            }
-
-            string marker = "[";
-            int index = this.Title.IndexOf(marker);
-            if (index < 0)
-            {
-                return null;
-            }
-
-            return this.Title.Substring(0, this.Title.IndexOf("["));
-        }
-
-        /// <summary>
-        /// Get Episode Quality.
-        /// </summary>
-        /// <returns>Episode Quality.</returns>
-        public virtual string GetQuality()
-        {
-            if (string.IsNullOrEmpty(this.Title))
-            {
-                return null;
-            }
-
-            char startMarker = '[';
-            int startIndex = this.Title.LastIndexOf(startMarker);
-            if (startIndex < 0)
-            {
-                return null;
-            }
-
-            char endMarker = ']';
-            int endIndex = this.Title.LastIndexOf(endMarker);
-            if (endIndex < 0)
-            {
-                return null;
-            }
-
-            if (endIndex < startIndex)
-            {
-                return null;
-            }
-
-            var quality = this.Title.Substring(startIndex + 1, endIndex - startIndex - 1);
-            if (quality == "1080p")
-            {
-                quality = "1080";
-            }
-
-            return quality;
-        }
-
-        /// <summary>
         /// Get torrent file Id.
         /// </summary>
         /// <returns>Torrent file id.</returns>
         public virtual string GetTorrentId()
-        {
-            return LostFilmTV.Client.Extensions.GetTorrentId(this.Link);
-        }
+            => Client.Extensions.GetTorrentId(this.Link);
 
-        private static DateTime ParseDate(string date)
+        /// <inheritdoc/>
+        public bool Equals(FeedItemResponse other)
         {
-            return DateTime.TryParse(date, out DateTime result) ? result : DateTime.MinValue;
+            if (!string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!string.Equals(this.Link, other.Link, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!string.Equals(this.PublishDate, other.PublishDate, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

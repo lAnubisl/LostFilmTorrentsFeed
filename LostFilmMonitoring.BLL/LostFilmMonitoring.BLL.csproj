@@ -3,6 +3,7 @@
   <PropertyGroup>
       <TargetFramework>net6.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,6 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.1.46">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Panfilenok.BencodeNET" Version="1.0.0.10" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,8 +33,23 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
-    <ProjectReference Include="..\LostFilmMonitoring.DAO\LostFilmMonitoring.DAO.csproj" />
+    <ProjectReference Include="..\LostFilmMonitoring.DAO.Interfaces\LostFilmMonitoring.DAO.Interfaces.csproj" />
     <ProjectReference Include="..\LostFilmTV.Client\LostFilmTV.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Localization\ErrorMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Localization\ErrorMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

@@ -70,6 +70,13 @@ namespace LostFilmMonitoring.Common
         /// <summary>
         /// Log exception.
         /// </summary>
+        /// <param name="message">message.</param>
+        /// <param name="ex">exception.</param>
+        void Log(string message, Exception ex);
+
+        /// <summary>
+        /// Log exception.
+        /// </summary>
         /// <param name="ex">exception.</param>
         void Log(Exception ex);
     }

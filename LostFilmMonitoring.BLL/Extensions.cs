@@ -23,70 +23,61 @@
 
 namespace LostFilmMonitoring.BLL
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
     /// <summary>
     /// Usefull extensions.
     /// </summary>
-    internal static class Extensions
+    public static class Extensions
     {
-        /// <summary>
-        /// Escapes danger characters.
-        /// </summary>
-        /// <param name="path">Original path.</param>
-        /// <returns>Escaped path.</returns>
-        public static string EscapePath(this string path)
-        {
-            return path
-                .Replace(":", "_")
-                .Replace("*", "_")
-                .Replace("\"", "_")
-                .Replace("/", "_")
-                .Replace("?", "_")
-                .Replace(">", "_")
-                .Replace("<", "_")
-                .Replace("|", "_");
-        }
-
         /// <summary>
         /// Generates torrent link for user's feed.
         /// </summary>
         /// <param name="baseUrl">Base website URL.</param>
         /// <param name="userId">User Id.</param>
-        /// <param name="torrentId">Torrent Id.</param>
+        /// <param name="torrentFileName">Torrent Id.</param>
         /// <returns>Torrent link.</returns>
-        internal static string GenerateTorrentLink(string baseUrl, Guid userId, string torrentId)
+        internal static string GenerateTorrentLink(string baseUrl, string userId, string torrentFileName)
         {
-            return $"{baseUrl}/Rss/{userId}/{torrentId}";
+            return $"{baseUrl}/{userId}/{torrentFileName}.torrent";
         }
 
         /// <summary>
-        /// Original torrent files downloaded from LostFilm through their RSS are missing some announces and their parts.
-        /// This function should fix torrent file and add personalized announces for user.
+        /// Replaces trackers for an instance of <see cref="BencodeNET.Torrents.Torrent"/>.
         /// </summary>
-        /// <param name="announces">Array of links to torrent tracker announces.</param>
-        public static void FixTrackers(this TorrentFile torrentFile, string[] announces)
+        /// <param name="torrent">Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</param>
+        /// <param name="announces">Array of trackers.</param>
+        internal static void FixTrackers(this BencodeNET.Torrents.Torrent torrent, string[] announces)
+        {
+            torrent.Trackers = announces.Select(a => new List<string>() { a } as IList<string>).ToList();
+        }
+
+        /// <summary>
+        /// Map instance of <see cref="BencodeNET.Torrents.Torrent"/> to <see cref="TorrentFile"/>.
+        /// </summary>
+        /// <param name="torrent">Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</param>
+        /// <returns>Instance of <see cref="TorrentFile"/>.</returns>
+        internal static TorrentFile ToTorrentFile(this BencodeNET.Torrents.Torrent torrent)
+            => new (torrent.DisplayNameUtf8 ?? torrent.DisplayName, torrent.ToStream());
+
+        /// <summary>
+        /// Generate instance of <see cref="BencodeNET.Torrents.Torrent"/> from a <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">An instance of <see cref="Stream"/> to torrent file.</param>
+        /// <returns>Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</returns>
+        internal static BencodeNET.Torrents.Torrent ToTorrentDataStructure(this Stream stream)
         {
             var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
-            var memoryStream = new MemoryStream();
-            using (torrentFile.Stream)
-            {
-                var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(torrentFile.Stream));
-                torrent.IsPrivate = false;
-                torrent.Trackers.Clear();
-                foreach (var announce in announces)
-                {
-                    torrent.Trackers.Add(new List<string>() { announce });
-                }
+            var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(stream));
+            torrent.IsPrivate = false;
+            stream.Position = 0;
+            return torrent;
+        }
 
-                torrent.EncodeTo(memoryStream);
-                memoryStream.Position = 0;
-            }
-
-            torrentFile.Stream = memoryStream;
+        private static Stream ToStream(this BencodeNET.Torrents.Torrent torrent)
+        {
+            var ms = new MemoryStream();
+            torrent.EncodeTo(ms);
+            ms.Position = 0;
+            return ms;
         }
     }
 }

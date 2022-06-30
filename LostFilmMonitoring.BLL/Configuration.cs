@@ -23,53 +23,20 @@
 
 namespace LostFilmMonitoring.BLL
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using LostFilmMonitoring.Common;
-
     /// <inheritdoc/>
     public class Configuration : IConfiguration
     {
-        private string[] torrentAnnounceListPatterns;
-
-        /// <inheritdoc/>
-        public string BaseFeedCookie { get; private set; }
-
-        /// <inheritdoc/>
-        public string ConnectionString { get; private set; }
-
-        /// <inheritdoc/>
-        public string ImagesPath { get; private set; }
-
-        /// <inheritdoc/>
-        public string TorrentPath { get; private set; }
-
-        /// <inheritdoc/>
-        public string BaseUrl { get; private set; }
-
-        /// <inheritdoc/>
-        public string BaseLinkUID { get; private set; }
-
-        /// <inheritdoc/>
-        public string[] GetTorrentAnnounceList(string link_uid)
-        {
-            return this.torrentAnnounceListPatterns
-                .Select(p => string.Format(p, link_uid ?? this.BaseLinkUID))
-                .Select(s => s)
-                .ToArray();
-        }
+        private readonly string[] torrentAnnounceListPatterns;
 
         /// <summary>
-        /// Initializes the configuration.
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
         /// </summary>
-        /// <param name="contentRootPath">contentRootPath.</param>
-        public void Init(string contentRootPath)
+        public Configuration()
         {
-            var basePath = Environment.GetEnvironmentVariable("BASEPATH") ?? contentRootPath;
-            var baseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? "http://localhost:5000";
-            var baseFeedCookie = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not set.");
-            this.BaseLinkUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not set.");
+            this.BaseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? "https://lostfilmfeedstorage.blob.core.windows.net/usertorrents";
+            this.BaseUSESS = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? "8c460d627c46325ae1ad3b7e82ddc468";
+            this.BaseUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? "1874597";
+            this.SqlServerConnectionString = Environment.GetEnvironmentVariable("SqlServerConnectionString") ?? string.Empty;
             this.torrentAnnounceListPatterns = Environment.GetEnvironmentVariable("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ??
                 new[]
                 {
@@ -80,23 +47,39 @@ namespace LostFilmMonitoring.BLL
                     "http://user1.newtrack.info/tracker.php/{0}/announce",
                 };
 
-            this.BaseFeedCookie = baseFeedCookie;
-            this.ImagesPath = Path.Combine(basePath, "data", "images");
-            this.BaseUrl = baseUrl;
-            EnsureDirectoryExists(this.ImagesPath);
-            this.TorrentPath = Path.Combine(basePath, "data", "torrents");
-            EnsureDirectoryExists(this.TorrentPath);
-            var dbpath = Path.Combine(basePath, "data", "lostfilmtorrentfeed.db");
-            this.ConnectionString = $"Data Source = {dbpath}";
+            this.ImagesDirectory = Environment.GetEnvironmentVariable("IMAGESDIRECTORY") ?? "images";
+            this.TorrentsDirectory = Environment.GetEnvironmentVariable("TORRENTSDIRECTORY") ?? "torrentfiles";
+            this.CfClearance = Environment.GetEnvironmentVariable("CFCLEARANCE") ?? "cf_clearance=KWofFL.OwtYZgILXCvcYLzNZjlu3qH4g.Ud_uWKhuj0-1651323090-0-150";
         }
 
-        private static void EnsureDirectoryExists(string path)
+        /// <inheritdoc/>
+        public string BaseUSESS { get; private set; }
+
+        /// <inheritdoc/>
+        public string ImagesDirectory { get; private set; }
+
+        /// <inheritdoc/>
+        public string TorrentsDirectory { get; private set; }
+
+        /// <inheritdoc/>
+        public string BaseUrl { get; private set; }
+
+        /// <inheritdoc/>
+        public string BaseUID { get; private set; }
+
+        /// <inheritdoc/>
+        public string CfClearance { get; private set; }
+
+        /// <inheritdoc/>
+        public string SqlServerConnectionString { get; private set; }
+
+        /// <inheritdoc/>
+        public string[] GetTorrentAnnounceList(string link_uid)
         {
-            var directory = new DirectoryInfo(path);
-            if (!directory.Exists)
-            {
-                directory.Create();
-            }
+            return this.torrentAnnounceListPatterns
+                .Select(p => string.Format(p, link_uid ?? this.BaseUID))
+                .Select(s => s)
+                .ToArray();
         }
     }
 }

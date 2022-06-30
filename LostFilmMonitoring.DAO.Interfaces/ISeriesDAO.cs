@@ -23,7 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Interfaces
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
@@ -37,19 +36,26 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// </summary>
         /// <param name="name">Series name.</param>
         /// <returns>Series.</returns>
-        Task<Series> LoadAsync(string name);
+        Task<Series?> LoadAsync(string name);
 
         /// <summary>
         /// Load series.
         /// </summary>
         /// <returns>All series.</returns>
-        Task<List<Series>> LoadAsync();
+        Task<Series[]> LoadAsync();
 
         /// <summary>
         /// Save series.
         /// </summary>
         /// <param name="series">Series to save.</param>
-        /// <returns>Awaitable task.</returns>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         Task SaveAsync(Series series);
+
+        /// <summary>
+        /// Delete series.
+        /// </summary>
+        /// <param name="series">Series to delete.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task DeleteAsync(Series series);
     }
 }

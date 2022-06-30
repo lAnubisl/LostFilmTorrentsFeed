@@ -21,15 +21,13 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
     using Microsoft.EntityFrameworkCore;
 
     /// <summary>
@@ -42,87 +40,43 @@ namespace LostFilmMonitoring.DAO
         /// </summary>
         /// <param name="configuration">IConfiguration.</param>
         public UserDAO(IConfiguration configuration)
-            : base(configuration.ConnectionString)
+            : base(configuration.SqlServerConnectionString)
         {
         }
 
-        /// <inheritdoc/>
-        public async Task<Guid[]> DeleteOldUsersAsync()
+        public async Task<Interfaces.DomainModels.User[]> LoadAsync()
         {
-            var deleted = new Collection<Guid>();
-            using (var ctx = this.OpenContext())
-            {
-                var oldUsers = await ctx.Users.Where(u => u.LastActivity < DateTime.UtcNow.AddMonths(-1)).ToArrayAsync();
-                foreach (var user in oldUsers)
-                {
-                    deleted.Add(user.Id);
-                    ctx.Remove(user);
-                }
-
-                await ctx.SaveChangesAsync();
-            }
-
-            return deleted.ToArray();
+            using var ctx = this.OpenContext();
+            return (await ctx.Users.ToArrayAsync()).Select(Mapper.Map).ToArray();
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateLastActivity(Guid userId)
+        public async Task<Interfaces.DomainModels.User> LoadAsync(string userId)
         {
+            var id = Guid.Parse(userId);
             using (var ctx = this.OpenContext())
             {
-                var user = await ctx.Users.FirstOrDefaultAsync(u => u.Id == userId);
-                if (user == null)
-                {
-                    return false;
-                }
-
-                user.LastActivity = DateTime.UtcNow;
-                ctx.Update(user);
-                await ctx.SaveChangesAsync();
-                return true;
+                return Mapper.Map(await ctx.Users.FirstOrDefaultAsync(u => u.Id == id));
             }
         }
 
         /// <inheritdoc/>
-        public async Task<User> LoadWithSubscriptionsAsync(Guid userId)
+        public async Task SaveAsync(Interfaces.DomainModels.User user)
         {
+            var id = Guid.Parse(user.Id);
             using (var ctx = this.OpenContext())
             {
-                return await ctx.Users.Include(u => u.Subscriptions).FirstOrDefaultAsync(u => u.Id == userId);
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<User> LoadAsync(Guid userId)
-        {
-            using (var ctx = this.OpenContext())
-            {
-                return await ctx.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            }
-        }
-
-        /// <inheritdoc/>
-        public async Task<Guid> EditAsync(User user)
-        {
-            using (var ctx = this.OpenContext())
-            {
-                if (user.Id == default)
+                var entity = await ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+                if (entity == null)
                 {
                     ctx.Add(user);
                 }
                 else
                 {
-                    var entity = await ctx.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-                    if (entity == null)
-                    {
-                        return user.Id;
-                    }
-
                     ctx.Entry(entity).CurrentValues.SetValues(user);
                 }
 
                 await ctx.SaveChangesAsync();
-                return user.Id;
             }
         }
     }

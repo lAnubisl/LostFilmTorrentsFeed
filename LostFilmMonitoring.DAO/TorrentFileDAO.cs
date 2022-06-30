@@ -21,13 +21,12 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO
+namespace LostFilmMonitoring.DAO.Sql
 {
     using System.IO;
     using System.Threading.Tasks;
     using LostFilmMonitoring.Common;
     using LostFilmMonitoring.DAO.Interfaces;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 
     /// <summary>
     /// Provides functionality for managing torrent files on disk.
@@ -36,6 +35,8 @@ namespace LostFilmMonitoring.DAO
     {
         private readonly string torrentFilesDirectoryPath;
         private readonly ILogger logger;
+        private readonly string baseTorrentsDirectory = "basetorrents";
+        private readonly string userTorrentsDirectory = "usertorrents";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TorrentFileDAO"/> class.
@@ -44,43 +45,54 @@ namespace LostFilmMonitoring.DAO
         /// <param name="logger">Logger.</param>
         public TorrentFileDAO(IConfiguration configuration, ILogger logger)
         {
-            this.torrentFilesDirectoryPath = configuration.TorrentPath;
+            this.torrentFilesDirectoryPath = configuration.TorrentsDirectory;
             this.logger = logger.CreateScope(nameof(TorrentFileDAO));
         }
 
         /// <inheritdoc/>
-        public async Task SaveAsync(string fileName, Stream fileContentStream, int torrentId)
+        public Task<Interfaces.DomainModels.TorrentFile> LoadBaseFileAsync(string torrentId)
         {
-            fileName = $"{torrentId}_{fileName}";
-            using (var fs = new FileStream(
-                Path.Combine(this.torrentFilesDirectoryPath, fileName),
-                FileMode.Create,
-                FileAccess.Write,
-                FileShare.None,
-                bufferSize: 4096,
-                useAsync: true))
-            {
-                await fileContentStream.CopyToAsync(fs);
-            }
-
-            this.logger.Info($"File '{fileName}' downloaded.");
+            this.logger.Info($"Call: {nameof(this.LoadBaseFileAsync)}('{torrentId}')");
+            var fileName = GetBaseTorrentFileName(torrentId);
+            var filePath = Path.Combine(this.torrentFilesDirectoryPath, this.baseTorrentsDirectory, fileName);
+            return Task.FromResult(File.Exists(filePath)
+                ? new Interfaces.DomainModels.TorrentFile(fileName, File.OpenRead(filePath))
+                : null);
         }
 
         /// <inheritdoc/>
-        public TorrentFile TryFind(int torrentId)
+        public async Task SaveBaseFileAsync(string torrentId, Interfaces.DomainModels.TorrentFile torrentFile)
         {
-            var directory = new DirectoryInfo(this.torrentFilesDirectoryPath);
-            var files = directory.GetFiles($"{torrentId}_*.torrent");
-            if (files.Length == 0)
+            var fileName = GetBaseTorrentFileName(torrentId);
+            var filePath = Path.Combine(this.torrentFilesDirectoryPath, this.baseTorrentsDirectory, fileName);
+            if (!File.Exists(filePath))
             {
-                return null;
+                File.Delete(filePath);
             }
 
-            return new TorrentFile
+            using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            await torrentFile.Stream.CopyToAsync(fs);
+        }
+
+        /// <inheritdoc/>
+        public async Task SaveUserFileAsync(string userId, Interfaces.DomainModels.TorrentFile torrentFile)
+        {
+            var filePath = Path.Combine(this.torrentFilesDirectoryPath, this.userTorrentsDirectory, userId, $"{torrentFile.FileName}.torrent");
+            using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+            await torrentFile.Stream.CopyToAsync(fs);
+        }
+
+        private static string GetBaseTorrentFileName(string torrentId) => $"{torrentId}.torrent";
+
+        public Task DeleteUserFileAsync(string userId, string torrentFileName)
+        {
+            var filePath = Path.Combine(this.torrentFilesDirectoryPath, this.userTorrentsDirectory, userId, torrentFileName);
+            if (File.Exists(filePath))
             {
-                Stream = files[0].OpenRead(),
-                FileName = files[0].Name,
-            };
+                File.Delete(filePath);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
