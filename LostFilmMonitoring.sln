@@ -12,10 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4222D218-C7D1-46A2-A78C-1B845930FF4B}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		DockerBuild.ps1 = DockerBuild.ps1
-		Dockerfile = Dockerfile
-		Dockerfile.ubuntu-x64 = Dockerfile.ubuntu-x64
-		data\lostfilmtorrentfeed.db = data\lostfilmtorrentfeed.db
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmTV.Client.Tests", "LostFilmTV.Client.Tests\LostFilmTV.Client.Tests.csproj", "{6A9F95A1-4B9D-4A0E-BF6B-FE70DD6D2FA0}"
