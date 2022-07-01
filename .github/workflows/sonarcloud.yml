@@ -62,11 +62,11 @@ jobs:
 
       - name: Begin Sonar scan
         run: |
-          dotnet sonarscanner begin 
-            /k:"lAnubisl_LostFilmTorrentsFeed" 
-            /o:"lanubisl" 
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" 
-            /d:sonar.host.url="https://sonarcloud.io"
+          dotnet sonarscanner begin \
+            /k:"lAnubisl_LostFilmTorrentsFeed" \
+            /o:"lanubisl" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         #   /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
 
