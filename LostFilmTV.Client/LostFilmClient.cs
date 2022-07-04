@@ -179,7 +179,7 @@ namespace LostFilmTV.Client
         public async Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
         {
             var client = this.httpClientFactory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"http://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
             request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
             HttpResponseMessage response = null;
 
