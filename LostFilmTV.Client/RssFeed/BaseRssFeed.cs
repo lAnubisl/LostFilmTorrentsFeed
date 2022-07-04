@@ -112,6 +112,12 @@ namespace LostFilmTV.Client.RssFeed
         protected SortedSet<FeedItemResponse> GetItems(string rssText)
         {
             this.Logger.Info($"Call: {nameof(this.GetItems)}(rssText)");
+            if (string.IsNullOrWhiteSpace(rssText))
+            {
+                this.Logger.Error("RSS content is empty.");
+                return new SortedSet<FeedItemResponse>();
+            }
+
             XDocument document;
             try
             {
@@ -119,7 +125,7 @@ namespace LostFilmTV.Client.RssFeed
             }
             catch (Exception ex)
             {
-                this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}{rssText}", ex);
+                this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}'{rssText}'", ex);
                 return new SortedSet<FeedItemResponse>();
             }
 
