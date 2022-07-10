@@ -28,6 +28,7 @@ namespace LostFilmTV.Client.Exceptions
     /// <summary>
     /// RemoteServiceUnavailableException.
     /// </summary>
+    [Serializable]
     public class RemoteServiceUnavailableException : Exception
     {
         /// <summary>

@@ -69,7 +69,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="items">Items from Azure.</param>
         /// <param name="func">Mapping function from {TSource} to {TResult}.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        protected static async Task<TResult[]> IterateAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
+        protected static Task<TResult[]> IterateAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
             where TSource : class
         {
             if (items == null)
@@ -77,13 +77,7 @@ namespace LostFilmMonitoring.DAO.Azure
                 throw new ArgumentNullException(nameof(items));
             }
 
-            var result = new List<TResult>();
-            await foreach (var item in items)
-            {
-                result.Add(func(item));
-            }
-
-            return result.ToArray();
+            return IterateInnerAsync(items, func);
         }
 
         /// <summary>
@@ -133,6 +127,18 @@ namespace LostFilmMonitoring.DAO.Azure
                 this.Logger.Log(ex);
                 throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
             }
+        }
+
+        private static async Task<TResult[]> IterateInnerAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
+            where TSource : class
+        {
+            var result = new List<TResult>();
+            await foreach (var item in items)
+            {
+                result.Add(func(item));
+            }
+
+            return result.ToArray();
         }
     }
 }

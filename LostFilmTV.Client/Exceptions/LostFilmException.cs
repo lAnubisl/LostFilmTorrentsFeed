@@ -29,6 +29,7 @@ namespace LostFilmTV.Client
     /// <summary>
     /// LostFilmException.
     /// </summary>
+    [Serializable]
     public class LostFilmException : Exception
     {
         /// <summary>

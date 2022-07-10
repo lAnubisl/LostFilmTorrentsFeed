@@ -29,7 +29,6 @@ namespace LostFilmTV.Client
     /// </summary>
     public class LostFilmClient : ILostFilmClient
     {
-        private const string BaseUrl = "https://www.lostfilm.tv";
         private readonly ILogger logger;
         private readonly IHttpClientFactory httpClientFactory;
 

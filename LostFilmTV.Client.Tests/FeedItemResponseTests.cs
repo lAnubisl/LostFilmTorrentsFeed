@@ -224,7 +224,7 @@ namespace LostFilmTV.Client.Tests
         {
             FeedItemResponse feedItemResponse = new FeedItemResponse();
             feedItemResponse.Link = link;
-            Assert.AreEqual(expected, feedItemResponse.GetTorrentId());
+            Assert.That(feedItemResponse.GetTorrentId(), Is.EqualTo(expected));
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace LostFilmTV.Client.Tests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
             FeedItemResponse feedItemResponse = new FeedItemResponse(el);
-            Assert.AreEqual(expected, feedItemResponse.SeriesName);
+            Assert.That(feedItemResponse.SeriesName, Is.EqualTo(expected));
         }
 
         [Test]
@@ -260,7 +260,7 @@ namespace LostFilmTV.Client.Tests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
             FeedItemResponse feedItemResponse = new FeedItemResponse(el);
-            Assert.AreEqual(expected, feedItemResponse.EpisodeName);
+            Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expected));
         }
 
         [Test]
@@ -283,7 +283,7 @@ namespace LostFilmTV.Client.Tests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
             FeedItemResponse feedItemResponse = new FeedItemResponse(el);
-            Assert.AreEqual(expected, feedItemResponse.Quality);
+            Assert.That(feedItemResponse.Quality, Is.EqualTo(expected));
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace LostFilmTV.Client.Tests
         {
             FeedItemResponse feedItemResponse = new FeedItemResponse();
             feedItemResponse.Title = "test";
-            Assert.AreEqual("test", feedItemResponse.ToString());
+            Assert.That(feedItemResponse.ToString(), Is.EqualTo("test"));
         }
 
         [Test]
@@ -305,10 +305,10 @@ namespace LostFilmTV.Client.Tests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
             var item = new FeedItemResponse(element);
-            Assert.AreEqual("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]", item.Title);
-            Assert.AreEqual("http://n.tracktor.site/rssdownloader.php?id=51236", item.Link);
-            Assert.AreEqual("Mon, 09 May 2022 20:27:53 +0000", item.PublishDate);
-            Assert.AreEqual(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc), item.PublishDateParsed);
+            Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
+            Assert.That(item.Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236"));
+            Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
+            Assert.That(item.PublishDateParsed, Is.EqualTo(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc)));
         }
     }
 }

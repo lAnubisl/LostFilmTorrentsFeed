@@ -26,7 +26,7 @@ namespace LostFilmTV.Client.Response
     /// <summary>
     /// FeedItemResponse.
     /// </summary>
-    public class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable<FeedItemResponse>
+    public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable<FeedItemResponse>
     {
         private const string RegexPattern = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\) \[(?<Quality>MP4|1080p|SD)\]";
 

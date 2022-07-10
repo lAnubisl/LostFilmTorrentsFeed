@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
     /// <summary>
     /// Subscription.
     /// </summary>
-    public class Subscription : IEquatable<Subscription>
+    public sealed class Subscription : IEquatable<Subscription>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Subscription"/> class.

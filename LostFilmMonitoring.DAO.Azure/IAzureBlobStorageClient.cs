@@ -84,7 +84,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
         Task<bool> ExistsAsync(string containerName, string fileName);
 
-        /// <summary>Sets the cache control property for a file</summary>
+        /// <summary>Sets the cache control property for a file.</summary>
         /// <param name="containerName">Name of the container.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="cacheControl">The cache control value.</param>

@@ -26,6 +26,7 @@ namespace LostFilmMonitoring.BLL.Exceptions
     /// <summary>
     /// Generic exception that covers all communication issues to external services.
     /// </summary>
+    [Serializable]
     public class ExternalServiceUnavailableException : Exception
     {
         /// <summary>

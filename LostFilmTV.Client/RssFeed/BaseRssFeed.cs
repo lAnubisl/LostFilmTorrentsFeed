@@ -35,7 +35,7 @@ namespace LostFilmTV.Client.RssFeed
         /// </summary>
         /// <param name="logger">Logger.</param>
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
-        public BaseRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
+        protected BaseRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
         {
             this.Logger = logger;
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
