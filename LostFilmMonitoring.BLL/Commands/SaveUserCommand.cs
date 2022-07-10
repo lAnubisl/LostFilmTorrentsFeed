@@ -28,19 +28,19 @@ namespace LostFilmMonitoring.BLL.Commands
     /// </summary>
     public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseModel>
     {
-        private readonly IUserDAO userDAO;
-        private readonly IFeedDAO feedDAO;
+        private readonly IUserDao userDAO;
+        private readonly IFeedDao feedDAO;
         private readonly ILogger logger;
         private readonly IModelPersister persister;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveUserCommand"/> class.
         /// </summary>
-        /// <param name="userDao">Instance of <see cref="IUserDAO"/>.</param>
+        /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
         /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
         /// <param name="persister">Instance of <see cref="IModelPersister"/>.</param>
-        /// <param name="feedDao">Instance of <see cref="IFeedDAO"/>.</param>
-        public SaveUserCommand(IUserDAO userDao, ILogger logger, IModelPersister persister, IFeedDAO feedDao)
+        /// <param name="feedDao">Instance of <see cref="IFeedDao"/>.</param>
+        public SaveUserCommand(IUserDao userDao, ILogger logger, IModelPersister persister, IFeedDao feedDao)
         {
             this.userDAO = userDao ?? throw new ArgumentNullException(nameof(userDao));
             this.logger = logger?.CreateScope(nameof(SaveUserCommand)) ?? throw new ArgumentNullException(nameof(logger));

@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing torrent files on disk.
     /// </summary>
-    public interface ITorrentFileDAO
+    public interface ITorrentFileDao
     {
         /// <summary>
         /// Save user torrent file to persistent storage.

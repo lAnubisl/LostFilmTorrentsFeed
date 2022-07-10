@@ -24,9 +24,9 @@
 namespace LostFilmMonitoring.DAO.Azure
 {
     /// <summary>
-    /// Implements <see cref="IEpisodeDAO"/> for Azure Table Storage.
+    /// Implements <see cref="IEpisodeDao"/> for Azure Table Storage.
     /// </summary>
-    public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDAO, IEpisodeDAO
+    public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureTableStorageEpisodeDao"/> class.

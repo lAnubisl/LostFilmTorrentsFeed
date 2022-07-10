@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing series.
     /// </summary>
-    public interface ISeriesDAO
+    public interface ISeriesDao
     {
         /// <summary>
         /// Load series by name.

@@ -24,9 +24,9 @@
 namespace LostFilmMonitoring.DAO.Azure
 {
     /// <summary>
-    /// Implements <see cref="ITorrentFileDAO"/> for Azure Blob Storage.
+    /// Implements <see cref="ITorrentFileDao"/> for Azure Blob Storage.
     /// </summary>
-    public class AzureBlobStorageTorrentFileDAO : ITorrentFileDAO
+    public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
     {
         private readonly IAzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
@@ -34,14 +34,14 @@ namespace LostFilmMonitoring.DAO.Azure
         private readonly string userTorrentsDirectory = "usertorrents";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureBlobStorageTorrentFileDAO"/> class.
+        /// Initializes a new instance of the <see cref="AzureBlobStorageTorrentFileDao"/> class.
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of ILogger.</param>
-        public AzureBlobStorageTorrentFileDAO(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageTorrentFileDao(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient;
-            this.logger = logger.CreateScope(nameof(AzureBlobStorageTorrentFileDAO));
+            this.logger = logger.CreateScope(nameof(AzureBlobStorageTorrentFileDao));
         }
 
         /// <inheritdoc/>

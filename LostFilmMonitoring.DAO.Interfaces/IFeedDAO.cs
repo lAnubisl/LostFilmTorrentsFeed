@@ -30,7 +30,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing user's feeds in storage.
     /// </summary>
-    public interface IFeedDAO
+    public interface IFeedDao
     {
         /// <summary>
         /// Loads users rss feed.

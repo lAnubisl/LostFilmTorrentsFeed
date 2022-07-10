@@ -26,36 +26,36 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Responsible for providing access to all aspects of Data-Access-Layer.
     /// </summary>
-    public interface IDAL
+    public interface IDal
     {
         /// <summary>
         /// Gets an instance of IFeedDAO.
         /// </summary>
-        IFeedDAO Feed { get; }
+        IFeedDao Feed { get; }
 
         /// <summary>
         /// Gets an instance of ISeriesDAO.
         /// </summary>
-        ISeriesDAO Series { get; }
+        ISeriesDao Series { get; }
 
         /// <summary>
         /// Gets an instance of ISubscriptionDAO.
         /// </summary>
-        ISubscriptionDAO Subscription { get; }
+        ISubscriptionDao Subscription { get; }
 
         /// <summary>
         /// Gets an instance of ITorrentFileDAO.
         /// </summary>
-        ITorrentFileDAO TorrentFile { get; }
+        ITorrentFileDao TorrentFile { get; }
 
         /// <summary>
         /// Gets an instance of IUserDAO.
         /// </summary>
-        IUserDAO User { get; }
+        IUserDao User { get; }
 
         /// <summary>
         /// Gets an instance of IEpisodeDAO.
         /// </summary>
-        IEpisodeDAO Episode { get; }
+        IEpisodeDao Episode { get; }
     }
 }

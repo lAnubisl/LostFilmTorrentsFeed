@@ -26,10 +26,10 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Responsible for providing access to all aspects of Data-Access-Layer.
     /// </summary>
-    public class DAL : IDAL
+    public class Dal : IDal
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DAL"/> class.
+        /// Initializes a new instance of the <see cref="Dal"/> class.
         /// </summary>
         /// <param name="feedDAO">IFeedDAO.</param>
         /// <param name="seriesDAO">ISeriesDAO.</param>
@@ -37,7 +37,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// <param name="torrentFileDAO">ITorrentFileDAO.</param>
         /// <param name="userDAO">IUserDAO.</param>
         /// <param name="episodeDAO">IEpisodeDAO.</param>
-        public DAL(IFeedDAO feedDAO, ISeriesDAO seriesDAO, ISubscriptionDAO subscriptionDAO, ITorrentFileDAO torrentFileDAO, IUserDAO userDAO, IEpisodeDAO episodeDAO)
+        public Dal(IFeedDao feedDAO, ISeriesDao seriesDAO, ISubscriptionDao subscriptionDAO, ITorrentFileDao torrentFileDAO, IUserDao userDAO, IEpisodeDao episodeDAO)
         {
             this.Feed = feedDAO ?? throw new ArgumentNullException(nameof(feedDAO));
             this.Subscription = subscriptionDAO ?? throw new ArgumentNullException(nameof(subscriptionDAO));
@@ -48,21 +48,21 @@ namespace LostFilmMonitoring.DAO.Interfaces
         }
 
         /// <inheritdoc/>
-        public IFeedDAO Feed { get; }
+        public IFeedDao Feed { get; }
 
         /// <inheritdoc/>
-        public ISeriesDAO Series { get; }
+        public ISeriesDao Series { get; }
 
         /// <inheritdoc/>
-        public ISubscriptionDAO Subscription { get; }
+        public ISubscriptionDao Subscription { get; }
 
         /// <inheritdoc/>
-        public ITorrentFileDAO TorrentFile { get; }
+        public ITorrentFileDao TorrentFile { get; }
 
         /// <inheritdoc/>
-        public IUserDAO User { get; }
+        public IUserDao User { get; }
 
         /// <inheritdoc/>
-        public IEpisodeDAO Episode { get; }
+        public IEpisodeDao Episode { get; }
     }
 }

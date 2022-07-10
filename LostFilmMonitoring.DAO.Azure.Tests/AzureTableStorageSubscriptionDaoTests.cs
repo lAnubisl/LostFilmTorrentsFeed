@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageSubscriptionDAO>
+    public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageSubscriptionDao>
     {
         [Test]
         public async Task LoadAsync_should_return_empty_array_when_userId_empty()
@@ -148,7 +148,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             tableClient.Verify(x => x.UpsertEntityAsync(It.IsAny<SubscriptionTableEntity>(), TableUpdateMode.Merge, default), Times.Once);
         }
 
-        protected override AzureTableStorageSubscriptionDAO GetDao()
+        protected override AzureTableStorageSubscriptionDao GetDao()
             => new(serviceClient.Object, new ConsoleLogger("Tests"));
     }
 }

@@ -28,15 +28,15 @@ namespace LostFilmMonitoring.BLL.Commands
     /// </summary>
     public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel>
     {
-        private readonly IUserDAO userDao;
+        private readonly IUserDao userDao;
         private readonly ILogger logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GetUserCommand"/> class.
         /// </summary>
-        /// <param name="userDao">Instance of <see cref="IUserDAO"/>.</param>
+        /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
         /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        public GetUserCommand(IUserDAO userDao, ILogger logger)
+        public GetUserCommand(IUserDao userDao, ILogger logger)
         {
             this.logger = logger?.CreateScope(nameof(GetUserCommand)) ?? throw new ArgumentNullException(nameof(logger));
             this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));

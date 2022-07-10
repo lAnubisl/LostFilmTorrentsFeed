@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing users in storage.
     /// </summary>
-    public interface IUserDAO
+    public interface IUserDao
     {
         /// <summary>
         /// Load user.

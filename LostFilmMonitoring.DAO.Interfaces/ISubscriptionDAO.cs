@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing subscription in storage.
     /// </summary>
-    public interface ISubscriptionDAO
+    public interface ISubscriptionDao
     {
         /// <summary>
         /// Load subscriptions by series name and quality.

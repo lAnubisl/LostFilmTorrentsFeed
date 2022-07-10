@@ -28,18 +28,18 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     {
         private const string BaseUid = "baseUid";
         private const string BaseUsess = "baseUsess";
-        private Mock<IDAL> dal;
+        private Mock<IDal> dal;
         private Mock<IConfiguration> configuration;
         private Mock<IModelPersister> persister;
         private Mock<ILogger> logger;
         private Mock<IRssFeed> rssFeed;
         private Mock<ILostFilmClient> lostFilmClient;
-        private Mock<ISeriesDAO> seriesDAO;
-        private Mock<IFeedDAO> feedDAO;
-        private Mock<ITorrentFileDAO> torrentFileDAO;
-        private Mock<ISubscriptionDAO> subscriptionDAO;
-        private Mock<IUserDAO> userDao;
-        private Mock<IEpisodeDAO> episodeDao;
+        private Mock<ISeriesDao> seriesDAO;
+        private Mock<IFeedDao> feedDAO;
+        private Mock<ITorrentFileDao> torrentFileDAO;
+        private Mock<ISubscriptionDao> subscriptionDAO;
+        private Mock<IUserDao> userDao;
+        private Mock<IEpisodeDao> episodeDao;
 
         private UpdateFeedsCommand CreateCommand()
         {

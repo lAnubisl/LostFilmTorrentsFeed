@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageUserDAO>
+    public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageUserDao>
     {
         [Test]
         public async Task LoadAsync_should_return_empty_array_when_no_users()
@@ -97,7 +97,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             Assert.That(result?.Id == userTableEntity.RowKey && result?.TrackerId == userTableEntity.TrackerId);
         }
 
-        protected override AzureTableStorageUserDAO GetDao()
+        protected override AzureTableStorageUserDao GetDao()
             => new(serviceClient.Object, new ConsoleLogger("Tests"));
     }
 }

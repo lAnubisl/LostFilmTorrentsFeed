@@ -55,7 +55,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             Assert.That(newXml, Is.EqualTo(this.baseFeed));
         }
 
-        private AzureBlobStorageFeedDAO GetDao()
+        private AzureBlobStorageFeedDao GetDao()
             => new(azureBlobStorageClient.Object, new ConsoleLogger("Tests"));
 
         private static string GetFile(string fileName)

@@ -28,16 +28,16 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     [ExcludeFromCodeCoverage]
     internal class SaveSubscriptionCommandTests
     {
-        private Mock<IUserDAO> userDao;
+        private Mock<IUserDao> userDao;
         private Mock<ILogger> logger;
         private Mock<IValidator<EditSubscriptionRequestModel>> validator;
-        private Mock<IDAL> dal;
+        private Mock<IDal> dal;
         private Mock<IConfiguration> configuration;
         private Mock<IModelPersister> persister;
-        private Mock<ISubscriptionDAO> subscriptionDAO;
-        private Mock<IFeedDAO> feedDAO;
-        private Mock<ISeriesDAO> seriesDAO;
-        private Mock<ITorrentFileDAO> torrentFileDAO;
+        private Mock<ISubscriptionDao> subscriptionDAO;
+        private Mock<IFeedDao> feedDAO;
+        private Mock<ISeriesDao> seriesDAO;
+        private Mock<ITorrentFileDao> torrentFileDAO;
         private Dictionary<string, User> usersCollection;
         private Dictionary<string, Subscription[]> subscriptionsCollection;
         private Dictionary<string, Series> seriesCollection;

@@ -26,17 +26,17 @@ namespace LostFilmMonitoring.DAO.Azure
     /// <summary>
     /// This class is responsible for managing access to Azure.Data.Tables.TableClient object instance.
     /// </summary>
-    public abstract class BaseAzureTableStorageDAO
+    public abstract class BaseAzureTableStorageDao
     {
         private readonly TableClient tableClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseAzureTableStorageDAO"/> class.
+        /// Initializes a new instance of the <see cref="BaseAzureTableStorageDao"/> class.
         /// </summary>
         /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
         /// <param name="tableName">Name of a table to work with.</param>
         /// <param name="logger">Instance of Logger.</param>
-        protected BaseAzureTableStorageDAO(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
+        protected BaseAzureTableStorageDao(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
         {
             if (tableServiceClient == null)
             {

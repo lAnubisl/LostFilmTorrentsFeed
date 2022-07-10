@@ -32,7 +32,7 @@ namespace LostFilmMonitoring.BLL.Commands
         private readonly IConfiguration configuration;
         private readonly IModelPersister persister;
         private readonly ILogger logger;
-        private readonly IDAL dal;
+        private readonly IDal dal;
         private readonly object locker = new ();
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace LostFilmMonitoring.BLL.Commands
         public SaveSubscriptionCommand(
             ILogger logger,
             IValidator<EditSubscriptionRequestModel> validator,
-            IDAL dal,
+            IDal dal,
             IConfiguration configuration,
             IModelPersister persister)
         {

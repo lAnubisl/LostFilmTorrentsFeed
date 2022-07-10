@@ -31,7 +31,7 @@ namespace LostFilmMonitoring.BLL.Commands
         private static readonly object SeriesLocker = new ();
         private static readonly object TorrentFileLocker = new ();
         private readonly ILogger logger;
-        private readonly IDAL dal;
+        private readonly IDal dal;
         private readonly IRssFeed rssFeed;
         private readonly IConfiguration configuration;
         private readonly IModelPersister modelPersister;
@@ -49,7 +49,7 @@ namespace LostFilmMonitoring.BLL.Commands
         public UpdateFeedsCommand(
             ILogger logger,
             IRssFeed rssFeed,
-            IDAL dal,
+            IDal dal,
             IConfiguration configuration,
             IModelPersister modelPersister,
             ILostFilmClient client)

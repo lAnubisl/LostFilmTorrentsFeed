@@ -24,9 +24,9 @@
 namespace LostFilmMonitoring.DAO.Azure
 {
     /// <summary>
-    /// Implements <see cref="IFeedDAO"/> for Azure Blob Storage.
+    /// Implements <see cref="IFeedDao"/> for Azure Blob Storage.
     /// </summary>
-    public class AzureBlobStorageFeedDAO : IFeedDAO
+    public class AzureBlobStorageFeedDao : IFeedDao
     {
         private static readonly string ConteinerName = "rssfeeds";
         private static readonly string BaseFeedName = "baseFeed.xml";
@@ -34,14 +34,14 @@ namespace LostFilmMonitoring.DAO.Azure
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureBlobStorageFeedDAO"/> class.
+        /// Initializes a new instance of the <see cref="AzureBlobStorageFeedDao"/> class.
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of ILogger.</param>
-        public AzureBlobStorageFeedDAO(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageFeedDao(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient;
-            this.logger = logger.CreateScope(nameof(AzureBlobStorageFeedDAO));
+            this.logger = logger.CreateScope(nameof(AzureBlobStorageFeedDao));
         }
 
         /// <inheritdoc/>

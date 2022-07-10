@@ -26,15 +26,15 @@ namespace LostFilmMonitoring.BLL.Validators
     /// <inheritdoc/>
     public class EditSubscriptionRequestModelValidator : IValidator<EditSubscriptionRequestModel>
     {
-        private readonly IUserDAO userDAO;
-        private readonly ISeriesDAO seriesDAO;
+        private readonly IUserDao userDAO;
+        private readonly ISeriesDao seriesDAO;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EditSubscriptionRequestModelValidator"/> class.
         /// </summary>
-        /// <param name="userDAO">Instance of <see cref="IUserDAO"/>.</param>
-        /// <param name="seriesDAO">Instance of <see cref="ISeriesDAO"/>.</param>
-        public EditSubscriptionRequestModelValidator(IUserDAO userDAO, ISeriesDAO seriesDAO)
+        /// <param name="userDAO">Instance of <see cref="IUserDao"/>.</param>
+        /// <param name="seriesDAO">Instance of <see cref="ISeriesDao"/>.</param>
+        public EditSubscriptionRequestModelValidator(IUserDao userDAO, ISeriesDao seriesDAO)
         {
             this.userDAO = userDAO ?? throw new ArgumentNullException(nameof(userDAO));
             this.seriesDAO = seriesDAO ?? throw new ArgumentNullException(nameof(seriesDAO));

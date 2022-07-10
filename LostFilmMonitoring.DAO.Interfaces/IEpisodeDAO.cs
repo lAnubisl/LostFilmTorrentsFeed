@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Interfaces
     /// <summary>
     /// Provides functionality for managing episode.
     /// </summary>
-    public interface IEpisodeDAO
+    public interface IEpisodeDao
     {
         /// <summary>
         /// Save series.

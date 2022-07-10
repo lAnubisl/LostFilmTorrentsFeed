@@ -29,14 +29,14 @@ namespace LostFilmMonitoring.BLL.Commands
     public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
     {
         private readonly ILogger logger;
-        private readonly IUserDAO userDao;
+        private readonly IUserDao userDao;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInCommand"/> class.
         /// </summary>
-        /// <param name="userDao">Instance of <see cref="IUserDAO"/>.</param>
+        /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
         /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        public SignInCommand(IUserDAO userDao, ILogger logger)
+        public SignInCommand(IUserDao userDao, ILogger logger)
         {
             this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));
             this.logger = logger?.CreateScope(nameof(SignInCommand)) ?? throw new ArgumentNullException(nameof(logger));

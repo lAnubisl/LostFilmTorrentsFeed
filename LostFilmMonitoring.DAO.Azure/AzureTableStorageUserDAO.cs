@@ -24,17 +24,17 @@
 namespace LostFilmMonitoring.DAO.Azure
 {
     /// <summary>
-    /// Implements <see cref="IUserDAO"/> for Azure Table Storage.
+    /// Implements <see cref="IUserDao"/> for Azure Table Storage.
     /// </summary>
-    public class AzureTableStorageUserDAO : BaseAzureTableStorageDAO, IUserDAO
+    public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureTableStorageUserDAO"/> class.
+        /// Initializes a new instance of the <see cref="AzureTableStorageUserDao"/> class.
         /// </summary>
         /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
         /// <param name="logger">Instance of Logger.</param>
-        public AzureTableStorageUserDAO(TableServiceClient tableServiceClient, ILogger logger)
-            : base(tableServiceClient, "users", logger?.CreateScope(nameof(AzureTableStorageUserDAO)))
+        public AzureTableStorageUserDao(TableServiceClient tableServiceClient, ILogger logger)
+            : base(tableServiceClient, "users", logger?.CreateScope(nameof(AzureTableStorageUserDao)))
         {
         }
 

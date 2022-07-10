@@ -26,8 +26,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     [ExcludeFromCodeCoverage]
     internal class SaveUserCommandTests
     {
-        private Mock<IUserDAO> userDao;
-        private Mock<IFeedDAO> feedDao;
+        private Mock<IUserDao> userDao;
+        private Mock<IFeedDao> feedDao;
         private Mock<IModelPersister> persister;
         private Mock<ILogger> logger;
 

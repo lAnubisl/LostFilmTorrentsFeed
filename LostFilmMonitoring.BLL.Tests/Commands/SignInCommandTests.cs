@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     [ExcludeFromCodeCoverage]
     internal class SignInCommandTests
     {
-        private Mock<IUserDAO> userDao;
+        private Mock<IUserDao> userDao;
         private Mock<ILogger> logger;
 
         [SetUp]
