@@ -224,7 +224,7 @@ namespace LostFilmTV.Client.Response
         /// Get torrent file Id.
         /// </summary>
         /// <returns>Torrent file id.</returns>
-        public virtual string? GetTorrentId()
+        public string? GetTorrentId()
             => Extensions.GetTorrentId(this.Link);
 
         /// <inheritdoc/>
