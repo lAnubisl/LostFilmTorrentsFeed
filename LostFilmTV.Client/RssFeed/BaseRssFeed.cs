@@ -52,7 +52,7 @@ namespace LostFilmTV.Client.RssFeed
         /// <param name="rssUri">URL.</param>
         /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
         /// <returns>Content.</returns>
-        protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string> requestHeaders = null)
+        protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
         {
             this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
             using (var client = this.httpClientFactory.CreateClient())
@@ -148,7 +148,7 @@ namespace LostFilmTV.Client.RssFeed
         /// <returns>Set of FeedItemResponse.</returns>
         private static SortedSet<FeedItemResponse> GetItems(XDocument doc)
         {
-            var entries = from item in doc.Root.Descendants()
+            var entries = from item in doc.Root?.Descendants()
                           .First(i => i.Name.LocalName == "channel")
                           .Elements()
                           .Where(i => i.Name.LocalName == "item")

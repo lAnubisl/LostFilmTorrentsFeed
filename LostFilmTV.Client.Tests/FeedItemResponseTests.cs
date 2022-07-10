@@ -32,6 +32,7 @@ namespace LostFilmTV.Client.Tests
 
     [TestFixture]
     [ExcludeFromCodeCoverage]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Test class.")]
     public class FeedItemResponseTests
     {
         [Test]

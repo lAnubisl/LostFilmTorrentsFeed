@@ -252,7 +252,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         }
 
         private Stream GetTorrent(string torrentId)
-            => Assembly.GetExecutingAssembly().GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent");
+            => Assembly.GetExecutingAssembly().GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent")!;
 
         private void DefineDatabaseState()
         {

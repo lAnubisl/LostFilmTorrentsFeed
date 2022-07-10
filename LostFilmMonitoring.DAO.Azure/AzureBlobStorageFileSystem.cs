@@ -45,12 +45,14 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <inheritdoc/>
         public Task<bool> ExistsAsync(string directory, string fileName)
         {
+            this.logger.Info($"Call: {nameof(this.ExistsAsync)}({directory}, {fileName})");
             return this.azureBlobStorageClient.ExistsAsync(directory, fileName);
         }
 
         /// <inheritdoc/>
         public Task SaveAsync(string directory, string fileName, Stream contentStream)
         {
+            this.logger.Info($"Call: {nameof(this.SaveAsync)}({directory}, {fileName}, {contentStream})");
             return this.azureBlobStorageClient.UploadAsync(directory, fileName, contentStream);
         }
     }

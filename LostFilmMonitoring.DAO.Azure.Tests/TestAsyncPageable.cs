@@ -21,12 +21,10 @@
 // SOFTWARE.
 // </copyright>
 
-using Azure;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class TestAsyncPageable<T> : AsyncPageable<T>
+    public class TestAsyncPageable<T> : AsyncPageable<T> where T: notnull
     {
         private readonly T[] values;
 

@@ -36,6 +36,10 @@ namespace LostFilmTV.Client.Response
         /// </summary>
         public FeedItemResponse()
         {
+            this.Title = string.Empty;
+            this.Link = string.Empty;
+            this.Description = string.Empty;
+            this.PublishDate = string.Empty;
         }
 
         /// <summary>
@@ -43,13 +47,20 @@ namespace LostFilmTV.Client.Response
         /// </summary>
         /// <param name="xElement">element.</param>
         internal FeedItemResponse(XElement xElement)
+            : this()
         {
-            this.Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
-            this.PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
+            var elements = xElement.Elements();
+            if (elements == null || elements.Count() == 0)
+            {
+                return;
+            }
+
+            this.Link = elements.First(i => i.Name.LocalName == "link").Value;
+            this.PublishDate = elements.First(i => i.Name.LocalName == "pubDate").Value;
             this.PublishDateParsed = DateTime.ParseExact(this.PublishDate, "ddd, dd MMM yyyy HH:mm:ss +0000", CultureInfo.InvariantCulture);
             this.PublishDateParsed = DateTime.SpecifyKind(this.PublishDateParsed, DateTimeKind.Utc);
-            this.Title = xElement.Elements().First(i => i.Name.LocalName == "title").Value;
-            this.Description = xElement.Elements().FirstOrDefault(i => i.Name.LocalName == "description")?.Value;
+            this.Title = elements.First(i => i.Name.LocalName == "title").Value;
+            this.Description = elements.FirstOrDefault(i => i.Name.LocalName == "description")?.Value ?? string.Empty;
 
             var match = Regex.Match(this.Title, RegexPattern);
             if (!match.Success)
@@ -66,19 +77,40 @@ namespace LostFilmTV.Client.Response
             this.SeriesName = $"{this.SeriesNameRu} ({this.SeriesNameEn})";
         }
 
-        public string SeriesNameRu { get; set; }
+        /// <summary>
+        /// Gets or sets Series Name (Russian Part only).
+        /// </summary>
+        public string? SeriesNameRu { get; set; }
 
-        public string SeriesNameEn { get; set; }
+        /// <summary>
+        /// Gets or sets Series Name (English Part only).
+        /// </summary>
+        public string? SeriesNameEn { get; set; }
 
-        public string SeriesName { get; set; }
+        /// <summary>
+        /// Gets or sets Series Name.
+        /// </summary>
+        public string? SeriesName { get; set; }
 
-        public string EpisodeName { get; set; }
+        /// <summary>
+        /// Gets or sets Episode Name.
+        /// </summary>
+        public string? EpisodeName { get; set; }
 
+        /// <summary>
+        /// Gets or sets Episode Number.
+        /// </summary>
         public int? EpisodeNumber { get; set; }
 
+        /// <summary>
+        /// Gets or sets Season Number..
+        /// </summary>
         public int? SeasonNumber { get; set; }
 
-        public string Quality { get; set; }
+        /// <summary>
+        /// Gets or sets Quality.
+        /// </summary>
+        public string? Quality { get; set; }
 
         /// <summary>
         /// Gets or sets Title.
@@ -147,9 +179,9 @@ namespace LostFilmTV.Client.Response
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (!(obj is FeedItemResponse other))
+            if (obj is not FeedItemResponse other)
             {
                 return false;
             }
@@ -168,8 +200,13 @@ namespace LostFilmTV.Client.Response
             => this.Title;
 
         /// <inheritdoc/>
-        int IComparable<FeedItemResponse>.CompareTo(FeedItemResponse that)
+        int IComparable<FeedItemResponse>.CompareTo(FeedItemResponse? that)
         {
+            if (that == null)
+            {
+                return 1;
+            }
+
             if (this.PublishDateParsed < that.PublishDateParsed)
             {
                 return 1;
@@ -187,12 +224,17 @@ namespace LostFilmTV.Client.Response
         /// Get torrent file Id.
         /// </summary>
         /// <returns>Torrent file id.</returns>
-        public virtual string GetTorrentId()
-            => Client.Extensions.GetTorrentId(this.Link);
+        public virtual string? GetTorrentId()
+            => Extensions.GetTorrentId(this.Link);
 
         /// <inheritdoc/>
-        public bool Equals(FeedItemResponse other)
+        public bool Equals(FeedItemResponse? other)
         {
+            if (other == null)
+            {
+                return false;
+            }
+
             if (!string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase))
             {
                 return false;

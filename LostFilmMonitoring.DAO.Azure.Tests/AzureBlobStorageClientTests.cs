@@ -21,10 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using FluentAssertions;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
@@ -140,7 +136,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
         
         [Test]
-        public async Task UploadAsync_should_throw_exception_when_stream_null()
+        public void UploadAsync_should_throw_exception_when_stream_null()
         {
             var action = async () => await GetClient().UploadAsync("test", "test", null as Stream);
             action.Should().ThrowAsync<ArgumentNullException>().Result.Which.ParamName.Should().Be("content");

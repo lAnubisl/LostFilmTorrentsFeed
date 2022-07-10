@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.AzureFunction
     /// <summary>
     /// Responsible for binding <see cref="HttpRequestData"/> to model instance.
     /// </summary>
-    internal class ModelBinder
+    internal static class ModelBinder
     {
         /// <summary>
         /// Binds instance of <see cref="HttpRequestData"/> to requested model type.

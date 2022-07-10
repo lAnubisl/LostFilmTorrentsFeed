@@ -33,7 +33,7 @@ namespace LostFilmTV.Client
         /// </summary>
         /// <param name="reteOrgUrl">reteOrgUrl.</param>
         /// <returns>Torrent Id.</returns>
-        public static string GetTorrentId(string reteOrgUrl)
+        public static string? GetTorrentId(string? reteOrgUrl)
         {
             // http://tracktor.in/rssdownloader.php?id=33572
             if (string.IsNullOrEmpty(reteOrgUrl))

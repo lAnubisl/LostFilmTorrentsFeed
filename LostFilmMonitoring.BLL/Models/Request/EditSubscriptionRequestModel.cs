@@ -36,6 +36,8 @@ namespace LostFilmMonitoring.BLL.Models.Request
         /// <summary>
         /// Gets or sets Selected Items.
         /// </summary>
+#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
         public SubscriptionItem[]? Items { get; set; }
+#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
     }
 }

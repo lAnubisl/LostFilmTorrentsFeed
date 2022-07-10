@@ -21,9 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using Azure;
-using Azure.Core;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]

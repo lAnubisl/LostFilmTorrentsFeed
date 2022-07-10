@@ -56,7 +56,7 @@ namespace LostFilmTV.Client
             var client = this.httpClientFactory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
             request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
-            HttpResponseMessage response = null;
+            HttpResponseMessage response;
 
             try
             {
@@ -68,9 +68,15 @@ namespace LostFilmTV.Client
                 return null;
             }
 
+            if (response?.Content?.Headers?.ContentType == null)
+            {
+                this.logger.Error("response?.Content?.Headers?.ContentType == null");
+                return null;
+            }
+
             if (response.Content.Headers.ContentType.MediaType != "application/x-bittorrent")
             {
-                string responseBody = null;
+                string? responseBody = null;
                 if (response.Content.Headers.ContentType.MediaType == "text/html")
                 {
                     responseBody = await response.Content.ReadAsStringAsync();
@@ -80,8 +86,8 @@ namespace LostFilmTV.Client
                 return null;
             }
 
-            response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string> cd);
-            var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1)..];
+            response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string>? cd);
+            var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
             if (fileName == null)
             {
                 this.logger.Error($"Something wrong with 'Content-Disposition' header of the response.");

@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.BLL
     /// <summary>
     /// Represents different video qualities.
     /// </summary>
-    public class Quality
+    public static class Quality
     {
         /// <summary>
         /// Standard quality.

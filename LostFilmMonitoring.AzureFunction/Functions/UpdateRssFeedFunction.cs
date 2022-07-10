@@ -38,7 +38,7 @@ namespace LostFilmMonitoring.AzureFunction.Functions
         /// <param name="updateFeedCommand">Instance of <see cref="UpdateFeedsCommand"/>.</param>
         public UpdateRssFeedFunction(ILogger logger, UpdateFeedsCommand updateFeedCommand)
         {
-            this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(UpdateRssFeedFunction));
+            this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
             this.updateFeedCommand = updateFeedCommand ?? throw new ArgumentNullException(nameof(updateFeedCommand));
         }
 

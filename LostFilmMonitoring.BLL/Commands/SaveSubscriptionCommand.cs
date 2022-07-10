@@ -104,7 +104,7 @@ namespace LostFilmMonitoring.BLL.Commands
             return itemToRemove;
         }
 
-        private static string GetTorrentId(Series series, string quality)
+        private static string? GetTorrentId(Series series, string quality)
         {
             return quality switch
             {

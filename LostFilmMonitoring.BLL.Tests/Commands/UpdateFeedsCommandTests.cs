@@ -235,6 +235,12 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
             var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+            if (torrentFileStream == null)
+            {
+                Assert.Fail("Torrent file not found");
+                return;
+            }
+            
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51438")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [1080].torrent", torrentFileStream));
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51437")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [SD].torrent", torrentFileStream));
@@ -297,6 +303,12 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             });
 
             var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+            if (torrentFileStream == null)
+            {
+                Assert.Fail("Torrent file not found");
+                return;
+            }
+
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51438")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [1080].torrent", torrentFileStream));
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51437")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [SD].torrent", torrentFileStream));
@@ -368,6 +380,12 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
             var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+            if (torrentFileStream == null)
+            {
+                Assert.Fail("Torrent file not found");
+                return;
+            }
+            
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
 
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
@@ -403,6 +421,12 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
             var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+            if (torrentFileStream == null)
+            {
+                Assert.Fail("Torrent file not found");
+                return;
+            }
+            
             this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
             this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);

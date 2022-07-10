@@ -49,7 +49,6 @@ namespace LostFilmMonitoring.BLL
 
             this.ImagesDirectory = Environment.GetEnvironmentVariable("IMAGESDIRECTORY") ?? "images";
             this.TorrentsDirectory = Environment.GetEnvironmentVariable("TORRENTSDIRECTORY") ?? "torrentfiles";
-            this.CfClearance = Environment.GetEnvironmentVariable("CFCLEARANCE") ?? "cf_clearance=KWofFL.OwtYZgILXCvcYLzNZjlu3qH4g.Ud_uWKhuj0-1651323090-0-150";
         }
 
         /// <inheritdoc/>
@@ -66,9 +65,6 @@ namespace LostFilmMonitoring.BLL
 
         /// <inheritdoc/>
         public string BaseUID { get; private set; }
-
-        /// <inheritdoc/>
-        public string CfClearance { get; private set; }
 
         /// <inheritdoc/>
         public string SqlServerConnectionString { get; private set; }

@@ -37,7 +37,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// <param name="episodeNumber">Episode number.</param>
         /// <param name="torrentId">Torrent Id.</param>
         /// <param name="quality">Quality.</param>
-        public Episode(string seriesName, string episodeName, int? seasonNumber, int? episodeNumber, string torrentId, string quality)
+        public Episode(string seriesName, string episodeName, int seasonNumber, int episodeNumber, string torrentId, string quality)
         {
             this.SeriesName = seriesName;
             this.EpisodeName = episodeName;
@@ -60,12 +60,12 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// <summary>
         /// Gets Season Number.
         /// </summary>
-        public int? SeasonNumber { get; private set; }
+        public int SeasonNumber { get; private set; }
 
         /// <summary>
         /// Gets Episode Number.
         /// </summary>
-        public int? EpisodeNumber { get; private set; }
+        public int EpisodeNumber { get; private set; }
 
         /// <summary>
         /// Gets Torrent Id.

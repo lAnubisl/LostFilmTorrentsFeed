@@ -21,15 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Azure;
-using Azure.Data.Tables;
-using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]

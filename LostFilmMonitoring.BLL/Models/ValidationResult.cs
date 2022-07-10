@@ -65,6 +65,7 @@ namespace LostFilmMonitoring.BLL.Models
         /// </summary>
         /// <param name="property">Property that has an error.</param>
         /// <param name="message">Error message.</param>
+        /// <param name="objects">Parameters for string.format.</param>
         /// <returns>Instance of <see cref="ValidationResult"/>.</returns>
         internal static ValidationResult Fail(string property, string message, params string[] objects)
             => new (

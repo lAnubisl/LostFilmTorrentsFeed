@@ -21,8 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using Azure.Data.Tables;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]

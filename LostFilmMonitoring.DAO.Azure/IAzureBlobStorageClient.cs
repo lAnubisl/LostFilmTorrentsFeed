@@ -72,7 +72,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="containerName">Name of the container.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>        
+        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
         Task<string?> DownloadStringAsync(string containerName, string fileName);
 
         /// <summary>

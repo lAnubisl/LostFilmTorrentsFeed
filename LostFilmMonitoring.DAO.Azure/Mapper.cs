@@ -95,8 +95,8 @@ namespace LostFilmMonitoring.DAO.Azure
                 RowKey = episode.TorrentId,
                 Timestamp = DateTime.UtcNow,
                 EpisodeName = episode.EpisodeName,
-                SeasonNumber = episode.SeasonNumber ?? 0,
-                EpisodeNumber = episode.EpisodeNumber ?? 0,
+                SeasonNumber = episode.SeasonNumber,
+                EpisodeNumber = episode.EpisodeNumber,
                 Quality = episode.Quality,
             };
         }

@@ -43,7 +43,7 @@ namespace LostFilmMonitoring.DAO.Azure
         }
 
         /// <inheritdoc/>
-        public async Task UploadAsync(string containerName, string fileName, Stream? content, string cacheControl = "no-cache")
+        public Task UploadAsync(string containerName, string fileName, Stream? content, string cacheControl = "no-cache")
         {
             if (content == null)
             {
@@ -51,35 +51,7 @@ namespace LostFilmMonitoring.DAO.Azure
             }
 
             this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', Stream)");
-            var blobClient = this.GetBlobClient(containerName, fileName);
-
-            try
-            {
-                content.Position = 0;
-                await blobClient.UploadAsync(content, overwrite: true);
-            }
-            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
-            {
-                await this.CreateContainerAsync(containerName);
-                await this.UploadAsync(containerName, fileName, content, cacheControl);
-            }
-            catch (Exception ex)
-            {
-                var message = $"Error uploading file '{fileName}' to container '{containerName}'";
-                this.logger.Log(message, ex);
-                throw new ExternalServiceUnavailableException(message, ex);
-            }
-
-            try
-            {
-                await SetCacheControlAsync(blobClient, cacheControl);
-            }
-            catch (Exception ex)
-            {
-                var message = $"Error setting properties of file '{fileName}' in container '{containerName}'";
-                this.logger.Log(message, ex);
-                throw new ExternalServiceUnavailableException(message, ex);
-            }
+            return this.UploadInnerAsync(containerName, fileName, content, cacheControl);
         }
 
         /// <inheritdoc/>
@@ -216,6 +188,39 @@ namespace LostFilmMonitoring.DAO.Azure
             catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
             {
                 return;
+            }
+        }
+
+        private async Task UploadInnerAsync(string containerName, string fileName, Stream content, string cacheControl = "no-cache")
+        {
+            var blobClient = this.GetBlobClient(containerName, fileName);
+
+            try
+            {
+                content.Position = 0;
+                await blobClient.UploadAsync(content, overwrite: true);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
+            {
+                await this.CreateContainerAsync(containerName);
+                await this.UploadInnerAsync(containerName, fileName, content, cacheControl);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Error uploading file '{fileName}' to container '{containerName}'";
+                this.logger.Log(message, ex);
+                throw new ExternalServiceUnavailableException(message, ex);
+            }
+
+            try
+            {
+                await SetCacheControlAsync(blobClient, cacheControl);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Error setting properties of file '{fileName}' in container '{containerName}'";
+                this.logger.Log(message, ex);
+                throw new ExternalServiceUnavailableException(message, ex);
             }
         }
 

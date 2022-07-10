@@ -28,8 +28,6 @@ namespace LostFilmTV.Client.RssFeed
     /// </summary>
     public class LostFilmRssFeed : BaseRssFeed, IRssFeed
     {
-        private readonly IConfiguration configuration;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LostFilmRssFeed"/> class.
         /// </summary>
@@ -39,7 +37,6 @@ namespace LostFilmTV.Client.RssFeed
         public LostFilmRssFeed(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
             : base(logger.CreateScope(nameof(ReteOrgRssFeed)), httpClientFactory)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>

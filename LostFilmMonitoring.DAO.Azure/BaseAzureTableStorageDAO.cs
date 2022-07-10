@@ -36,7 +36,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
         /// <param name="tableName">Name of a table to work with.</param>
         /// <param name="logger">Instance of Logger.</param>
-        public BaseAzureTableStorageDAO(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
+        protected BaseAzureTableStorageDAO(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
         {
             if (tableServiceClient == null)
             {

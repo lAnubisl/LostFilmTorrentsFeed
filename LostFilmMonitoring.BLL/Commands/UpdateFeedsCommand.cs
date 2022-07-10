@@ -81,17 +81,36 @@ namespace LostFilmMonitoring.BLL.Commands
             }
         }
 
-        private static Episode ToEpisode(FeedItemResponse feedItem)
-            => new (
+        private static Episode? ToEpisode(FeedItemResponse feedItem)
+        {
+            var torrentId = feedItem.GetTorrentId();
+            if (string.IsNullOrEmpty(feedItem.SeriesName)
+                || string.IsNullOrEmpty(feedItem.EpisodeName)
+                || feedItem.EpisodeNumber == null
+                || feedItem.SeasonNumber == null
+                || string.IsNullOrEmpty(feedItem.Quality)
+                || string.IsNullOrEmpty(torrentId))
+            {
+                return null;
+            }
+
+            return new (
                 feedItem.SeriesName,
                 feedItem.EpisodeName,
-                feedItem.SeasonNumber,
-                feedItem.EpisodeNumber,
-                feedItem.GetTorrentId(),
+                feedItem.SeasonNumber.Value,
+                feedItem.EpisodeNumber.Value,
+                torrentId,
                 feedItem.Quality);
+        }
 
-        private static Series ToSeries(FeedItemResponse feedItem)
-            => new (
+        private static Series? ToSeries(FeedItemResponse feedItem)
+        {
+            if (feedItem == null || string.IsNullOrEmpty(feedItem.SeriesName))
+            {
+                return null;
+            }
+
+            return new (
                 feedItem.SeriesName,
                 feedItem.PublishDateParsed,
                 $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",
@@ -104,6 +123,7 @@ namespace LostFilmMonitoring.BLL.Commands
                 ParseEpisodeNumber(feedItem, Quality.H1080),
                 ParseEpisodeNumber(feedItem, Quality.H720),
                 ParseEpisodeNumber(feedItem, Quality.SD));
+        }
 
         private static BencodeNET.Torrents.Torrent ToTorrentDataStructure(TorrentFileResponse torrentFileResponse)
             => torrentFileResponse.Content.ToTorrentDataStructure();
@@ -132,18 +152,20 @@ namespace LostFilmMonitoring.BLL.Commands
                     return null;
                 }
 
-                if (feedItem.SeriesName == null || feedItem.EpisodeName == null)
+                var series = ToSeries(feedItem);
+
+                if (series == null)
                 {
                     return null;
                 }
 
-                if (!existingSeries.ContainsKey(feedItem.SeriesName))
+                if (!existingSeries.ContainsKey(series.Name))
                 {
-                    existingSeries.Add(feedItem.SeriesName, ToSeries(feedItem));
-                    return existingSeries[feedItem.SeriesName];
+                    existingSeries.Add(series.Name, series);
+                    return existingSeries[series.Name];
                 }
 
-                var existing = existingSeries[feedItem.SeriesName];
+                var existing = existingSeries[series.Name];
                 if (feedItem.Quality == Quality.H1080 && Skip(existing, feedItem, x => x.Q1080SeasonNumber, x => x.Q1080EpisodeNumber))
                 {
                     return null;
@@ -159,7 +181,7 @@ namespace LostFilmMonitoring.BLL.Commands
                     return null;
                 }
 
-                existing.MergeFrom(ToSeries(feedItem));
+                existing.MergeFrom(series);
                 return existing;
             }
         }
@@ -205,7 +227,7 @@ namespace LostFilmMonitoring.BLL.Commands
         private async Task SaveEpisodeAsync(FeedItemResponse feedItem)
         {
             var episode = ToEpisode(feedItem);
-            if (episode.SeasonNumber != null && episode.EpisodeNumber != null)
+            if (episode != null)
             {
                 await this.dal.Episode.SaveAsync(episode);
             }
@@ -229,6 +251,12 @@ namespace LostFilmMonitoring.BLL.Commands
         private async Task<BencodeNET.Torrents.Torrent?> GetTorrentAsync(FeedItemResponse feedResponseItem)
         {
             var torrentId = feedResponseItem.GetTorrentId();
+            if (torrentId == null)
+            {
+                this.logger.Error($"Could not get torrent id for {feedResponseItem.Title}");
+                return null;
+            }
+
             var torrentFileResponse = await this.client.DownloadTorrentFileAsync(this.configuration.BaseUID, this.configuration.BaseUSESS, torrentId);
             if (torrentFileResponse == null)
             {
@@ -242,6 +270,12 @@ namespace LostFilmMonitoring.BLL.Commands
 
         private async Task UpdateAllSubscribedUsersAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
         {
+            if (string.IsNullOrEmpty(feedResponseItem.SeriesName) || string.IsNullOrEmpty(feedResponseItem.Quality))
+            {
+                this.logger.Error($"Cannot update users for feed item {feedResponseItem} because it has no series name or quality.");
+                return;
+            }
+
             var userIds = await this.dal.Subscription.LoadUsersIdsAsync(feedResponseItem.SeriesName, feedResponseItem.Quality);
             await this.UpdateAllSubscribedUsersAsync(userIds, feedResponseItem, torrent);
         }
