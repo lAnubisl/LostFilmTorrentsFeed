@@ -25,6 +25,7 @@ using LostFilmMonitoring.BLL.Models.Response;
 
 namespace LostFilmMonitoring.BLL.Tests.Commands
 {
+    [ExcludeFromCodeCoverage]
     internal class SaveSubscriptionCommandTests
     {
         private Mock<IUserDAO> userDao;

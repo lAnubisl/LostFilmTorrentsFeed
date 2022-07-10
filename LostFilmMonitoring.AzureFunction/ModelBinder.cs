@@ -41,7 +41,7 @@ namespace LostFilmMonitoring.AzureFunction
             {
                 using var reader = new StreamReader(req.Body);
                 var json = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<T>(json);
+                return JsonSerializer.Deserialize<T>(json);
             }
             catch
             {

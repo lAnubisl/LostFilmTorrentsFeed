@@ -1,4 +1,4 @@
-﻿// <copyright file="TorrentFileResponse.cs" company="Alexander Panfilenok">
+﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,32 +21,30 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
+namespace LostFilmMonitoring.DAO.Azure.Tests
 {
-    /// <summary>
-    /// Represents torrent file with content.
-    /// </summary>
-    public class TorrentFileResponse
+    [ExcludeFromCodeCoverage]
+    public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TorrentFileResponse"/> class.
-        /// </summary>
-        /// <param name="fileName">File Name.</param>
-        /// <param name="content">Content stream.</param>
-        internal TorrentFileResponse(string fileName, Stream content)
+        private IEnumerable<T> values;
+        private IEnumerator<T> enumerator;
+        
+        public TestAsyncEnumerator(T[] values)
         {
-            this.FileName = fileName;
-            this.Content = content;
+            this.values = values;
+            this.enumerator = this.values.GetEnumerator();
+        }
+        
+        public T Current => enumerator.Current;
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask();
         }
 
-        /// <summary>
-        /// Gets File Name.
-        /// </summary>
-        public string FileName { get; }
-
-        /// <summary>
-        /// Gets content stream.
-        /// </summary>
-        public Stream Content { get; }
+        public ValueTask<bool> MoveNextAsync()
+        {
+            return new ValueTask<bool>(enumerator.MoveNext());
+        }
     }
 }

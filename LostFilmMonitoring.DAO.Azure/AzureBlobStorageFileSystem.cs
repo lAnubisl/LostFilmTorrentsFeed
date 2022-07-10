@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure
     /// </summary>
     public class AzureBlobStorageFileSystem : IFileSystem
     {
-        private readonly AzureBlobStorageClient azureBlobStorageClient;
+        private readonly IAzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of Logger.</param>
-        public AzureBlobStorageFileSystem(AzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageFileSystem(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient ?? throw new ArgumentNullException(nameof(azureBlobStorageClient));
             this.logger = logger?.CreateScope(nameof(AzureBlobStorageFileSystem)) ?? throw new ArgumentNullException(nameof(logger));

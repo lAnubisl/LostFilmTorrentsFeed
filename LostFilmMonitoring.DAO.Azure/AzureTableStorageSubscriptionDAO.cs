@@ -82,11 +82,6 @@ namespace LostFilmMonitoring.DAO.Azure
 
         private async Task DeleteAsync(string userId, Subscription subscription)
         {
-            if (subscription == null)
-            {
-                return;
-            }
-
             try
             {
                 await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(subscription.SeriesName), userId));

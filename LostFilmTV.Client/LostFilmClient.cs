@@ -23,17 +23,6 @@
 
 namespace LostFilmTV.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using LostFilmMonitoring.Common;
-    using LostFilmTV.Client.Response;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Client for LostFilm.TV
     /// This class is responsible for all interactions with lostfilm.tv website.
@@ -53,120 +42,6 @@ namespace LostFilmTV.Client
         {
             this.logger = logger.CreateScope(nameof(LostFilmClient));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        }
-
-        /// <summary>
-        /// Returns captcha for new user registration.
-        /// </summary>
-        /// <returns>Captcha object which contains captcha cookie and image.</returns>
-        public async Task<CaptchaResponse> GetRegistrationCaptchaAsync()
-        {
-            var client = this.httpClientFactory.CreateClient();
-            var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/simple_captcha.php"));
-            return await CaptchaResponse.BuildAsync(response);
-        }
-
-        /// <summary>
-        /// Creates new account on lostfilm.tv website.
-        /// </summary>
-        /// <param name="captchaCookie">Captcha cookie you got from <see cref="GetRegistrationCaptchaAsync"/>.</param>
-        /// <param name="captcha">Captcha text from the image you got from <see cref="GetRegistrationCaptchaAsync"/>.</param>
-        /// <returns>Registration object which contains all information about new user.</returns>
-        public async Task<RegistrationResponse> RegisterNewAccountAsync(string captchaCookie, string captcha)
-        {
-            var guid = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 16);
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}/ajaxik.php");
-            request.Headers.Add("Cookie", $"PHPSESSID={captchaCookie}");
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>()
-            {
-                    { "act", "users" },
-                    { "type", "signup" },
-                    { "login", guid },
-                    { "mail", $"{guid}%40gmail.com" },
-                    { "pass", guid },
-                    { "pass_check", guid },
-                    { "rem", "1" },
-                    { "captcha", captcha },
-            });
-
-            var client = this.httpClientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<RegistrationResponse>(responseJson);
-            var cookie = response.Headers
-                .Where(h => h.Key == "Set-Cookie")
-                .Select(h => h.Value)
-                .FirstOrDefault()
-                ?.Last();
-            if (cookie != null)
-            {
-                cookie = cookie[(cookie.IndexOf("=") + 1)..];
-                result.Cookie = cookie.Substring(0, cookie.IndexOf(";"));
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get's the episode id by episode link.
-        /// </summary>
-        /// <param name="episodeLink">Link to an episode.</param>
-        /// <param name="cookie_lf_session">User's cookie.</param>
-        /// <returns>Episode Id. Or Null.</returns>
-        public async Task<string> GetEpisodeIdAsync(string episodeLink, string cookie_lf_session)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, episodeLink);
-            request.Headers.Add("Cookie", $"lf_session={cookie_lf_session}");
-            var responseString = await this.ExecuteAsync(request);
-            var episodeIdMatch = Regex.Match(responseString, "PlayEpisode\\('(\\d+)'\\)");
-            if (!episodeIdMatch.Success)
-            {
-                this.logger.Error($"Cannot find EpisodeId from content:{responseString}");
-                return null;
-            }
-
-            return episodeIdMatch.Groups[1].Value;
-        }
-
-        /// <summary>
-        /// GetEpisodeLink.
-        /// </summary>
-        /// <param name="episodeLink">Link to an episode.</param>
-        /// <param name="cookie_lf_session">User's cookie.</param>
-        /// <returns>Link.</returns>
-        public async Task<string> GetEpisodeLinkAsync(string episodeLink, string cookie_lf_session)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Get, episodeLink);
-            request.Headers.Add("Cookie", $"lf_session={cookie_lf_session}");
-            var responseString = await this.ExecuteAsync(request);
-            var linkMatch = Regex.Match(responseString, "url=([^\"]+)");
-            if (!linkMatch.Success)
-            {
-                this.logger.Error($"Cannot find EpisodeLink from content:{responseString}");
-                return null;
-            }
-
-            return linkMatch.Groups[1].Value;
-        }
-
-        /// <summary>
-        /// Get user identity.
-        /// </summary>
-        /// <param name="link">Link.</param>
-        /// <returns>User identity.</returns>
-        public async Task<string> GetUserIdentityAsync(string link)
-        {
-            var client = this.httpClientFactory.CreateClient();
-            var usessResponse = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, link));
-            var usessResponseContent = await usessResponse.Content.ReadAsStringAsync();
-            var usessMatch = Regex.Match(usessResponseContent, "this.innerHTML = '([^']+)'");
-            if (!usessMatch.Success)
-            {
-                this.logger.Error($"Cannot get usess from: {Environment.NewLine}{usessResponseContent}");
-                return null;
-            }
-
-            return usessMatch.Groups[1].Value;
         }
 
         /// <summary>
@@ -216,22 +91,6 @@ namespace LostFilmTV.Client
             fileName = fileName[0..^1];
             var stream = await response.Content.ReadAsStreamAsync();
             return new TorrentFileResponse(fileName, stream);
-        }
-
-        private async Task<string> ExecuteAsync(HttpRequestMessage httpRequestMessage)
-        {
-            var client = this.httpClientFactory.CreateClient();
-            try
-            {
-                var response = await client.SendAsync(httpRequestMessage);
-                var responseBytes = await response.Content.ReadAsByteArrayAsync();
-                return Encoding.UTF8.GetString(responseBytes);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Log(ex);
-                return null;
-            }
         }
     }
 }

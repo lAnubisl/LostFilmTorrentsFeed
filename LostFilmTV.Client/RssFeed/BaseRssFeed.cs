@@ -23,19 +23,6 @@
 
 namespace LostFilmTV.Client.RssFeed
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using System.Web;
-    using System.Xml.Linq;
-    using LostFilmMonitoring.Common;
-    using LostFilmTV.Client.Exceptions;
-    using LostFilmTV.Client.Response;
-
     /// <summary>
     /// Represents base rss feed.
     /// </summary>

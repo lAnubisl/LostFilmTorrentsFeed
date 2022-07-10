@@ -23,6 +23,7 @@
 
 namespace LostFilmMonitoring.BLL.Tests.Commands
 {
+    [ExcludeFromCodeCoverage]
     public class UpdateFeedsCommandTests
     {
         private const string BaseUid = "baseUid";

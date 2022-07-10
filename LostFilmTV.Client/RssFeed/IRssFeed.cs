@@ -23,10 +23,6 @@
 
 namespace LostFilmTV.Client
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using LostFilmTV.Client.Response;
-
     /// <summary>
     /// Interface that provides access to RSS feed.
     /// </summary>

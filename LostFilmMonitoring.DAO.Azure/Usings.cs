@@ -23,6 +23,7 @@
 
 #pragma warning disable SA1200 // Using directives should be placed correctly
 global using System.Text;
+global using System.Text.Json;
 global using System.Xml.Linq;
 global using Azure;
 global using Azure.Data.Tables;
@@ -33,5 +34,4 @@ global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.Common;
 global using LostFilmMonitoring.DAO.Interfaces;
 global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-global using Newtonsoft.Json;
 #pragma warning restore SA1200 // Using directives should be placed correctly

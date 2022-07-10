@@ -1,4 +1,4 @@
-﻿// <copyright file="SearchResponseSeries.cs" company="Alexander Panfilenok">
+﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,43 +21,21 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
+namespace LostFilmMonitoring.DAO.Azure.Tests
 {
-    using Newtonsoft.Json;
-
-    /// <summary>
-    /// Object contains search series data.
-    /// </summary>
-    public class SearchResponseSeries
+    [ExcludeFromCodeCoverage]
+    public class TestAsyncEnumerable<T> : IAsyncEnumerable<T>
     {
-        /// <summary>
-        /// Gets or sets Id.
-        /// </summary>
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets Title.
-        /// </summary>
-        [JsonProperty("title")]
-        public string Title { get; set; }
-
-        /// <summary>
-        /// Gets or sets OriginalTitle.
-        /// </summary>
-        [JsonProperty("title_orig")]
-        public string OriginalTitle { get; set; }
-
-        /// <summary>
-        /// Gets or sets Icon.
-        /// </summary>
-        [JsonProperty("icon")]
-        public string Icon { get; set; }
-
-        /// <summary>
-        /// Gets or sets Link.
-        /// </summary>
-        [JsonProperty("link")]
-        public string Link { get; set; }
+        private readonly T[] values;
+        
+        public TestAsyncEnumerable(T[] values)
+        {
+            this.values = values;
+        }
+        
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            return new TestAsyncEnumerator<T>(this.values);
+        }
     }
 }

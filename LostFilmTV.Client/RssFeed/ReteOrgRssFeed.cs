@@ -23,14 +23,6 @@
 
 namespace LostFilmTV.Client.RssFeed
 {
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using LostFilmMonitoring.Common;
-    using LostFilmTV.Client;
-    using LostFilmTV.Client.Exceptions;
-    using LostFilmTV.Client.Response;
-
     /// <summary>
     /// ReteOrgRssFeedService.
     /// </summary>

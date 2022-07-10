@@ -23,9 +23,6 @@
 
 namespace LostFilmTV.Client
 {
-    using System.Threading.Tasks;
-    using LostFilmTV.Client.Response;
-
     public interface ILostFilmClient
     {
         Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);

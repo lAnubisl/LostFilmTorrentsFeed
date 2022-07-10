@@ -30,7 +30,7 @@ namespace LostFilmMonitoring.DAO.Azure
     {
         private static readonly string ConteinerName = "rssfeeds";
         private static readonly string BaseFeedName = "baseFeed.xml";
-        private readonly AzureBlobStorageClient azureBlobStorageClient;
+        private readonly IAzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of ILogger.</param>
-        public AzureBlobStorageFeedDAO(AzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageFeedDAO(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient;
             this.logger = logger.CreateScope(nameof(AzureBlobStorageFeedDAO));

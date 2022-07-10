@@ -23,9 +23,11 @@
 
 namespace LostFilmTV.Client.Tests
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
 
+    [ExcludeFromCodeCoverage]
     internal class Helper
     {
         internal static string GetEmbeddedResource(string name)

@@ -23,6 +23,7 @@
 
 namespace LostFilmMonitoring.BLL.Tests.Commands
 {
+    [ExcludeFromCodeCoverage]
     internal class GetUserCommandTests
     {
         private Mock<IUserDAO> userDao;

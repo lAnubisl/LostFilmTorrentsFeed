@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure
     /// </summary>
     public class AzureBlobStorageModelPersister : IModelPersister
     {
-        private readonly AzureBlobStorageClient azureBlobStorageClient;
+        private readonly IAzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of Logger.</param>
-        public AzureBlobStorageModelPersister(AzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageModelPersister(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient ?? throw new ArgumentNullException(nameof(azureBlobStorageClient));
             this.logger = logger?.CreateScope(nameof(AzureBlobStorageModelPersister)) ?? throw new ArgumentNullException(nameof(logger));
@@ -55,7 +55,7 @@ namespace LostFilmMonitoring.DAO.Azure
                     return null;
                 }
 
-                return JsonConvert.DeserializeObject<T>(json);
+                return JsonSerializer.Deserialize<T>(json);
             }
             catch (ExternalServiceUnavailableException ex)
             {
@@ -70,7 +70,7 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger.Info($"Call: {nameof(this.PersistAsync)}('{modelName}', model)");
             try
             {
-                await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonConvert.SerializeObject(model));
+                await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonSerializer.Serialize(model));
             }
             catch (ExternalServiceUnavailableException ex)
             {

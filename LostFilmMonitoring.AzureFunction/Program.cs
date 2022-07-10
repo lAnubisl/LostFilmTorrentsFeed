@@ -33,10 +33,10 @@ namespace LostFilmMonitoring.AzureFunction
             var storageAccountConnectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString") ?? throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
 
             services.AddLogging();
-            services.AddSingleton<ILogger, BLL.Logger>();
+            services.AddSingleton<Common.ILogger, BLL.Logger>();
             services.AddSingleton<BlobServiceClient>(r => new BlobServiceClient(storageAccountConnectionString));
             services.AddSingleton<TableServiceClient>(r => new TableServiceClient(storageAccountConnectionString));
-            services.AddSingleton<AzureBlobStorageClient>();
+            services.AddSingleton<IAzureBlobStorageClient, AzureBlobStorageClient>();
             services.AddSingleton<IModelPersister, AzureBlobStorageModelPersister>();
             services.AddSingleton<IDAL, DAL>();
             services.AddSingleton<ITorrentFileDAO, AzureBlobStorageTorrentFileDAO>();

@@ -1,4 +1,4 @@
-﻿// <copyright file="TorrentFileResponse.cs" company="Alexander Panfilenok">
+﻿// <copyright file="AzureBlobStorageClientTests.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,32 +21,22 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
+using Azure;
+
+namespace LostFilmMonitoring.DAO.Azure.Tests
 {
-    /// <summary>
-    /// Represents torrent file with content.
-    /// </summary>
-    public class TorrentFileResponse
+    [ExcludeFromCodeCoverage]
+    public class TestResponse<T> : Response<T>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TorrentFileResponse"/> class.
-        /// </summary>
-        /// <param name="fileName">File Name.</param>
-        /// <param name="content">Content stream.</param>
-        internal TorrentFileResponse(string fileName, Stream content)
+        private readonly T expectedObject;
+        
+        public TestResponse(T expectedObject)
         {
-            this.FileName = fileName;
-            this.Content = content;
+            this.expectedObject = expectedObject;
         }
 
-        /// <summary>
-        /// Gets File Name.
-        /// </summary>
-        public string FileName { get; }
+        public override T Value => this.expectedObject;
 
-        /// <summary>
-        /// Gets content stream.
-        /// </summary>
-        public Stream Content { get; }
+        public override Response GetRawResponse() => new TestResponseOk();
     }
 }

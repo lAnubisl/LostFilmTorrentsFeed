@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure
     /// </summary>
     public class AzureBlobStorageTorrentFileDAO : ITorrentFileDAO
     {
-        private readonly AzureBlobStorageClient azureBlobStorageClient;
+        private readonly IAzureBlobStorageClient azureBlobStorageClient;
         private readonly ILogger logger;
         private readonly string baseTorrentsDirectory = "basetorrents";
         private readonly string userTorrentsDirectory = "usertorrents";
@@ -38,7 +38,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// </summary>
         /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
         /// <param name="logger">Instance of ILogger.</param>
-        public AzureBlobStorageTorrentFileDAO(AzureBlobStorageClient azureBlobStorageClient, ILogger logger)
+        public AzureBlobStorageTorrentFileDAO(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
         {
             this.azureBlobStorageClient = azureBlobStorageClient;
             this.logger = logger.CreateScope(nameof(AzureBlobStorageTorrentFileDAO));

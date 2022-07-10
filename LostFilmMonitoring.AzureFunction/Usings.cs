@@ -25,6 +25,7 @@
 global using System;
 global using System.IO;
 global using System.Net;
+global using System.Text.Json;
 global using System.Threading.Tasks;
 global using Azure.Data.Tables;
 global using Azure.Storage.Blobs;
@@ -46,6 +47,5 @@ global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
-global using Newtonsoft.Json;
 
 #pragma warning restore SA1200 // Using directives should be placed correctly

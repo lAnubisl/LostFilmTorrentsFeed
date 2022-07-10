@@ -39,7 +39,7 @@ namespace LostFilmMonitoring.DAO.Azure
         }
 
         /// <inheritdoc/>
-        public async Task DeleteAsync(Series series)
+        public async Task DeleteAsync(Series? series)
         {
             this.Logger.Info($"Call: {nameof(this.DeleteAsync)}(series)");
 

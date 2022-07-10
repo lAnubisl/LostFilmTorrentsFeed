@@ -1,4 +1,4 @@
-﻿// <copyright file="SearchResponse.cs" company="Alexander Panfilenok">
+﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,25 +21,24 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
+using Azure;
+
+namespace LostFilmMonitoring.DAO.Azure.Tests
 {
-    using Newtonsoft.Json;
-
-    /// <summary>
-    /// Object contains search request execution results.
-    /// </summary>
-    public class SearchResponse
+    [ExcludeFromCodeCoverage]
+    public class TestPage<T> : Page<T>
     {
-        /// <summary>
-        /// Gets or sets Data.
-        /// </summary>
-        [JsonProperty("data")]
-        public SearchResponseData Data { get; set; }
+        private readonly T[] values;
 
-        /// <summary>
-        /// Gets or sets Result.
-        /// </summary>
-        [JsonProperty("result")]
-        public string Result { get; set; }
+        public TestPage(T[] values)
+        {
+            this.values = values;
+        }
+
+        public override IReadOnlyList<T> Values => values;
+
+        public override string? ContinuationToken => null;
+
+        public override Response GetRawResponse() => new TestResponseOk();
     }
 }

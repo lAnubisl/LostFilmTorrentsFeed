@@ -1,4 +1,4 @@
-﻿// <copyright file="SearchResponseData.cs" company="Alexander Panfilenok">
+﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,20 +21,23 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+using Azure;
 
-    /// <summary>
-    /// Object contains search data results.
-    /// </summary>
-    public class SearchResponseData
+namespace LostFilmMonitoring.DAO.Azure.Tests
+{
+    [ExcludeFromCodeCoverage]
+    public class TestAsyncPageable<T> : AsyncPageable<T>
     {
-        /// <summary>
-        /// Gets or sets Series.
-        /// </summary>
-        [JsonProperty("series")]
-        public List<SearchResponseSeries> Series { get; set; }
+        private readonly T[] values;
+
+        public TestAsyncPageable(T[] values)
+        {
+            this.values = values;
+        }
+
+        public override IAsyncEnumerable<Page<T>> AsPages(string? continuationToken = null, int? pageSizeHint = null)
+        {
+            return new TestAsyncEnumerable<Page<T>>(new[] { new TestPage<T>(values) });
+        }
     }
 }

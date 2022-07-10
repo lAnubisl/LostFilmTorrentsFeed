@@ -57,7 +57,7 @@ namespace LostFilmMonitoring.AzureFunction.Functions
             var responseModel = await this.command.ExecuteAsync(ModelBinder.Bind<GetUserRequestModel>(req));
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
-            await response.WriteStringAsync(JsonConvert.SerializeObject(responseModel));
+            await response.WriteStringAsync(JsonSerializer.Serialize(responseModel));
             return response;
         }
     }

@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# This workflow helps you trigger a SonarCloud analysis of your code and populates 
+# This workflow helps you trigger a SonarCloud analysis of your code and populates
 # GitHub Code Scanning alerts with the vulnerabilities found.
 # Free for open source project.
 
@@ -14,7 +14,7 @@
 #     * Please note that many languages are eligible for automatic analysis, 
 #       which means that the analysis will start automatically without the need to set up GitHub Actions.
 #     * This behavior can be changed in Administration > Analysis Method.
-# 
+#
 # 3. Follow the SonarCloud in-product tutorial
 #     * a. Copy/paste the Project Key and the Organization Key into the args parameter below
 #          (You'll find this information in SonarCloud. Click on "Information" at the bottom left)
@@ -53,7 +53,7 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-     
+
       - name: Install tools
         run: |
           dotnet tool install --global dotnet-sonarscanner
@@ -77,6 +77,6 @@ jobs:
           dotnet-coverage collect 'dotnet test --no-build --no-restore' -f xml -o 'coverage.xml'
         # dotnet test --no-build --no-restore --collect "Code Coverage"
         # dotnet dotcover test --dcReportType=HTML
-          
+
       - name: End Sonar scan
         run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}

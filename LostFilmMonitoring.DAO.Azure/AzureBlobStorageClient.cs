@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.DAO.Azure
     /// <summary>
     /// Manages access to Azure Blob Storage.
     /// </summary>
-    public class AzureBlobStorageClient
+    public class AzureBlobStorageClient : IAzureBlobStorageClient
     {
         private readonly BlobServiceClient blobServiceClient;
         private readonly ILogger logger;
@@ -42,15 +42,7 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger = logger.CreateScope(nameof(AzureBlobStorageClient)) ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Upload file content to Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <param name="content">Stream with content of the file.</param>
-        /// <param name="cacheControl">Cache-Control property of the file.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task UploadAsync(string containerName, string fileName, Stream? content, string cacheControl = "no-cache")
         {
             if (content == null)
@@ -90,27 +82,11 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
-        /// <summary>
-        /// Upload file content to Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="directoryName">Name of the directory in a container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <param name="content">Stream with content of the file.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public Task UploadAsync(string containerName, string directoryName, string fileName, Stream? content)
             => this.UploadAsync(containerName, $"{directoryName}/{fileName}", content);
 
-        /// <summary>
-        /// Upload file content to Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <param name="content">Text content of the file.</param>
-        /// <param name="cacheControl">Cache-Control property of the file.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task UploadAsync(string containerName, string fileName, string content, string cacheControl = "no-cache")
         {
             this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
@@ -122,13 +98,7 @@ namespace LostFilmMonitoring.DAO.Azure
             await this.UploadAsync(containerName, fileName, ms, cacheControl);
         }
 
-        /// <summary>
-        /// Download file stream from Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task<Stream?> DownloadAsync(string containerName, string fileName)
         {
             this.logger.Info($"Call: {nameof(this.DownloadAsync)}('{containerName}', '{fileName}')");
@@ -144,24 +114,11 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
-        /// <summary>
-        /// Download text from Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="directoryName">Name of the directory in container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>String content of the file.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public Task<Stream?> DownloadAsync(string containerName, string directoryName, string fileName)
             => this.DownloadAsync(containerName, $"{directoryName}/{fileName}");
 
-        /// <summary>
-        /// Download text from Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task<string?> DownloadStringAsync(string containerName, string fileName)
         {
             this.logger.Info($"Call: {nameof(this.DownloadStringAsync)}('{containerName}', '{fileName}')");
@@ -175,13 +132,7 @@ namespace LostFilmMonitoring.DAO.Azure
             return await streamReader.ReadToEndAsync();
         }
 
-        /// <summary>
-        /// Delete file from Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task DeleteAsync(string containerName, string fileName)
         {
             this.logger.Info($"Call: {nameof(this.DeleteAsync)}('{containerName}', '{fileName}')");
@@ -204,24 +155,11 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger.Info($"File '{fileName}' deleted from container '{containerName}'");
         }
 
-        /// <summary>
-        /// Delete file from Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="directoryName">Name of the directory in the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public Task DeleteAsync(string containerName, string directoryName, string fileName)
             => this.DeleteAsync(containerName, $"{directoryName}/{fileName}");
 
-        /// <summary>
-        /// Checks if file exists in Azure Blob Storage.
-        /// </summary>
-        /// <param name="containerName">Name of the container.</param>
-        /// <param name="fileName">Name of the file.</param>
-        /// <returns>True - file exists. False - file does not exist.</returns>
-        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        /// <inheritdoc/>
         public async Task<bool> ExistsAsync(string containerName, string fileName)
         {
             this.logger.Info($"Call: {nameof(this.ExistsAsync)}('{containerName}', '{fileName}')");
@@ -237,6 +175,7 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
+        /// <inheritdoc/>
         public async Task SetCacheControlAsync(string containerName, string fileName, string cacheControl)
         {
             this.logger.Info($"Call: {nameof(this.SetCacheControlAsync)}('{containerName}', '{fileName}', '{cacheControl}')");
@@ -253,18 +192,6 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
-        private async Task CreateContainerAsync(string containerName)
-        {
-            try
-            {
-                await this.blobServiceClient.CreateBlobContainerAsync(containerName);
-            }
-            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
-            {
-                return;
-            }
-        }
-
         private static async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
         {
             var properties = await blobClient.GetPropertiesAsync();
@@ -278,6 +205,18 @@ namespace LostFilmMonitoring.DAO.Azure
                 ContentHash = properties.Value.ContentHash,
             };
             await blobClient.SetHttpHeadersAsync(httpHeaders);
+        }
+
+        private async Task CreateContainerAsync(string containerName)
+        {
+            try
+            {
+                await this.blobServiceClient.CreateBlobContainerAsync(containerName);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
+            {
+                return;
+            }
         }
 
         private BlobClient GetBlobClient(string containerName, string fileName)

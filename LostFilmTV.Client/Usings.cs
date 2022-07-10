@@ -1,4 +1,4 @@
-﻿// <copyright file="TorrentFileResponse.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,32 +21,21 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response
-{
-    /// <summary>
-    /// Represents torrent file with content.
-    /// </summary>
-    public class TorrentFileResponse
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TorrentFileResponse"/> class.
-        /// </summary>
-        /// <param name="fileName">File Name.</param>
-        /// <param name="content">Content stream.</param>
-        internal TorrentFileResponse(string fileName, Stream content)
-        {
-            this.FileName = fileName;
-            this.Content = content;
-        }
-
-        /// <summary>
-        /// Gets File Name.
-        /// </summary>
-        public string FileName { get; }
-
-        /// <summary>
-        /// Gets content stream.
-        /// </summary>
-        public Stream Content { get; }
-    }
-}
+#pragma warning disable SA1200 // Using directives should be placed correctly
+global using System;
+global using System.Collections.Generic;
+global using System.Globalization;
+global using System.IO;
+global using System.Linq;
+global using System.Net.Http;
+global using System.Text;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.RegularExpressions;
+global using System.Threading.Tasks;
+global using System.Web;
+global using System.Xml.Linq;
+global using LostFilmMonitoring.Common;
+global using LostFilmTV.Client.Exceptions;
+global using LostFilmTV.Client.Response;
+#pragma warning restore SA1200 // Using directives should be placed correctly
