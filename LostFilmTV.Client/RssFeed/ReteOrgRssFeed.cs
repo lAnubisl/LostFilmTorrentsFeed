@@ -28,6 +28,8 @@ namespace LostFilmTV.Client.RssFeed
     /// </summary>
     public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
     {
+        private const string RssUrl = "http://insearch.site/rssdd.xml";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ReteOrgRssFeed"/> class.
         /// </summary>
@@ -48,7 +50,7 @@ namespace LostFilmTV.Client.RssFeed
             string rss;
             try
             {
-                rss = await this.DownloadRssTextAsync("http://insearch.site/rssdd.xml");
+                rss = await this.DownloadRssTextAsync(RssUrl);
             }
             catch (RemoteServiceUnavailableException)
             {

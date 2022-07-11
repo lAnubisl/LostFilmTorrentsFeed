@@ -187,7 +187,6 @@ namespace LostFilmMonitoring.DAO.Azure
             }
             catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
             {
-                return;
             }
         }
 

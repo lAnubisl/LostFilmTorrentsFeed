@@ -50,7 +50,7 @@ namespace LostFilmTV.Client.Response
             : this()
         {
             var elements = xElement.Elements();
-            if (elements == null || elements.Count() == 0)
+            if (elements == null || elements.Any() == false)
             {
                 return;
             }

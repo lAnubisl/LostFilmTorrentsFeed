@@ -89,7 +89,7 @@ namespace LostFilmTV.Client.Tests
                     },
                 });
 
-            Assert.False(FeedItemResponse.HasUpdates(newItems, existingItems));
+            Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.False);
         }
 
         [Test]
@@ -139,7 +139,7 @@ namespace LostFilmTV.Client.Tests
                     },
                 });
 
-            Assert.True(FeedItemResponse.HasUpdates(newItems, existingItems));
+            Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.True);
         }
 
         [Test]
@@ -196,7 +196,7 @@ namespace LostFilmTV.Client.Tests
                     },
                 });
 
-            Assert.True(FeedItemResponse.HasUpdates(newItems, existingItems));
+            Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.True);
         }
 
         [Test]
@@ -305,10 +305,13 @@ namespace LostFilmTV.Client.Tests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
             var item = new FeedItemResponse(element);
-            Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
-            Assert.That(item.Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236"));
-            Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
-            Assert.That(item.PublishDateParsed, Is.EqualTo(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc)));
+            Assert.Multiple(() =>
+            {
+                Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
+                Assert.That(item.Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236"));
+                Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
+                Assert.That(item.PublishDateParsed, Is.EqualTo(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc)));
+            });
         }
     }
 }

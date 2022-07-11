@@ -38,16 +38,16 @@ namespace LostFilmMonitoring.DAO.Interfaces
         Task<User?> LoadAsync(string userId);
 
         /// <summary>
+        /// Load users.
+        /// </summary>
+        /// <returns>All users.</returns>
+        Task<User[]> LoadAsync();
+
+        /// <summary>
         /// Create new user.
         /// </summary>
         /// <param name="user">User to create.</param>
         /// <returns>New user GUID.</returns>
         Task SaveAsync(User user);
-
-        /// <summary>
-        /// Load users.
-        /// </summary>
-        /// <returns>All users.</returns>
-        Task<User[]> LoadAsync();
     }
 }

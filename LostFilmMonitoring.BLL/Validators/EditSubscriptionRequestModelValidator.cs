@@ -85,17 +85,6 @@ namespace LostFilmMonitoring.BLL.Validators
             return result;
         }
 
-        private static bool IsIn(string? str, params string[] values)
-        {
-            foreach (var value in values)
-            {
-                if (string.Equals(str, value))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        private static bool IsIn(string? str, params string[] values) => values.Contains(str);
     }
 }

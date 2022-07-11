@@ -28,6 +28,7 @@ namespace LostFilmMonitoring.BLL
     /// <summary>
     /// This logger implements <see cref="Common.ILogger"/> using <see cref="ILoggerFactory"/>.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Custom properties are not ready.")]
     public class Logger : Common.ILogger
     {
         private readonly ILoggerFactory loggerFactory;
