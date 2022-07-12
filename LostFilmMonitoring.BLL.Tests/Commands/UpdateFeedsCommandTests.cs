@@ -173,7 +173,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
 
             // rssFeed and persister responds with identical set of items.
             this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(storedItems);
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(storedItems);
+            SetupPersister_LoadAsync(storedItems);
 
             await command.ExecuteAsync();
 
@@ -187,7 +187,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             var command = CreateCommand();
             var storedItems = new SortedSet<FeedItemResponse>() { new FeedItemResponse() { Title = "item 1" } };
             var rssItems = new SortedSet<FeedItemResponse>() { new FeedItemResponse() { Title = "Флэш (The Flash). (S08E999) [MP4]" } };
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(storedItems);
+            SetupPersister_LoadAsync(storedItems);
 
             // rssFeed does have only season item
             this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
@@ -201,7 +201,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_save_new_series()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>() 
             { 
@@ -234,17 +234,10 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // There is no such series in the system
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
-            var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-            if (torrentFileStream == null)
-            {
-                Assert.Fail("Torrent file not found");
-                return;
-            }
+            SetupTorrentFile("51439");
+            SetupTorrentFile("51438");
+            SetupTorrentFile("51437");
             
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51438")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [1080].torrent", torrentFileStream));
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51437")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [SD].torrent", torrentFileStream));
-
             await command.ExecuteAsync();
 
             // Verify series is saved
@@ -261,7 +254,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_update_existing_series()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>()
             {
@@ -302,17 +295,10 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
                     "http://n.tracktor.site/rssdownloader.php?id=51434")
             });
 
-            var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-            if (torrentFileStream == null)
-            {
-                Assert.Fail("Torrent file not found");
-                return;
-            }
-
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51438")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [1080].torrent", torrentFileStream));
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51437")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [SD].torrent", torrentFileStream));
-
+            SetupTorrentFile("51439");
+            SetupTorrentFile("51438");
+            SetupTorrentFile("51437");
+            
             await command.ExecuteAsync();
 
             // Verify series is saved
@@ -329,7 +315,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_not_add_series_when_torrent_download_failed()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>()
             {
@@ -360,7 +346,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_update_user_feed()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>()
             {
@@ -379,15 +365,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // There is no such series in the system
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
-            var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-            if (torrentFileStream == null)
-            {
-                Assert.Fail("Torrent file not found");
-                return;
-            }
+            SetupTorrentFile("51439");
             
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
-
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
             this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
             this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
@@ -401,7 +380,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_not_update_feed_when_user_not_found()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>()
             {
@@ -420,14 +399,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // There is no such series in the system
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
-            var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-            if (torrentFileStream == null)
-            {
-                Assert.Fail("Torrent file not found");
-                return;
-            }
+            SetupTorrentFile("51439");
             
-            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
             this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
 
@@ -442,7 +415,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         public async Task ExecuteAsync_should_not_update_feed_when_series_not_updated()
         {
             var command = CreateCommand();
-            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(new SortedSet<FeedItemResponse>());
+            SetupPersister_LoadAsync(null);
 
             var rssItems = new SortedSet<FeedItemResponse>()
             {
@@ -458,23 +431,72 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // RSS feed returns new series
             this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
+            // Episode like this is already in the system. It should not be updated.
+            this.episodeDao.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(true);
+            await command.ExecuteAsync();
+            this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Never);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_should_not_skip_missing_episodes()
+        {
+            var command = CreateCommand();
+            SetupPersister_LoadAsync(null);
+            var rssItems = new SortedSet<FeedItemResponse>()
+            {
+                new FeedItemResponse(XElement.Parse(
+                @"<item>
+                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>")),
+            };
+
+            // RSS feed returns new series
+            this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+
+            // Episode like this does not exist in the system. It should be added.
+            this.episodeDao.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
+
             // There is such series in the system already
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
             {
                 new Series(
                     "Флэш (The Flash)",
-                    new DateTime(2022, 5, 21, 22, 58, 0, DateTimeKind.Utc),
-                    "Флэш (The Flash). Падение смерти (S08E13) ",
+                    new DateTime(2022, 5, 22, 20, 15, 0, DateTimeKind.Utc),
+                    "Флэш (The Flash). Падение смерти (S08E14) ",
                     null,
-                    "http://n.tracktor.site/rssdownloader.php?id=51439",
+                    "http://n.tracktor.site/rssdownloader.php?id=51440",
                     null,
                     8, 8, 8,
-                    13, 13, 13)
+                    14, 14, 14)
             });
 
+            SetupTorrentFile("51439");
+            
             await command.ExecuteAsync();
-            this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Never);
+            this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Once);
+            this.episodeDao.Verify(x => x.SaveAsync(It.IsAny<Episode>()), Times.Once);
+        }
+        
+        private void SetupTorrentFile(string torrentId)
+        {
+            var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+            if (torrentFileStream == null)
+            {
+                Assert.Fail("Torrent file not found");
+                return;
+            }
+
+            this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
+        }
+
+        private void SetupPersister_LoadAsync(SortedSet<FeedItemResponse>? feedItems)
+        {
+            this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(feedItems ?? new SortedSet<FeedItemResponse>());
         }
     }
 }

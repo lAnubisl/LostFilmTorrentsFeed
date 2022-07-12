@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.AzureFunction
     /// <summary>
     /// Program entry class.
     /// </summary>
-    public class Program
+    public static class Program
     {
         private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
         {

@@ -192,6 +192,32 @@ namespace LostFilmTV.Client.Response
         }
 
         /// <inheritdoc/>
+        public bool Equals(FeedItemResponse? other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (!string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!string.Equals(this.Link, other.Link, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (!string.Equals(this.PublishDate, other.PublishDate, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc/>
         public override int GetHashCode()
             => HashCode.Combine(this.Title, this.Link, this.PublishDate);
 
@@ -226,31 +252,5 @@ namespace LostFilmTV.Client.Response
         /// <returns>Torrent file id.</returns>
         public string? GetTorrentId()
             => Extensions.GetTorrentId(this.Link);
-
-        /// <inheritdoc/>
-        public bool Equals(FeedItemResponse? other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (!string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (!string.Equals(this.Link, other.Link, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (!string.Equals(this.PublishDate, other.PublishDate, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            return true;
-        }
     }
 }

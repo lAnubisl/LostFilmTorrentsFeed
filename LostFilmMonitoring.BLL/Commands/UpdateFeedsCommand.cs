@@ -147,13 +147,7 @@ namespace LostFilmMonitoring.BLL.Commands
         {
             lock (SeriesLocker)
             {
-                if (feedItem.Title.Contains("E999"))
-                {
-                    return null;
-                }
-
                 var series = ToSeries(feedItem);
-
                 if (series == null)
                 {
                     return null;
@@ -166,29 +160,9 @@ namespace LostFilmMonitoring.BLL.Commands
                 }
 
                 var existing = existingSeries[series.Name];
-                if (feedItem.Quality == Quality.H1080 && Skip(existing, feedItem, x => x.Q1080SeasonNumber, x => x.Q1080EpisodeNumber))
-                {
-                    return null;
-                }
-
-                if (feedItem.Quality == Quality.H720 && Skip(existing, feedItem, x => x.QMP4SeasonNumber, x => x.QMP4EpisodeNumber))
-                {
-                    return null;
-                }
-
-                if (feedItem.Quality == Quality.SD && Skip(existing, feedItem, x => x.QSDSeasonNumber, x => x.QSDEpisodeNumber))
-                {
-                    return null;
-                }
-
                 existing.MergeFrom(series);
                 return existing;
             }
-        }
-
-        private static bool Skip(Series series, FeedItemResponse feedItem, Func<Series, int?> seasonPropFn, Func<Series, int?> episodePropFn)
-        {
-            return seasonPropFn(series) >= feedItem.SeasonNumber & episodePropFn(series) >= feedItem.EpisodeNumber;
         }
 
         private async Task<bool> ProcessFeedItemsAsync(SortedSet<FeedItemResponse> feedItems)
@@ -204,8 +178,34 @@ namespace LostFilmMonitoring.BLL.Commands
             return success;
         }
 
+        private async Task<bool> CheckEpisodeAsync(Episode? episode)
+        {
+            if (episode == null)
+            {
+                return false;
+            }
+
+            if (episode.EpisodeNumber == 999)
+            {
+                return false;
+            }
+
+            if (await this.dal.Episode.ExistsAsync(episode.SeriesName, episode.SeasonNumber, episode.EpisodeNumber, episode.Quality))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task<bool> ProcessFeedItemAsync(FeedItemResponse feedItem, Dictionary<string, Series> series)
         {
+            var episode = ToEpisode(feedItem);
+            if (!await this.CheckEpisodeAsync(episode))
+            {
+                return false;
+            }
+
             var seriesToUpdate = GetSeriesToUpdate(series, feedItem);
             if (seriesToUpdate == null)
             {

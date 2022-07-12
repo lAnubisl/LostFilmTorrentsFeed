@@ -250,8 +250,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // do delete old torrent file
             this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(request.UserId, "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4.torrent"), Times.Once);
         }
-
-        private Stream GetTorrent(string torrentId)
+        
+        private static Stream GetTorrent(string torrentId)
             => Assembly.GetExecutingAssembly().GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent")!;
 
         private void DefineDatabaseState()

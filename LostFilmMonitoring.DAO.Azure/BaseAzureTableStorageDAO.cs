@@ -69,6 +69,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="items">Items from Azure.</param>
         /// <param name="func">Mapping function from {TSource} to {TResult}.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">items.</exception>
         protected static Task<TResult[]> IterateAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
             where TSource : class
         {
@@ -78,6 +79,24 @@ namespace LostFilmMonitoring.DAO.Azure
             }
 
             return IterateInnerAsync(items, func);
+        }
+
+        /// <summary>
+        /// Iterates through Azure Response and counts items.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="items">The items.</param>
+        /// <returns>A <see cref="Task{integer}"/> representing the result of the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">items.</exception>
+        protected static Task<int> CountAsync<TSource>(AsyncPageable<TSource> items)
+            where TSource : class
+        {
+            if (items == null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            return CountInnerAsync(items);
         }
 
         /// <summary>
@@ -129,6 +148,26 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
+        /// <summary>
+        /// Use this function to get a count entities in Azure Table storage.
+        /// </summary>
+        /// <typeparam name="T">Type of an instance to get.</typeparam>
+        /// <param name="func">Function to apply to TableClient.</param>
+        /// <returns>An instance that represents a singe row in Azure Table Storage.</returns>
+        /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+        protected async Task<int> TryCountAsync(Func<TableClient, Task<int>> func)
+        {
+            try
+            {
+                return await func(this.tableClient);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Log(ex);
+                throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
+            }
+        }
+
         private static async Task<TResult[]> IterateInnerAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
             where TSource : class
         {
@@ -139,6 +178,18 @@ namespace LostFilmMonitoring.DAO.Azure
             }
 
             return result.ToArray();
+        }
+
+        private static async Task<int> CountInnerAsync<TSource>(AsyncPageable<TSource> items)
+            where TSource : class
+        {
+            int result = 0;
+            await foreach (var item in items)
+            {
+                result++;
+            }
+
+            return result;
         }
     }
 }

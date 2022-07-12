@@ -27,7 +27,7 @@ namespace LostFilmMonitoring.BLL.Exceptions
     /// Generic exception that covers all communication issues to external services.
     /// </summary>
     [Serializable]
-    public class ExternalServiceUnavailableException : Exception
+    public sealed class ExternalServiceUnavailableException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
@@ -36,6 +36,10 @@ namespace LostFilmMonitoring.BLL.Exceptions
         /// <param name="innerException">Actual exception occurred.</param>
         public ExternalServiceUnavailableException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        private ExternalServiceUnavailableException()
         {
         }
     }
