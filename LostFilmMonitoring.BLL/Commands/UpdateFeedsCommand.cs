@@ -74,6 +74,7 @@ namespace LostFilmMonitoring.BLL.Commands
                 return;
             }
 
+            this.logger.Info("Found an Update.");
             var success = await this.ProcessFeedItemsAsync(feedItemsResponse);
             if (success)
             {
@@ -137,6 +138,9 @@ namespace LostFilmMonitoring.BLL.Commands
         private static string? ParseLink(FeedItemResponse feedItem, string quality)
             => feedItem.Quality == quality ? feedItem.Link : null;
 
+        private static bool EpisodeIsCorrect(Episode? episode)
+            => episode != null && episode.EpisodeNumber != 999;
+
         private static TorrentFile ToTorrentFile(TorrentFileResponse x)
             => new (x.FileName, x.Content);
 
@@ -178,32 +182,20 @@ namespace LostFilmMonitoring.BLL.Commands
             return success;
         }
 
-        private async Task<bool> CheckEpisodeAsync(Episode? episode)
-        {
-            if (episode == null)
-            {
-                return false;
-            }
-
-            if (episode.EpisodeNumber == 999)
-            {
-                return false;
-            }
-
-            if (await this.dal.Episode.ExistsAsync(episode.SeriesName, episode.SeasonNumber, episode.EpisodeNumber, episode.Quality))
-            {
-                return false;
-            }
-
-            return true;
-        }
+        private Task<bool> EpisodeAlreadyExistAsync(Episode episode)
+            => this.dal.Episode.ExistsAsync(episode!.SeriesName, episode.SeasonNumber, episode.EpisodeNumber, episode.Quality);
 
         private async Task<bool> ProcessFeedItemAsync(FeedItemResponse feedItem, Dictionary<string, Series> series)
         {
             var episode = ToEpisode(feedItem);
-            if (!await this.CheckEpisodeAsync(episode))
+            if (!EpisodeIsCorrect(episode))
             {
                 return false;
+            }
+
+            if (await this.EpisodeAlreadyExistAsync(episode!))
+            {
+                return true;
             }
 
             var seriesToUpdate = GetSeriesToUpdate(series, feedItem);
