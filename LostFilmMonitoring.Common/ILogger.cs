@@ -23,8 +23,6 @@
 
 namespace LostFilmMonitoring.Common
 {
-    using System;
-
     /// <summary>
     /// Logger interface.
     /// </summary>

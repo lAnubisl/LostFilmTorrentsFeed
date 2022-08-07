@@ -23,8 +23,6 @@
 
 namespace LostFilmMonitoring.Common
 {
-    using System;
-
     /// <summary>
     /// Implements <see cref="ILogger"/> using stdout.
     /// </summary>

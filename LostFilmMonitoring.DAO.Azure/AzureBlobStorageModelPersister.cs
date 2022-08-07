@@ -70,7 +70,7 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger.Info($"Call: {nameof(this.PersistAsync)}('{modelName}', model)");
             try
             {
-                await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonSerializer.Serialize(model));
+                await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonSerializer.Serialize(model, CommonSerializationOptions.Default));
             }
             catch (ExternalServiceUnavailableException ex)
             {
