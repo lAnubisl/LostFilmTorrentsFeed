@@ -86,10 +86,18 @@ namespace LostFilmMonitoring.DAO.Azure
         }
 
         /// <inheritdoc/>
-        public Task SaveAsync(Series series)
+        public async Task SaveAsync(Series series)
         {
             this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Series series)");
-            return this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
+            try
+            {
+                await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
+            }
+            catch (ExternalServiceUnavailableException)
+            {
+                this.Logger.Error($"Error saving series (Name='{series.Name}')");
+                throw;
+            }
         }
     }
 }
