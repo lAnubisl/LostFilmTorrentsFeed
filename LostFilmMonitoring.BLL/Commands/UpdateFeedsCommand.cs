@@ -190,7 +190,7 @@ namespace LostFilmMonitoring.BLL.Commands
             var episode = ToEpisode(feedItem);
             if (!EpisodeIsCorrect(episode))
             {
-                return false;
+                return true;
             }
 
             if (await this.EpisodeAlreadyExistAsync(episode!))
