@@ -43,7 +43,25 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                 TableUpdateMode.Merge,
                 default), Times.Once);
         }
-        
+
+        [Test]
+        public async Task SaveAsync_should_remove_forbidden_characters_from_primarykey()
+        {
+            var episode = new Episode("SeriesName?", "EpisodeName", 1, 1, "123", "SD");
+            await GetDao().SaveAsync(episode);
+            tableClient.Verify(x => x.UpsertEntityAsync(
+                It.Is<EpisodeTableEntity>(x =>
+                    x.SeasonNumber == episode.SeasonNumber
+                    && x.EpisodeNumber == episode.EpisodeNumber
+                    && x.EpisodeName == episode.EpisodeName
+                    && x.PartitionKey == "SeriesName"
+                    && x.RowKey == episode.TorrentId
+                    && x.Quality == episode.Quality
+                ),
+                TableUpdateMode.Merge,
+                default), Times.Once);
+        }
+
         protected override AzureTableStorageEpisodeDao GetDao()
             => new(serviceClient.Object, new ConsoleLogger("Tests"));
     }
