@@ -28,8 +28,6 @@ namespace LostFilmMonitoring.DAO.Azure
     /// </summary>
     internal static class Mapper
     {
-        private static readonly HashSet<char> ForbiddenPrimaryKeyCharacters = new () { '/', '\\', '?', '#', '\t', '\r', '\n', '+' };
-
         /// <summary>
         /// Map <see cref="SubscriptionTableEntity"/> to <see cref="Subscription"/>.
         /// </summary>
@@ -48,7 +46,7 @@ namespace LostFilmMonitoring.DAO.Azure
         {
             return new SubscriptionTableEntity
             {
-                PartitionKey = ReplaceForbiddenCharacters(subscription.SeriesName),
+                PartitionKey = subscription.SeriesName,
                 RowKey = userId,
                 Timestamp = DateTime.UtcNow,
                 Quality = subscription.Quality,
@@ -64,8 +62,8 @@ namespace LostFilmMonitoring.DAO.Azure
         {
             var result = new SeriesTableEntity
             {
-                PartitionKey = ReplaceForbiddenCharacters(series.Name),
-                RowKey = ReplaceForbiddenCharacters(series.Name),
+                PartitionKey = series.Name,
+                RowKey = series.Name,
                 Timestamp = DateTime.UtcNow,
                 LastEpisode = series.LastEpisode,
                 LastEpisodeName = series.LastEpisodeName,
@@ -93,7 +91,7 @@ namespace LostFilmMonitoring.DAO.Azure
         {
             return new ()
             {
-                PartitionKey = ReplaceForbiddenCharacters(episode.SeriesName),
+                PartitionKey = episode.SeriesName,
                 RowKey = episode.TorrentId,
                 Timestamp = DateTime.UtcNow,
                 EpisodeName = episode.EpisodeName,
@@ -146,8 +144,5 @@ namespace LostFilmMonitoring.DAO.Azure
                 TrackerId = user.TrackerId,
             };
         }
-
-        private static string ReplaceForbiddenCharacters(string str)
-            => new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
     }
 }

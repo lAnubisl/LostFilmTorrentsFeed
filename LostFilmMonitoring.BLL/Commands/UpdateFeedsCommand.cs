@@ -28,6 +28,7 @@ namespace LostFilmMonitoring.BLL.Commands
     /// </summary>
     public class UpdateFeedsCommand : ICommand
     {
+        private static readonly HashSet<char> ForbiddenPrimaryKeyCharacters = new () { '/', '\\', '?', '#', '\t', '\r', '\n', '+' };
         private static readonly object SeriesLocker = new ();
         private static readonly object TorrentFileLocker = new ();
         private readonly ILogger logger;
@@ -67,6 +68,7 @@ namespace LostFilmMonitoring.BLL.Commands
         {
             this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
             var feedItemsResponse = await this.LoadFeedUpdatesAsync();
+            CleanForbiddenCharacters(feedItemsResponse);
             var persistedItemsRespone = await this.LoadLastFeedUpdatesAsync();
             if (!FeedItemResponse.HasUpdates(feedItemsResponse, persistedItemsRespone))
             {
@@ -79,6 +81,24 @@ namespace LostFilmMonitoring.BLL.Commands
             if (success)
             {
                 await this.SaveFeedUpdatesAsync(feedItemsResponse);
+            }
+        }
+
+
+        private static string? ReplaceForbiddenCharacters(string? str)
+            => str == null
+                ? null
+                : new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
+
+        private static void CleanForbiddenCharacters(IEnumerable<FeedItemResponse> items)
+        {
+            foreach (var item in items)
+            {
+                item.Title = ReplaceForbiddenCharacters(item.Title)!;
+                item.EpisodeName = ReplaceForbiddenCharacters(item.EpisodeName);
+                item.SeriesName = ReplaceForbiddenCharacters(item.SeriesName);
+                item.SeriesNameEn = ReplaceForbiddenCharacters(item.SeriesNameEn);
+                item.SeriesNameRu = ReplaceForbiddenCharacters(item.SeriesNameRu);
             }
         }
 
