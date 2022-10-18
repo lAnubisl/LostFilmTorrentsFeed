@@ -1,4 +1,4 @@
-﻿// <copyright file="LostFilmClient.cs" company="Alexander Panfilenok">
+// <copyright file="LostFilmClient.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -89,7 +89,7 @@ namespace LostFilmTV.Client
             var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
             if (fileName == null)
             {
-                this.logger.Error($"Something wrong with 'Content-Disposition' header of the response.");
+                this.logger.Error("Something wrong with 'Content-Disposition' header of the response.");
                 return null;
             }
 
