@@ -28,7 +28,7 @@ namespace LostFilmTV.Client.RssFeed
     /// </summary>
     public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
     {
-        private const string RssUrl = "http://insearch.site/rssdd.xml";
+        private const string RssUrl = "https://insearch.site/rssdd.xml";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReteOrgRssFeed"/> class.
