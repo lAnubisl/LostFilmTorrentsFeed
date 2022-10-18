@@ -59,11 +59,6 @@ namespace LostFilmMonitoring.Common
         string BaseUrl { get; }
 
         /// <summary>
-        /// Gets the SQL server connection string.
-        /// </summary>
-        string SqlServerConnectionString { get; }
-
-        /// <summary>
         /// Get list of torrent trackers for torrent file.
         /// </summary>
         /// <param name="link_uid">Torrent tracker user identifier.</param>

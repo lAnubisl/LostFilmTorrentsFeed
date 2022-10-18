@@ -33,20 +33,10 @@ namespace LostFilmMonitoring.BLL
         /// </summary>
         public Configuration()
         {
-            this.BaseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? "https://lostfilmfeedstorage.blob.core.windows.net/usertorrents";
-            this.BaseUSESS = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? "8c460d627c46325ae1ad3b7e82ddc468";
-            this.BaseUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? "1874597";
-            this.SqlServerConnectionString = Environment.GetEnvironmentVariable("SqlServerConnectionString") ?? string.Empty;
-            this.torrentAnnounceListPatterns = Environment.GetEnvironmentVariable("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ??
-                new[]
-                {
-                    "http://bt.tracktor.in/tracker.php/{0}/announce",
-                    "http://bt99.tracktor.in/tracker.php/{0}/announce",
-                    "http://bt0.tracktor.in/tracker.php/{0}/announce",
-                    "http://user5.newtrack.info/tracker.php/{0}/announce",
-                    "http://user1.newtrack.info/tracker.php/{0}/announce",
-                };
-
+            this.BaseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
+            this.BaseUSESS = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
+            this.BaseUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
+            this.torrentAnnounceListPatterns = Environment.GetEnvironmentVariable("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
             this.ImagesDirectory = Environment.GetEnvironmentVariable("IMAGESDIRECTORY") ?? "images";
             this.TorrentsDirectory = Environment.GetEnvironmentVariable("TORRENTSDIRECTORY") ?? "torrentfiles";
         }
@@ -65,9 +55,6 @@ namespace LostFilmMonitoring.BLL
 
         /// <inheritdoc/>
         public string BaseUID { get; private set; }
-
-        /// <inheritdoc/>
-        public string SqlServerConnectionString { get; private set; }
 
         /// <inheritdoc/>
         public string[] GetTorrentAnnounceList(string link_uid)
