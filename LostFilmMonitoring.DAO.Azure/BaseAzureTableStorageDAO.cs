@@ -151,7 +151,6 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <summary>
         /// Use this function to get a count entities in Azure Table storage.
         /// </summary>
-        /// <typeparam name="T">Type of an instance to get.</typeparam>
         /// <param name="func">Function to apply to TableClient.</param>
         /// <returns>An instance that represents a singe row in Azure Table Storage.</returns>
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>

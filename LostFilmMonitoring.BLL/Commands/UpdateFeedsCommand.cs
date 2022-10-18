@@ -84,7 +84,6 @@ namespace LostFilmMonitoring.BLL.Commands
             }
         }
 
-
         private static string? ReplaceForbiddenCharacters(string? str)
             => str == null
                 ? null
@@ -94,7 +93,7 @@ namespace LostFilmMonitoring.BLL.Commands
         {
             foreach (var item in items)
             {
-                item.Title = ReplaceForbiddenCharacters(item.Title)!;
+                item.Title = ReplaceForbiddenCharacters(item.Title) !;
                 item.EpisodeName = ReplaceForbiddenCharacters(item.EpisodeName);
                 item.SeriesName = ReplaceForbiddenCharacters(item.SeriesName);
                 item.SeriesNameEn = ReplaceForbiddenCharacters(item.SeriesNameEn);
