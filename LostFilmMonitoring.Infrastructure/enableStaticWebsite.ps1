@@ -1,0 +1,1 @@
+az storage blob service-properties update --account-name ${storageAccount.name} --static-website --index-document index.html
