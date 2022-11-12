@@ -28,7 +28,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.AzureFun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.BLL.Tests", "LostFilmMonitoring.BLL.Tests\LostFilmMonitoring.BLL.Tests.csproj", "{04BC4724-F296-449D-8041-21FC5578207C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LostFilmMonitoring.DAO.Azure.Tests", "LostFilmMonitoring.DAO.Azure.Tests\LostFilmMonitoring.DAO.Azure.Tests.csproj", "{A8A6E126-31D9-4ACF-8606-1E479136AA28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LostFilmMonitoring.DAO.Azure.Tests", "LostFilmMonitoring.DAO.Azure.Tests\LostFilmMonitoring.DAO.Azure.Tests.csproj", "{A8A6E126-31D9-4ACF-8606-1E479136AA28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LostFilmMonitoring.Infrastructure", "LostFilmMonitoring.Infrastructure", "{2560C4C5-5DA1-4B3E-8F7E-22F15F6387FD}"
+	ProjectSection(SolutionItems) = preProject
+		LostFilmMonitoring.Infrastructure\azure.bicep = LostFilmMonitoring.Infrastructure\azure.bicep
+		LostFilmMonitoring.Infrastructure\azure_function.bicep = LostFilmMonitoring.Infrastructure\azure_function.bicep
+		LostFilmMonitoring.Infrastructure\azure_storage.bicep = LostFilmMonitoring.Infrastructure\azure_storage.bicep
+		LostFilmMonitoring.Infrastructure\azure_storage_containers.bicep = LostFilmMonitoring.Infrastructure\azure_storage_containers.bicep
+		LostFilmMonitoring.Infrastructure\azure_storage_tables.bicep = LostFilmMonitoring.Infrastructure\azure_storage_tables.bicep
+		LostFilmMonitoring.Infrastructure\deploy.ps1 = LostFilmMonitoring.Infrastructure\deploy.ps1
+		LostFilmMonitoring.Infrastructure\functions.ps1 = LostFilmMonitoring.Infrastructure\functions.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
