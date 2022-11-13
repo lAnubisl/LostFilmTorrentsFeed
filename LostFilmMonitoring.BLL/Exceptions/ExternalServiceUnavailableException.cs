@@ -21,13 +21,15 @@
 // SOFTWARE.
 // </copyright>
 
+using System.Runtime.Serialization;
+
 namespace LostFilmMonitoring.BLL.Exceptions
 {
     /// <summary>
     /// Generic exception that covers all communication issues to external services.
     /// </summary>
     [Serializable]
-    public sealed class ExternalServiceUnavailableException : Exception
+    public sealed class ExternalServiceUnavailableException : Exception, ISerializable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
