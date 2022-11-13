@@ -1,154 +1,99 @@
-﻿<rss version="2.0">
+﻿<rss version="0.91">
     <channel>
+        <title>LostFilm.TV</title>
+        <description>Новинки от LostFilm.TV</description>
+        <link>https://www.lostfilm.tv/</link>
+        <lastBuildDate>Sat, 12 Nov 2022 21:26:44 +0000</lastBuildDate>
+        <language>ru</language>
         <item>
-            <title>Внешние сферы (Outer Range). Неведомое (S01E07) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51230</link>
-            <pubDate>2022-05-09T16:00:54Z</pubDate>
+            <title>Уокер (Walker). То, чего раньше не было (S03E06) [MP4]</title>
+            <category>[MP4]</category>
+            <pubDate>Sat, 12 Nov 2022 20:57:00 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53850</link>
         </item>
         <item>
-            <title>Внешние сферы (Outer Range). Неведомое (S01E07) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51231</link>
-            <pubDate>2022-05-09T16:00:54Z</pubDate>
+            <title>Уокер (Walker). То, чего раньше не было (S03E06) [1080p]</title>
+            <category>[1080p]</category>
+            <pubDate>Sat, 12 Nov 2022 20:57:00 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53849</link>
         </item>
         <item>
-            <title>Внешние сферы (Outer Range). Неведомое (S01E07) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51229</link>
-            <pubDate>2022-05-09T16:00:54Z</pubDate>
+            <title>Уокер (Walker). То, чего раньше не было (S03E06) [SD]</title>
+            <category>[SD]</category>
+            <pubDate>Sat, 12 Nov 2022 20:57:00 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53848</link>
         </item>
         <item>
-            <title>Озарк (Ozark). Теперь ты главный (S04E10) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51227</link>
-            <pubDate>2022-05-09T13:14:06Z</pubDate>
+            <title>Титаны (Titans). Джинкс (S04E03) [MP4]</title>
+            <category>[MP4]</category>
+            <pubDate>Sat, 12 Nov 2022 20:34:49 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53847</link>
         </item>
         <item>
-            <title>Озарк (Ozark). Теперь ты главный (S04E10) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51228</link>
-            <pubDate>2022-05-09T13:14:06Z</pubDate>
+            <title>Титаны (Titans). Джинкс (S04E03) [1080p]</title>
+            <category>[1080p]</category>
+            <pubDate>Sat, 12 Nov 2022 20:34:49 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53846</link>
         </item>
         <item>
-            <title>Озарк (Ozark). Теперь ты главный (S04E10) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51226</link>
-            <pubDate>2022-05-09T13:14:06Z</pubDate>
+            <title>Титаны (Titans). Джинкс (S04E03) [SD]</title>
+            <category>[SD]</category>
+            <pubDate>Sat, 12 Nov 2022 20:34:49 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53845</link>
         </item>
         <item>
-            <title>Черный список (The Blacklist). Маска медведя (S09E19) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51224</link>
-            <pubDate>2022-05-08T20:57:00Z</pubDate>
+            <title>Уокер: Независимость (Walker: Independence). Случайности (S01E06) [MP4]</title>
+            <category>[MP4]</category>
+            <pubDate>Sat, 12 Nov 2022 20:07:51 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53844</link>
         </item>
         <item>
-            <title>Черный список (The Blacklist). Маска медведя (S09E19) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51225</link>
-            <pubDate>2022-05-08T20:57:00Z</pubDate>
+            <title>Уокер: Независимость (Walker: Independence). Случайности (S01E06) [1080p]</title>
+            <category>[1080p]</category>
+            <pubDate>Sat, 12 Nov 2022 20:07:51 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53843</link>
         </item>
         <item>
-            <title>Черный список (The Blacklist). Маска медведя (S09E19) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51223</link>
-            <pubDate>2022-05-08T20:57:00Z</pubDate>
+            <title>Уокер: Независимость (Walker: Independence). Случайности (S01E06) [SD]</title>
+            <category>[SD]</category>
+            <pubDate>Sat, 12 Nov 2022 20:07:51 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53842</link>
         </item>
         <item>
-            <title>Уокер (Walker). Проблемы с шампанским (S02E16) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51221</link>
-            <pubDate>2022-05-08T18:25:45Z</pubDate>
+            <title>Монахиня-воин (Warrior Nun). Послание к Галатам, глава 6, стих 4-5 (S02E01) [MP4]</title>
+            <category>[MP4]</category>
+            <pubDate>Sat, 12 Nov 2022 19:42:01 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53841</link>
         </item>
         <item>
-            <title>Уокер (Walker). Проблемы с шампанским (S02E16) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51222</link>
-            <pubDate>2022-05-08T18:25:45Z</pubDate>
+            <title>Монахиня-воин (Warrior Nun). Послание к Галатам, глава 6, стих 4-5 (S02E01) [1080p]</title>
+            <category>[1080p]</category>
+            <pubDate>Sat, 12 Nov 2022 19:42:01 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53840</link>
         </item>
         <item>
-            <title>Уокер (Walker). Проблемы с шампанским (S02E16) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51220</link>
-            <pubDate>2022-05-08T18:25:45Z</pubDate>
+            <title>Монахиня-воин (Warrior Nun). Послание к Галатам, глава 6, стих 4-5 (S02E01) [SD]</title>
+            <category>[SD]</category>
+            <pubDate>Sat, 12 Nov 2022 19:42:01 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53839</link>
         </item>
         <item>
-            <title>Звездный путь: Странные новые миры (Star Trek: Strange New Worlds). Странные новые миры (S01E01) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51218</link>
-            <pubDate>2022-05-08T17:54:38Z</pubDate>
+            <title>Пенниуорт (Pennyworth). Красный мародер (S03E08) [MP4]</title>
+            <category>[MP4]</category>
+            <pubDate>Sat, 12 Nov 2022 19:41:15 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53838</link>
         </item>
         <item>
-            <title>Звездный путь: Странные новые миры (Star Trek: Strange New Worlds). Странные новые миры (S01E01) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51219</link>
-            <pubDate>2022-05-08T17:54:38Z</pubDate>
+            <title>Пенниуорт (Pennyworth). Красный мародер (S03E08) [1080p]</title>
+            <category>[1080p]</category>
+            <pubDate>Sat, 12 Nov 2022 19:41:15 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53837</link>
         </item>
         <item>
-            <title>Звездный путь: Странные новые миры (Star Trek: Strange New Worlds). Странные новые миры (S01E01) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51217</link>
-            <pubDate>2022-05-08T17:54:38Z</pubDate>
-        </item>
-        <item>
-            <title>Матрешка (Russian Doll). Руфь Шредингера (S02E06) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51215</link>
-            <pubDate>2022-05-08T08:46:19Z</pubDate>
-        </item>
-        <item>
-            <title>Матрешка (Russian Doll). Руфь Шредингера (S02E06) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51216</link>
-            <pubDate>2022-05-08T08:46:19Z</pubDate>
-        </item>
-        <item>
-            <title>Матрешка (Russian Doll). Руфь Шредингера (S02E06) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51214</link>
-            <pubDate>2022-05-08T08:46:19Z</pubDate>
-        </item>
-        <item>
-            <title>Берег москитов (The Mosquito Coast). Элвис, Иисус, Кока-Кола (S01E05) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51212</link>
-            <pubDate>2022-05-08T08:40:33Z</pubDate>
-        </item>
-        <item>
-            <title>Берег москитов (The Mosquito Coast). Элвис, Иисус, Кока-Кола (S01E05) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51213</link>
-            <pubDate>2022-05-08T08:40:33Z</pubDate>
-        </item>
-        <item>
-            <title>Берег москитов (The Mosquito Coast). Элвис, Иисус, Кока-Кола (S01E05) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51211</link>
-            <pubDate>2022-05-08T08:40:33Z</pubDate>
-        </item>
-        <item>
-            <title>Кларк (Clark). Если я не мог быть лучшим из лучших, то решил стать лучшим из худших (S01E01) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51209</link>
-            <pubDate>2022-05-07T20:58:00Z</pubDate>
-        </item>
-        <item>
-            <title>Кларк (Clark). Если я не мог быть лучшим из лучших, то решил стать лучшим из худших (S01E01) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51210</link>
-            <pubDate>2022-05-07T20:58:00Z</pubDate>
-        </item>
-        <item>
-            <title>Кларк (Clark). Если я не мог быть лучшим из лучших, то решил стать лучшим из худших (S01E01) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51208</link>
-            <pubDate>2022-05-07T20:58:00Z</pubDate>
-        </item>
-        <item>
-            <title>Звездный путь: Пикар (Star Trek: Picard). Прощание (S02E10) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51200</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
-        </item>
-        <item>
-            <title>Звездный путь: Пикар (Star Trek: Picard). Прощание (S02E10) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51201</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
-        </item>
-        <item>
-            <title>Звездный путь: Пикар (Star Trek: Picard). Прощание (S02E10) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51199</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
-        </item>
-        <item>
-            <title>Наследие (Legacies). Я пошел в лес (S04E17) [1080p]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51203</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
-        </item>
-        <item>
-            <title>Наследие (Legacies). Я пошел в лес (S04E17) [MP4]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51204</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
-        </item>
-        <item>
-            <title>Наследие (Legacies). Я пошел в лес (S04E17) [SD]</title>
-            <link>http://n.tracktor.site/rssdownloader.php?id=51202</link>
-            <pubDate>2022-05-07T20:57:00Z</pubDate>
+            <title>Пенниуорт (Pennyworth). Красный мародер (S03E08) [SD]</title>
+            <category>[SD]</category>
+            <pubDate>Sat, 12 Nov 2022 19:41:15 +0000</pubDate>
+            <link>http://n.tracktor.site/rssdownloader.php?id=53836</link>
         </item>
     </channel>
 </rss>

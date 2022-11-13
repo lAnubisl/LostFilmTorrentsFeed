@@ -1,4 +1,4 @@
-﻿// <copyright file="Helper.cs" company="Alexander Panfilenok">
+﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -21,16 +21,16 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Tests
-{
-    [ExcludeFromCodeCoverage]
-    internal class Helper
-    {
-        internal static string GetEmbeddedResource(string name)
-        {
-            using var resource = typeof(Helper).GetTypeInfo().Assembly.GetManifestResourceStream(name);
-            using var reader = new StreamReader(resource);
-            return reader.ReadToEnd();
-        }
-    }
-}
+global using System;
+global using System.Collections.Generic;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Xml.Linq;
+global using LostFilmTV.Client.Response;
+global using NUnit.Framework;
+global using System.Net.Http;
+global using LostFilmMonitoring.Common;
+global using LostFilmTV.Client.RssFeed;
+global using Moq;
+global using System.IO;
+global using System.Reflection;
+global using FluentAssertions;

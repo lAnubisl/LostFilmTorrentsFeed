@@ -23,13 +23,6 @@
 
 namespace LostFilmTV.Client.Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Xml.Linq;
-    using LostFilmTV.Client.Response;
-    using NUnit.Framework;
-
     [TestFixture]
     [ExcludeFromCodeCoverage]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "Test class.")]

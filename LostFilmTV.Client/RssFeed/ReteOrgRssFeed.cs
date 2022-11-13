@@ -36,7 +36,7 @@ namespace LostFilmTV.Client.RssFeed
         /// <param name="logger">Logger.</param>
         /// <param name="httpClientFactory">httpClientFactory.</param>
         public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
-            : base(logger.CreateScope(nameof(ReteOrgRssFeed)), httpClientFactory)
+            : base(logger?.CreateScope(nameof(ReteOrgRssFeed)) ?? throw new ArgumentNullException(nameof(logger)), httpClientFactory)
         {
         }
 

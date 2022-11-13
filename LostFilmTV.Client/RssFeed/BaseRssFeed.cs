@@ -55,39 +55,37 @@ namespace LostFilmTV.Client.RssFeed
         protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
         {
             this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
-            using (var client = this.httpClientFactory.CreateClient())
+            using var client = this.httpClientFactory.CreateClient();
+            var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
+            if (requestHeaders != null)
             {
-                var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
-                if (requestHeaders != null)
+                foreach (var header in requestHeaders)
                 {
-                    foreach (var header in requestHeaders)
-                    {
-                        message.Headers.Add(header.Key, header.Value);
-                    }
+                    message.Headers.Add(header.Key, header.Value);
                 }
+            }
 
-                try
-                {
-                    var response = await client.SendAsync(message);
-                    var rssText = await response.Content.ReadAsStringAsync();
-                    this.Logger.Debug(rssText);
-                    return rssText;
-                }
-                catch (TaskCanceledException ex)
-                {
-                    this.Logger.Log(ex);
-                    throw new RemoteServiceUnavailableException(ex);
-                }
-                catch (IOException ex)
-                {
-                    this.Logger.Log(ex);
-                    throw new RemoteServiceUnavailableException(ex);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.Log(ex);
-                    throw new RemoteServiceUnavailableException(ex);
-                }
+            try
+            {
+                var response = await client.SendAsync(message);
+                var rssText = await response.Content.ReadAsStringAsync();
+                this.Logger.Debug(rssText);
+                return rssText;
+            }
+            catch (TaskCanceledException ex)
+            {
+                this.Logger.Log(ex);
+                throw new RemoteServiceUnavailableException(ex);
+            }
+            catch (IOException ex)
+            {
+                this.Logger.Log(ex);
+                throw new RemoteServiceUnavailableException(ex);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Log(ex);
+                throw new RemoteServiceUnavailableException(ex);
             }
         }
 
