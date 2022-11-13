@@ -130,6 +130,6 @@
     <value>Field '{0}' should be in [{1}].</value>
   </data>
   <data name="UserDoesNotExist" xml:space="preserve">
-    <value>User with Id '{1}' does not exist.</value>
+    <value>User with Id '{0}' does not exist.</value>
   </data>
 </root>

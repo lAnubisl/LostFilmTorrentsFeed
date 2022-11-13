@@ -9,6 +9,7 @@ global using LostFilmMonitoring.BLL.Localization;
 global using LostFilmMonitoring.BLL.Models.Request;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.BLL.Models;
+global using LostFilmMonitoring.BLL.Validators;
 global using LostFilmTV.Client;
 global using LostFilmTV.Client.Response;
 global using System.Reflection;

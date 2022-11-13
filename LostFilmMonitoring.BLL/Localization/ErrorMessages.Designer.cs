@@ -97,7 +97,7 @@ namespace LostFilmMonitoring.BLL.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User with Id &apos;{1}&apos; does not exist..
+        ///   Looks up a localized string similar to User with Id &apos;{0}&apos; does not exist..
         /// </summary>
         public static string UserDoesNotExist {
             get {

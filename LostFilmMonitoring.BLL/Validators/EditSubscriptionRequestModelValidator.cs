@@ -52,7 +52,7 @@ namespace LostFilmMonitoring.BLL.Validators
 
             if (model.Items == null)
             {
-                return ValidationResult.Fail(nameof(model.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(model.Items)));
+                return ValidationResult.Fail(nameof(model.Items), string.Format(ErrorMessages.FieldEmpty, nameof(model.Items)));
             }
 
             foreach (var item in model.Items)
@@ -65,11 +65,12 @@ namespace LostFilmMonitoring.BLL.Validators
 
                 if (!IsIn(item.Quality, Quality.SD, Quality.H1080, Quality.H720))
                 {
-                    result.SetError(nameof(item.Quality), string.Format(ErrorMessages.ShouldBeIn, string.Join(", ", new[] { Quality.SD, Quality.H1080, Quality.H720 })));
+                    result.SetError(nameof(item.Quality), string.Format(ErrorMessages.ShouldBeIn, nameof(item.Quality), string.Join(", ", new[] { Quality.SD, Quality.H1080, Quality.H720 })));
                     return result;
                 }
 
-                if ((await this.seriesDAO.LoadAsync(item.SeriesName)) == null)
+                var series = await this.seriesDAO.LoadAsync(item.SeriesName);
+                if (series == null)
                 {
                     result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesName));
                     return result;
