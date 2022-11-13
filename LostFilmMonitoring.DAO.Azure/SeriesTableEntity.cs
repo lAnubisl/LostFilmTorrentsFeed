@@ -99,5 +99,10 @@ namespace LostFilmMonitoring.DAO.Azure
         /// Gets or sets Episode number for SD quality.
         /// </summary>
         public int? EpisodeNumberSD { get; set; }
+
+        /// <summary>
+        /// Gets or sets LostFilm Id.
+        /// </summary>
+        public int? LostFilmId { get; set; }
     }
 }

@@ -34,3 +34,5 @@ global using Moq;
 global using System.IO;
 global using System.Reflection;
 global using FluentAssertions;
+global using System.Threading.Tasks;
+global using RichardSzalay.MockHttp;

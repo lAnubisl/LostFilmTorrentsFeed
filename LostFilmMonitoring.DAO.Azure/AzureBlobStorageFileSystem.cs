@@ -50,10 +50,10 @@ namespace LostFilmMonitoring.DAO.Azure
         }
 
         /// <inheritdoc/>
-        public Task SaveAsync(string directory, string fileName, Stream contentStream)
+        public Task SaveAsync(string directory, string fileName, string contentType, Stream contentStream)
         {
             this.logger.Info($"Call: {nameof(this.SaveAsync)}({directory}, {fileName}, {contentStream})");
-            return this.azureBlobStorageClient.UploadAsync(directory, fileName, contentStream);
+            return this.azureBlobStorageClient.UploadAsync(directory, fileName, contentStream, contentType);
         }
     }
 }

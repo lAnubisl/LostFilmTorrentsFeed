@@ -41,8 +41,9 @@ namespace LostFilmMonitoring.BLL.Interfaces
         /// </summary>
         /// <param name="directory">Directory to save file.</param>
         /// <param name="fileName">File name.</param>
+        /// <param name="contentType">Content-Type property of the file.</param>
         /// <param name="contentStream">File content.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task SaveAsync(string directory, string fileName, Stream contentStream);
+        Task SaveAsync(string directory, string fileName, string contentType, Stream contentStream);
     }
 }

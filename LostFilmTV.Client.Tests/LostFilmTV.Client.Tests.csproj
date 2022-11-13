@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="stylecop.json" />
     <None Remove="TestData\BaseFeed1.xml" />
+    <None Remove="TestData\LostFilmFeed1.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="TestData\BaseFeed1.xml" />
+    <EmbeddedResource Include="TestData\LostFilmFeed1.xml" />
   </ItemGroup>
 
   <ItemGroup>

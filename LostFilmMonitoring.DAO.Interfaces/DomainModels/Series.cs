@@ -45,6 +45,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
         /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
         /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
+        /// <param name="lostFilmId">LostFilm Id.</param>
         public Series(
             string name,
             DateTime lastEposide,
@@ -57,7 +58,8 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
             int? qSDSeasonNumber = null,
             int? q1080EpisodeNumber = null,
             int? qMP4EpisodeNumber = null,
-            int? qSDEpisodeNumber = null)
+            int? qSDEpisodeNumber = null,
+            int? lostFilmId = null)
         {
             this.Name = name;
             this.LastEpisode = lastEposide;
@@ -71,6 +73,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
             this.Q1080SeasonNumber = q1080SeasonNumber;
             this.QMP4SeasonNumber = qMP4SeasonNumber;
             this.QSDSeasonNumber = qSDSeasonNumber;
+            this.LostFilmId = lostFilmId;
         }
 
         /// <summary>
@@ -134,6 +137,11 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         public int? QSDEpisodeNumber { get; private set; }
 
         /// <summary>
+        /// Gets LostFilm Id.
+        /// </summary>
+        public int? LostFilmId { get; set; }
+
+        /// <summary>
         /// Merge updates from <paramref name="from"/> to current instance.
         /// </summary>
         /// <param name="from">Instance of <see cref="Series"/> to merge changes from.</param>
@@ -150,6 +158,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
             this.Q1080EpisodeNumber = from.Q1080EpisodeNumber ?? this.Q1080EpisodeNumber;
             this.QMP4EpisodeNumber = from.QMP4EpisodeNumber ?? this.QMP4EpisodeNumber;
             this.QSDEpisodeNumber = from.QSDEpisodeNumber ?? this.QSDEpisodeNumber;
+            this.LostFilmId = from.LostFilmId ?? this.LostFilmId;
         }
     }
 }

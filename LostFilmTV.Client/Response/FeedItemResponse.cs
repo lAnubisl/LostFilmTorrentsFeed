@@ -28,7 +28,11 @@ namespace LostFilmTV.Client.Response
     /// </summary>
     public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable<FeedItemResponse>
     {
+        // Уокер (Walker). То, чего раньше не было (S03E06) [1080p]
         private const string RegexPattern = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\) \[(?<Quality>MP4|1080p|SD)\]";
+
+        // Периферийные устройства (The Peripheral). А как же Боб?. (S01E05)
+        private const string RegexPattern2 = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\)";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeedItemResponse"/> class.
@@ -65,7 +69,11 @@ namespace LostFilmTV.Client.Response
             var match = Regex.Match(this.Title, RegexPattern);
             if (!match.Success)
             {
-                return;
+                match = Regex.Match(this.Title, RegexPattern2);
+                if (!match.Success)
+                {
+                    return;
+                }
             }
 
             this.SeriesNameRu = match.Groups["SeriesNameRu"].Value;
@@ -73,8 +81,11 @@ namespace LostFilmTV.Client.Response
             this.EpisodeName = match.Groups["EpisodeNameRu"].Value;
             this.SeasonNumber = int.Parse(match.Groups["SeasonNumber"].Value);
             this.EpisodeNumber = int.Parse(match.Groups["EpisodeNumber"].Value);
-            this.Quality = match.Groups["Quality"].Value.Replace("1080p", "1080");
             this.SeriesName = $"{this.SeriesNameRu} ({this.SeriesNameEn})";
+            if (match.Groups.ContainsKey("Quality"))
+            {
+                this.Quality = match.Groups["Quality"].Value.Replace("1080p", "1080");
+            }
         }
 
         /// <summary>

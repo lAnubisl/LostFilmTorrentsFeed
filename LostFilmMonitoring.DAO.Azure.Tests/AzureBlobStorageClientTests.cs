@@ -54,10 +54,8 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         {
             var azureBlobStorageClient = GetClient();
             var content = new MemoryStream();
-            await azureBlobStorageClient.UploadAsync("containerName", "fileName", content);
-            blobClient.Verify(x => x.UploadAsync(content, true, default), Times.Once);
-            blobClient.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
-            blobClient.Verify(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), null, default), Times.Once);
+            await azureBlobStorageClient.UploadAsync("containerName", "fileName", content, "contentType");
+            blobClient.Verify(x => x.UploadAsync(content, It.IsAny<BlobUploadOptions>(), default), Times.Once);
         }
 
         [Test]
@@ -65,10 +63,8 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         {
             var azureBlobStorageClient = GetClient();
             var stream = new MemoryStream();
-            await azureBlobStorageClient.UploadAsync("containerName", "fileName", "content");
-            blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), true, default), Times.Once);
-            blobClient.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
-            blobClient.Verify(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), null, default), Times.Once);
+            await azureBlobStorageClient.UploadAsync("containerName", "fileName", "content", "contentType");
+            blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
         }
 
         [Test]
@@ -76,10 +72,8 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         {
             var azureBlobStorageClient = GetClient();
             var content = new MemoryStream();
-            await azureBlobStorageClient.UploadAsync("containerName", "directoryName", "fileName", content);
-            blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), true, default), Times.Once);
-            blobClient.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
-            blobClient.Verify(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), null, default), Times.Once);
+            await azureBlobStorageClient.UploadAsync("containerName", "directoryName", "fileName", content, "contentType");
+            blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
         }
         
         [Test]
@@ -162,7 +156,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         [Test]
         public void UploadAsync_should_throw_exception_when_stream_null()
         {
-            var action = async () => await GetClient().UploadAsync("test", "test", null as Stream);
+            var action = async () => await GetClient().UploadAsync("test", "test", null as Stream, "text/plain");
             action.Should().ThrowAsync<ArgumentNullException>().Result.Which.ParamName.Should().Be("content");
         }
 

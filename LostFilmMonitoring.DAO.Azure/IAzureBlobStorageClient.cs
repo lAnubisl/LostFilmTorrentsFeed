@@ -97,11 +97,12 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="containerName">Name of the container.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="content">Stream with content of the file.</param>
+        /// <param name="contentType">Content-Type property of the file.</param>
         /// <param name="cacheControl">Cache-Control property of the file.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">Content is null.</exception>
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
-        Task UploadAsync(string containerName, string fileName, Stream? content, string cacheControl = "no-cache");
+        Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl = "no-cache");
 
         /// <summary>
         /// Upload file content to Azure Blob Storage.
@@ -109,10 +110,11 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="containerName">Name of the container.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="content">Text content of the file.</param>
+        /// <param name="contentType">Content-Type property of the file.</param>
         /// <param name="cacheControl">Cache-Control property of the file.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
-        Task UploadAsync(string containerName, string fileName, string content, string cacheControl = "no-cache");
+        Task UploadAsync(string containerName, string fileName, string content, string contentType, string cacheControl = "no-cache");
 
         /// <summary>
         /// Upload file content to Azure Blob Storage.
@@ -121,8 +123,9 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="directoryName">Name of the directory in a container.</param>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="content">Stream with content of the file.</param>
+        /// <param name="contentType">Content-Type property of the file.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
-        Task UploadAsync(string containerName, string directoryName, string fileName, Stream? content);
+        Task UploadAsync(string containerName, string directoryName, string fileName, Stream? content, string contentType);
     }
 }

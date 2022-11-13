@@ -76,7 +76,7 @@ namespace LostFilmMonitoring.DAO.Azure
         public Task SaveBaseFeedAsync(FeedItem[] items)
         {
             this.logger.Info($"Call: {nameof(this.SaveBaseFeedAsync)}(FeedItem[])");
-            return this.azureBlobStorageClient.UploadAsync(ConteinerName, BaseFeedName, items.GenerateXml());
+            return this.azureBlobStorageClient.UploadAsync(ConteinerName, BaseFeedName, items.GenerateXml(), "text/xml");
         }
 
         /// <inheritdoc/>

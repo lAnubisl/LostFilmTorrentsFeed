@@ -77,6 +77,7 @@ namespace LostFilmMonitoring.DAO.Azure
                 EpisodeNumberMP4 = series.QMP4EpisodeNumber,
                 EpisodeNumberSD = series.QSDEpisodeNumber,
                 Name = series.Name,
+                LostFilmId = series.LostFilmId,
             };
 
             return result;
@@ -119,7 +120,8 @@ namespace LostFilmMonitoring.DAO.Azure
                 entity.SeasonNumberSD,
                 entity.EpisodeNumber1080,
                 entity.EpisodeNumberMP4,
-                entity.EpisodeNumberSD);
+                entity.EpisodeNumberSD,
+                entity.LostFilmId);
 
         /// <summary>
         /// Map <see cref="UserTableEntity"/> to <see cref="User"/>.

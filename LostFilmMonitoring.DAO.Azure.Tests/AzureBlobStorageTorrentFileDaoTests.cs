@@ -75,7 +75,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             var torrentId = "torrentId";
             var dao = new AzureBlobStorageTorrentFileDao(this.azureBlobStorageClient.Object, this.logger);
             await dao.SaveBaseFileAsync(torrentId, new TorrentFile(torrentId, new MemoryStream()));
-            this.azureBlobStorageClient.Verify(x => x.UploadAsync("basetorrents", $"{torrentId}.torrent", It.IsAny<Stream>(), "no-cache"), Times.Once);
+            this.azureBlobStorageClient.Verify(x => x.UploadAsync("basetorrents", $"{torrentId}.torrent", It.IsAny<Stream>(), "applications/x-bittorrent", "no-cache"), Times.Once);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             var userId = "userId";
             var dao = new AzureBlobStorageTorrentFileDao(this.azureBlobStorageClient.Object, this.logger);
             await dao.SaveUserFileAsync(userId, new TorrentFile("fileName", new MemoryStream()));
-            this.azureBlobStorageClient.Verify(x => x.UploadAsync("usertorrents", userId, "fileName.torrent", It.IsAny<Stream>()), Times.Once);
+            this.azureBlobStorageClient.Verify(x => x.UploadAsync("usertorrents", userId, "fileName.torrent", It.IsAny<Stream>(), "applications/x-bittorrent"), Times.Once);
         }
     }
 }

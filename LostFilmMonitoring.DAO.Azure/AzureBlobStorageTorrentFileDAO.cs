@@ -64,14 +64,14 @@ namespace LostFilmMonitoring.DAO.Azure
         public Task SaveBaseFileAsync(string torrentId, TorrentFile torrentFile)
         {
             this.logger.Info($"Call: {nameof(this.SaveBaseFileAsync)}('{torrentId}', TorrentFile torrentFile)");
-            return this.azureBlobStorageClient.UploadAsync(this.baseTorrentsDirectory, GetBaseTorrentFileName(torrentId), torrentFile.Stream);
+            return this.azureBlobStorageClient.UploadAsync(this.baseTorrentsDirectory, GetBaseTorrentFileName(torrentId), torrentFile.Stream, "applications/x-bittorrent");
         }
 
         /// <inheritdoc/>
         public Task SaveUserFileAsync(string userId, TorrentFile torrentFile)
         {
             this.logger.Info($"Call: {nameof(this.SaveUserFileAsync)}('{userId}', TorrentFile torrentFile)");
-            return this.azureBlobStorageClient.UploadAsync(this.userTorrentsDirectory, userId, $"{torrentFile.FileName}.torrent", torrentFile.Stream);
+            return this.azureBlobStorageClient.UploadAsync(this.userTorrentsDirectory, userId, $"{torrentFile.FileName}.torrent", torrentFile.Stream, "applications/x-bittorrent");
         }
 
         private static string GetBaseTorrentFileName(string torrentId) => $"{torrentId}.torrent";

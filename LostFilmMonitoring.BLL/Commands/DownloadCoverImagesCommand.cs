@@ -28,10 +28,12 @@ namespace LostFilmMonitoring.BLL.Commands
     /// </summary>
     public class DownloadCoverImagesCommand : ICommand
     {
+        private const string LostFilmIdRegex = "static\\.lostfilm\\.top\\/Images\\/(\\d+)\\/Posters\\/image\\.jpg";
         private readonly ILogger logger;
         private readonly IFileSystem fileSystem;
         private readonly IConfiguration configuration;
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly ISeriesDao seriesDao;
         private readonly LostFilmTV.Client.RssFeed.LostFilmRssFeed lostFilmRssFeed;
 
         /// <summary>
@@ -42,18 +44,21 @@ namespace LostFilmMonitoring.BLL.Commands
         /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
         /// <param name="httpClientFactory">Instance of <see cref="IHttpClientFactory"/>.</param>
         /// <param name="lostFilmRssFeed">Instance of <see cref="LostFilmTV.Client.RssFeed.LostFilmRssFeed"/>.</param>
+        /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
         public DownloadCoverImagesCommand(
             ILogger logger,
             IFileSystem fileSystem,
             IConfiguration configuration,
             IHttpClientFactory httpClientFactory,
-            LostFilmTV.Client.RssFeed.LostFilmRssFeed lostFilmRssFeed)
+            LostFilmTV.Client.RssFeed.LostFilmRssFeed lostFilmRssFeed,
+            ISeriesDao seriesDao)
         {
             this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
-            this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(logger));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(logger));
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(logger));
-            this.lostFilmRssFeed = lostFilmRssFeed ?? throw new ArgumentNullException(nameof(logger));
+            this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.lostFilmRssFeed = lostFilmRssFeed ?? throw new ArgumentNullException(nameof(lostFilmRssFeed));
+            this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
         }
 
         /// <inheritdoc/>
@@ -69,44 +74,81 @@ namespace LostFilmMonitoring.BLL.Commands
             await Task.WhenAll(items.Select(this.CheckItemAsync));
         }
 
-        private static string EscapePath(string path)
-        {
-            return path
-                .Replace(":", "_")
-                .Replace("*", "_")
-                .Replace("\"", "_")
-                .Replace("/", "_")
-                .Replace("?", "_")
-                .Replace(">", "_")
-                .Replace("<", "_")
-                .Replace("|", "_");
-        }
-
         private async Task CheckItemAsync(FeedItemResponse item)
         {
-            var seriesName = item.Title[.. (item.Title.IndexOf(").") + 2)];
-            var fileName = EscapePath(seriesName) + ".jpg";
-            if (await this.fileSystem.ExistsAsync(this.configuration.ImagesDirectory, fileName))
+            var lostFilmId = this.ParseLostFilmId(item);
+            if (lostFilmId == null)
             {
                 return;
             }
 
-            var match = Regex.Match(item.Description, "Images/(\\d+)/Posters");
-            if (!match.Success)
+            if (await this.PosterExistsAsync(lostFilmId))
             {
                 return;
             }
 
-            var id = match.Groups[1].Value;
+            await this.DownloadImageAsync(lostFilmId);
+            await this.UpdateSeriesAsync(item?.SeriesName, lostFilmId);
+        }
 
+        private string? ParseLostFilmId(FeedItemResponse item)
+        {
+            if (string.IsNullOrEmpty(item?.Description))
+            {
+                return null;
+            }
+
+            try
+            {
+                var lostFilmIdMatch = Regex.Match(item.Description, LostFilmIdRegex, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+                if (!lostFilmIdMatch.Success)
+                {
+                    this.logger.Error($"Regex match failure: {item.Description}");
+                    return null;
+                }
+
+                return lostFilmIdMatch.Groups[1].Value;
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                this.logger.Error($"Regex match timeout: {item.Description}");
+                return null;
+            }
+        }
+
+        private async Task UpdateSeriesAsync(string? seriesName, string lostFilmId)
+        {
+            if (string.IsNullOrEmpty(seriesName))
+            {
+                return;
+            }
+
+            var series = await this.seriesDao.LoadAsync(seriesName);
+            if (series == null)
+            {
+                return;
+            }
+
+            if (series.LostFilmId == null)
+            {
+                series.LostFilmId = int.Parse(lostFilmId);
+                await this.seriesDao.SaveAsync(series);
+            }
+        }
+
+        private async Task DownloadImageAsync(string lostFilmId)
+        {
             using var httpClient = this.httpClientFactory.CreateClient();
-            using var imageStream = await httpClient.GetStreamAsync($"https://static.lostfilm.top/Images/{id}/Posters/t_shmoster_s1.jpg");
+            using var imageStream = await httpClient.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg");
             if (imageStream == null)
             {
                 return;
             }
 
-            await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, fileName, imageStream);
+            await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", imageStream);
         }
+
+        private Task<bool> PosterExistsAsync(string lostFilmId) =>
+            this.fileSystem.ExistsAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg");
     }
 }
