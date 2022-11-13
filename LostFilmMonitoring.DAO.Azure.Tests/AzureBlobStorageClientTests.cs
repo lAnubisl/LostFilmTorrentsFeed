@@ -21,6 +21,8 @@
 // SOFTWARE.
 // </copyright>
 
+using System.Text;
+
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
@@ -79,7 +81,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             blobClient.Verify(x => x.GetPropertiesAsync(null, default), Times.Once);
             blobClient.Verify(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), null, default), Times.Once);
         }
-
+        
         [Test]
         public async Task DownloadAsync_should_download_stream()
         {
@@ -87,6 +89,28 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             var stream = new MemoryStream();
             var result = await azureBlobStorageClient.DownloadAsync("containerName", "fileName");
             blobClient.Verify(x => x.DownloadToAsync(result), Times.Once);
+        }
+
+        [Test]
+        public async Task DownloadAsync_should_return_null_when_blob_not_found()
+        {
+            var azureBlobStorageClient = GetClient();
+            blobClient
+                .Setup(x => x.DownloadToAsync(It.IsAny<Stream>()))
+                .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
+            var result = await azureBlobStorageClient.DownloadAsync("containerName", "fileName");
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task DownloadAsync_should_return_throw_when_unexpected_error()
+        {
+            var azureBlobStorageClient = GetClient();
+            blobClient
+                .Setup(x => x.DownloadToAsync(It.IsAny<Stream>()))
+                .ThrowsAsync(new Exception());
+            var func = async () => { await azureBlobStorageClient.DownloadAsync("containerName", "fileName"); };
+            await func.Should().ThrowAsync<Exception>();
         }
 
         [Test]
