@@ -36,5 +36,12 @@ namespace LostFilmTV.Client
         /// <param name="torrentFileId">The torrent file identifier.</param>
         /// <returns>Torrent file response container.</returns>
         Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);
+
+        /// <summary>
+        /// Downloads the series cover asynchronous.
+        /// </summary>
+        /// <param name="lostFilmId">Series Id in LostFilm.</param>
+        /// <returns>Stream of the series cover file.</returns>
+        Task<Stream?> DownloadImageAsync(string lostFilmId);
     }
 }

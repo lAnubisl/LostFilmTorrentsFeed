@@ -32,9 +32,9 @@ namespace LostFilmMonitoring.BLL.Commands
         private readonly ILogger logger;
         private readonly IFileSystem fileSystem;
         private readonly IConfiguration configuration;
-        private readonly IHttpClientFactory httpClientFactory;
         private readonly ISeriesDao seriesDao;
-        private readonly LostFilmTV.Client.RssFeed.LostFilmRssFeed lostFilmRssFeed;
+        private readonly IRssFeed rssFeed;
+        private readonly ILostFilmClient lostFilmClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadCoverImagesCommand"/> class.
@@ -42,30 +42,30 @@ namespace LostFilmMonitoring.BLL.Commands
         /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
         /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
         /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
-        /// <param name="httpClientFactory">Instance of <see cref="IHttpClientFactory"/>.</param>
         /// <param name="lostFilmRssFeed">Instance of <see cref="LostFilmTV.Client.RssFeed.LostFilmRssFeed"/>.</param>
         /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
+        /// <param name="lostFilmClient">Instance of <see cref="ILostFilmClient"/>.</param>
         public DownloadCoverImagesCommand(
             ILogger logger,
             IFileSystem fileSystem,
             IConfiguration configuration,
-            IHttpClientFactory httpClientFactory,
-            LostFilmTV.Client.RssFeed.LostFilmRssFeed lostFilmRssFeed,
-            ISeriesDao seriesDao)
+            IRssFeed lostFilmRssFeed,
+            ISeriesDao seriesDao,
+            ILostFilmClient lostFilmClient)
         {
             this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
             this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.lostFilmRssFeed = lostFilmRssFeed ?? throw new ArgumentNullException(nameof(lostFilmRssFeed));
+            this.rssFeed = lostFilmRssFeed ?? throw new ArgumentNullException(nameof(lostFilmRssFeed));
             this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
+            this.lostFilmClient = lostFilmClient ?? throw new ArgumentNullException(nameof(lostFilmClient));
         }
 
         /// <inheritdoc/>
         public async Task ExecuteAsync()
         {
             this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-            var items = await this.lostFilmRssFeed.LoadFeedItemsAsync();
+            var items = await this.rssFeed.LoadFeedItemsAsync();
             if (items == null)
             {
                 return;
@@ -138,8 +138,7 @@ namespace LostFilmMonitoring.BLL.Commands
 
         private async Task DownloadImageAsync(string lostFilmId)
         {
-            using var httpClient = this.httpClientFactory.CreateClient();
-            using var imageStream = await httpClient.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg");
+            using var imageStream = await this.lostFilmClient.DownloadImageAsync(lostFilmId);
             if (imageStream == null)
             {
                 return;

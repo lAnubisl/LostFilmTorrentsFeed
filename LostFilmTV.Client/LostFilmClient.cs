@@ -1,4 +1,4 @@
-// <copyright file="LostFilmClient.cs" company="Alexander Panfilenok">
+﻿// <copyright file="LostFilmClient.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2021 Alexander Panfilenok
 //
@@ -41,6 +41,22 @@ namespace LostFilmTV.Client
         {
             this.logger = logger.CreateScope(nameof(LostFilmClient));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+        }
+
+        /// <inheritdoc/>
+        public async Task<Stream?> DownloadImageAsync(string lostFilmId)
+        {
+            using var client = this.httpClientFactory.CreateClient();
+            try
+            {
+                var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg");
+                return stream;
+            }
+            catch (Exception ex)
+            {
+                this.logger.Log(ex);
+                return null;
+            }
         }
 
         /// <summary>
