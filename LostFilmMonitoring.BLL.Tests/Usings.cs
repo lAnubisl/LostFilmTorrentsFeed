@@ -15,3 +15,4 @@ global using LostFilmTV.Client.Response;
 global using System.Reflection;
 global using System.Xml.Linq;
 global using System.Diagnostics.CodeAnalysis;
+global using Microsoft.Extensions.Logging;

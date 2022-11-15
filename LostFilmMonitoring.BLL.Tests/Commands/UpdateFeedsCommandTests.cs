@@ -31,7 +31,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         private Mock<IDal> dal;
         private Mock<IConfiguration> configuration;
         private Mock<IModelPersister> persister;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
         private Mock<IRssFeed> rssFeed;
         private Mock<ILostFilmClient> lostFilmClient;
         private Mock<ISeriesDao> seriesDAO;
@@ -481,7 +481,174 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Once);
             this.episodeDao.Verify(x => x.SaveAsync(It.IsAny<Episode>()), Times.Once);
         }
-        
+
+        [Test]
+        public async Task ExecuteAsync_should_cleanup_old_torrent_files()
+        {
+            var command = CreateCommand();
+            SetupPersister_LoadAsync(null);
+
+            var userId = "User#1";
+            var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
+            var rssItems = new SortedSet<FeedItemResponse>()
+            {
+                new FeedItemResponse(XElement.Parse(
+                @"<item>
+                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>")),
+            };
+
+            // RSS feed returns new series
+            this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+
+            // There is no such series in the system
+            this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+
+            SetupTorrentFile("51439");
+
+            this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+            this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+            this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+            this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 01, 01) }, // #4
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 12, 01) }, // #5
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 11, 01) }, // #6
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 10, 01) }, // #7
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 09, 01) }, // #8
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 08, 01) }, // #9
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 07, 01) }, // #10
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 06, 01) }, // #11
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 05, 01) }, // #12
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 04, 01) }, // #13
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 03, 01) }, // #14
+                new FeedItem() {                                                   // #15
+                    PublishDateParsed = new DateTime(2021, 02, 01), 
+                    Title = "Андор (Andor). Выход только один (S01E10) [1080p]", 
+                    Link = $"https://example.com/usertorrents/{userId}/{torrentFileName}" },
+            });
+
+            await command.ExecuteAsync();
+            this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_should_not_fail_on_cleanup_when_file_name_not_parsed()
+        {
+            var command = CreateCommand();
+            SetupPersister_LoadAsync(null);
+
+            var userId = "User#1";
+            var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
+            var rssItems = new SortedSet<FeedItemResponse>()
+            {
+                new FeedItemResponse(XElement.Parse(
+                @"<item>
+                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>")),
+            };
+
+            // RSS feed returns new series
+            this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+
+            // There is no such series in the system
+            this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+
+            SetupTorrentFile("51439");
+
+            this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+            this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+            this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+            this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 01, 01) }, // #4
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 12, 01) }, // #5
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 11, 01) }, // #6
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 10, 01) }, // #7
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 09, 01) }, // #8
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 08, 01) }, // #9
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 07, 01) }, // #10
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 06, 01) }, // #11
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 05, 01) }, // #12
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 04, 01) }, // #13
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 03, 01) }, // #14
+                new FeedItem() {                                                   // #15
+                    PublishDateParsed = new DateTime(2021, 02, 01),
+                    Title = "Андор (Andor). Выход только один (S01E10) [1080p]",
+                    Link = "mailformed" },
+            });
+
+            await command.ExecuteAsync();
+            this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Never);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_should_not_fail_on_cleanup_when_deletion_failed()
+        {
+            var command = CreateCommand();
+            SetupPersister_LoadAsync(null);
+
+            var userId = "User#1";
+            var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
+            var rssItems = new SortedSet<FeedItemResponse>()
+            {
+                new FeedItemResponse(XElement.Parse(
+                @"<item>
+                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>")),
+            };
+
+            // RSS feed returns new series
+            this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+
+            // There is no such series in the system
+            this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+
+            SetupTorrentFile("51439");
+
+            this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+            this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+            this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+            this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
+                new FeedItem() { PublishDateParsed = new DateTime(2022, 01, 01) }, // #4
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 12, 01) }, // #5
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 11, 01) }, // #6
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 10, 01) }, // #7
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 09, 01) }, // #8
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 08, 01) }, // #9
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 07, 01) }, // #10
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 06, 01) }, // #11
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 05, 01) }, // #12
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 04, 01) }, // #13
+                new FeedItem() { PublishDateParsed = new DateTime(2021, 03, 01) }, // #14
+                new FeedItem() {                                                   // #15
+                    PublishDateParsed = new DateTime(2021, 02, 01),
+                    Title = "Андор (Andor). Выход только один (S01E10) [1080p]",
+                    Link = "mailformed" },
+            });
+
+            this.torrentFileDAO.Setup(x => x.DeleteUserFileAsync(userId, torrentFileName)).ThrowsAsync(new Exception("Test"));
+
+            await command.ExecuteAsync();
+            this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Never);
+        }
+
         private void SetupTorrentFile(string torrentId)
         {
             var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");

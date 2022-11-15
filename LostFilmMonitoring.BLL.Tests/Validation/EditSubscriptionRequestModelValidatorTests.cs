@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.BLL.Tests.Validation
     {
         private Mock<IUserDao> userDao;
         private Mock<ISeriesDao> seriesDao;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
 
         [SetUp]
         public void Setup()

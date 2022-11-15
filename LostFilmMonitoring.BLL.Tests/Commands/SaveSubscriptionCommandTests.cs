@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     internal class SaveSubscriptionCommandTests
     {
         private Mock<IUserDao> userDao;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
         private Mock<IValidator<EditSubscriptionRequestModel>> validator;
         private Mock<IDal> dal;
         private Mock<IConfiguration> configuration;

@@ -328,27 +328,23 @@ namespace LostFilmMonitoring.BLL.Commands
             var userFeedItem = ToFeedItem(item, link);
             var userFeed = (await this.dal.Feed.LoadUserFeedAsync(userId)) ?? new SortedSet<FeedItem>();
             userFeed.Add(userFeedItem);
+            userFeed.RemoveWhere(x => x == null);
             await this.dal.Feed.SaveUserFeedAsync(userId, userFeed.Take(15).ToArray());
             await this.CleanupOldRssFilesAsync(userId, userFeed.Skip(15).ToArray());
         }
 
         private async Task CleanupOldRssFileAsync(string userId, FeedItem item)
         {
-            if (item == null)
+            this.logger.Info($"Call: {nameof(this.CleanupOldRssFileAsync)}('{userId}', '{item.Link}')");
+            var fileName = item.GetUserFileName(userId);
+            if (fileName == null)
             {
+                this.logger.Error($"Cannot get fileName from FeedItem '{item.Link}'.");
                 return;
             }
 
-            this.logger.Info($"Call: {nameof(this.CleanupOldRssFileAsync)}('{userId}', '{item.Link}')");
             try
             {
-                var fileName = item.GetUserFileName(userId);
-                if (fileName == null)
-                {
-                    this.logger.Error($"Cannot get fileName from FeedItem '{item.Link}'.");
-                    return;
-                }
-
                 await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName);
             }
             catch (Exception ex)

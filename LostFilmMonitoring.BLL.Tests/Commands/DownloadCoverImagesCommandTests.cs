@@ -21,15 +21,13 @@
 // SOFTWARE.
 // </copyright>
 
-using LostFilmMonitoring.DAO.Interfaces;
-
 namespace LostFilmMonitoring.BLL.Tests.Commands
 {
     [ExcludeFromCodeCoverage]
     public class DownloadCoverImagesCommandTests
     {
         private Mock<ISeriesDao> seriesDao;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
         private Mock<IFileSystem> fileSystem;
         private Mock<IConfiguration> configuration;
         private Mock<ILostFilmClient> lostFilmClient;

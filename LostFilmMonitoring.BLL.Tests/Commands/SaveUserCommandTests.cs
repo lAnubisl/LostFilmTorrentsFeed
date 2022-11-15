@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         private Mock<IUserDao> userDao;
         private Mock<IFeedDao> feedDao;
         private Mock<IModelPersister> persister;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
 
         [SetUp]
         public void Setup()
@@ -72,7 +72,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         [Test]
         public void Constructor_should_throw_exception_when_logger_createScope_null()
         {
-            this.logger.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as ILogger)!);
+            this.logger.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as Common.ILogger)!);
             var action = () => new SaveUserCommand(this.userDao.Object, this.logger.Object, this.persister.Object, this.feedDao.Object);
             action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
         }

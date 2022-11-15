@@ -27,7 +27,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
     internal class SignInCommandTests
     {
         private Mock<IUserDao> userDao;
-        private Mock<ILogger> logger;
+        private Mock<Common.ILogger> logger;
 
         [SetUp]
         public void Setup()
@@ -88,7 +88,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         [Test]
         public void Constructor_should_throw_exception_when_logger_createScope_null()
         {
-            this.logger.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as ILogger)!);
+            this.logger.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as Common.ILogger)!);
             var action = () => new SignInCommand(this.userDao.Object, this.logger.Object);
             action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
         }
