@@ -39,16 +39,16 @@ namespace LostFilmMonitoring.DAO.Azure
         }
 
         /// <inheritdoc/>
-        public async Task<bool> ExistsAsync(string seriesName, int seasonNumber, int eposideNumber, string quality)
+        public async Task<bool> ExistsAsync(string seriesName, int seasonNumber, int episideNumber, string quality)
         {
-            this.Logger.Info($"Call: {nameof(this.ExistsAsync)}('{seriesName}', {seasonNumber}, {eposideNumber}, '{quality}')");
+            this.Logger.Info($"Call: {nameof(this.ExistsAsync)}('{seriesName}', {seasonNumber}, {episideNumber}, '{quality}')");
             return (await this.TryCountAsync(tc =>
             {
                 var query = tc.QueryAsync<EpisodeTableEntity>(entity =>
                     entity.PartitionKey == EscapeKey(seriesName) &&
                     entity.Quality == quality &&
                     entity.SeasonNumber == seasonNumber &&
-                    entity.EpisodeNumber == eposideNumber);
+                    entity.EpisodeNumber == episideNumber);
                 return CountAsync(query);
             })) > 0;
         }

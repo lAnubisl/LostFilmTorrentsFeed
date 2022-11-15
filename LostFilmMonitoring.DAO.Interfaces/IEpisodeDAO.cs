@@ -42,9 +42,9 @@ namespace LostFilmMonitoring.DAO.Interfaces
         /// </summary>
         /// <param name="seriesName">Name of the series.</param>
         /// <param name="seasonNumber">The season number.</param>
-        /// <param name="eposideNumber">The eposide number.</param>
+        /// <param name="episideNumber">The eposide number.</param>
         /// <param name="quality">The quality.</param>
         /// <returns>True is such episode exists. Otherwise false.</returns>
-        Task<bool> ExistsAsync(string seriesName, int seasonNumber, int eposideNumber, string quality);
+        Task<bool> ExistsAsync(string seriesName, int seasonNumber, int episideNumber, string quality);
     }
 }
