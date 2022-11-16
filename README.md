@@ -3,7 +3,7 @@
 
 ## Статус:
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lAnubisl_LostFilmTorrentsFeed&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lAnubisl_LostFilmTorrentsFeed)
-
+[![CodeFactor](https://www.codefactor.io/repository/github/lanubisl/lostfilmtorrentsfeed/badge)](https://www.codefactor.io/repository/github/lanubisl/lostfilmtorrentsfeed)
 #### 1. Выбираем сериалы.
 ![Выбираем сериалы](https://lostfilmfeed.petproject.by/images/f0.png)
 #### 2. Выбираем качество.
