@@ -155,7 +155,7 @@ namespace LostFilmMonitoring.DAO.Azure
             var blobClient = this.GetBlobClient(containerName, fileName);
             try
             {
-                await SetCacheControlAsync(blobClient, cacheControl);
+                await this.SetCacheControlAsync(blobClient, cacheControl);
             }
             catch (Exception ex)
             {

@@ -31,6 +31,7 @@ namespace LostFilmMonitoring.BLL
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.
         /// </summary>
+        /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
         public Configuration(IConfigurationValuesProvider provider)
         {
             this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");

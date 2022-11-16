@@ -21,8 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using System.Runtime.Serialization;
-
 namespace LostFilmMonitoring.BLL.Exceptions
 {
     /// <summary>
