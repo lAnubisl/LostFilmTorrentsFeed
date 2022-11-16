@@ -138,7 +138,7 @@ namespace LostFilmMonitoring.DAO.Azure
             this.logger.Info($"Call: {nameof(this.ExistsAsync)}('{containerName}', '{fileName}')");
             try
             {
-                return await this.GetBlobClient(containerName, fileName).ExistsAsync();
+                return await this.GetBlobClient(containerName, fileName).ExistsAsync(this.cancellationToken);
             }
             catch (Exception ex)
             {
@@ -165,7 +165,7 @@ namespace LostFilmMonitoring.DAO.Azure
             }
         }
 
-        private static async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
+        private async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
         {
             var properties = await blobClient.GetPropertiesAsync();
             var httpHeaders = new BlobHttpHeaders
@@ -177,7 +177,7 @@ namespace LostFilmMonitoring.DAO.Azure
                 ContentEncoding = properties.Value.ContentEncoding,
                 ContentHash = properties.Value.ContentHash,
             };
-            await blobClient.SetHttpHeadersAsync(httpHeaders);
+            await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
         }
 
         private async Task CreateContainerAsync(string containerName)

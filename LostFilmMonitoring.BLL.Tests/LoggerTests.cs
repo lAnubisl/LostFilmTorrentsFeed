@@ -21,8 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-
 namespace LostFilmMonitoring.BLL.Tests
 {
     [ExcludeFromCodeCoverage]

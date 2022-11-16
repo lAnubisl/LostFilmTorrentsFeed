@@ -171,6 +171,25 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
 
         [Test]
+        public async Task DownloadStringAsync_should_return_string()
+        {
+            var testData = "TEST DATA";
+            blobClient.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
+                (s, ct) =>
+                {
+                    var bytes = Encoding.UTF8.GetBytes(testData);
+                    s.Write(bytes, 0, bytes.Length);
+                    s.Seek(0, SeekOrigin.Begin);
+                }
+            );
+            
+            var azureBlobStorageClient = GetClient();
+            var result = await azureBlobStorageClient.DownloadStringAsync(containerName, blobName);
+            result.Should().BeEquivalentTo(testData);
+        }
+
+
+        [Test]
         public async Task DeleteAsync_should_delete_file()
         {
             var azureBlobStorageClient = GetClient();
@@ -198,6 +217,18 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
 
         [Test]
+        public async Task DeleteAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
+        {
+            blobClient
+                .Setup(x => x.DeleteAsync(It.IsAny<DeleteSnapshotsOption>(), It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
+
+            var action = () => GetClient().DeleteAsync(containerName, dirName, blobName);
+            await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
+        }
+
+
+        [Test]
         public async Task ExistsAsync_should_check_if_file_exists()
         {
             var azureBlobStorageClient = GetClient();
@@ -205,17 +236,41 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                 .Setup(x => x.ExistsAsync(default))
                 .ReturnsAsync(new TestResponse<bool>(true));
             await azureBlobStorageClient.ExistsAsync(containerName, blobName);
-            blobClient.Verify(x => x.ExistsAsync(default), Times.Once);
+            blobClient.Verify(x => x.ExistsAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        [Test]
+        public async Task ExistsAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
+        {
+            blobClient
+                .Setup(x => x.ExistsAsync(It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
+
+            var action = () => GetClient().ExistsAsync(containerName, blobName);
+            await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
+        }
+
 
         [Test]
         public async Task SetCacheControlAsync_should_set_cache_control()
         {
             var azureBlobStorageClient = GetClient();
             await azureBlobStorageClient.SetCacheControlAsync(containerName, blobName, "cacheControl");
-            blobClient.Verify(x => x.SetHttpHeadersAsync(It.Is<BlobHttpHeaders>(y => y.CacheControl == "cacheControl"), null, default), Times.Once);
+            blobClient.Verify(x => x.SetHttpHeadersAsync(It.Is<BlobHttpHeaders>(y => y.CacheControl == "cacheControl"), null, It.IsAny<CancellationToken>()), Times.Once);
         }
-        
+
+        [Test]
+        public async Task SetCacheControlAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
+        {
+            blobClient
+                .Setup(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
+
+            var action = () => GetClient().SetCacheControlAsync(containerName, blobName, "cacheControl");
+            await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
+        }
+
+
         [Test]
         public async Task UploadAsync_should_throw_exception_when_stream_null()
         {

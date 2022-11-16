@@ -31,14 +31,14 @@ namespace LostFilmMonitoring.BLL
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.
         /// </summary>
-        public Configuration()
+        public Configuration(IConfigurationValuesProvider provider)
         {
-            this.BaseUrl = Environment.GetEnvironmentVariable("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
-            this.BaseUSESS = Environment.GetEnvironmentVariable("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
-            this.BaseUID = Environment.GetEnvironmentVariable("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
-            this.torrentAnnounceListPatterns = Environment.GetEnvironmentVariable("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
-            this.ImagesDirectory = Environment.GetEnvironmentVariable("IMAGESDIRECTORY") ?? "images";
-            this.TorrentsDirectory = Environment.GetEnvironmentVariable("TORRENTSDIRECTORY") ?? "torrentfiles";
+            this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
+            this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
+            this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
+            this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
+            this.ImagesDirectory = provider.GetValue("IMAGESDIRECTORY") ?? "images";
+            this.TorrentsDirectory = provider.GetValue("TORRENTSDIRECTORY") ?? "torrentfiles";
         }
 
         /// <inheritdoc/>

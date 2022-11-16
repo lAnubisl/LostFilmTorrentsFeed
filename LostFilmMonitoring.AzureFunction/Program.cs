@@ -47,6 +47,7 @@ namespace LostFilmMonitoring.AzureFunction
             services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
             services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
             services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
+            services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
             services.AddSingleton<IConfiguration, Configuration>();
             services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
             services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
