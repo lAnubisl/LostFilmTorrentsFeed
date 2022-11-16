@@ -36,3 +36,4 @@ global using System.Reflection;
 global using FluentAssertions;
 global using System.Threading.Tasks;
 global using RichardSzalay.MockHttp;
+global using System.Text;

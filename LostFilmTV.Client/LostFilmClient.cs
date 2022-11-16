@@ -39,7 +39,7 @@ namespace LostFilmTV.Client
         /// <param name="httpClientFactory">IHttpClientFactory.</param>
         public LostFilmClient(ILogger logger, IHttpClientFactory httpClientFactory)
         {
-            this.logger = logger.CreateScope(nameof(LostFilmClient));
+            this.logger = logger?.CreateScope(nameof(LostFilmClient)) ?? throw new ArgumentNullException(nameof(logger));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 

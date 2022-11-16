@@ -26,31 +26,31 @@ namespace LostFilmTV.Client.Tests.RssFeed
     [ExcludeFromCodeCoverage]
     public class ReteOrgRssFeedTests
     {
-        private Mock<IHttpClientFactory> httpControllerFactory;
+        private Mock<IHttpClientFactory> httpClientFactory;
         private Mock<ILogger> logger;
         private MockHttpMessageHandler mockHttp;
 
         [SetUp]
         public void Setup()
         {
-            this.httpControllerFactory = new();
+            this.httpClientFactory = new();
             this.logger = new();
             this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
             this.mockHttp = new();
-            this.httpControllerFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
+            this.httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
         }
 
         [Test]
         public void Constructor_should_throw_exception_when_logger_null()
         {
-            var action = () => new ReteOrgRssFeed(null!, this.httpControllerFactory.Object);
+            var action = () => new ReteOrgRssFeed(null!, this.httpClientFactory.Object);
             action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
         }
 
         [Test]
         public void Constructor_should_throw_exception_when_logger_createScope_null()
         {
-            var action = () => new ReteOrgRssFeed(new Mock<ILogger>().Object, this.httpControllerFactory.Object);
+            var action = () => new ReteOrgRssFeed(new Mock<ILogger>().Object, this.httpClientFactory.Object);
             action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
         }
 
@@ -83,6 +83,6 @@ namespace LostFilmTV.Client.Tests.RssFeed
             result.Should().BeEmpty();
         }
 
-        private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpControllerFactory.Object);
+        private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object);
     }
 }

@@ -30,6 +30,7 @@ namespace LostFilmMonitoring.DAO.Azure
     {
         private readonly BlobServiceClient blobServiceClient;
         private readonly ILogger logger;
+        private readonly CancellationToken cancellationToken = CancellationToken.None;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureBlobStorageClient"/> class.
@@ -232,7 +233,7 @@ namespace LostFilmMonitoring.DAO.Azure
             try
             {
                 MemoryStream ms = new MemoryStream();
-                await blobClient.DownloadToAsync(ms);
+                await blobClient.DownloadToAsync(ms, this.cancellationToken);
                 ms.Position = 0;
                 return ms;
             }
