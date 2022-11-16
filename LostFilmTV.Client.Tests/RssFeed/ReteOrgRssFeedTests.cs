@@ -83,6 +83,50 @@ namespace LostFilmTV.Client.Tests.RssFeed
             result.Should().BeEmpty();
         }
 
+        [Test]
+        public async Task LoadFeedItemsAsync_should_return_empty_when_TaskCanceledException()
+        {
+            mockHttp
+                .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
+                .Throw(new TaskCanceledException());
+            var result = await GetService().LoadFeedItemsAsync();
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task LoadFeedItemsAsync_should_return_empty_when_IOException()
+        {
+            mockHttp
+                .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
+                .Throw(new IOException());
+            var result = await GetService().LoadFeedItemsAsync();
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task LoadFeedItemsAsync_should_return_empty_when_Exception()
+        {
+            mockHttp
+                .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
+                .Throw(new Exception());
+            var result = await GetService().LoadFeedItemsAsync();
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task LoadFeedItemsAsync_should_return_empty_when_rss_broken()
+        {
+            mockHttp
+                .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
+                .Respond("application/xml", "BROKEN RSS DATA");
+            var result = await GetService().LoadFeedItemsAsync();
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
         private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object);
     }
 }
