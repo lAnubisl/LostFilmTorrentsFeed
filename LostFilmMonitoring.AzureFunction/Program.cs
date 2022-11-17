@@ -33,9 +33,9 @@ namespace LostFilmMonitoring.AzureFunction
             var storageAccountConnectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString") ?? throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
 
             services.AddLogging();
-            services.AddSingleton<Common.ILogger, BLL.Logger>();
-            services.AddSingleton<BlobServiceClient>(r => new BlobServiceClient(storageAccountConnectionString));
-            services.AddSingleton<TableServiceClient>(r => new TableServiceClient(storageAccountConnectionString));
+            services.AddSingleton<ILogger, Logger>();
+            services.AddSingleton(r => new BlobServiceClient(storageAccountConnectionString));
+            services.AddSingleton(r => new TableServiceClient(storageAccountConnectionString));
             services.AddSingleton<IAzureBlobStorageClient, AzureBlobStorageClient>();
             services.AddSingleton<IModelPersister, AzureBlobStorageModelPersister>();
             services.AddSingleton<IDal, Dal>();
@@ -46,6 +46,7 @@ namespace LostFilmMonitoring.AzureFunction
             services.AddSingleton<IEpisodeDao, AzureTableStorageEpisodeDao>();
             services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
             services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
+            services.AddSingleton<IRssFeed, LostFilmRssFeed>();
             services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
             services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
             services.AddSingleton<IConfiguration, Configuration>();
@@ -53,8 +54,22 @@ namespace LostFilmMonitoring.AzureFunction
             services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
             services.AddSingleton<ILostFilmClient, LostFilmClient>();
             services.AddHttpClient();
-            services.AddTransient<UpdateFeedsCommand>();
-            services.AddTransient<DownloadCoverImagesCommand>();
+            services.AddTransient(sp =>
+                new UpdateFeedsCommand(
+                    sp.GetService<ILogger>() !,
+                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
+                    sp.GetService<IDal>() !,
+                    sp.GetService<IConfiguration>() !,
+                    sp.GetService<IModelPersister>() !,
+                    sp.GetService<ILostFilmClient>() !));
+            services.AddTransient(sp =>
+                new DownloadCoverImagesCommand(
+                    sp.GetService<ILogger>() !,
+                    sp.GetService<IFileSystem>() !,
+                    sp.GetService<IConfiguration>() !,
+                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(LostFilmRssFeed))) !,
+                    sp.GetService<ISeriesDao>() !,
+                    sp.GetService<ILostFilmClient>() !));
             services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
             services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
             services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();

@@ -24,6 +24,7 @@
 #pragma warning disable SA1200 // Using directives should be placed correctly
 global using System;
 global using System.IO;
+global using System.Linq;
 global using System.Net;
 global using System.Text.Json;
 global using System.Threading.Tasks;
@@ -47,5 +48,4 @@ global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
-
 #pragma warning restore SA1200 // Using directives should be placed correctly
