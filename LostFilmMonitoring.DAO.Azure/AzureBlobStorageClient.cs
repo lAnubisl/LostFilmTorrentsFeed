@@ -196,7 +196,7 @@ namespace LostFilmMonitoring.DAO.Azure
         {
             var blobClient = this.GetBlobClient(containerName, fileName);
 
-            if (content.Position != 0 && content.CanSeek)
+            if (content.CanSeek && content.Position != 0)
             {
                 content.Position = 0;
             }
