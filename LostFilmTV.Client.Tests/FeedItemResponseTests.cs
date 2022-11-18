@@ -21,6 +21,8 @@
 // SOFTWARE.
 // </copyright>
 
+using System.Linq;
+
 namespace LostFilmTV.Client.Tests
 {
     [TestFixture]
@@ -305,6 +307,41 @@ namespace LostFilmTV.Client.Tests
                 Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
                 Assert.That(item.PublishDateParsed, Is.EqualTo(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc)));
             });
+        }
+
+        [Test]
+        public void FeedItemResponse_should_be_sortable()
+        {
+            var items = new SortedSet<FeedItemResponse>(
+                new[]
+                {
+                    new FeedItemResponse()
+                    {
+                        Title = "Title1",
+                        Link = "http://any.com",
+                        PublishDate = "2022-05-09T00:00:00Z",
+                        PublishDateParsed = new DateTime(2022, 5, 9, 00, 0, 0, DateTimeKind.Utc),
+                    },
+                    new FeedItemResponse()
+                    {
+                        Title = "Title2",
+                        Link = "http://any.com",
+                        PublishDate = "2022-05-08T00:00:00Z",
+                        PublishDateParsed = new DateTime(2022, 5, 8, 00, 0, 0, DateTimeKind.Utc),
+                    },
+                    new FeedItemResponse()
+                    {
+                        Title = "Title3",
+                        Link = "http://any.com",
+                        PublishDate = "2022-05-10T00:00:00Z",
+                        PublishDateParsed = new DateTime(2022, 5, 10, 00, 0, 0, DateTimeKind.Utc),
+                    },
+                });
+            var arr = items.ToArray();
+            Assert.That(arr[0].Title, Is.EqualTo("Title3"));
+            Assert.That(arr[1].Title, Is.EqualTo("Title1"));
+            Assert.That(arr[2].Title, Is.EqualTo("Title2"));
+
         }
     }
 }
