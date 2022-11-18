@@ -49,7 +49,7 @@ namespace LostFilmTV.Client
             using var client = this.httpClientFactory.CreateClient();
             try
             {
-                var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg");
+                var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg");
                 return stream;
             }
             catch (Exception ex)
