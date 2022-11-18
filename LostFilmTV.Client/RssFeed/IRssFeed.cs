@@ -32,6 +32,6 @@ namespace LostFilmTV.Client
         /// Get RSS feed items.
         /// </summary>
         /// <returns>Awaitable task with RSS feed items.</returns>
-        Task<SortedSet<FeedItemResponse>> LoadFeedItemsAsync();
+        Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync();
     }
 }

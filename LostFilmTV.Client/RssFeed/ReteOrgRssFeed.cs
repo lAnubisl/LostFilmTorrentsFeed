@@ -44,7 +44,7 @@ namespace LostFilmTV.Client.RssFeed
         /// Get FeedItemResponse from n.retre.org.
         /// </summary>
         /// <returns>Set of FeedItemResponse.</returns>
-        public async Task<SortedSet<FeedItemResponse>> LoadFeedItemsAsync()
+        public async Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync()
         {
             this.Logger.Info($"Call: {nameof(this.LoadFeedItemsAsync)}()");
             string rss;

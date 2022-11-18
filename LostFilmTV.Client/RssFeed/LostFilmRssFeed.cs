@@ -44,7 +44,7 @@ namespace LostFilmTV.Client.RssFeed
         /// Reads Feed items.
         /// </summary>
         /// <returns>Feed items.</returns>
-        public async Task<SortedSet<FeedItemResponse>> LoadFeedItemsAsync()
+        public async Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync()
         {
             var requestHeaders = new Dictionary<string, string>
             {

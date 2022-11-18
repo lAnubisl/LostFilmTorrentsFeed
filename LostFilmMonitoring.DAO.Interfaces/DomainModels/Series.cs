@@ -137,7 +137,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         public int? QSDEpisodeNumber { get; private set; }
 
         /// <summary>
-        /// Gets LostFilm Id.
+        /// Gets or sets LostFilm Id.
         /// </summary>
         public int? LostFilmId { get; set; }
 

@@ -338,10 +338,12 @@ namespace LostFilmTV.Client.Tests
                     },
                 });
             var arr = items.ToArray();
-            Assert.That(arr[0].Title, Is.EqualTo("Title3"));
-            Assert.That(arr[1].Title, Is.EqualTo("Title1"));
-            Assert.That(arr[2].Title, Is.EqualTo("Title2"));
-
+            Assert.Multiple(() =>
+            {
+                Assert.That(arr[0].Title, Is.EqualTo("Title3"));
+                Assert.That(arr[1].Title, Is.EqualTo("Title1"));
+                Assert.That(arr[2].Title, Is.EqualTo("Title2"));
+            });
         }
     }
 }

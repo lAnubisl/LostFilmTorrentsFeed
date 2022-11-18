@@ -70,11 +70,11 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                     entity.SeasonNumber == seasonNumber &&
                     entity.EpisodeNumber == episodeNumber;
 
-            tableClient.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>(new EpisodeTableEntity[0]));
+            tableClient.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>(Array.Empty<EpisodeTableEntity>()));
             await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality);
             tableClient.Verify(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default), Times.Once);
         }
-
+        
         protected override AzureTableStorageEpisodeDao GetDao()
             => new(serviceClient.Object, new ConsoleLogger("Tests"));
     }

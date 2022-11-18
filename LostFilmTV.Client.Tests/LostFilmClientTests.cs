@@ -87,8 +87,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var resultStream = await client.DownloadImageAsync(lostFilmId);
-
-            Assert.IsNull(resultStream);
+            resultStream.Should().BeNull();
         }
 
         [Test]
@@ -102,7 +101,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -116,7 +115,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -130,7 +129,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -143,7 +142,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         private static byte[] ReadFully(Stream input)

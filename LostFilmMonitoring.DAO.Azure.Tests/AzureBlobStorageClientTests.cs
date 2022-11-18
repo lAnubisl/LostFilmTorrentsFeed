@@ -133,7 +133,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
 
             var azureBlobStorageClient = GetClient();
             var result = await azureBlobStorageClient.DownloadAsync(containerName, dirName, blobName);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                 .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
             var azureBlobStorageClient = GetClient();
             var result = await azureBlobStorageClient.DownloadAsync(containerName, blobName);
-            Assert.IsNull(result);
+            result.Should().BeNull();
         }
 
         [Test]
@@ -283,7 +283,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
 
         private static byte[] ReadFully(Stream? input)
         {
-            if (input == null) return new byte[0];
+            if (input == null) return Array.Empty<byte>();
             byte[] buffer = new byte[16 * 1024];
             using MemoryStream ms = new MemoryStream();
             int read;
