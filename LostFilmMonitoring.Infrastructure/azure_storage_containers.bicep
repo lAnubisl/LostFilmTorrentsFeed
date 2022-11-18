@@ -32,7 +32,7 @@ resource storageAccountImagesContainer 'Microsoft.Storage/storageAccounts/blobSe
     }
     defaultEncryptionScope: '$account-encryption-key'
     denyEncryptionScopeOverride: false
-    publicAccess: 'None'
+    publicAccess: 'Container'
   }
 }
 
@@ -44,7 +44,7 @@ resource storageAccountImagesModelsContainer 'Microsoft.Storage/storageAccounts/
     }
     defaultEncryptionScope: '$account-encryption-key'
     denyEncryptionScopeOverride: false
-    publicAccess: 'None'
+    publicAccess: 'Container'
   }
 }
 
@@ -56,7 +56,7 @@ resource storageAccountRssFeedsContainer 'Microsoft.Storage/storageAccounts/blob
     }
     defaultEncryptionScope: '$account-encryption-key'
     denyEncryptionScopeOverride: false
-    publicAccess: 'None'
+    publicAccess: 'Container'
   }
 }
 
@@ -68,6 +68,6 @@ resource storageAccountUserTorrentsContainer 'Microsoft.Storage/storageAccounts/
     }
     defaultEncryptionScope: '$account-encryption-key'
     denyEncryptionScopeOverride: false
-    publicAccess: 'None'
+    publicAccess: 'Container'
   }
 }
