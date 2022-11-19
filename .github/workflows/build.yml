@@ -57,16 +57,10 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: 'Build'
-        shell: bash
+      - name: 'Build and run unit tests'
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          popd
-
-      - name: 'Run unit tests'
-        run: |
-          dotnet-coverage collect 'dotnet test -c Release --no-build --no-restore' -f xml -o 'coverage.xml'
+          dotnet build --configuration Release
+          dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
         # dotnet test --no-build --no-restore --collect "Code Coverage"
         # dotnet dotcover test --dcReportType=HTML
 
@@ -75,6 +69,13 @@ jobs:
 
       - name: 'End Sonar scan'
         run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+
+      - name: 'Publish'
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet build --configuration Release --output ./output
+          popd
 
       - name: 'Deploy'
         uses: Azure/functions-action@v1
