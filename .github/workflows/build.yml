@@ -66,7 +66,7 @@ jobs:
 
       - name: 'Run unit tests'
         run: |
-          dotnet-coverage collect 'dotnet test --no-build --no-restore' -f xml -o 'coverage.xml'
+          dotnet-coverage collect 'dotnet test -c Release --no-build --no-restore' -f xml -o 'coverage.xml'
         # dotnet test --no-build --no-restore --collect "Code Coverage"
         # dotnet dotcover test --dcReportType=HTML
 
