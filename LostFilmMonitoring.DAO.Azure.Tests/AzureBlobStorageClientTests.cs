@@ -282,7 +282,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             exception.Which.ParamName.Should().Be("content");
         }
 
-        private AzureBlobStorageClient GetClient() => new(blobServiceClient.Object, new ConsoleLogger("tests"));
+        private AzureBlobStorageClient GetClient() => new(blobServiceClient.Object, this.logger.Object);
 
         private static byte[] ReadFully(Stream? input)
         {

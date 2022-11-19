@@ -53,6 +53,6 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
 
         protected AzureBlobStorageFileSystem GetServide()
-            => new(azureBlobStorageClientMock.Object, new ConsoleLogger("Tests"));
+            => new(this.azureBlobStorageClientMock.Object, this.logger.Object);
     }
 }

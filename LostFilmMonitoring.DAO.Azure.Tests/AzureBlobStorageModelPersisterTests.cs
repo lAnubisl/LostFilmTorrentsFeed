@@ -42,7 +42,6 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             client
                 .Setup(x => x.DownloadStringAsync("models", "ReteOrgItems.json"))
                 .ReturnsAsync(GetFile("ReteOrgItems.json"));
-            var logger = new ConsoleLogger("test");
             var persister = new AzureBlobStorageModelPersister(client.Object, this.logger.Object);
             var model = await persister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems");
             Assert.That(model, Is.Not.Null);
