@@ -29,13 +29,16 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     {
         protected Mock<TableServiceClient> serviceClient;
         protected Mock<TableClient> tableClient;
+        protected Mock<Common.ILogger> logger;
 
         [SetUp]
         public void SetUp()
         {
-            serviceClient = new Mock<TableServiceClient>();
-            tableClient = new Mock<TableClient>();
-            serviceClient
+            this.logger = new();
+            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+            this.serviceClient = new Mock<TableServiceClient>();
+            this.tableClient = new Mock<TableClient>();
+            this.serviceClient
                 .Setup(x => x.GetTableClient(It.IsAny<string>()))
                 .Returns(tableClient.Object);
         }

@@ -27,6 +27,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     public class AzureBlobStorageFeedDAOTests
     {
         private Mock<IAzureBlobStorageClient> azureBlobStorageClient;
+        private Mock<Common.ILogger> logger;
         private string baseFeed;
 
         [SetUp]
@@ -37,6 +38,8 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             azureBlobStorageClient
                 .Setup(x => x.DownloadStringAsync("rssfeeds", "baseFeed.xml"))
                 .ReturnsAsync(this.baseFeed);
+            this.logger = new();
+            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         }
 
         [Test]
@@ -56,7 +59,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
 
         private AzureBlobStorageFeedDao GetDao()
-            => new(azureBlobStorageClient.Object, new ConsoleLogger("Tests"));
+            => new(azureBlobStorageClient.Object, logger.Object);
 
         private static string GetFile(string fileName)
         {

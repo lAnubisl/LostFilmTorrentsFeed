@@ -68,7 +68,7 @@ namespace LostFilmTV.Client.Tests
             var lostFilmId = "ID";
             var testString = "Test Data";
             mockHttp
-                .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg")
+                .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg")
                 .Respond("image/jpeg", new MemoryStream(Encoding.UTF8.GetBytes(testString)));
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
@@ -82,7 +82,7 @@ namespace LostFilmTV.Client.Tests
         {
             var lostFilmId = "ID";
             mockHttp
-                .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/t_shmoster_s1.jpg")
+                .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg")
                 .Throw(new HttpRequestException());
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);

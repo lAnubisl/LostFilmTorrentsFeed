@@ -149,6 +149,6 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         }
 
         protected override AzureTableStorageSubscriptionDao GetDao()
-            => new(serviceClient.Object, new ConsoleLogger("Tests"));
+            => new(serviceClient.Object, this.logger.Object);
     }
 }

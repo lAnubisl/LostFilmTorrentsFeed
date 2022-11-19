@@ -27,11 +27,14 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     public class AzureBlobStorageFileSystemTests
     {
         private Mock<IAzureBlobStorageClient> azureBlobStorageClientMock;
+        private Mock<Common.ILogger> logger;
 
         [SetUp]
         public void Setup()
         {
-            azureBlobStorageClientMock = new();
+            this.azureBlobStorageClientMock = new();
+            this.logger = new();
+            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         }
 
         [Test]

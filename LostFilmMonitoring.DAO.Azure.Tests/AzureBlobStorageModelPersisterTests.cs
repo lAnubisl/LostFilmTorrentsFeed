@@ -26,6 +26,15 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     [ExcludeFromCodeCoverage]
     public class AzureBlobStorageModelPersisterTests
     {
+        private Mock<Common.ILogger> logger;
+
+        [SetUp]
+        public void Setup()
+        {
+            this.logger = new();
+            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+        }
+        
         [Test]
         public async Task LoadAsync_should_deserialize_json_file()
         {
@@ -34,7 +43,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                 .Setup(x => x.DownloadStringAsync("models", "ReteOrgItems.json"))
                 .ReturnsAsync(GetFile("ReteOrgItems.json"));
             var logger = new ConsoleLogger("test");
-            var persister = new AzureBlobStorageModelPersister(client.Object, logger);
+            var persister = new AzureBlobStorageModelPersister(client.Object, this.logger.Object);
             var model = await persister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems");
             Assert.That(model, Is.Not.Null);
         }

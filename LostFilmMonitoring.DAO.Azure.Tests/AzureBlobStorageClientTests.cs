@@ -32,6 +32,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         Mock<BlobClient> blobClient;
         Mock<BlobContainerClient> blobContainerClient;
         Mock<BlobServiceClient> blobServiceClient;
+        private Mock<Common.ILogger> logger;
 
         private readonly string containerName = "TestContatinerName";
         private readonly string blobName = "TestBlobName";
@@ -43,16 +44,18 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             this.blobClient = new Mock<BlobClient>();
             this.blobContainerClient = new Mock<BlobContainerClient>();
             this.blobServiceClient = new Mock<BlobServiceClient>();
-            blobServiceClient
+            this.logger = new();
+            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+            this.blobServiceClient
                 .Setup(x => x.GetBlobContainerClient(containerName))
                 .Returns(blobContainerClient.Object);
-            blobContainerClient
+            this.blobContainerClient
                 .Setup(x => x.GetBlobClient(blobName))
                 .Returns(blobClient.Object);
-            blobContainerClient
+            this.blobContainerClient
                 .Setup(x => x.GetBlobClient($"{dirName}/{blobName}"))
                 .Returns(blobClient.Object);
-            blobClient
+            this.blobClient
                 .Setup(x => x.GetPropertiesAsync(null, default))
                 .ReturnsAsync(new TestResponse<BlobProperties>(new BlobProperties()));
         }
