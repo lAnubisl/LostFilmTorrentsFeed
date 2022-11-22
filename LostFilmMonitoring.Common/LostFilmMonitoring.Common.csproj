@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\DEV\LostFilmTorrentsFeed\LostFilmMonitoring.Common\LostFilmMonitoring.Common.xml</DocumentationFile>
+    <DocumentationFile>LostFilmMonitoring.Common.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />
