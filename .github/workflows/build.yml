@@ -33,7 +33,7 @@ jobs:
       - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}  
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: 'Install tools'
         run: |
           dotnet tool install --global dotnet-sonarscanner
