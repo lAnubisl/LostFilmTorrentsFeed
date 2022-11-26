@@ -36,17 +36,19 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Install tools'
+      - name: 'Install dotnet-sonarscanner'
         run: |
           dotnet tool install --global dotnet-sonarscanner
+ 
+      - name: 'Install dotnet-coverage'
+        run: |
           dotnet tool install --global dotnet-coverage
-          # dotnet tool install --global JetBrains.dotCover.GlobalTool
 
       - name: 'Install DeepSource CLI'
         run: |
           curl https://deepsource.io/cli | sh
       
-      - name: 'Begin Sonar scan'
+      - name: 'SonarCloud Begin'
         run: |
           dotnet sonarscanner begin \
             /k:"lAnubisl_LostFilmTorrentsFeed" \
@@ -54,24 +56,24 @@ jobs:
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-        #   /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
 
-      - name: 'Init CodeQL'
+      - name: 'CodeQL Begin'
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
 
-      - name: 'Build and run unit tests'
+      - name: 'Build Solution'
         run: |
           dotnet build --configuration Release
-          dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
-        # dotnet test --no-build --no-restore --collect "Code Coverage"
-        # dotnet dotcover test --dcReportType=HTML
 
-      - name: 'Perform CodeQL Analysis'
+      - name: 'Run Unit Tests'
+        run: |
+          dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
+
+      - name: 'CodeQL End'
         uses: github/codeql-action/analyze@v2
 
-      - name: 'End Sonar scan'
+      - name: 'SonarCloud End'
         run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: 'Publish'
