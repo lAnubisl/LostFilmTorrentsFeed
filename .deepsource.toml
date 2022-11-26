@@ -8,9 +8,10 @@ enabled = true
 name = "javascript"
 enabled = true
 
-[[transformers]]
-name = "dotnet-format"
-enabled = true
+# Transformers are disabled because they are not good enough yet
+# [[transformers]]
+# name = "dotnet-format"
+# enabled = true
 
 [[analyzers]]
 name = "test-coverage"
