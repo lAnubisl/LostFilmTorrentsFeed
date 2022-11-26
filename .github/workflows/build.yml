@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
-    
+
 permissions:
   pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
@@ -41,6 +41,7 @@ jobs:
           dotnet tool install --global dotnet-sonarscanner
           dotnet tool install --global dotnet-coverage
         # dotnet tool install --global JetBrains.dotCover.GlobalTool
+          curl https://deepsource.io/cli | sh  # Install 'deepsource CLI'
 
       - name: 'Begin Sonar scan'
         run: |

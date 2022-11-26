@@ -7,3 +7,11 @@ enabled = true
 [[analyzers]]
 name = "javascript"
 enabled = true
+
+[[transformers]]
+name = "dotnet-format"
+enabled = true
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true
