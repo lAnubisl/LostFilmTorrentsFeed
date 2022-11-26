@@ -30,6 +30,6 @@ using LostFilmTV.Client.Response;
 global 
 using Microsoft.Extensions.Logging;
 using Moq;
-global 
+global
 global using NUnit.Framework;
-global 
+global

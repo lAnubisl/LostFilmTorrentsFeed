@@ -51,4 +51,4 @@ global
 using NUnit.Framework;
 global 
 using RichardSzalay.MockHttp;
-global 
+global
