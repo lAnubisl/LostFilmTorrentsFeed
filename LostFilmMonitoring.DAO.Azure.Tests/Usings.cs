@@ -26,6 +26,6 @@ global
 using LostFilmTV.Client.Response;
 global 
 using Moq;
-global 
+global
 global using NUnit.Framework;
-global 
+global
