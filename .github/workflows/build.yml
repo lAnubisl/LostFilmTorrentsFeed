@@ -30,19 +30,16 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v3
-
       - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
+          dotnet-version: ${{ env.DOTNET_VERSION }}  
       - name: 'Install tools'
         run: |
           dotnet tool install --global dotnet-sonarscanner
           dotnet tool install --global dotnet-coverage
         # dotnet tool install --global JetBrains.dotCover.GlobalTool
           curl https://deepsource.io/cli | sh  # Install 'deepsource CLI'
-
       - name: 'Begin Sonar scan'
         run: |
           dotnet sonarscanner begin \
@@ -52,32 +49,26 @@ jobs:
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
         #   /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
-
       - name: 'Init CodeQL'
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-
       - name: 'Build and run unit tests'
         run: |
           dotnet build --configuration Release
           dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
         # dotnet test --no-build --no-restore --collect "Code Coverage"
         # dotnet dotcover test --dcReportType=HTML
-
       - name: 'Perform CodeQL Analysis'
         uses: github/codeql-action/analyze@v2
-
       - name: 'End Sonar scan'
         run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
-
       - name: 'Publish'
         shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output
           popd
-
       - name: 'Deploy'
         uses: Azure/functions-action@v1
         id: fa
