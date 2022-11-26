@@ -56,20 +56,20 @@ namespace LostFilmMonitoring.AzureFunction
             services.AddHttpClient();
             services.AddTransient(sp =>
                 new UpdateFeedsCommand(
-                    sp.GetService<ILogger>() !,
-                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
-                    sp.GetService<IDal>() !,
-                    sp.GetService<IConfiguration>() !,
-                    sp.GetService<IModelPersister>() !,
-                    sp.GetService<ILostFilmClient>() !));
+                    sp.GetService<ILogger>()!,
+                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed)))!,
+                    sp.GetService<IDal>()!,
+                    sp.GetService<IConfiguration>()!,
+                    sp.GetService<IModelPersister>()!,
+                    sp.GetService<ILostFilmClient>()!));
             services.AddTransient(sp =>
                 new DownloadCoverImagesCommand(
-                    sp.GetService<ILogger>() !,
-                    sp.GetService<IFileSystem>() !,
-                    sp.GetService<IConfiguration>() !,
-                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(LostFilmRssFeed))) !,
-                    sp.GetService<ISeriesDao>() !,
-                    sp.GetService<ILostFilmClient>() !));
+                    sp.GetService<ILogger>()!,
+                    sp.GetService<IFileSystem>()!,
+                    sp.GetService<IConfiguration>()!,
+                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(LostFilmRssFeed)))!,
+                    sp.GetService<ISeriesDao>()!,
+                    sp.GetService<ILostFilmClient>()!));
             services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
             services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
             services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();

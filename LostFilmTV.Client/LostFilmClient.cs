@@ -102,7 +102,7 @@ namespace LostFilmTV.Client
             }
 
             response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string>? cd);
-            var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
+            var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1)..];
             if (fileName == null)
             {
                 this.logger.Error("Something wrong with 'Content-Disposition' header of the response.");

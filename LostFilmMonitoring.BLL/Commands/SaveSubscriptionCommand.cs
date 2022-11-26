@@ -33,7 +33,7 @@ namespace LostFilmMonitoring.BLL.Commands
         private readonly IModelPersister persister;
         private readonly ILogger logger;
         private readonly IDal dal;
-        private readonly object locker = new ();
+        private readonly object locker = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveSubscriptionCommand"/> class.

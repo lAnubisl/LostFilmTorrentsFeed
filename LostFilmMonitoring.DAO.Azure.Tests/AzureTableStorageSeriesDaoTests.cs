@@ -108,9 +108,9 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
         public async Task TaskAsync_should_return_records()
         {
             var values = new[]
-            { 
-                new SeriesTableEntity() { Name = "A" }, 
-                new SeriesTableEntity() { Name = "B" } 
+            {
+                new SeriesTableEntity() { Name = "A" },
+                new SeriesTableEntity() { Name = "B" }
             };
             var expected = new TestAsyncPageable<SeriesTableEntity>(values);
 
@@ -121,12 +121,12 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                     null as IEnumerable<string>,
                     default))
                 .Returns(expected);
-            
+
             var result = await GetDao().LoadAsync();
             Assert.That(
                 result != null &&
                 result.Length == 2 &&
-                result.Any(x => x.Name == "A") && 
+                result.Any(x => x.Name == "A") &&
                 result.Any(x => x.Name == "B")
             );
         }
@@ -143,7 +143,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
                 "link1080p");
             await GetDao().SaveAsync(series);
             tableClient.Verify(x => x.UpsertEntityAsync(
-                It.Is<SeriesTableEntity>(x => 
+                It.Is<SeriesTableEntity>(x =>
                     x.Name == series.Name
                     && x.LastEpisode == series.LastEpisode
                     && x.LastEpisodeName == series.LastEpisodeName

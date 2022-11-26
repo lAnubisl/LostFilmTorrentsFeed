@@ -27,7 +27,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     public class TestResponse<T> : Response<T>
     {
         private readonly T expectedObject;
-        
+
         public TestResponse(T expectedObject)
         {
             this.expectedObject = expectedObject;

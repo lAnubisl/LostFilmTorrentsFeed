@@ -100,7 +100,7 @@ namespace LostFilmMonitoring.BLL.Tests
             providerMock.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns("#1{0},#2{0},#3{0}");
             providerMock.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
             providerMock.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
-            
+
             var action = () => GetService();
             action.Should().Throw<Exception>().WithMessage("Environment variable 'BASEURL' is not defined.");
         }
@@ -147,6 +147,6 @@ namespace LostFilmMonitoring.BLL.Tests
             action.Should().Throw<Exception>().WithMessage("Environment variable 'TORRENTTRACKERS' is not defined.");
         }
 
-        private Configuration GetService() => new (providerMock.Object);
+        private Configuration GetService() => new(providerMock.Object);
     }
 }

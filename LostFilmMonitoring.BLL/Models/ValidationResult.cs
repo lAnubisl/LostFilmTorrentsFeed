@@ -58,7 +58,7 @@ namespace LostFilmMonitoring.BLL.Models
         /// <summary>
         /// Gets <see cref="ValidationResult"/> without any errors.
         /// </summary>
-        internal static ValidationResult Ok => new ();
+        internal static ValidationResult Ok => new();
 
         /// <summary>
         /// Gets an instance of <see cref="ValidationResult"/> with predefined error message.
@@ -68,7 +68,7 @@ namespace LostFilmMonitoring.BLL.Models
         /// <param name="objects">Parameters for string.format.</param>
         /// <returns>Instance of <see cref="ValidationResult"/>.</returns>
         internal static ValidationResult Fail(string property, string message, params string[] objects)
-            => new (
+            => new(
                 property,
                 string.Format(message, new string[] { property }
                 .Union(objects ?? Array.Empty<string>()).ToArray()));
@@ -78,7 +78,7 @@ namespace LostFilmMonitoring.BLL.Models
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Instance of <see cref="ValidationResult"/>.</returns>
-        internal static ValidationResult Fail(string message) => new ("model", message);
+        internal static ValidationResult Fail(string message) => new("model", message);
 
         /// <summary>
         /// Sets validation error to <see cref="ValidationResult"/>.

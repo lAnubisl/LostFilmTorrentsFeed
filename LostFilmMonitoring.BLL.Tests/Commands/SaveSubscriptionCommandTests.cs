@@ -174,7 +174,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             var request = new EditSubscriptionRequestModel
             {
                 UserId = "user#123",
-                Items = new []
+                Items = new[]
                 {
                     new SubscriptionItem
                     {
@@ -250,7 +250,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             // do delete old torrent file
             this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(request.UserId, "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4.torrent"), Times.Once);
         }
-        
+
         private static Stream GetTorrent(string torrentId)
             => Assembly.GetExecutingAssembly().GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent")!;
 
@@ -305,27 +305,27 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
 
         private void SetupStorage()
         {
-            foreach(var kvp in usersCollection)
+            foreach (var kvp in usersCollection)
             {
                 this.userDao.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
             }
 
-            foreach(var kvp in subscriptionsCollection)
+            foreach (var kvp in subscriptionsCollection)
             {
                 this.subscriptionDAO.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
             }
 
-            foreach(var kvp in seriesCollection)
+            foreach (var kvp in seriesCollection)
             {
                 this.seriesDAO.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
             }
 
-            foreach(var kvp in torrentFileCollection)
+            foreach (var kvp in torrentFileCollection)
             {
                 this.torrentFileDAO.Setup(x => x.LoadBaseFileAsync(kvp.Key)).ReturnsAsync(kvp.Value);
             }
 
-            foreach(var kvp in feedItemsCollection)
+            foreach (var kvp in feedItemsCollection)
             {
                 this.feedDAO.Setup(x => x.LoadUserFeedAsync(kvp.Key)).ReturnsAsync(kvp.Value);
             }
@@ -341,6 +341,6 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
         }
 
         private SaveSubscriptionCommand GetCommand()
-            => new (this.logger.Object, this.validator.Object, this.dal.Object, this.configuration.Object, this.persister.Object);
+            => new(this.logger.Object, this.validator.Object, this.dal.Object, this.configuration.Object, this.persister.Object);
     }
 }

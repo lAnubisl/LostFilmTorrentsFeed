@@ -82,7 +82,7 @@ namespace LostFilmMonitoring.BLL.Tests.Validation
         [Test]
         public async Task ValidateAsync_should_return_fail_when_items_is_null()
         {
-            var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId"});
+            var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId" });
             result.IsValid.Should().BeFalse();
             result.Errors.Should().HaveCount(1);
             result.Errors.First().Key.Should().Be("Items");
@@ -123,7 +123,7 @@ namespace LostFilmMonitoring.BLL.Tests.Validation
         [Test]
         public async Task ValidateAsync_should_return_fail_when_item_userId_is_invalid()
         {
-            var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = new SubscriptionItem[0]});
+            var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = new SubscriptionItem[0] });
             result.IsValid.Should().BeFalse();
             result.Errors.Should().HaveCount(1);
             result.Errors.First().Key.Should().Be("UserId");

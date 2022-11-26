@@ -28,13 +28,13 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
     {
         private IEnumerable<T> values;
         private IEnumerator<T> enumerator;
-        
+
         public TestAsyncEnumerator(T[] values)
         {
             this.values = values;
             this.enumerator = this.values.GetEnumerator();
         }
-        
+
         public T Current => enumerator.Current;
 
         public ValueTask DisposeAsync()

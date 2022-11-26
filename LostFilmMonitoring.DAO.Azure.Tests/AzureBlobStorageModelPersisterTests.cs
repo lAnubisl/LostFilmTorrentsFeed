@@ -34,7 +34,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             this.logger = new();
             this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         }
-        
+
         [Test]
         public async Task LoadAsync_should_deserialize_json_file()
         {
@@ -46,7 +46,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             var model = await persister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems");
             Assert.That(model, Is.Not.Null);
         }
-        
+
         private static string GetFile(string fileName)
         {
             var assembly = Assembly.GetExecutingAssembly();
