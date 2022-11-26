@@ -40,9 +40,12 @@ jobs:
         run: |
           dotnet tool install --global dotnet-sonarscanner
           dotnet tool install --global dotnet-coverage
-          curl https://deepsource.io/cli | sh  # Install 'deepsource CLI'
           # dotnet tool install --global JetBrains.dotCover.GlobalTool
 
+      - name: 'Install DeepSource CLI'
+        run: |
+          curl https://deepsource.io/cli | sh
+      
       - name: 'Begin Sonar scan'
         run: |
           dotnet sonarscanner begin \
