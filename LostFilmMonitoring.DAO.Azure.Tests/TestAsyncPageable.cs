@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]
-    public class TestAsyncPageable<T> : AsyncPageable<T> where T: notnull
+    public class TestAsyncPageable<T> : AsyncPageable<T> where T : notnull
     {
         private readonly T[] values;
 

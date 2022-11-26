@@ -48,7 +48,7 @@ namespace LostFilmTV.Client
                 return null;
             }
 
-            return reteOrgUrl[(index + marker.Length) ..];
+            return reteOrgUrl[(index + marker.Length)..];
         }
     }
 }

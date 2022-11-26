@@ -76,7 +76,7 @@ namespace LostFilmTV.Client.RssFeed
             var escapedAmpIndex = rss.IndexOf("&amp;");
             if (ampIndex == escapedAmpIndex)
             {
-                return rss[.. (ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1) ..]);
+                return rss[..(ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1)..]);
             }
 
             rss = rss.Insert(ampIndex + 1, "amp;");

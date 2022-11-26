@@ -203,8 +203,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             var command = CreateCommand();
             SetupPersister_LoadAsync(null);
 
-            var rssItems = new SortedSet<FeedItemResponse>() 
-            { 
+            var rssItems = new SortedSet<FeedItemResponse>()
+            {
                 new FeedItemResponse(XElement.Parse(
                 @"<item>
                     <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
@@ -237,11 +237,11 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             SetupTorrentFile("51439");
             SetupTorrentFile("51438");
             SetupTorrentFile("51437");
-            
+
             await command.ExecuteAsync();
 
             // Verify series is saved
-            this.seriesDAO.Verify(x => x.SaveAsync(It.Is<Series>(x => 
+            this.seriesDAO.Verify(x => x.SaveAsync(It.Is<Series>(x =>
                 x.Name == "Флэш (The Flash)"
              && x.LastEpisodeName == "Флэш (The Flash). Падение смерти (S08E13) "
              && x.LastEpisode == new DateTime(2022, 5, 21, 20, 58, 00, DateTimeKind.Utc)
@@ -298,7 +298,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             SetupTorrentFile("51439");
             SetupTorrentFile("51438");
             SetupTorrentFile("51437");
-            
+
             await command.ExecuteAsync();
 
             // Verify series is saved
@@ -366,7 +366,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
             SetupTorrentFile("51439");
-            
+
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
             this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
             this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
@@ -400,7 +400,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
             SetupTorrentFile("51439");
-            
+
             this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
             this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
 
@@ -475,7 +475,7 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
             });
 
             SetupTorrentFile("51439");
-            
+
             await command.ExecuteAsync();
             this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Once);
@@ -528,8 +528,8 @@ namespace LostFilmMonitoring.BLL.Tests.Commands
                 new FeedItem() { PublishDateParsed = new DateTime(2021, 04, 01) }, // #13
                 new FeedItem() { PublishDateParsed = new DateTime(2021, 03, 01) }, // #14
                 new FeedItem() {                                                   // #15
-                    PublishDateParsed = new DateTime(2021, 02, 01), 
-                    Title = "Андор (Andor). Выход только один (S01E10) [1080p]", 
+                    PublishDateParsed = new DateTime(2021, 02, 01),
+                    Title = "Андор (Andor). Выход только один (S01E10) [1080p]",
                     Link = $"https://example.com/usertorrents/{userId}/{torrentFileName}" },
             });
 

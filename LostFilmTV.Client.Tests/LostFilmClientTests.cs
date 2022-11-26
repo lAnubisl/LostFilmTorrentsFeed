@@ -73,7 +73,7 @@ namespace LostFilmTV.Client.Tests
 
             var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
             var actualString = Encoding.UTF8.GetString(ReadFully(await client.DownloadImageAsync(lostFilmId)));
-            
+
             Assert.That(string.Equals(testString, actualString));
         }
 

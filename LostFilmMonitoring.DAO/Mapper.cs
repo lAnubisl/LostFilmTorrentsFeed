@@ -29,7 +29,7 @@ namespace LostFilmMonitoring.DAO.Sql
     internal static class Mapper
     {
         internal static Series Map(Interfaces.DomainModels.Series series)
-            => new ()
+            => new()
             {
                 LastEpisode = series.LastEpisode,
                 LastEpisodeName = series.LastEpisodeName,
@@ -50,7 +50,7 @@ namespace LostFilmMonitoring.DAO.Sql
                 null, null, null, null, null, null);
 
         internal static Interfaces.DomainModels.Subscription Map(Subscription s)
-            => new (s.SeriesName, s.Quality);
+            => new(s.SeriesName, s.Quality);
 
         internal static Subscription Map(Interfaces.DomainModels.Subscription subscription, Guid userId)
         {

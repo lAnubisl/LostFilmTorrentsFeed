@@ -31,7 +31,7 @@ namespace LostFilmMonitoring.Common
         /// <summary>
         /// Gets default serialization options.
         /// </summary>
-        public static readonly JsonSerializerOptions Default = new ()
+        public static readonly JsonSerializerOptions Default = new()
         {
             Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
             WriteIndented = true,

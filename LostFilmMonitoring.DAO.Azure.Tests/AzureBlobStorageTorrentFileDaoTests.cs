@@ -69,7 +69,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             Assert.NotNull(result);
             Assert.That(string.Equals(result.FileName, $"{torrentId}.torrent"));
         }
-        
+
         [Test]
         public async Task SaveBaseFileAsync_should_call_UploadAsync()
         {

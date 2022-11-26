@@ -107,7 +107,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
                 return null;
             }
 
-            var subStr = this.Link[(index + userId.Length) ..];
+            var subStr = this.Link[(index + userId.Length)..];
             if (subStr.Length == 0)
             {
                 return null;
@@ -177,7 +177,7 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels
         /// </summary>
         /// <returns>XElement.</returns>
         public XElement ToXElement()
-            => new (
+            => new(
                 "item",
                 new XElement("title", this.Title),
                 new XElement("link", this.Link),

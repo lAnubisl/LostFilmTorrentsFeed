@@ -74,7 +74,7 @@ namespace LostFilmMonitoring.DAO.Azure.Tests
             await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality);
             tableClient.Verify(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default), Times.Once);
         }
-        
+
         protected override AzureTableStorageEpisodeDao GetDao()
             => new(this.serviceClient.Object, this.logger.Object);
     }

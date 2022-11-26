@@ -22,18 +22,33 @@
 // </copyright>
 
 global using System;
-global using System.Collections.Generic;
-global using System.Diagnostics.CodeAnalysis;
-global using System.Xml.Linq;
-global using LostFilmTV.Client.Response;
-global using NUnit.Framework;
-global using System.Net.Http;
-global using LostFilmMonitoring.Common;
-global using LostFilmTV.Client.RssFeed;
-global using Moq;
-global using System.IO;
-global using System.Reflection;
-global using FluentAssertions;
-global using System.Threading.Tasks;
-global using RichardSzalay.MockHttp;
-global using System.Text;
+global 
+using System.Collections.Generic;
+global 
+using System.Diagnostics.CodeAnalysis;
+global 
+using System.IO;
+global 
+using System.Net.Http;
+global 
+using System.Reflection;
+global 
+using System.Text;
+using System.Threading.Tasks;
+global 
+using System.Xml.Linq;
+global 
+using FluentAssertions;
+global 
+using LostFilmMonitoring.Common;
+global 
+using LostFilmTV.Client.Response;
+global 
+using LostFilmTV.Client.RssFeed;
+global 
+using Moq;
+global 
+using NUnit.Framework;
+global 
+using RichardSzalay.MockHttp;
+global 

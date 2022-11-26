@@ -53,7 +53,7 @@ namespace LostFilmMonitoring.BLL.Models
             => items.Select(Map).ToArray();
 
         private static Subscription Map(SubscriptionItem s)
-            => new (
+            => new(
                 s.SeriesName ?? throw new InvalidDataException(nameof(Subscription.SeriesName)),
                 s.Quality ?? throw new InvalidDataException(nameof(Subscription.Quality)));
     }

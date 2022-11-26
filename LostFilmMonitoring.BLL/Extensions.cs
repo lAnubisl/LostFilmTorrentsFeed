@@ -56,7 +56,7 @@ namespace LostFilmMonitoring.BLL
         /// <param name="torrent">Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</param>
         /// <returns>Instance of <see cref="TorrentFile"/>.</returns>
         internal static TorrentFile ToTorrentFile(this BencodeNET.Torrents.Torrent torrent)
-            => new (torrent.DisplayNameUtf8 ?? torrent.DisplayName, torrent.ToStream());
+            => new(torrent.DisplayNameUtf8 ?? torrent.DisplayName, torrent.ToStream());
 
         /// <summary>
         /// Generate instance of <see cref="BencodeNET.Torrents.Torrent"/> from a <see cref="Stream"/>.

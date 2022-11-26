@@ -34,7 +34,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="e">Instance of <see cref="SubscriptionTableEntity"/>.</param>
         /// <returns>Instance of <see cref="Subscription"/>.</returns>
         internal static Subscription Map(SubscriptionTableEntity e)
-            => new (e.PartitionKey, e.Quality);
+            => new(e.PartitionKey, e.Quality);
 
         /// <summary>
         /// Map <see cref="Subscription"/> to <see cref="SubscriptionTableEntity"/>.
@@ -90,7 +90,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <returns>Instance of <see cref="EpisodeTableEntity"/>.</returns>
         internal static EpisodeTableEntity Map(Episode episode)
         {
-            return new ()
+            return new()
             {
                 PartitionKey = episode.SeriesName,
                 RowKey = episode.TorrentId,
@@ -108,7 +108,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="entity">Instance of <see cref="SeriesTableEntity"/>.</param>
         /// <returns>Instance of <see cref="Series"/>.</returns>
         internal static Series Map(SeriesTableEntity entity)
-            => new (
+            => new(
                 entity.Name,
                 entity.LastEpisode,
                 entity.LastEpisodeName,
@@ -129,7 +129,7 @@ namespace LostFilmMonitoring.DAO.Azure
         /// <param name="entity">Instance of <see cref="UserTableEntity"/>.</param>
         /// <returns>Instance of <see cref="User"/>.</returns>
         internal static User Map(UserTableEntity entity)
-            => new (entity.RowKey, entity.TrackerId);
+            => new(entity.RowKey, entity.TrackerId);
 
         /// <summary>
         /// Map <see cref="User"/> to <see cref="UserTableEntity"/>.
