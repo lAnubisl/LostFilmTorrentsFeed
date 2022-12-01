@@ -603,14 +603,30 @@
             <param name="property">Model property name.</param>
             <param name="message">Model property validation message.</param>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel">
+        <member name="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel">
             <summary>
             Represents information to be shown in home screen.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel.#ctor">
+        <member name="M:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel.#ctor(LostFilmMonitoring.DAO.Interfaces.DomainModels.Series)">
             <summary>
-            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel"/> class.
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel"/> class.
+            </summary>
+            <param name="series">Series.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel.Name">
+            <summary>
+            Gets or sets item name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel.ImageFileName">
+            <summary>
+            Gets or sets image file name.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel">
+            <summary>
+            Represents information to be shown in home screen.
             </summary>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel.#ctor(System.Collections.Generic.ICollection{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series})">
@@ -632,6 +648,11 @@
         <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel.OlderItems">
             <summary>
             Gets or sets episodes older than 7 days..
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel.Items">
+            <summary>
+            Gets or sets items to be shown in home screen.
             </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Quality">
