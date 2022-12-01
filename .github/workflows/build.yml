@@ -14,19 +14,9 @@ env:
   DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
 
 jobs:
-  setup-stage:
-    outputs:
-      environment_name: ${{ steps.setup-environment-name.outputs.environment_name }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Environment Name
-        id: setup-environment-name
-        run: echo "environment_name=${{ fromJSON('{"master":"Staging","release":"Production"}')[github.ref_name] }}" >> $GITHUB_OUTPUT
-
   build:
     name: 'Build'
     runs-on: ubuntu-latest
-    needs: setup-stage
     environment:
       name: ${{ needs.setup-stage.outputs.environment_name }}
     permissions:
