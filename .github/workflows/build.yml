@@ -17,8 +17,6 @@ jobs:
   build:
     name: 'Build'
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ needs.setup-stage.outputs.environment_name }}
     permissions:
       actions: read
       contents: read
@@ -88,7 +86,7 @@ jobs:
         with:
           name: 'azure-functionapp'
           path: |
-            '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+            './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
 
   deploy_to_staging:
     name: 'Deploy to Staging'
