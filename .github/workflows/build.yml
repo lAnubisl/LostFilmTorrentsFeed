@@ -72,7 +72,7 @@ jobs:
       - name: 'Store artifact'
         uses: actions/upload-artifact@v3
         with:
-          name: 'azure-functionapp'
+          name: azure-functionapp
           path: |
             publish
           if-no-files-found: error
@@ -84,23 +84,19 @@ jobs:
     needs: 'build'
     if: ${{ github.ref_name == 'master' || github.ref_name == 'release' }}
     environment: 'Staging'
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - name: 'Download artifact'
         uses: actions/download-artifact@v3
         with:
-          name: 'azure-functionapp'
-          path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          name: azure-functionapp
+          path: packageDir
  
       - name: 'Deploy'
         uses: Azure/functions-action@v1
         with:
           app-name: '${{ secrets.AZURE_FUNCTION_APP_NAME }}'
           slot-name: 'Production'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          package: packageDir
           publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PROFILE }}
 
   deploy_to_Production:
@@ -109,21 +105,17 @@ jobs:
     needs: 'deploy_to_staging'
     if: ${{ github.ref_name == 'master' || github.ref_name == 'release' }}
     environment: 'Production'
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
     steps:
       - name: 'Download artifact'
         uses: actions/download-artifact@v3
         with:
-          name: 'azure-functionapp'
-          path: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          name: azure-functionapp
+          path: packageDir
  
       - name: 'Deploy'
         uses: Azure/functions-action@v1
         with:
           app-name: '${{ secrets.AZURE_FUNCTION_APP_NAME }}'
           slot-name: 'Production'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          package: packageDir
           publish-profile: ${{ secrets.AZURE_FUNCTION_PUBLISH_PROFILE }}
