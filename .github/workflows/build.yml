@@ -74,7 +74,7 @@ jobs:
         with:
           name: 'azure-functionapp'
           path: |
-            'publish'
+            publish
           if-no-files-found: error
           retention-days: 5
 
