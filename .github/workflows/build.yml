@@ -1,21 +1,15 @@
-name: Build
+name: 'Build and Publish'
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   workflow_dispatch:
 
-permissions:
-  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
-
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'LostFilmMonitoring.AzureFunction' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
 
 jobs:
   build:
-    name: 'Build and Deploy'
+    name: 'Build'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -73,17 +67,16 @@ jobs:
       - name: 'Publish'
         shell: bash
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          popd
+          dotnet build LostFilmMonitoring.AzureFunction/LostFilmMonitoring.AzureFunction.csproj --configuration Release --output publish
 
       - name: 'Store artifact'
         uses: actions/upload-artifact@v3
         with:
           name: 'azure-functionapp'
           path: |
-            './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+            'publish'
           if-no-files-found: error
+          retention-days: 5
 
   deploy_to_staging:
     name: 'Deploy to Staging'
