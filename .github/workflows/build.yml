@@ -20,49 +20,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      # - name: 'Install dotnet-sonarscanner'
-      #   run: |
-      #     dotnet tool install --global dotnet-sonarscanner
- 
-      # - name: 'Install dotnet-coverage'
-      #   run: |
-      #     dotnet tool install --global dotnet-coverage
-
-      # - name: 'Install DeepSource CLI'
-      #   run: |
-      #     curl https://deepsource.io/cli | sh
-      
-      # - name: 'SonarCloud Begin'
-      #   run: |
-      #     dotnet sonarscanner begin \
-      #       /k:"lAnubisl_LostFilmTorrentsFeed" \
-      #       /o:"lanubisl" \
-      #       /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-      #       /d:sonar.host.url="https://sonarcloud.io" \
-      #       /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-
-      # - name: 'CodeQL Begin'
-      #   uses: github/codeql-action/init@v2
-      #   with:
-      #     languages: 'csharp'
-
-      # - name: 'Restore Solution Dependencies'
-      #   run: |
-      #     dotnet restore
-          
-      # - name: 'Build Solution'
-      #   run: |
-      #     dotnet build --configuration Release --no-restore
-
-      # - name: 'Run Unit Tests'
-      #   run: |
-      #     dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
-
-      # - name: 'CodeQL End'
-      #   uses: github/codeql-action/analyze@v2
-
-      # - name: 'SonarCloud End'
-      #   run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: 'Run Unit Tests'
+        run: |
+          dotnet test --configuration Release
 
       - name: 'Publish'
         shell: bash
