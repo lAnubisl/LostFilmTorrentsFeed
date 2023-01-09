@@ -34,7 +34,7 @@ namespace LostFilmMonitoring.BLL.Models.ViewModel
         /// <param name="series">Series.</param>
         public IndexViewModel(ICollection<Series> series)
         {
-            this.Items = series.OrderByDescending(s => s.LastEpisode).Take(12).Select(s => new IndexViewItemModel(s)).ToArray();
+            this.Items = series.OrderByDescending(s => s.LastEpisode).Select(s => new IndexViewItemModel(s)).ToArray();
             this.Last24HoursItems = Filter(series, s => s.LastEpisode >= DateTime.Now.AddHours(-24));
             this.Last7DaysItems = Filter(series, s => s.LastEpisode < DateTime.Now.AddHours(-24) && s.LastEpisode >= DateTime.Now.AddDays(-7));
             this.OlderItems = Filter(series, s => s.LastEpisode < DateTime.Now.AddDays(-7));
