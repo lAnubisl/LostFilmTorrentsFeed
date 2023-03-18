@@ -28,13 +28,12 @@ namespace LostFilmMonitoring.BLL.Commands
     /// </summary>
     public class DownloadCoverImagesCommand : ICommand
     {
-        private const string LostFilmIdRegex = "static\\.lostfilm\\.top\\/Images\\/(\\d+)\\/Posters\\/image\\.jpg";
         private readonly ILogger logger;
         private readonly IFileSystem fileSystem;
         private readonly IConfiguration configuration;
         private readonly ISeriesDao seriesDao;
-        private readonly IRssFeed rssFeed;
         private readonly ILostFilmClient lostFilmClient;
+        private readonly IDictionaryDao dictionaryDao;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DownloadCoverImagesCommand"/> class.
@@ -42,97 +41,65 @@ namespace LostFilmMonitoring.BLL.Commands
         /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
         /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
         /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
-        /// <param name="lostFilmRssFeed">Instance of <see cref="LostFilmTV.Client.RssFeed.LostFilmRssFeed"/>.</param>
         /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
         /// <param name="lostFilmClient">Instance of <see cref="ILostFilmClient"/>.</param>
+        /// <param name="dictionaryDao">Instance of <see cref="IDictionaryDao"/>.</param>
         public DownloadCoverImagesCommand(
             ILogger logger,
             IFileSystem fileSystem,
             IConfiguration configuration,
-            IRssFeed lostFilmRssFeed,
             ISeriesDao seriesDao,
-            ILostFilmClient lostFilmClient)
+            ILostFilmClient lostFilmClient,
+            IDictionaryDao dictionaryDao)
         {
             this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
             this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.rssFeed = lostFilmRssFeed ?? throw new ArgumentNullException(nameof(lostFilmRssFeed));
             this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
             this.lostFilmClient = lostFilmClient ?? throw new ArgumentNullException(nameof(lostFilmClient));
+            this.dictionaryDao = dictionaryDao ?? throw new ArgumentNullException(nameof(dictionaryDao));
         }
 
         /// <inheritdoc/>
         public async Task ExecuteAsync()
         {
             this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-            var items = await this.rssFeed.LoadFeedItemsAsync();
-            if (items == null)
+            var series = await this.seriesDao.LoadAsync();
+            var dictionary = await this.dictionaryDao.LoadAsync();
+            foreach (var seriesItem in series)
             {
-                return;
-            }
-
-            await Task.WhenAll(items.Select(this.CheckItemAsync));
-        }
-
-        private async Task CheckItemAsync(FeedItemResponse item)
-        {
-            var lostFilmId = this.ParseLostFilmId(item);
-            if (lostFilmId == null)
-            {
-                return;
-            }
-
-            if (await this.PosterExistsAsync(lostFilmId))
-            {
-                return;
-            }
-
-            await this.DownloadImageAsync(lostFilmId);
-            await this.UpdateSeriesAsync(item?.SeriesName, lostFilmId);
-        }
-
-        private string? ParseLostFilmId(FeedItemResponse item)
-        {
-            if (string.IsNullOrEmpty(item?.Description))
-            {
-                return null;
-            }
-
-            try
-            {
-                var lostFilmIdMatch = Regex.Match(item.Description, LostFilmIdRegex, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-                if (!lostFilmIdMatch.Success)
+                if (seriesItem.LostFilmId == null)
                 {
-                    this.logger.Error($"Regex match failure: {item.Description}");
-                    return null;
+                    var openBraceIndex = seriesItem.Name.IndexOf('(');
+                    var closeBraceIndex = seriesItem.Name.IndexOf(')');
+                    if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
+                    {
+                        // cannot parse the series original name
+                        continue;
+                    }
+
+                    var originalName = seriesItem.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
+                    if (!dictionary.ContainsKey(originalName))
+                    {
+                        // the series is not found in the dictionary
+                        continue;
+                    }
+
+                    seriesItem.LostFilmId = dictionary[originalName];
+                    await this.seriesDao.SaveAsync(seriesItem);
                 }
 
-                return lostFilmIdMatch.Groups[1].Value;
-            }
-            catch (RegexMatchTimeoutException)
-            {
-                this.logger.Error($"Regex match timeout: {item.Description}");
-                return null;
-            }
-        }
+                if (seriesItem.LostFilmId == null)
+                {
+                    // cannot continue without LostFilmId
+                    continue;
+                }
 
-        private async Task UpdateSeriesAsync(string? seriesName, string lostFilmId)
-        {
-            if (string.IsNullOrEmpty(seriesName))
-            {
-                return;
-            }
-
-            var series = await this.seriesDao.LoadAsync(seriesName);
-            if (series == null)
-            {
-                return;
-            }
-
-            if (series.LostFilmId == null)
-            {
-                series.LostFilmId = int.Parse(lostFilmId);
-                await this.seriesDao.SaveAsync(series);
+                var lostFilmId = seriesItem.LostFilmId.ToString()!;
+                if (await this.PosterExistsAsync(lostFilmId))
+                {
+                    await this.DownloadImageAsync(lostFilmId);
+                }
             }
         }
 

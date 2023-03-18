@@ -1,4 +1,4 @@
-// <copyright file="IndexViewItemModel.cs" company="Alexander Panfilenok">
+// <copyright file="IDictionaryDAO.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,31 +21,16 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models.ViewModel
+namespace LostFilmMonitoring.DAO.Interfaces;
+
+/// <summary>
+/// Provides functionality for managing episode.
+/// </summary>
+public interface IDictionaryDao
 {
     /// <summary>
-    /// Represents information to be shown in home screen.
+    /// Load all episodes from storage.
     /// </summary>
-    public class IndexViewItemModel
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndexViewItemModel"/> class.
-        /// </summary>
-        /// <param name="series">Series.</param>
-        public IndexViewItemModel(Series series)
-        {
-            this.Name = series.Name;
-            this.ImageFileName = series.LostFilmId + ".jpg";
-        }
-
-        /// <summary>
-        /// Gets or sets item name.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets image file name.
-        /// </summary>
-        public string ImageFileName { get; set; }
-    }
+    /// <returns>Map of Title to LostFilmId.</returns>
+    Task<IDictionary<string, int>> LoadAsync();
 }

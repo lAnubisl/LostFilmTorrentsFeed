@@ -1,6 +1,6 @@
-// <copyright file="IndexViewItemModel.cs" company="Alexander Panfilenok">
+// <copyright file="DictionaryTableEntity.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2023 Alexander Panfilenok
+// Copyright (c) 2021 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal
@@ -21,31 +21,28 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models.ViewModel
+namespace LostFilmMonitoring.DAO.Azure
 {
     /// <summary>
-    /// Represents information to be shown in home screen.
+    /// Describes User Subscrition in Azure Table Storage.
     /// </summary>
-    public class IndexViewItemModel
+    public class DictionaryTableEntity : ITableEntity
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndexViewItemModel"/> class.
-        /// </summary>
-        /// <param name="series">Series.</param>
-        public IndexViewItemModel(Series series)
-        {
-            this.Name = series.Name;
-            this.ImageFileName = series.LostFilmId + ".jpg";
-        }
+        /// <inheritdoc/>
+        public string PartitionKey { get; set; } = null!;
+
+        /// <inheritdoc/>
+        public string RowKey { get; set; } = null!;
+
+        /// <inheritdoc/>
+        public DateTimeOffset? Timestamp { get; set; }
+
+        /// <inheritdoc/>
+        public ETag ETag { get; set; }
 
         /// <summary>
-        /// Gets or sets item name.
+        /// Gets or sets Title.
         /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets image file name.
-        /// </summary>
-        public string ImageFileName { get; set; }
+        public string Title { get; set; } = null!;
     }
 }

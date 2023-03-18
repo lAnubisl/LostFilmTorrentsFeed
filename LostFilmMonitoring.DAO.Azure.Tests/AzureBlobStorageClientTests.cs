@@ -21,9 +21,6 @@
 // SOFTWARE.
 // </copyright>
 
-using System.Text;
-using Azure.Storage.Blobs;
-
 namespace LostFilmMonitoring.DAO.Azure.Tests
 {
     [ExcludeFromCodeCoverage]

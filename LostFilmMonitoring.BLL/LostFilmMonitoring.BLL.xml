@@ -9,16 +9,16 @@
             Checks series cover images.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.Common.IConfiguration,LostFilmTV.Client.IRssFeed,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmTV.Client.ILostFilmClient)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmTV.Client.ILostFilmClient,LostFilmMonitoring.DAO.Interfaces.IDictionaryDao)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand"/> class.
             </summary>
             <param name="logger">Instance of <see cref="T:LostFilmMonitoring.Common.ILogger"/>.</param>
             <param name="fileSystem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem"/>.</param>
             <param name="configuration">Instance of <see cref="T:LostFilmMonitoring.Common.IConfiguration"/>.</param>
-            <param name="lostFilmRssFeed">Instance of <see cref="T:LostFilmTV.Client.RssFeed.LostFilmRssFeed"/>.</param>
             <param name="seriesDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.ISeriesDao"/>.</param>
             <param name="lostFilmClient">Instance of <see cref="T:LostFilmTV.Client.ILostFilmClient"/>.</param>
+            <param name="dictionaryDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.IDictionaryDao"/>.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.ExecuteAsync">
             <inheritdoc/>

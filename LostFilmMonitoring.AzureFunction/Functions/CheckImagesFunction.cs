@@ -21,38 +21,37 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.AzureFunction.Functions
+namespace LostFilmMonitoring.AzureFunction.Functions;
+
+/// <summary>
+/// Responsible for updating RSS feeds.
+/// </summary>
+public class CheckImagesFunction
 {
+    private readonly ILogger logger;
+    private readonly DownloadCoverImagesCommand command;
+
     /// <summary>
-    /// Responsible for updating RSS feeds.
+    /// Initializes a new instance of the <see cref="CheckImagesFunction"/> class.
     /// </summary>
-    public class CheckImagesFunction
+    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    /// <param name="command">Instance of <see cref="UpdateFeedsCommand"/>.</param>
+    public CheckImagesFunction(ILogger logger, DownloadCoverImagesCommand command)
     {
-        private readonly ILogger logger;
-        private readonly DownloadCoverImagesCommand command;
+        this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
+        this.command = command ?? throw new ArgumentNullException(nameof(command));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CheckImagesFunction"/> class.
-        /// </summary>
-        /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        /// <param name="command">Instance of <see cref="UpdateFeedsCommand"/>.</param>
-        public CheckImagesFunction(ILogger logger, DownloadCoverImagesCommand command)
-        {
-            this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
-            this.command = command ?? throw new ArgumentNullException(nameof(command));
-        }
-
-        /// <summary>
-        /// Azure Function Entry Point.
-        /// </summary>
-        /// <param name="myTimer">Timer object.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Function("CheckImagesFunction")]
-        public async Task RunAsync([TimerTrigger("0 */30 * * * *")] object myTimer)
-        {
-            this.logger.Info($"Start {DateTime.Now}");
-            await this.command.ExecuteAsync();
-            this.logger.Info($"Finish: {DateTime.Now}");
-        }
+    /// <summary>
+    /// Azure Function Entry Point.
+    /// </summary>
+    /// <param name="myTimer">Timer object.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Function("CheckImagesFunction")]
+    public async Task RunAsync([TimerTrigger("0 0 0 * * *")] object myTimer)
+    {
+        this.logger.Info($"Start CheckImagesFunction {DateTime.Now}");
+        await this.command.ExecuteAsync();
+        this.logger.Info($"Finish: CheckImagesFunction {DateTime.Now}");
     }
 }
