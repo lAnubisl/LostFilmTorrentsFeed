@@ -43,6 +43,7 @@ namespace LostFilmMonitoring.AzureFunction
             services.AddSingleton<IFeedDao, AzureBlobStorageFeedDao>();
             services.AddSingleton<IUserDao, AzureTableStorageUserDao>();
             services.AddSingleton<ISeriesDao, AzureTableStorageSeriesDao>();
+            services.AddSingleton<IDictionaryDao, AzureTableStorageDictionaryDao>();
             services.AddSingleton<IEpisodeDao, AzureTableStorageEpisodeDao>();
             services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
             services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
