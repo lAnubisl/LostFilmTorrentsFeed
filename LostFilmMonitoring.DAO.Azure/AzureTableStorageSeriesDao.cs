@@ -1,6 +1,6 @@
 ﻿// <copyright file="AzureTableStorageSeriesDao.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2021 Alexander Panfilenok
+// Copyright (c) 2023 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal
@@ -21,83 +21,82 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure
+namespace LostFilmMonitoring.DAO.Azure;
+
+/// <summary>
+/// Implements <see cref="ISeriesDao"/> for Azure Table Storage.
+/// </summary>
+public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
 {
     /// <summary>
-    /// Implements <see cref="ISeriesDao"/> for Azure Table Storage.
+    /// Initializes a new instance of the <see cref="AzureTableStorageSeriesDao"/> class.
     /// </summary>
-    public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
+    /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
+    /// <param name="logger">Instance of Logger.</param>
+    public AzureTableStorageSeriesDao(TableServiceClient tableServiceClient, ILogger logger)
+        : base(tableServiceClient, "series", logger?.CreateScope(nameof(AzureTableStorageUserDao)))
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AzureTableStorageSeriesDao"/> class.
-        /// </summary>
-        /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
-        /// <param name="logger">Instance of Logger.</param>
-        public AzureTableStorageSeriesDao(TableServiceClient tableServiceClient, ILogger logger)
-            : base(tableServiceClient, "series", logger?.CreateScope(nameof(AzureTableStorageUserDao)))
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(Series? series)
+    {
+        this.Logger.Info($"Call: {nameof(this.DeleteAsync)}(series)");
+
+        if (series == null)
         {
+            return;
         }
 
-        /// <inheritdoc/>
-        public async Task DeleteAsync(Series? series)
+        try
         {
-            this.Logger.Info($"Call: {nameof(this.DeleteAsync)}(series)");
-
-            if (series == null)
-            {
-                return;
-            }
-
-            try
-            {
-                await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(series.Name), EscapeKey(series.Name)));
-            }
-            catch (ExternalServiceUnavailableException ex)
-            {
-                this.Logger.Log($"Error deleting series (Name='{series.Name}')", ex);
-            }
+            await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(series.Name), EscapeKey(series.Name)));
         }
-
-        /// <inheritdoc/>
-        public async Task<Series?> LoadAsync(string name)
+        catch (ExternalServiceUnavailableException ex)
         {
-            this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{name}')");
-            return await this.TryGetEntityAsync(async (tc) =>
-            {
-                var response = await tc.GetEntityAsync<SeriesTableEntity>(name, name);
-                return Mapper.Map(response.Value);
-            });
+            this.Logger.Log($"Error deleting series (Name='{series.Name}')", ex);
         }
+    }
 
-        /// <inheritdoc/>
-        public async Task<Series[]> LoadAsync()
+    /// <inheritdoc/>
+    public async Task<Series?> LoadAsync(string name)
+    {
+        this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{name}')");
+        return await this.TryGetEntityAsync(async (tc) =>
         {
-            this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
-            return await this.TryGetEntityAsync(async (tc) =>
-            {
-                var result = new List<Series>();
-                await foreach (var item in tc.QueryAsync<SeriesTableEntity>())
-                {
-                    result.Add(Mapper.Map(item));
-                }
+            var response = await tc.GetEntityAsync<SeriesTableEntity>(name, name);
+            return Mapper.Map(response.Value);
+        });
+    }
 
-                return result.ToArray();
-            }) ?? Array.Empty<Series>();
+    /// <inheritdoc/>
+    public async Task<Series[]> LoadAsync()
+    {
+        this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
+        return await this.TryGetEntityAsync(async (tc) =>
+        {
+            var result = new List<Series>();
+            await foreach (var item in tc.QueryAsync<SeriesTableEntity>())
+            {
+                result.Add(Mapper.Map(item));
+            }
+
+            return result.ToArray();
+        }) ?? Array.Empty<Series>();
+    }
+
+    /// <inheritdoc/>
+    public async Task SaveAsync(Series series)
+    {
+        this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Series series)");
+        try
+        {
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
         }
-
-        /// <inheritdoc/>
-        public async Task SaveAsync(Series series)
+        catch (ExternalServiceUnavailableException)
         {
-            this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Series series)");
-            try
-            {
-                await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
-            }
-            catch (ExternalServiceUnavailableException)
-            {
-                this.Logger.Error($"Error saving series (Name='{series.Name}')");
-                throw;
-            }
+            this.Logger.Error($"Error saving series (Name='{series.Name}')");
+            throw;
         }
     }
 }

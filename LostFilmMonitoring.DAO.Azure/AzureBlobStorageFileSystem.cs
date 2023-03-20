@@ -1,6 +1,6 @@
 ﻿// <copyright file="AzureBlobStorageFileSystem.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2021 Alexander Panfilenok
+// Copyright (c) 2023 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal
@@ -21,39 +21,38 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure
+namespace LostFilmMonitoring.DAO.Azure;
+
+/// <summary>
+/// Implements <see cref="IFileSystem"/> for Azure Blob Storage.
+/// </summary>
+public class AzureBlobStorageFileSystem : IFileSystem
 {
+    private readonly IAzureBlobStorageClient azureBlobStorageClient;
+    private readonly ILogger logger;
+
     /// <summary>
-    /// Implements <see cref="IFileSystem"/> for Azure Blob Storage.
+    /// Initializes a new instance of the <see cref="AzureBlobStorageFileSystem"/> class.
     /// </summary>
-    public class AzureBlobStorageFileSystem : IFileSystem
+    /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
+    /// <param name="logger">Instance of Logger.</param>
+    public AzureBlobStorageFileSystem(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
     {
-        private readonly IAzureBlobStorageClient azureBlobStorageClient;
-        private readonly ILogger logger;
+        this.azureBlobStorageClient = azureBlobStorageClient ?? throw new ArgumentNullException(nameof(azureBlobStorageClient));
+        this.logger = logger?.CreateScope(nameof(AzureBlobStorageFileSystem)) ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AzureBlobStorageFileSystem"/> class.
-        /// </summary>
-        /// <param name="azureBlobStorageClient">Instance of AzureBlobStorageClient.</param>
-        /// <param name="logger">Instance of Logger.</param>
-        public AzureBlobStorageFileSystem(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
-        {
-            this.azureBlobStorageClient = azureBlobStorageClient ?? throw new ArgumentNullException(nameof(azureBlobStorageClient));
-            this.logger = logger?.CreateScope(nameof(AzureBlobStorageFileSystem)) ?? throw new ArgumentNullException(nameof(logger));
-        }
+    /// <inheritdoc/>
+    public Task<bool> ExistsAsync(string directory, string fileName)
+    {
+        this.logger.Info($"Call: {nameof(this.ExistsAsync)}({directory}, {fileName})");
+        return this.azureBlobStorageClient.ExistsAsync(directory, fileName);
+    }
 
-        /// <inheritdoc/>
-        public Task<bool> ExistsAsync(string directory, string fileName)
-        {
-            this.logger.Info($"Call: {nameof(this.ExistsAsync)}({directory}, {fileName})");
-            return this.azureBlobStorageClient.ExistsAsync(directory, fileName);
-        }
-
-        /// <inheritdoc/>
-        public Task SaveAsync(string directory, string fileName, string contentType, Stream contentStream)
-        {
-            this.logger.Info($"Call: {nameof(this.SaveAsync)}({directory}, {fileName}, {contentStream})");
-            return this.azureBlobStorageClient.UploadAsync(directory, fileName, contentStream, contentType);
-        }
+    /// <inheritdoc/>
+    public Task SaveAsync(string directory, string fileName, string contentType, Stream contentStream)
+    {
+        this.logger.Info($"Call: {nameof(this.SaveAsync)}({directory}, {fileName}, {contentStream})");
+        return this.azureBlobStorageClient.UploadAsync(directory, fileName, contentStream, contentType);
     }
 }

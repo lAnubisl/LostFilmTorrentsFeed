@@ -1,6 +1,6 @@
 ﻿// <copyright file="AzureTableStorageEpisodeDAO.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2021 Alexander Panfilenok
+// Copyright (c) 2023 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal
@@ -21,51 +21,50 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure
+namespace LostFilmMonitoring.DAO.Azure;
+
+/// <summary>
+/// Implements <see cref="IEpisodeDao"/> for Azure Table Storage.
+/// </summary>
+public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
 {
     /// <summary>
-    /// Implements <see cref="IEpisodeDao"/> for Azure Table Storage.
+    /// Initializes a new instance of the <see cref="AzureTableStorageEpisodeDao"/> class.
     /// </summary>
-    public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
+    /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
+    /// <param name="logger">Instance of Logger.</param>
+    public AzureTableStorageEpisodeDao(TableServiceClient tableServiceClient, ILogger? logger)
+        : base(tableServiceClient, "episodes", logger)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AzureTableStorageEpisodeDao"/> class.
-        /// </summary>
-        /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
-        /// <param name="logger">Instance of Logger.</param>
-        public AzureTableStorageEpisodeDao(TableServiceClient tableServiceClient, ILogger? logger)
-            : base(tableServiceClient, "episodes", logger)
-        {
-        }
+    }
 
-        /// <inheritdoc/>
-        public async Task<bool> ExistsAsync(string seriesName, int seasonNumber, int episideNumber, string quality)
+    /// <inheritdoc/>
+    public async Task<bool> ExistsAsync(string seriesName, int seasonNumber, int episideNumber, string quality)
+    {
+        this.Logger.Info($"Call: {nameof(this.ExistsAsync)}('{seriesName}', {seasonNumber}, {episideNumber}, '{quality}')");
+        return (await this.TryCountAsync(tc =>
         {
-            this.Logger.Info($"Call: {nameof(this.ExistsAsync)}('{seriesName}', {seasonNumber}, {episideNumber}, '{quality}')");
-            return (await this.TryCountAsync(tc =>
-            {
-                var query = tc.QueryAsync<EpisodeTableEntity>(entity =>
-                    entity.PartitionKey == EscapeKey(seriesName) &&
-                    entity.Quality == quality &&
-                    entity.SeasonNumber == seasonNumber &&
-                    entity.EpisodeNumber == episideNumber);
-                return CountAsync(query);
-            })) > 0;
-        }
+            var query = tc.QueryAsync<EpisodeTableEntity>(entity =>
+                entity.PartitionKey == EscapeKey(seriesName) &&
+                entity.Quality == quality &&
+                entity.SeasonNumber == seasonNumber &&
+                entity.EpisodeNumber == episideNumber);
+            return CountAsync(query);
+        })) > 0;
+    }
 
-        /// <inheritdoc/>
-        public async Task SaveAsync(Episode episode)
+    /// <inheritdoc/>
+    public async Task SaveAsync(Episode episode)
+    {
+        this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Episode episode)");
+        try
         {
-            this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Episode episode)");
-            try
-            {
-                await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(episode)));
-            }
-            catch (ExternalServiceUnavailableException)
-            {
-                this.Logger.Fatal($"Error while saving episode: '{JsonSerializer.Serialize(episode, CommonSerializationOptions.Default)}'");
-                throw;
-            }
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(episode)));
+        }
+        catch (ExternalServiceUnavailableException)
+        {
+            this.Logger.Fatal($"Error while saving episode: '{JsonSerializer.Serialize(episode, CommonSerializationOptions.Default)}'");
+            throw;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2021 Alexander Panfilenok
+// Copyright (c) 2023 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal

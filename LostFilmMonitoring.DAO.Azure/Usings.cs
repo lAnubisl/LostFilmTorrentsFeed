@@ -1,6 +1,6 @@
 ﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
 // MIT License
-// Copyright (c) 2021 Alexander Panfilenok
+// Copyright (c) 2023 Alexander Panfilenok
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the 'Software'), to deal
@@ -23,9 +23,7 @@
 
 #pragma warning disable SA1200 // Using directives should be placed correctly
 global using System.Text;
-global using System.Text.Encodings.Web;
 global using System.Text.Json;
-global using System.Text.Unicode;
 global using System.Xml.Linq;
 global using Azure;
 global using Azure.Data.Tables;
