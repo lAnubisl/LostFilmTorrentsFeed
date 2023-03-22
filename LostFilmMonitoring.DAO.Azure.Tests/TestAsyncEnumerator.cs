@@ -21,30 +21,29 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure.Tests
+namespace LostFilmMonitoring.DAO.Azure.Tests;
+
+[ExcludeFromCodeCoverage]
+public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 {
-    [ExcludeFromCodeCoverage]
-    public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
+    private IEnumerable<T> values;
+    private IEnumerator<T> enumerator;
+    
+    public TestAsyncEnumerator(T[] values)
     {
-        private IEnumerable<T> values;
-        private IEnumerator<T> enumerator;
-        
-        public TestAsyncEnumerator(T[] values)
-        {
-            this.values = values;
-            this.enumerator = this.values.GetEnumerator();
-        }
-        
-        public T Current => enumerator.Current;
+        this.values = values;
+        this.enumerator = this.values.GetEnumerator();
+    }
+    
+    public T Current => enumerator.Current;
 
-        public ValueTask DisposeAsync()
-        {
-            return new ValueTask();
-        }
+    public ValueTask DisposeAsync()
+    {
+        return new ValueTask();
+    }
 
-        public ValueTask<bool> MoveNextAsync()
-        {
-            return new ValueTask<bool>(enumerator.MoveNext());
-        }
+    public ValueTask<bool> MoveNextAsync()
+    {
+        return new ValueTask<bool>(enumerator.MoveNext());
     }
 }

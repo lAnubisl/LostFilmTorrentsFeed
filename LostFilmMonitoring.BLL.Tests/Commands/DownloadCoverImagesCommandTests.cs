@@ -21,31 +21,30 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Tests.Commands
+namespace LostFilmMonitoring.BLL.Tests.Commands;
+
+[ExcludeFromCodeCoverage]
+public class DownloadCoverImagesCommandTests
 {
-    [ExcludeFromCodeCoverage]
-    public class DownloadCoverImagesCommandTests
+    private Mock<ISeriesDao> seriesDao;
+    private Mock<Common.ILogger> logger;
+    private Mock<IFileSystem> fileSystem;
+    private Mock<IConfiguration> configuration;
+    private Mock<ILostFilmClient> lostFilmClient;
+    private Mock<IDictionaryDao> dictionaryDao;
+
+    [SetUp]
+    public void Setup()
     {
-        private Mock<ISeriesDao> seriesDao;
-        private Mock<Common.ILogger> logger;
-        private Mock<IFileSystem> fileSystem;
-        private Mock<IConfiguration> configuration;
-        private Mock<ILostFilmClient> lostFilmClient;
-        private Mock<IDictionaryDao> dictionaryDao;
-
-        [SetUp]
-        public void Setup()
-        {
-            this.fileSystem = new();
-            this.dictionaryDao = new();
-            this.configuration = new();
-            this.lostFilmClient = new();
-            this.seriesDao = new();
-            this.logger = new();
-            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
-        }
-
-        private DownloadCoverImagesCommand GetService()
-            => new(this.logger.Object, this.fileSystem.Object, this.configuration.Object, this.seriesDao.Object, this.lostFilmClient.Object, this.dictionaryDao.Object);
+        this.fileSystem = new();
+        this.dictionaryDao = new();
+        this.configuration = new();
+        this.lostFilmClient = new();
+        this.seriesDao = new();
+        this.logger = new();
+        this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
     }
+
+    private DownloadCoverImagesCommand GetService()
+        => new(this.logger.Object, this.fileSystem.Object, this.configuration.Object, this.seriesDao.Object, this.lostFilmClient.Object, this.dictionaryDao.Object);
 }

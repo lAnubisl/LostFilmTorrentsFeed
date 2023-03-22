@@ -21,97 +21,96 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client
+namespace LostFilmTV.Client;
+
+/// <summary>
+/// Client for LostFilm.TV
+/// This class is responsible for all interactions with lostfilm.tv website.
+/// </summary>
+public class LostFilmClient : ILostFilmClient
 {
+    private readonly ILogger logger;
+    private readonly IHttpClientFactory httpClientFactory;
+
     /// <summary>
-    /// Client for LostFilm.TV
-    /// This class is responsible for all interactions with lostfilm.tv website.
+    /// Initializes a new instance of the <see cref="LostFilmClient"/> class.
     /// </summary>
-    public class LostFilmClient : ILostFilmClient
+    /// <param name="logger">Logger.</param>
+    /// <param name="httpClientFactory">IHttpClientFactory.</param>
+    public LostFilmClient(ILogger logger, IHttpClientFactory httpClientFactory)
     {
-        private readonly ILogger logger;
-        private readonly IHttpClientFactory httpClientFactory;
+        this.logger = logger?.CreateScope(nameof(LostFilmClient)) ?? throw new ArgumentNullException(nameof(logger));
+        this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LostFilmClient"/> class.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="httpClientFactory">IHttpClientFactory.</param>
-        public LostFilmClient(ILogger logger, IHttpClientFactory httpClientFactory)
+    /// <inheritdoc/>
+    public async Task<Stream?> DownloadImageAsync(string lostFilmId)
+    {
+        using var client = this.httpClientFactory.CreateClient();
+        try
         {
-            this.logger = logger?.CreateScope(nameof(LostFilmClient)) ?? throw new ArgumentNullException(nameof(logger));
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg");
+            return stream;
+        }
+        catch (Exception ex)
+        {
+            this.logger.Log(ex);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Get torrent file for user.
+    /// </summary>
+    /// <param name="uid">User Id.</param>
+    /// <param name="usess">User ss key.</param>
+    /// <param name="torrentFileId">Torrent file Id.</param>
+    /// <returns>TorrentFile object which contain file name and content stream.</returns>
+    public async Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
+    {
+        var client = this.httpClientFactory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
+        request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
+        HttpResponseMessage response;
+
+        try
+        {
+            response = await client.SendAsync(request);
+        }
+        catch (Exception ex)
+        {
+            this.logger.Log(ex);
+            return null;
         }
 
-        /// <inheritdoc/>
-        public async Task<Stream?> DownloadImageAsync(string lostFilmId)
+        if (response?.Content?.Headers?.ContentType == null)
         {
-            using var client = this.httpClientFactory.CreateClient();
-            try
-            {
-                var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg");
-                return stream;
-            }
-            catch (Exception ex)
-            {
-                this.logger.Log(ex);
-                return null;
-            }
+            this.logger.Error("response?.Content?.Headers?.ContentType == null");
+            return null;
         }
 
-        /// <summary>
-        /// Get torrent file for user.
-        /// </summary>
-        /// <param name="uid">User Id.</param>
-        /// <param name="usess">User ss key.</param>
-        /// <param name="torrentFileId">Torrent file Id.</param>
-        /// <returns>TorrentFile object which contain file name and content stream.</returns>
-        public async Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
+        if (response.Content.Headers.ContentType.MediaType != "application/x-bittorrent")
         {
-            var client = this.httpClientFactory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
-            request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
-            HttpResponseMessage response;
-
-            try
+            string? responseBody = null;
+            if (response.Content.Headers.ContentType.MediaType == "text/html")
             {
-                response = await client.SendAsync(request);
-            }
-            catch (Exception ex)
-            {
-                this.logger.Log(ex);
-                return null;
+                responseBody = await response.Content.ReadAsStringAsync();
             }
 
-            if (response?.Content?.Headers?.ContentType == null)
-            {
-                this.logger.Error("response?.Content?.Headers?.ContentType == null");
-                return null;
-            }
-
-            if (response.Content.Headers.ContentType.MediaType != "application/x-bittorrent")
-            {
-                string? responseBody = null;
-                if (response.Content.Headers.ContentType.MediaType == "text/html")
-                {
-                    responseBody = await response.Content.ReadAsStringAsync();
-                }
-
-                this.logger.Error($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. Response content is: '{responseBody}'. TorrentFileId is: '{torrentFileId}'.");
-                return null;
-            }
-
-            response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string>? cd);
-            var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
-            if (fileName == null)
-            {
-                this.logger.Error("Something wrong with 'Content-Disposition' header of the response.");
-                return null;
-            }
-
-            fileName = fileName[0..^1];
-            var stream = await response.Content.ReadAsStreamAsync();
-            return new TorrentFileResponse(fileName, stream);
+            this.logger.Error($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. Response content is: '{responseBody}'. TorrentFileId is: '{torrentFileId}'.");
+            return null;
         }
+
+        response.Content.Headers.TryGetValues("Content-Disposition", out IEnumerable<string>? cd);
+        var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
+        if (fileName == null)
+        {
+            this.logger.Error("Something wrong with 'Content-Disposition' header of the response.");
+            return null;
+        }
+
+        fileName = fileName[0..^1];
+        var stream = await response.Content.ReadAsStreamAsync();
+        return new TorrentFileResponse(fileName, stream);
     }
 }

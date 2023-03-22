@@ -21,23 +21,22 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL
+namespace LostFilmMonitoring.BLL;
+
+/// <summary>
+/// Responsible for accessing current user Id.
+/// </summary>
+public interface ICurrentUserProvider
 {
     /// <summary>
-    /// Responsible for accessing current user Id.
+    /// Get current user id.
     /// </summary>
-    public interface ICurrentUserProvider
-    {
-        /// <summary>
-        /// Get current user id.
-        /// </summary>
-        /// <returns>UserID.</returns>
-        Guid GetCurrentUserId();
+    /// <returns>UserID.</returns>
+    Guid GetCurrentUserId();
 
-        /// <summary>
-        /// Set current user id.
-        /// </summary>
-        /// <param name="userId">UserId.</param>
-        void SetCurrentUserId(Guid userId);
-    }
+    /// <summary>
+    /// Set current user id.
+    /// </summary>
+    /// <param name="userId">UserId.</param>
+    void SetCurrentUserId(Guid userId);
 }

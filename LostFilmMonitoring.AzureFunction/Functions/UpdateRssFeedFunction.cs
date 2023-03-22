@@ -21,38 +21,37 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.AzureFunction.Functions
+namespace LostFilmMonitoring.AzureFunction.Functions;
+
+/// <summary>
+/// Responsible for updating RSS feeds.
+/// </summary>
+public class UpdateRssFeedFunction
 {
+    private readonly ILogger logger;
+    private readonly UpdateFeedsCommand updateFeedCommand;
+
     /// <summary>
-    /// Responsible for updating RSS feeds.
+    /// Initializes a new instance of the <see cref="UpdateRssFeedFunction"/> class.
     /// </summary>
-    public class UpdateRssFeedFunction
+    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    /// <param name="updateFeedCommand">Instance of <see cref="UpdateFeedsCommand"/>.</param>
+    public UpdateRssFeedFunction(ILogger logger, UpdateFeedsCommand updateFeedCommand)
     {
-        private readonly ILogger logger;
-        private readonly UpdateFeedsCommand updateFeedCommand;
+        this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
+        this.updateFeedCommand = updateFeedCommand ?? throw new ArgumentNullException(nameof(updateFeedCommand));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UpdateRssFeedFunction"/> class.
-        /// </summary>
-        /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        /// <param name="updateFeedCommand">Instance of <see cref="UpdateFeedsCommand"/>.</param>
-        public UpdateRssFeedFunction(ILogger logger, UpdateFeedsCommand updateFeedCommand)
-        {
-            this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
-            this.updateFeedCommand = updateFeedCommand ?? throw new ArgumentNullException(nameof(updateFeedCommand));
-        }
-
-        /// <summary>
-        /// Azure Function Entry Point.
-        /// </summary>
-        /// <param name="myTimer">Timer object.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        [Function("UpdateRssFeedFunction")]
-        public async Task RunAsync([TimerTrigger("0 */5 * * * *")] object myTimer)
-        {
-            this.logger.Info($"Start {DateTime.Now}");
-            await this.updateFeedCommand.ExecuteAsync();
-            this.logger.Info($"Finish: {DateTime.Now}");
-        }
+    /// <summary>
+    /// Azure Function Entry Point.
+    /// </summary>
+    /// <param name="myTimer">Timer object.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    [Function("UpdateRssFeedFunction")]
+    public async Task RunAsync([TimerTrigger("0 */5 * * * *")] object myTimer)
+    {
+        this.logger.Info($"Start {DateTime.Now}");
+        await this.updateFeedCommand.ExecuteAsync();
+        this.logger.Info($"Finish: {DateTime.Now}");
     }
 }

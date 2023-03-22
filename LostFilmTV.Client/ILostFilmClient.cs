@@ -21,27 +21,26 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client
+namespace LostFilmTV.Client;
+
+/// <summary>
+/// LostFilmTV client interface.
+/// </summary>
+public interface ILostFilmClient
 {
     /// <summary>
-    /// LostFilmTV client interface.
+    /// Downloads the torrent file asynchronous.
     /// </summary>
-    public interface ILostFilmClient
-    {
-        /// <summary>
-        /// Downloads the torrent file asynchronous.
-        /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <param name="usess">The usess.</param>
-        /// <param name="torrentFileId">The torrent file identifier.</param>
-        /// <returns>Torrent file response container.</returns>
-        Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);
+    /// <param name="uid">The uid.</param>
+    /// <param name="usess">The usess.</param>
+    /// <param name="torrentFileId">The torrent file identifier.</param>
+    /// <returns>Torrent file response container.</returns>
+    Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);
 
-        /// <summary>
-        /// Downloads the series cover asynchronous.
-        /// </summary>
-        /// <param name="lostFilmId">Series Id in LostFilm.</param>
-        /// <returns>Stream of the series cover file.</returns>
-        Task<Stream?> DownloadImageAsync(string lostFilmId);
-    }
+    /// <summary>
+    /// Downloads the series cover asynchronous.
+    /// </summary>
+    /// <param name="lostFilmId">Series Id in LostFilm.</param>
+    /// <returns>Stream of the series cover file.</returns>
+    Task<Stream?> DownloadImageAsync(string lostFilmId);
 }

@@ -21,34 +21,33 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client
+namespace LostFilmTV.Client;
+
+/// <summary>
+/// Useful extensions.
+/// </summary>
+public static class Extensions
 {
     /// <summary>
-    /// Useful extensions.
+    /// Extracts torrent id from ReteOrg url.
     /// </summary>
-    public static class Extensions
+    /// <param name="reteOrgUrl">reteOrgUrl.</param>
+    /// <returns>Torrent Id.</returns>
+    public static string? GetTorrentId(string? reteOrgUrl)
     {
-        /// <summary>
-        /// Extracts torrent id from ReteOrg url.
-        /// </summary>
-        /// <param name="reteOrgUrl">reteOrgUrl.</param>
-        /// <returns>Torrent Id.</returns>
-        public static string? GetTorrentId(string? reteOrgUrl)
+        // http://tracktor.in/rssdownloader.php?id=33572
+        if (string.IsNullOrEmpty(reteOrgUrl))
         {
-            // http://tracktor.in/rssdownloader.php?id=33572
-            if (string.IsNullOrEmpty(reteOrgUrl))
-            {
-                return null;
-            }
-
-            string marker = "rssdownloader.php?id=";
-            int index = reteOrgUrl.IndexOf(marker);
-            if (index < 0)
-            {
-                return null;
-            }
-
-            return reteOrgUrl[(index + marker.Length) ..];
+            return null;
         }
+
+        string marker = "rssdownloader.php?id=";
+        int index = reteOrgUrl.IndexOf(marker);
+        if (index < 0)
+        {
+            return null;
+        }
+
+        return reteOrgUrl[(index + marker.Length) ..];
     }
 }

@@ -21,32 +21,31 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.AzureFunction
+namespace LostFilmMonitoring.AzureFunction;
+
+/// <summary>
+/// Responsible for binding <see cref="HttpRequestData"/> to model instance.
+/// </summary>
+internal static class ModelBinder
 {
     /// <summary>
-    /// Responsible for binding <see cref="HttpRequestData"/> to model instance.
+    /// Binds instance of <see cref="HttpRequestData"/> to requested model type.
     /// </summary>
-    internal static class ModelBinder
+    /// <typeparam name="T">Type of model to bind to.</typeparam>
+    /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
+    /// <returns>Instance of T.</returns>
+    internal static T? Bind<T>(HttpRequestData req)
+        where T : class
     {
-        /// <summary>
-        /// Binds instance of <see cref="HttpRequestData"/> to requested model type.
-        /// </summary>
-        /// <typeparam name="T">Type of model to bind to.</typeparam>
-        /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
-        /// <returns>Instance of T.</returns>
-        internal static T? Bind<T>(HttpRequestData req)
-            where T : class
+        try
         {
-            try
-            {
-                using var reader = new StreamReader(req.Body);
-                var json = reader.ReadToEnd();
-                return JsonSerializer.Deserialize<T>(json);
-            }
-            catch
-            {
-                return null;
-            }
+            using var reader = new StreamReader(req.Body);
+            var json = reader.ReadToEnd();
+            return JsonSerializer.Deserialize<T>(json);
+        }
+        catch
+        {
+            return null;
         }
     }
 }

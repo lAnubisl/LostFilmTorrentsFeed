@@ -21,18 +21,17 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL
+namespace LostFilmMonitoring.BLL;
+
+/// <summary>
+/// Provides configuration values.
+/// </summary>
+public interface IConfigurationValuesProvider
 {
     /// <summary>
-    /// Provides configuration values.
+    /// Gets the value by key.
     /// </summary>
-    public interface IConfigurationValuesProvider
-    {
-        /// <summary>
-        /// Gets the value by key.
-        /// </summary>
-        /// <param name="key">Key.</param>
-        /// <returns>Value.</returns>
-        string? GetValue(string key);
-    }
+    /// <param name="key">Key.</param>
+    /// <returns>Value.</returns>
+    string? GetValue(string key);
 }

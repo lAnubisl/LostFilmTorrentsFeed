@@ -21,68 +21,67 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Tests.RssFeed
+namespace LostFilmTV.Client.Tests.RssFeed;
+
+[ExcludeFromCodeCoverage]
+public class LostFilmRssFeedTests
 {
-    [ExcludeFromCodeCoverage]
-    public class LostFilmRssFeedTests
+    private Mock<IHttpClientFactory> httpControllerFactory;
+    private Mock<ILogger> logger;
+    private MockHttpMessageHandler mockHttp;
+
+    [SetUp]
+    public void Setup()
     {
-        private Mock<IHttpClientFactory> httpControllerFactory;
-        private Mock<ILogger> logger;
-        private MockHttpMessageHandler mockHttp;
-
-        [SetUp]
-        public void Setup()
-        {
-            this.httpControllerFactory = new();
-            this.logger = new();
-            this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
-            this.mockHttp = new();
-            this.httpControllerFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
-        }
-
-        [Test]
-        public void Constructor_should_throw_exception_when_logger_null()
-        {
-            var action = () => new LostFilmRssFeed(null!, this.httpControllerFactory.Object);
-            action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
-        }
-
-        [Test]
-        public void Constructor_should_throw_exception_when_logger_createScope_null()
-        {
-            var action = () => new LostFilmRssFeed(new Mock<ILogger>().Object, this.httpControllerFactory.Object);
-            action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
-        }
-
-        [Test]
-        public void Constructor_should_throw_exception_when_httpClientFactory_null()
-        {
-            var action = () => new LostFilmRssFeed(this.logger.Object, null!);
-            action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("httpClientFactory");
-        }
-
-        [Test]
-        public async Task LoadFeedItemsAsync_should_return_items()
-        {
-            mockHttp
-                .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
-                .Respond("application/xml", Helper.GetEmbeddedResource($"LostFilmTV.Client.Tests.TestData.LostFilmFeed1.xml"));
-            var result = await GetService().LoadFeedItemsAsync();
-            result.Should().NotBeNull();
-            result.Should().NotBeEmpty();
-        }
-
-        [Test]
-        public async Task LoadFeedItemsAsync_should_return_empty_when_content_is_empty()
-        {
-            mockHttp
-                .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
-                .Respond("application/xml", string.Empty);
-            var result = await GetService().LoadFeedItemsAsync();
-            result.Should().NotBeNull();
-            result.Should().BeEmpty();
-        }
-
-        private LostFilmRssFeed GetService() => new(this.logger.Object, this.httpControllerFactory.Object);
+        this.httpControllerFactory = new();
+        this.logger = new();
+        this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+        this.mockHttp = new();
+        this.httpControllerFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
     }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_logger_null()
+    {
+        var action = () => new LostFilmRssFeed(null!, this.httpControllerFactory.Object);
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_logger_createScope_null()
+    {
+        var action = () => new LostFilmRssFeed(new Mock<ILogger>().Object, this.httpControllerFactory.Object);
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_httpClientFactory_null()
+    {
+        var action = () => new LostFilmRssFeed(this.logger.Object, null!);
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("httpClientFactory");
+    }
+
+    [Test]
+    public async Task LoadFeedItemsAsync_should_return_items()
+    {
+        mockHttp
+            .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
+            .Respond("application/xml", Helper.GetEmbeddedResource($"LostFilmTV.Client.Tests.TestData.LostFilmFeed1.xml"));
+        var result = await GetService().LoadFeedItemsAsync();
+        result.Should().NotBeNull();
+        result.Should().NotBeEmpty();
+    }
+
+    [Test]
+    public async Task LoadFeedItemsAsync_should_return_empty_when_content_is_empty()
+    {
+        mockHttp
+            .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
+            .Respond("application/xml", string.Empty);
+        var result = await GetService().LoadFeedItemsAsync();
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    private LostFilmRssFeed GetService() => new(this.logger.Object, this.httpControllerFactory.Object);
 }

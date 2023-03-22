@@ -21,22 +21,21 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Azure.Tests
+namespace LostFilmMonitoring.DAO.Azure.Tests;
+
+[ExcludeFromCodeCoverage]
+public class TestPage<T> : Page<T>
 {
-    [ExcludeFromCodeCoverage]
-    public class TestPage<T> : Page<T>
+    private readonly T[] values;
+
+    public TestPage(T[] values)
     {
-        private readonly T[] values;
-
-        public TestPage(T[] values)
-        {
-            this.values = values;
-        }
-
-        public override IReadOnlyList<T> Values => values;
-
-        public override string? ContinuationToken => null;
-
-        public override Response GetRawResponse() => new TestResponseOk();
+        this.values = values;
     }
+
+    public override IReadOnlyList<T> Values => values;
+
+    public override string? ContinuationToken => null;
+
+    public override Response GetRawResponse() => new TestResponseOk();
 }

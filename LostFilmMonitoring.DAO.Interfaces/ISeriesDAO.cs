@@ -21,41 +21,37 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Interfaces
+namespace LostFilmMonitoring.DAO.Interfaces;
+
+/// <summary>
+/// Provides functionality for managing series.
+/// </summary>
+public interface ISeriesDao
 {
-    using System.Threading.Tasks;
-    using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+    /// <summary>
+    /// Load series by name.
+    /// </summary>
+    /// <param name="name">Series name.</param>
+    /// <returns>Series.</returns>
+    Task<Series?> LoadAsync(string name);
 
     /// <summary>
-    /// Provides functionality for managing series.
+    /// Load series.
     /// </summary>
-    public interface ISeriesDao
-    {
-        /// <summary>
-        /// Load series by name.
-        /// </summary>
-        /// <param name="name">Series name.</param>
-        /// <returns>Series.</returns>
-        Task<Series?> LoadAsync(string name);
+    /// <returns>All series.</returns>
+    Task<Series[]> LoadAsync();
 
-        /// <summary>
-        /// Load series.
-        /// </summary>
-        /// <returns>All series.</returns>
-        Task<Series[]> LoadAsync();
+    /// <summary>
+    /// Save series.
+    /// </summary>
+    /// <param name="series">Series to save.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    Task SaveAsync(Series series);
 
-        /// <summary>
-        /// Save series.
-        /// </summary>
-        /// <param name="series">Series to save.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task SaveAsync(Series series);
-
-        /// <summary>
-        /// Delete series.
-        /// </summary>
-        /// <param name="series">Series to delete.</param>
-        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-        Task DeleteAsync(Series? series);
-    }
+    /// <summary>
+    /// Delete series.
+    /// </summary>
+    /// <param name="series">Series to delete.</param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    Task DeleteAsync(Series? series);
 }

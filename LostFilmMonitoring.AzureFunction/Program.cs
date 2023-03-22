@@ -21,74 +21,73 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.AzureFunction
+namespace LostFilmMonitoring.AzureFunction;
+
+/// <summary>
+/// Program entry class.
+/// </summary>
+public static class Program
 {
-    /// <summary>
-    /// Program entry class.
-    /// </summary>
-    public static class Program
+    private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
     {
-        private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
-        {
-            var storageAccountConnectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString") ?? throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
+        var storageAccountConnectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString") ?? throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
 
-            services.AddLogging();
-            services.AddSingleton<ILogger, Logger>();
-            services.AddSingleton(r => new BlobServiceClient(storageAccountConnectionString));
-            services.AddSingleton(r => new TableServiceClient(storageAccountConnectionString));
-            services.AddSingleton<IAzureBlobStorageClient, AzureBlobStorageClient>();
-            services.AddSingleton<IModelPersister, AzureBlobStorageModelPersister>();
-            services.AddSingleton<IDal, Dal>();
-            services.AddSingleton<ITorrentFileDao, AzureBlobStorageTorrentFileDao>();
-            services.AddSingleton<IFeedDao, AzureBlobStorageFeedDao>();
-            services.AddSingleton<IUserDao, AzureTableStorageUserDao>();
-            services.AddSingleton<ISeriesDao, AzureTableStorageSeriesDao>();
-            services.AddSingleton<IDictionaryDao, AzureTableStorageDictionaryDao>();
-            services.AddSingleton<IEpisodeDao, AzureTableStorageEpisodeDao>();
-            services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
-            services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
-            services.AddSingleton<IRssFeed, LostFilmRssFeed>();
-            services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
-            services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
-            services.AddSingleton<IConfiguration, Configuration>();
-            services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
-            services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
-            services.AddSingleton<ILostFilmClient, LostFilmClient>();
-            services.AddHttpClient();
-            services.AddTransient(sp =>
-                new UpdateFeedsCommand(
-                    sp.GetService<ILogger>() !,
-                    sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
-                    sp.GetService<IDal>() !,
-                    sp.GetService<IConfiguration>() !,
-                    sp.GetService<IModelPersister>() !,
-                    sp.GetService<ILostFilmClient>() !));
-            services.AddTransient(sp =>
-                new DownloadCoverImagesCommand(
-                    sp.GetService<ILogger>() !,
-                    sp.GetService<IFileSystem>() !,
-                    sp.GetService<IConfiguration>() !,
-                    sp.GetService<ISeriesDao>() !,
-                    sp.GetService<ILostFilmClient>() !,
-                    sp.GetService<IDictionaryDao>() !));
-            services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
-            services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
-            services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();
-            services.AddTransient<ICommand<GetUserRequestModel, GetUserResponseModel>, GetUserCommand>();
-        };
+        services.AddLogging();
+        services.AddSingleton<ILogger, Logger>();
+        services.AddSingleton(r => new BlobServiceClient(storageAccountConnectionString));
+        services.AddSingleton(r => new TableServiceClient(storageAccountConnectionString));
+        services.AddSingleton<IAzureBlobStorageClient, AzureBlobStorageClient>();
+        services.AddSingleton<IModelPersister, AzureBlobStorageModelPersister>();
+        services.AddSingleton<IDal, Dal>();
+        services.AddSingleton<ITorrentFileDao, AzureBlobStorageTorrentFileDao>();
+        services.AddSingleton<IFeedDao, AzureBlobStorageFeedDao>();
+        services.AddSingleton<IUserDao, AzureTableStorageUserDao>();
+        services.AddSingleton<ISeriesDao, AzureTableStorageSeriesDao>();
+        services.AddSingleton<IDictionaryDao, AzureTableStorageDictionaryDao>();
+        services.AddSingleton<IEpisodeDao, AzureTableStorageEpisodeDao>();
+        services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
+        services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
+        services.AddSingleton<IRssFeed, LostFilmRssFeed>();
+        services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
+        services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
+        services.AddSingleton<IConfiguration, Configuration>();
+        services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
+        services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
+        services.AddSingleton<ILostFilmClient, LostFilmClient>();
+        services.AddHttpClient();
+        services.AddTransient(sp =>
+            new UpdateFeedsCommand(
+                sp.GetService<ILogger>() !,
+                sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
+                sp.GetService<IDal>() !,
+                sp.GetService<IConfiguration>() !,
+                sp.GetService<IModelPersister>() !,
+                sp.GetService<ILostFilmClient>() !));
+        services.AddTransient(sp =>
+            new DownloadCoverImagesCommand(
+                sp.GetService<ILogger>() !,
+                sp.GetService<IFileSystem>() !,
+                sp.GetService<IConfiguration>() !,
+                sp.GetService<ISeriesDao>() !,
+                sp.GetService<ILostFilmClient>() !,
+                sp.GetService<IDictionaryDao>() !));
+        services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
+        services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
+        services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();
+        services.AddTransient<ICommand<GetUserRequestModel, GetUserResponseModel>, GetUserCommand>();
+    };
 
-        /// <summary>
-        /// Program entry point.
-        /// </summary>
-        public static void Main()
-        {
-            var host = new HostBuilder()
-                .ConfigureFunctionsWorkerDefaults(worker => worker.UseNewtonsoftJson())
-                .ConfigureOpenApi()
-                .ConfigureServices(RegisterDependencyInjection)
-                .Build();
+    /// <summary>
+    /// Program entry point.
+    /// </summary>
+    public static void Main()
+    {
+        var host = new HostBuilder()
+            .ConfigureFunctionsWorkerDefaults(worker => worker.UseNewtonsoftJson())
+            .ConfigureOpenApi()
+            .ConfigureServices(RegisterDependencyInjection)
+            .Build();
 
-            host.Run();
-        }
+        host.Run();
     }
 }

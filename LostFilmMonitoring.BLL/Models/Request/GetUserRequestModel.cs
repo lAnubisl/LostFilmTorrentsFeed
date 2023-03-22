@@ -21,16 +21,15 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models.Request
+namespace LostFilmMonitoring.BLL.Models.Request;
+
+/// <summary>
+/// Represents the request for getting user information.
+/// </summary>
+public class GetUserRequestModel
 {
     /// <summary>
-    /// Represents the request for getting user information.
+    /// Gets or sets the user id.
     /// </summary>
-    public class GetUserRequestModel
-    {
-        /// <summary>
-        /// Gets or sets the user id.
-        /// </summary>
-        public string? UserId { get; set; }
-    }
+    public string? UserId { get; set; }
 }

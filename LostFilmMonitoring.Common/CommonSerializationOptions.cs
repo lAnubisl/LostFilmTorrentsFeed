@@ -21,20 +21,19 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.Common
+namespace LostFilmMonitoring.Common;
+
+/// <summary>
+/// Common serialization options.
+/// </summary>
+public static class CommonSerializationOptions
 {
     /// <summary>
-    /// Common serialization options.
+    /// Gets default serialization options.
     /// </summary>
-    public static class CommonSerializationOptions
+    public static readonly JsonSerializerOptions Default = new ()
     {
-        /// <summary>
-        /// Gets default serialization options.
-        /// </summary>
-        public static readonly JsonSerializerOptions Default = new ()
-        {
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
-            WriteIndented = true,
-        };
-    }
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+        WriteIndented = true,
+    };
 }

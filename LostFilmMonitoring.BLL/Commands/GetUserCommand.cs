@@ -21,48 +21,47 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Commands
+namespace LostFilmMonitoring.BLL.Commands;
+
+/// <summary>
+/// Get user information.
+/// </summary>
+public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel>
 {
+    private readonly IUserDao userDao;
+    private readonly ILogger logger;
+
     /// <summary>
-    /// Get user information.
+    /// Initializes a new instance of the <see cref="GetUserCommand"/> class.
     /// </summary>
-    public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel>
+    /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
+    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    public GetUserCommand(IUserDao userDao, ILogger logger)
     {
-        private readonly IUserDao userDao;
-        private readonly ILogger logger;
+        this.logger = logger?.CreateScope(nameof(GetUserCommand)) ?? throw new ArgumentNullException(nameof(logger));
+        this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GetUserCommand"/> class.
-        /// </summary>
-        /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
-        /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        public GetUserCommand(IUserDao userDao, ILogger logger)
+    /// <inheritdoc/>
+    public async Task<GetUserResponseModel> ExecuteAsync(GetUserRequestModel? request)
+    {
+        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(GetUserRequestModel request)");
+        if (request == null)
         {
-            this.logger = logger?.CreateScope(nameof(GetUserCommand)) ?? throw new ArgumentNullException(nameof(logger));
-            this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));
+            return new GetUserResponseModel(ValidationResult.Fail(ErrorMessages.RequestNull));
         }
 
-        /// <inheritdoc/>
-        public async Task<GetUserResponseModel> ExecuteAsync(GetUserRequestModel? request)
+        if (request.UserId == null)
         {
-            this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(GetUserRequestModel request)");
-            if (request == null)
-            {
-                return new GetUserResponseModel(ValidationResult.Fail(ErrorMessages.RequestNull));
-            }
-
-            if (request.UserId == null)
-            {
-                return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.FieldEmpty));
-            }
-
-            var user = await this.userDao.LoadAsync(request.UserId);
-            if (user == null)
-            {
-                return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.UserDoesNotExist, request.UserId));
-            }
-
-            return new GetUserResponseModel(user);
+            return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.FieldEmpty));
         }
+
+        var user = await this.userDao.LoadAsync(request.UserId);
+        if (user == null)
+        {
+            return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.UserDoesNotExist, request.UserId));
+        }
+
+        return new GetUserResponseModel(user);
     }
 }

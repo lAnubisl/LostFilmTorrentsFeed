@@ -21,16 +21,15 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Tests
+namespace LostFilmTV.Client.Tests;
+
+[ExcludeFromCodeCoverage]
+internal class Helper
 {
-    [ExcludeFromCodeCoverage]
-    internal class Helper
+    internal static string GetEmbeddedResource(string name)
     {
-        internal static string GetEmbeddedResource(string name)
-        {
-            using var resource = typeof(Helper).GetTypeInfo().Assembly.GetManifestResourceStream(name);
-            using var reader = new StreamReader(resource);
-            return reader.ReadToEnd();
-        }
+        using var resource = typeof(Helper).GetTypeInfo().Assembly.GetManifestResourceStream(name);
+        using var reader = new StreamReader(resource);
+        return reader.ReadToEnd();
     }
 }

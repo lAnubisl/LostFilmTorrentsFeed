@@ -21,43 +21,42 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Commands
+namespace LostFilmMonitoring.BLL.Commands;
+
+/// <summary>
+/// Sign in user.
+/// </summary>
+public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
 {
+    private readonly ILogger logger;
+    private readonly IUserDao userDao;
+
     /// <summary>
-    /// Sign in user.
+    /// Initializes a new instance of the <see cref="SignInCommand"/> class.
     /// </summary>
-    public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
+    /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
+    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    public SignInCommand(IUserDao userDao, ILogger logger)
     {
-        private readonly ILogger logger;
-        private readonly IUserDao userDao;
+        this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));
+        this.logger = logger?.CreateScope(nameof(SignInCommand)) ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SignInCommand"/> class.
-        /// </summary>
-        /// <param name="userDao">Instance of <see cref="IUserDao"/>.</param>
-        /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-        public SignInCommand(IUserDao userDao, ILogger logger)
+    /// <inheritdoc/>
+    public async Task<SignInResponseModel> ExecuteAsync(SignInRequestModel? request)
+    {
+        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(SingInRequestModel request);");
+        if (request == null)
         {
-            this.userDao = userDao ?? throw new ArgumentNullException(nameof(userDao));
-            this.logger = logger?.CreateScope(nameof(SignInCommand)) ?? throw new ArgumentNullException(nameof(logger));
+            return new SignInResponseModel { Success = false };
         }
 
-        /// <inheritdoc/>
-        public async Task<SignInResponseModel> ExecuteAsync(SignInRequestModel? request)
+        if (request.UserId == null)
         {
-            this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(SingInRequestModel request);");
-            if (request == null)
-            {
-                return new SignInResponseModel { Success = false };
-            }
-
-            if (request.UserId == null)
-            {
-                return new SignInResponseModel { Success = false };
-            }
-
-            var user = await this.userDao.LoadAsync(request.UserId);
-            return new SignInResponseModel { Success = user != null };
+            return new SignInResponseModel { Success = false };
         }
+
+        var user = await this.userDao.LoadAsync(request.UserId);
+        return new SignInResponseModel { Success = user != null };
     }
 }

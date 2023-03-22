@@ -21,49 +21,48 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL
+namespace LostFilmMonitoring.BLL;
+
+/// <inheritdoc/>
+public class Configuration : IConfiguration
 {
-    /// <inheritdoc/>
-    public class Configuration : IConfiguration
+    private readonly string[] torrentAnnounceListPatterns;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Configuration"/> class.
+    /// </summary>
+    /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
+    public Configuration(IConfigurationValuesProvider provider)
     {
-        private readonly string[] torrentAnnounceListPatterns;
+        this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
+        this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
+        this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
+        this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
+        this.ImagesDirectory = provider.GetValue("IMAGESDIRECTORY") ?? "images";
+        this.TorrentsDirectory = provider.GetValue("TORRENTSDIRECTORY") ?? "torrentfiles";
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Configuration"/> class.
-        /// </summary>
-        /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
-        public Configuration(IConfigurationValuesProvider provider)
-        {
-            this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
-            this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
-            this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
-            this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
-            this.ImagesDirectory = provider.GetValue("IMAGESDIRECTORY") ?? "images";
-            this.TorrentsDirectory = provider.GetValue("TORRENTSDIRECTORY") ?? "torrentfiles";
-        }
+    /// <inheritdoc/>
+    public string BaseUSESS { get; private set; }
 
-        /// <inheritdoc/>
-        public string BaseUSESS { get; private set; }
+    /// <inheritdoc/>
+    public string ImagesDirectory { get; private set; }
 
-        /// <inheritdoc/>
-        public string ImagesDirectory { get; private set; }
+    /// <inheritdoc/>
+    public string TorrentsDirectory { get; private set; }
 
-        /// <inheritdoc/>
-        public string TorrentsDirectory { get; private set; }
+    /// <inheritdoc/>
+    public string BaseUrl { get; private set; }
 
-        /// <inheritdoc/>
-        public string BaseUrl { get; private set; }
+    /// <inheritdoc/>
+    public string BaseUID { get; private set; }
 
-        /// <inheritdoc/>
-        public string BaseUID { get; private set; }
-
-        /// <inheritdoc/>
-        public string[] GetTorrentAnnounceList(string link_uid)
-        {
-            return this.torrentAnnounceListPatterns
-                .Select(p => string.Format(p, link_uid ?? this.BaseUID))
-                .Select(s => s)
-                .ToArray();
-        }
+    /// <inheritdoc/>
+    public string[] GetTorrentAnnounceList(string link_uid)
+    {
+        return this.torrentAnnounceListPatterns
+            .Select(p => string.Format(p, link_uid ?? this.BaseUID))
+            .Select(s => s)
+            .ToArray();
     }
 }

@@ -21,137 +21,136 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.RssFeed
+namespace LostFilmTV.Client.RssFeed;
+
+/// <summary>
+/// Represents base rss feed.
+/// </summary>
+public abstract class BaseRssFeed
 {
+    private readonly IHttpClientFactory httpClientFactory;
+
     /// <summary>
-    /// Represents base rss feed.
+    /// Initializes a new instance of the <see cref="BaseRssFeed"/> class.
     /// </summary>
-    public abstract class BaseRssFeed
+    /// <param name="logger">Logger.</param>
+    /// <param name="httpClientFactory">IHttpClientFactory.</param>
+    protected BaseRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
     {
-        private readonly IHttpClientFactory httpClientFactory;
+        this.Logger = logger;
+        this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseRssFeed"/> class.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="httpClientFactory">IHttpClientFactory.</param>
-        protected BaseRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
+    /// <summary>
+    /// Gets Logger.
+    /// </summary>
+    protected ILogger Logger { get; }
+
+    /// <summary>
+    /// Downloads content by URL.
+    /// </summary>
+    /// <param name="rssUri">URL.</param>
+    /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
+    /// <returns>Content.</returns>
+    protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
+    {
+        this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
+        using var client = this.httpClientFactory.CreateClient();
+        var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
+        if (requestHeaders != null)
         {
-            this.Logger = logger;
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        }
-
-        /// <summary>
-        /// Gets Logger.
-        /// </summary>
-        protected ILogger Logger { get; }
-
-        /// <summary>
-        /// Downloads content by URL.
-        /// </summary>
-        /// <param name="rssUri">URL.</param>
-        /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
-        /// <returns>Content.</returns>
-        protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
-        {
-            this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
-            using var client = this.httpClientFactory.CreateClient();
-            var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
-            if (requestHeaders != null)
+            foreach (var header in requestHeaders)
             {
-                foreach (var header in requestHeaders)
-                {
-                    message.Headers.Add(header.Key, header.Value);
-                }
-            }
-
-            try
-            {
-                var response = await client.SendAsync(message);
-                var rssText = await response.Content.ReadAsStringAsync();
-                this.Logger.Debug(rssText);
-                return rssText;
-            }
-            catch (TaskCanceledException ex)
-            {
-                this.Logger.Log(ex);
-                throw new RemoteServiceUnavailableException(ex);
-            }
-            catch (IOException ex)
-            {
-                this.Logger.Log(ex);
-                throw new RemoteServiceUnavailableException(ex);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Log(ex);
-                throw new RemoteServiceUnavailableException(ex);
+                message.Headers.Add(header.Key, header.Value);
             }
         }
 
-        /// <summary>
-        /// Reads Feed item objects from RSS content.
-        /// </summary>
-        /// <param name="rssText">RSS content.</param>
-        /// <returns>Feed item objects.</returns>
-        protected SortedSet<FeedItemResponse> GetItems(string rssText)
+        try
         {
-            this.Logger.Info($"Call: {nameof(this.GetItems)}(rssText)");
-            if (string.IsNullOrWhiteSpace(rssText))
-            {
-                this.Logger.Error("RSS content is empty.");
-                return new SortedSet<FeedItemResponse>();
-            }
+            var response = await client.SendAsync(message);
+            var rssText = await response.Content.ReadAsStringAsync();
+            this.Logger.Debug(rssText);
+            return rssText;
+        }
+        catch (TaskCanceledException ex)
+        {
+            this.Logger.Log(ex);
+            throw new RemoteServiceUnavailableException(ex);
+        }
+        catch (IOException ex)
+        {
+            this.Logger.Log(ex);
+            throw new RemoteServiceUnavailableException(ex);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.Log(ex);
+            throw new RemoteServiceUnavailableException(ex);
+        }
+    }
 
-            XDocument document;
-            try
-            {
-                document = Parse(rssText);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}'{rssText}'", ex);
-                return new SortedSet<FeedItemResponse>();
-            }
-
-            return GetItems(document);
+    /// <summary>
+    /// Reads Feed item objects from RSS content.
+    /// </summary>
+    /// <param name="rssText">RSS content.</param>
+    /// <returns>Feed item objects.</returns>
+    protected SortedSet<FeedItemResponse> GetItems(string rssText)
+    {
+        this.Logger.Info($"Call: {nameof(this.GetItems)}(rssText)");
+        if (string.IsNullOrWhiteSpace(rssText))
+        {
+            this.Logger.Error("RSS content is empty.");
+            return new SortedSet<FeedItemResponse>();
         }
 
-        /// <summary>
-        /// Generages XDocument from input string.
-        /// </summary>
-        /// <param name="rssString">Input string.</param>
-        /// <returns>XDocument.</returns>
-        private static XDocument Parse(string rssString)
+        XDocument document;
+        try
         {
-            string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
-            string result = Regex.Replace(rssString, pattern, m =>
-                        m.Groups["start"].Value +
-                        HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
-                        m.Groups["end"].Value);
-            try
-            {
-                return XDocument.Parse(result);
-            }
-            catch
-            {
-                return XDocument.Parse(rssString);
-            }
+            document = Parse(rssText);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}'{rssText}'", ex);
+            return new SortedSet<FeedItemResponse>();
         }
 
-        /// <summary>
-        /// Read feed items from XDocument.
-        /// </summary>
-        /// <param name="doc">XDocument.</param>
-        /// <returns>Set of FeedItemResponse.</returns>
-        private static SortedSet<FeedItemResponse> GetItems(XDocument doc)
+        return GetItems(document);
+    }
+
+    /// <summary>
+    /// Generages XDocument from input string.
+    /// </summary>
+    /// <param name="rssString">Input string.</param>
+    /// <returns>XDocument.</returns>
+    private static XDocument Parse(string rssString)
+    {
+        string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
+        string result = Regex.Replace(rssString, pattern, m =>
+                    m.Groups["start"].Value +
+                    HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
+                    m.Groups["end"].Value);
+        try
         {
-            var entries = from item in doc.Root?.Descendants()
-                          .First(i => i.Name.LocalName == "channel")
-                          .Elements()
-                          .Where(i => i.Name.LocalName == "item")
-                          select new FeedItemResponse(item);
-            return new SortedSet<FeedItemResponse>(entries);
+            return XDocument.Parse(result);
         }
+        catch
+        {
+            return XDocument.Parse(rssString);
+        }
+    }
+
+    /// <summary>
+    /// Read feed items from XDocument.
+    /// </summary>
+    /// <param name="doc">XDocument.</param>
+    /// <returns>Set of FeedItemResponse.</returns>
+    private static SortedSet<FeedItemResponse> GetItems(XDocument doc)
+    {
+        var entries = from item in doc.Root?.Descendants()
+                      .First(i => i.Name.LocalName == "channel")
+                      .Elements()
+                      .Where(i => i.Name.LocalName == "item")
+                      select new FeedItemResponse(item);
+        return new SortedSet<FeedItemResponse>(entries);
     }
 }

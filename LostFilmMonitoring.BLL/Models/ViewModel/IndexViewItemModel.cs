@@ -21,31 +21,30 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Models.ViewModel
+namespace LostFilmMonitoring.BLL.Models.ViewModel;
+
+/// <summary>
+/// Represents information to be shown in home screen.
+/// </summary>
+public class IndexViewItemModel
 {
     /// <summary>
-    /// Represents information to be shown in home screen.
+    /// Initializes a new instance of the <see cref="IndexViewItemModel"/> class.
     /// </summary>
-    public class IndexViewItemModel
+    /// <param name="series">Series.</param>
+    public IndexViewItemModel(Series series)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IndexViewItemModel"/> class.
-        /// </summary>
-        /// <param name="series">Series.</param>
-        public IndexViewItemModel(Series series)
-        {
-            this.Name = series.Name;
-            this.ImageFileName = series.LostFilmId + ".jpg";
-        }
-
-        /// <summary>
-        /// Gets or sets item name.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets image file name.
-        /// </summary>
-        public string ImageFileName { get; set; }
+        this.Name = series.Name;
+        this.ImageFileName = series.LostFilmId + ".jpg";
     }
+
+    /// <summary>
+    /// Gets or sets item name.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets image file name.
+    /// </summary>
+    public string ImageFileName { get; set; }
 }

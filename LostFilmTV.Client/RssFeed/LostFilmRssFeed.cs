@@ -21,66 +21,65 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.RssFeed
+namespace LostFilmTV.Client.RssFeed;
+
+/// <summary>
+/// LostFilmRssFeed.
+/// </summary>
+public class LostFilmRssFeed : BaseRssFeed, IRssFeed
 {
+    private const string RssUrl = "https://www.lostfilm.tv/rss.xml";
+
     /// <summary>
-    /// LostFilmRssFeed.
+    /// Initializes a new instance of the <see cref="LostFilmRssFeed"/> class.
     /// </summary>
-    public class LostFilmRssFeed : BaseRssFeed, IRssFeed
+    /// <param name="logger">Logger.</param>
+    /// <param name="httpClientFactory">httpClientFactory.</param>
+    public LostFilmRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
+        : base(logger?.CreateScope(nameof(ReteOrgRssFeed)) ?? throw new ArgumentNullException(nameof(logger)), httpClientFactory)
     {
-        private const string RssUrl = "https://www.lostfilm.tv/rss.xml";
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LostFilmRssFeed"/> class.
-        /// </summary>
-        /// <param name="logger">Logger.</param>
-        /// <param name="httpClientFactory">httpClientFactory.</param>
-        public LostFilmRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
-            : base(logger?.CreateScope(nameof(ReteOrgRssFeed)) ?? throw new ArgumentNullException(nameof(logger)), httpClientFactory)
+    /// <summary>
+    /// Reads Feed items.
+    /// </summary>
+    /// <returns>Feed items.</returns>
+    public async Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync()
+    {
+        var requestHeaders = new Dictionary<string, string>
         {
+            { "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36" },
+        };
+
+        string rssText;
+        try
+        {
+            rssText = await this.DownloadRssTextAsync(RssUrl, requestHeaders);
+        }
+        catch (RemoteServiceUnavailableException)
+        {
+            return new SortedSet<FeedItemResponse>();
         }
 
-        /// <summary>
-        /// Reads Feed items.
-        /// </summary>
-        /// <returns>Feed items.</returns>
-        public async Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync()
+        rssText = FixAmpBug(rssText);
+        return this.GetItems(rssText);
+    }
+
+    private static string FixAmpBug(string rss)
+    {
+        var ampIndex = rss.IndexOf('&');
+        if (ampIndex == -1)
         {
-            var requestHeaders = new Dictionary<string, string>
-            {
-                { "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36" },
-            };
-
-            string rssText;
-            try
-            {
-                rssText = await this.DownloadRssTextAsync(RssUrl, requestHeaders);
-            }
-            catch (RemoteServiceUnavailableException)
-            {
-                return new SortedSet<FeedItemResponse>();
-            }
-
-            rssText = FixAmpBug(rssText);
-            return this.GetItems(rssText);
+            return rss;
         }
 
-        private static string FixAmpBug(string rss)
+        var escapedAmpIndex = rss.IndexOf("&amp;");
+        if (ampIndex == escapedAmpIndex)
         {
-            var ampIndex = rss.IndexOf('&');
-            if (ampIndex == -1)
-            {
-                return rss;
-            }
-
-            var escapedAmpIndex = rss.IndexOf("&amp;");
-            if (ampIndex == escapedAmpIndex)
-            {
-                return rss[.. (ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1) ..]);
-            }
-
-            rss = rss.Insert(ampIndex + 1, "amp;");
-            return FixAmpBug(rss);
+            return rss[.. (ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1) ..]);
         }
+
+        rss = rss.Insert(ampIndex + 1, "amp;");
+        return FixAmpBug(rss);
     }
 }

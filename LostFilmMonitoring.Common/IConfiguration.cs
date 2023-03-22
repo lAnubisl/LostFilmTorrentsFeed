@@ -21,48 +21,47 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.Common
+namespace LostFilmMonitoring.Common;
+
+/// <summary>
+/// Configuration.
+/// </summary>
+public interface IConfiguration
 {
     /// <summary>
-    /// Configuration.
+    /// Gets Base torrent tracker user identifier.
     /// </summary>
-    public interface IConfiguration
-    {
-        /// <summary>
-        /// Gets Base torrent tracker user identifier.
-        /// </summary>
-        /// <returns>Base torrent tracker user identifier.</returns>
-        string BaseUID { get; }
+    /// <returns>Base torrent tracker user identifier.</returns>
+    string BaseUID { get; }
 
-        /// <summary>
-        /// Gets BaseFeedCookie.
-        /// </summary>
-        /// <returns>BaseFeedCookie.</returns>
-        string BaseUSESS { get; }
+    /// <summary>
+    /// Gets BaseFeedCookie.
+    /// </summary>
+    /// <returns>BaseFeedCookie.</returns>
+    string BaseUSESS { get; }
 
-        /// <summary>
-        /// Gets physical path where series covers are stored.
-        /// </summary>
-        /// <returns>Physical path where series covers are stored.</returns>
-        string ImagesDirectory { get; }
+    /// <summary>
+    /// Gets physical path where series covers are stored.
+    /// </summary>
+    /// <returns>Physical path where series covers are stored.</returns>
+    string ImagesDirectory { get; }
 
-        /// <summary>
-        /// Gets physical path where torrent files are stored.
-        /// </summary>
-        /// <returns>Physical path where torrent files are stored.</returns>
-        string TorrentsDirectory { get; }
+    /// <summary>
+    /// Gets physical path where torrent files are stored.
+    /// </summary>
+    /// <returns>Physical path where torrent files are stored.</returns>
+    string TorrentsDirectory { get; }
 
-        /// <summary>
-        /// Gets base url where website is hosted.
-        /// </summary>
-        /// <returns>Base url where website is hosted.</returns>
-        string BaseUrl { get; }
+    /// <summary>
+    /// Gets base url where website is hosted.
+    /// </summary>
+    /// <returns>Base url where website is hosted.</returns>
+    string BaseUrl { get; }
 
-        /// <summary>
-        /// Get list of torrent trackers for torrent file.
-        /// </summary>
-        /// <param name="link_uid">Torrent tracker user identifier.</param>
-        /// <returns>List of torrent trackers for torrent file.</returns>
-        string[] GetTorrentAnnounceList(string link_uid);
-    }
+    /// <summary>
+    /// Get list of torrent trackers for torrent file.
+    /// </summary>
+    /// <param name="link_uid">Torrent tracker user identifier.</param>
+    /// <returns>List of torrent trackers for torrent file.</returns>
+    string[] GetTorrentAnnounceList(string link_uid);
 }
