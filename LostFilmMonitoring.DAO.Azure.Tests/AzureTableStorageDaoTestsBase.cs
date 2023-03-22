@@ -27,9 +27,9 @@ namespace LostFilmMonitoring.DAO.Azure.Tests;
 public abstract class AzureTableStorageDaoTestsBase<T> where T
     : BaseAzureTableStorageDao
 {
-    protected Mock<TableServiceClient> serviceClient;
-    protected Mock<TableClient> tableClient;
-    protected Mock<Common.ILogger> logger;
+    protected Mock<TableServiceClient>? serviceClient;
+    protected Mock<TableClient>? tableClient;
+    protected Mock<Common.ILogger>? logger;
 
     [SetUp]
     public void SetUp()

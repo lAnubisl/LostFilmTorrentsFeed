@@ -26,21 +26,21 @@ namespace LostFilmMonitoring.BLL.Tests.Commands;
 [ExcludeFromCodeCoverage]
 internal class SaveSubscriptionCommandTests
 {
-    private Mock<IUserDao> userDao;
-    private Mock<Common.ILogger> logger;
-    private Mock<IValidator<EditSubscriptionRequestModel>> validator;
-    private Mock<IDal> dal;
-    private Mock<IConfiguration> configuration;
-    private Mock<IModelPersister> persister;
-    private Mock<ISubscriptionDao> subscriptionDAO;
-    private Mock<IFeedDao> feedDAO;
-    private Mock<ISeriesDao> seriesDAO;
-    private Mock<ITorrentFileDao> torrentFileDAO;
-    private Dictionary<string, User> usersCollection;
-    private Dictionary<string, Subscription[]> subscriptionsCollection;
-    private Dictionary<string, Series> seriesCollection;
-    private Dictionary<string, TorrentFile> torrentFileCollection;
-    private Dictionary<string, SortedSet<FeedItem>> feedItemsCollection;
+    private Mock<IUserDao>? userDao;
+    private Mock<Common.ILogger>? logger;
+    private Mock<IValidator<EditSubscriptionRequestModel>>? validator;
+    private Mock<IDal>? dal;
+    private Mock<IConfiguration>? configuration;
+    private Mock<IModelPersister>? persister;
+    private Mock<ISubscriptionDao>? subscriptionDAO;
+    private Mock<IFeedDao>? feedDAO;
+    private Mock<ISeriesDao>? seriesDAO;
+    private Mock<ITorrentFileDao>? torrentFileDAO;
+    private Dictionary<string, User>? usersCollection;
+    private Dictionary<string, Subscription[]>? subscriptionsCollection;
+    private Dictionary<string, Series>? seriesCollection;
+    private Dictionary<string, TorrentFile>? torrentFileCollection;
+    private Dictionary<string, SortedSet<FeedItem>>? feedItemsCollection;
 
     [SetUp]
     public void Setup()
@@ -70,10 +70,10 @@ internal class SaveSubscriptionCommandTests
     {
         var action = () => new SaveSubscriptionCommand(
             null!,
-            this.validator.Object,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object
+            this.validator!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
@@ -82,11 +82,11 @@ internal class SaveSubscriptionCommandTests
     public void Constructor_should_throw_exception_when_validator_null()
     {
         var action = () => new SaveSubscriptionCommand(
-            this.logger.Object,
+            this.logger!.Object,
             null!,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("validator");
     }
@@ -95,11 +95,11 @@ internal class SaveSubscriptionCommandTests
     public void Constructor_should_throw_exception_when_dal_null()
     {
         var action = () => new SaveSubscriptionCommand(
-            this.logger.Object,
-            this.validator.Object,
+            this.logger!.Object,
+            this.validator!.Object,
             null!,
-            this.configuration.Object,
-            this.persister.Object
+            this.configuration!.Object,
+            this.persister!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
@@ -108,11 +108,11 @@ internal class SaveSubscriptionCommandTests
     public void Constructor_should_throw_exception_when_configuration_null()
     {
         var action = () => new SaveSubscriptionCommand(
-            this.logger.Object,
-            this.validator.Object,
-            this.dal.Object,
+            this.logger!.Object,
+            this.validator!.Object,
+            this.dal!.Object,
             null!,
-            this.persister.Object
+            this.persister!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
@@ -121,10 +121,10 @@ internal class SaveSubscriptionCommandTests
     public void Constructor_should_throw_exception_when_persister_null()
     {
         var action = () => new SaveSubscriptionCommand(
-            this.logger.Object,
-            this.validator.Object,
-            this.dal.Object,
-            this.configuration.Object,
+            this.logger!.Object,
+            this.validator!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
             null!
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("persister");
@@ -158,7 +158,7 @@ internal class SaveSubscriptionCommandTests
     public async Task ExecuteAsync_should_return_error_when_validator_returned_validation_error()
     {
         var validationError = ValidationResult.Fail("property", "message");
-        validator.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(validationError);
+        validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(validationError);
 
         var command = GetCommand();
         var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = Array.Empty<SubscriptionItem>() });
@@ -186,23 +186,23 @@ internal class SaveSubscriptionCommandTests
             }
         };
 
-        validator.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
+        validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
         var response = await GetCommand().ExecuteAsync(request);
 
         // load user
-        this.userDao.Verify(x => x.LoadAsync(request.UserId), Times.Once);
+        this.userDao!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
         // load user feed
-        this.feedDAO.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
+        this.feedDAO!.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
         // load subscription
-        this.subscriptionDAO.Verify(x => x.LoadAsync(request.UserId), Times.Once);
+        this.subscriptionDAO!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
         // load details for new series
-        this.seriesDAO.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
+        this.seriesDAO!.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
         // load torrent file
-        this.torrentFileDAO.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
         // load list of trackers
-        this.configuration.Verify(x => x.GetTorrentAnnounceList(usersCollection[request.UserId].TrackerId), Times.Once);
+        this.configuration!.Verify(x => x.GetTorrentAnnounceList(usersCollection![request.UserId].TrackerId), Times.Once);
         // save torrent file for user
-        this.torrentFileDAO.Verify(x => x.SaveUserFileAsync(request.UserId, It.Is<TorrentFile>(t => t.FileName == "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4")), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.SaveUserFileAsync(request.UserId, It.Is<TorrentFile>(t => t.FileName == "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4")), Times.Once);
         // var user feed
         this.feedDAO.Verify(x => x.SaveUserFeedAsync(request.UserId, It.IsAny<FeedItem[]>()), Times.Once);
         // do not delete any torrent files
@@ -225,27 +225,27 @@ internal class SaveSubscriptionCommandTests
             }
         };
 
-        validator.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
+        validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
         var response = await GetCommand().ExecuteAsync(request);
 
         // load user
-        this.userDao.Verify(x => x.LoadAsync(request.UserId), Times.Once);
+        this.userDao!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
         // load user feed
-        this.feedDAO.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
+        this.feedDAO!.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
         // load subscription
-        this.subscriptionDAO.Verify(x => x.LoadAsync(request.UserId), Times.Once);
+        this.subscriptionDAO!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
         // load details for new series
-        this.seriesDAO.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
+        this.seriesDAO!.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
         // load torrent file
-        this.torrentFileDAO.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
         // load list of trackers
-        this.configuration.Verify(x => x.GetTorrentAnnounceList(usersCollection[request.UserId].TrackerId), Times.Once);
+        this.configuration!.Verify(x => x.GetTorrentAnnounceList(usersCollection![request.UserId].TrackerId), Times.Once);
         // save torrent file for user
-        this.torrentFileDAO.Verify(x => x.SaveUserFileAsync(request.UserId, It.Is<TorrentFile>(t => t.FileName == "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4")), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.SaveUserFileAsync(request.UserId, It.Is<TorrentFile>(t => t.FileName == "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4")), Times.Once);
         // var user feed
-        this.feedDAO.Verify(x => x.SaveUserFeedAsync(request.UserId, It.IsAny<FeedItem[]>()), Times.Once);
+        this.feedDAO!.Verify(x => x.SaveUserFeedAsync(request.UserId, It.IsAny<FeedItem[]>()), Times.Once);
         // do delete old torrent file
-        this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(request.UserId, "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4.torrent"), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.DeleteUserFileAsync(request.UserId, "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4.torrent"), Times.Once);
     }
     
     private static Stream GetTorrent(string torrentId)
@@ -302,29 +302,29 @@ internal class SaveSubscriptionCommandTests
 
     private void SetupStorage()
     {
-        foreach(var kvp in usersCollection)
+        foreach(var kvp in usersCollection!)
         {
-            this.userDao.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
+            this.userDao!.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
 
-        foreach(var kvp in subscriptionsCollection)
+        foreach(var kvp in subscriptionsCollection!)
         {
-            this.subscriptionDAO.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
+            this.subscriptionDAO!.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
 
-        foreach(var kvp in seriesCollection)
+        foreach(var kvp in seriesCollection!)
         {
-            this.seriesDAO.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
+            this.seriesDAO!.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
 
-        foreach(var kvp in torrentFileCollection)
+        foreach(var kvp in torrentFileCollection!)
         {
-            this.torrentFileDAO.Setup(x => x.LoadBaseFileAsync(kvp.Key)).ReturnsAsync(kvp.Value);
+            this.torrentFileDAO!.Setup(x => x.LoadBaseFileAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
 
-        foreach(var kvp in feedItemsCollection)
+        foreach(var kvp in feedItemsCollection!)
         {
-            this.feedDAO.Setup(x => x.LoadUserFeedAsync(kvp.Key)).ReturnsAsync(kvp.Value);
+            this.feedDAO!.Setup(x => x.LoadUserFeedAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
     }
 
@@ -338,5 +338,5 @@ internal class SaveSubscriptionCommandTests
     }
 
     private SaveSubscriptionCommand GetCommand()
-        => new (this.logger.Object, this.validator.Object, this.dal.Object, this.configuration.Object, this.persister.Object);
+        => new (this.logger!.Object, this.validator!.Object, this.dal!.Object, this.configuration!.Object, this.persister!.Object);
 }

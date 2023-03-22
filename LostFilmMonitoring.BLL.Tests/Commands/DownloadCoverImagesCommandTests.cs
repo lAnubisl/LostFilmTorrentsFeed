@@ -26,12 +26,13 @@ namespace LostFilmMonitoring.BLL.Tests.Commands;
 [ExcludeFromCodeCoverage]
 public class DownloadCoverImagesCommandTests
 {
-    private Mock<ISeriesDao> seriesDao;
-    private Mock<Common.ILogger> logger;
-    private Mock<IFileSystem> fileSystem;
-    private Mock<IConfiguration> configuration;
-    private Mock<ILostFilmClient> lostFilmClient;
-    private Mock<IDictionaryDao> dictionaryDao;
+    private Mock<ISeriesDao>? seriesDao;
+    private Mock<Common.ILogger>? logger;
+    private Mock<IFileSystem>? fileSystem;
+    private Mock<IConfiguration>? configuration;
+    private Mock<ILostFilmClient>? lostFilmClient;
+    private Mock<IDictionaryDao>? dictionaryDao;
+    private Mock<IImageProcessor>? imageProcessor;
 
     [SetUp]
     public void Setup()
@@ -42,9 +43,10 @@ public class DownloadCoverImagesCommandTests
         this.lostFilmClient = new();
         this.seriesDao = new();
         this.logger = new();
+        this.imageProcessor = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
     }
 
     private DownloadCoverImagesCommand GetService()
-        => new(this.logger.Object, this.fileSystem.Object, this.configuration.Object, this.seriesDao.Object, this.lostFilmClient.Object, this.dictionaryDao.Object);
+        => new(this.logger!.Object, this.fileSystem!.Object, this.configuration!.Object, this.seriesDao!.Object, this.lostFilmClient!.Object, this.dictionaryDao!.Object, this.imageProcessor!.Object);
 }

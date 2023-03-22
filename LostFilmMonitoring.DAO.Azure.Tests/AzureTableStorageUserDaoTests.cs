@@ -29,7 +29,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
     [Test]
     public async Task LoadAsync_should_return_empty_array_when_no_users()
     {
-        tableClient
+        tableClient!
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(Array.Empty<UserTableEntity>()));
         var result = await GetDao().LoadAsync();
@@ -54,7 +54,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
         {
             new User("UserId", "TrackerId")
         };
-        tableClient
+        tableClient!
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(users));
         var result = await GetDao().LoadAsync();
@@ -66,13 +66,13 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
     {
         var user = new User("UserId", "TrackerId");
         await GetDao().SaveAsync(user);
-        tableClient.Verify(x => x.UpsertEntityAsync(It.Is<UserTableEntity>(x => x.RowKey == "UserId" && x.TrackerId == "TrackerId"), TableUpdateMode.Merge, default), Times.Once);
+        tableClient!.Verify(x => x.UpsertEntityAsync(It.Is<UserTableEntity>(x => x.RowKey == "UserId" && x.TrackerId == "TrackerId"), TableUpdateMode.Merge, default), Times.Once);
     }
 
     [Test]
     public async Task LoadAsync_should_return_null_when_user_not_found()
     {
-        tableClient
+        tableClient!
             .Setup(x => x.GetEntityAsync<UserTableEntity>(It.IsAny<string>(), It.IsAny<string>(), null, default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
 
@@ -89,7 +89,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             TrackerId = "TrackerId",
         };
 
-        tableClient
+        tableClient!
             .Setup(x => x.GetEntityAsync<UserTableEntity>(It.IsAny<string>(), It.IsAny<string>(), null, default))
             .ReturnsAsync(new TestResponse<UserTableEntity>(userTableEntity));
 
@@ -98,5 +98,5 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
     }
 
     protected override AzureTableStorageUserDao GetDao()
-        => new(this.serviceClient.Object, this.logger.Object);
+        => new(this.serviceClient!.Object, this.logger!.Object);
 }

@@ -28,28 +28,28 @@ public class UpdateFeedsCommandTests
 {
     private const string BaseUid = "baseUid";
     private const string BaseUsess = "baseUsess";
-    private Mock<IDal> dal;
-    private Mock<IConfiguration> configuration;
-    private Mock<IModelPersister> persister;
-    private Mock<Common.ILogger> logger;
-    private Mock<IRssFeed> rssFeed;
-    private Mock<ILostFilmClient> lostFilmClient;
-    private Mock<ISeriesDao> seriesDAO;
-    private Mock<IFeedDao> feedDAO;
-    private Mock<ITorrentFileDao> torrentFileDAO;
-    private Mock<ISubscriptionDao> subscriptionDAO;
-    private Mock<IUserDao> userDao;
-    private Mock<IEpisodeDao> episodeDao;
+    private Mock<IDal>? dal;
+    private Mock<IConfiguration>? configuration;
+    private Mock<IModelPersister>? persister;
+    private Mock<Common.ILogger>? logger;
+    private Mock<IRssFeed>? rssFeed;
+    private Mock<ILostFilmClient>? lostFilmClient;
+    private Mock<ISeriesDao>? seriesDAO;
+    private Mock<IFeedDao>? feedDAO;
+    private Mock<ITorrentFileDao>? torrentFileDAO;
+    private Mock<ISubscriptionDao>? subscriptionDAO;
+    private Mock<IUserDao>? userDao;
+    private Mock<IEpisodeDao>? episodeDao;
 
     private UpdateFeedsCommand CreateCommand()
     {
         return new UpdateFeedsCommand(
-            this.logger.Object,
-            this.rssFeed.Object,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object,
-            this.lostFilmClient.Object);
+            this.logger!.Object,
+            this.rssFeed!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
+            this.lostFilmClient!.Object);
     }
 
     [SetUp]
@@ -83,11 +83,11 @@ public class UpdateFeedsCommandTests
     {
         var action = () => new UpdateFeedsCommand(
             null!,
-            this.rssFeed.Object,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object,
-            this.lostFilmClient.Object);
+            this.rssFeed!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
+            this.lostFilmClient!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
 
@@ -95,12 +95,12 @@ public class UpdateFeedsCommandTests
     public void Constructor_should_throw_exception_when_rssFeed_null()
     {
         var action = () => new UpdateFeedsCommand(
-            this.logger.Object,
+            this.logger!.Object,
             null!,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object,
-            this.lostFilmClient.Object);
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
+            this.lostFilmClient!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("rssFeed");
     }
 
@@ -108,12 +108,12 @@ public class UpdateFeedsCommandTests
     public void Constructor_should_throw_exception_when_dal_null()
     {
         var action = () => new UpdateFeedsCommand(
-            this.logger.Object,
-            this.rssFeed.Object,
+            this.logger!.Object,
+            this.rssFeed!.Object,
             null!,
-            this.configuration.Object,
-            this.persister.Object,
-            this.lostFilmClient.Object);
+            this.configuration!.Object,
+            this.persister!.Object,
+            this.lostFilmClient!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
 
@@ -121,12 +121,12 @@ public class UpdateFeedsCommandTests
     public void Constructor_should_throw_exception_when_configuration_null()
     {
         var action = () => new UpdateFeedsCommand(
-            this.logger.Object,
-            this.rssFeed.Object,
-            this.dal.Object,
+            this.logger!.Object,
+            this.rssFeed!.Object,
+            this.dal!.Object,
             null!,
-            this.persister.Object,
-            this.lostFilmClient.Object);
+            this.persister!.Object,
+            this.lostFilmClient!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
 
@@ -134,12 +134,12 @@ public class UpdateFeedsCommandTests
     public void Constructor_should_throw_exception_when_persister_null()
     {
         var action = () => new UpdateFeedsCommand(
-            this.logger.Object,
-            this.rssFeed.Object,
-            this.dal.Object,
-            this.configuration.Object,
+            this.logger!.Object,
+            this.rssFeed!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
             null!,
-            this.lostFilmClient.Object);
+            this.lostFilmClient!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("modelPersister");
     }
 
@@ -147,11 +147,11 @@ public class UpdateFeedsCommandTests
     public void Constructor_should_throw_exception_when_lostfilmclient_null()
     {
         var action = () => new UpdateFeedsCommand(
-            this.logger.Object,
-            this.rssFeed.Object,
-            this.dal.Object,
-            this.configuration.Object,
-            this.persister.Object,
+            this.logger!.Object,
+            this.rssFeed!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
             null!);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("client");
     }
@@ -172,13 +172,13 @@ public class UpdateFeedsCommandTests
         };
 
         // rssFeed and persister responds with identical set of items.
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(storedItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(storedItems);
         SetupPersister_LoadAsync(storedItems);
 
         await command.ExecuteAsync();
 
-        this.logger.Verify(x => x.Info("No updates."), Times.Once);
-        this.seriesDAO.Verify(x => x.LoadAsync(), Times.Never);
+        this.logger!.Verify(x => x.Info("No updates."), Times.Once);
+        this.seriesDAO!.Verify(x => x.LoadAsync(), Times.Never);
     }
 
     [Test]
@@ -190,11 +190,11 @@ public class UpdateFeedsCommandTests
         SetupPersister_LoadAsync(storedItems);
 
         // rssFeed does have only season item
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         await command.ExecuteAsync();
 
-        this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        this.lostFilmClient!.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [Test]
@@ -229,10 +229,10 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
         SetupTorrentFile("51438");
@@ -282,10 +282,10 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is an old series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(new Series[] {
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new Series[] {
             new Series(
                 "Флэш (The Flash)",
                 new DateTime(2022, 1, 1, 1, 1, 1, DateTimeKind.Utc),
@@ -329,12 +329,12 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>);
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>);
 
-        this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(null as TorrentFileResponse);
+        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(null as TorrentFileResponse);
 
         await command.ExecuteAsync();
 
@@ -360,20 +360,20 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
-        this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
-        this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
 
         await command.ExecuteAsync();
 
-        this.torrentFileDAO.Verify(x => x.SaveUserFileAsync("User#1", It.IsAny<TorrentFile>()));
+        this.torrentFileDAO!.Verify(x => x.SaveUserFileAsync("User#1", It.IsAny<TorrentFile>()));
     }
 
     [Test]
@@ -394,21 +394,21 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
-        this.userDao.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
 
         await command.ExecuteAsync();
 
-        this.logger.Verify(x => x.Error("User 'User#1' not found."));
-        this.torrentFileDAO.Verify(x => x.SaveUserFileAsync(It.IsAny<string>(), It.IsAny<TorrentFile>()), Times.Never);
-        this.feedDAO.Verify(x => x.SaveUserFeedAsync(It.IsAny<string>(), It.IsAny<FeedItem[]>()), Times.Never);
+        this.logger!.Verify(x => x.Error("User 'User#1' not found."));
+        this.torrentFileDAO!.Verify(x => x.SaveUserFileAsync(It.IsAny<string>(), It.IsAny<TorrentFile>()), Times.Never);
+        this.feedDAO!.Verify(x => x.SaveUserFeedAsync(It.IsAny<string>(), It.IsAny<FeedItem[]>()), Times.Never);
     }
 
     [Test]
@@ -429,13 +429,13 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // Episode like this is already in the system. It should not be updated.
-        this.episodeDao.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(true);
+        this.episodeDao!.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(true);
         await command.ExecuteAsync();
-        this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Never);
+        this.lostFilmClient!.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        this.seriesDAO!.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Never);
     }
 
     [Test]
@@ -455,13 +455,13 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // Episode like this does not exist in the system. It should be added.
-        this.episodeDao.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
+        this.episodeDao!.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
 
         // There is such series in the system already
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
         {
             new Series(
                 "Флэш (The Flash)",
@@ -477,7 +477,7 @@ public class UpdateFeedsCommandTests
         SetupTorrentFile("51439");
         
         await command.ExecuteAsync();
-        this.lostFilmClient.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        this.lostFilmClient!.Verify(x => x.DownloadTorrentFileAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         this.seriesDAO.Verify(x => x.SaveAsync(It.IsAny<Series>()), Times.Once);
         this.episodeDao.Verify(x => x.SaveAsync(It.IsAny<Episode>()), Times.Once);
     }
@@ -502,17 +502,17 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
-        this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
-        this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
             new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
@@ -534,7 +534,7 @@ public class UpdateFeedsCommandTests
         });
 
         await command.ExecuteAsync();
-        this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Once);
+        this.torrentFileDAO!.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Once);
     }
 
     [Test]
@@ -557,17 +557,17 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
-        this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
-        this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
             new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
@@ -589,7 +589,7 @@ public class UpdateFeedsCommandTests
         });
 
         await command.ExecuteAsync();
-        this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Never);
+        this.torrentFileDAO!.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Never);
     }
 
     [Test]
@@ -612,17 +612,17 @@ public class UpdateFeedsCommandTests
         };
 
         // RSS feed returns new series
-        this.rssFeed.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
+        this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
-        this.userDao.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
-        this.feedDAO.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
             new FeedItem() { PublishDateParsed = new DateTime(2022, 02, 01) }, // #3
@@ -643,7 +643,7 @@ public class UpdateFeedsCommandTests
                 Link = "mailformed" },
         });
 
-        this.torrentFileDAO.Setup(x => x.DeleteUserFileAsync(userId, torrentFileName)).ThrowsAsync(new Exception("Test"));
+        this.torrentFileDAO!.Setup(x => x.DeleteUserFileAsync(userId, torrentFileName)).ThrowsAsync(new Exception("Test"));
 
         await command.ExecuteAsync();
         this.torrentFileDAO.Verify(x => x.DeleteUserFileAsync(userId, torrentFileName), Times.Never);
@@ -658,11 +658,11 @@ public class UpdateFeedsCommandTests
             return;
         }
 
-        this.lostFilmClient.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
+        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
     }
 
     private void SetupPersister_LoadAsync(SortedSet<FeedItemResponse>? feedItems)
     {
-        this.persister.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(feedItems ?? new SortedSet<FeedItemResponse>());
+        this.persister!.Setup(x => x.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")).ReturnsAsync(feedItems ?? new SortedSet<FeedItemResponse>());
     }
 }

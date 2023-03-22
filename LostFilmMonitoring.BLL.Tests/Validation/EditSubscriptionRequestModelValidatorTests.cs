@@ -26,9 +26,9 @@ namespace LostFilmMonitoring.BLL.Tests.Validation;
 [ExcludeFromCodeCoverage]
 public class EditSubscriptionRequestModelValidatorTests
 {
-    private Mock<IUserDao> userDao;
-    private Mock<ISeriesDao> seriesDao;
-    private Mock<Common.ILogger> logger;
+    private Mock<IUserDao>? userDao;
+    private Mock<ISeriesDao>? seriesDao;
+    private Mock<Common.ILogger>? logger;
 
     [SetUp]
     public void Setup()
@@ -44,7 +44,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var action = () => new EditSubscriptionRequestModelValidator(
             null!,
-            this.seriesDao.Object
+            this.seriesDao!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDAO");
     }
@@ -53,7 +53,7 @@ public class EditSubscriptionRequestModelValidatorTests
     public void Constructor_should_throw_exception_when_seriesDAO_null()
     {
         var action = () => new EditSubscriptionRequestModelValidator(
-            this.userDao.Object,
+            this.userDao!.Object,
             null!
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("seriesDAO");
@@ -112,7 +112,7 @@ public class EditSubscriptionRequestModelValidatorTests
     [Test]
     public async Task ValidateAsync_should_return_fail_when_item_seriesName_is_invalid()
     {
-        this.seriesDao.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
+        this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = new SubscriptionItem[] { new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" } } });
         result.IsValid.Should().BeFalse();
         result.Errors.Should().HaveCount(1);
@@ -134,15 +134,15 @@ public class EditSubscriptionRequestModelValidatorTests
     public async Task ValidateAsync_should_return_success()
     {
         var testSeries = new Series(string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
-        this.seriesDao.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(testSeries);
-        this.userDao.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
+        this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(testSeries);
+        this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = new SubscriptionItem[] { new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" } } });
         result.IsValid.Should().BeTrue();
         result.Errors.Should().HaveCount(0);
     }
 
     private EditSubscriptionRequestModelValidator GetService() => new(
-        this.userDao.Object,
-        this.seriesDao.Object
+        this.userDao!.Object,
+        this.seriesDao!.Object
     );
 }

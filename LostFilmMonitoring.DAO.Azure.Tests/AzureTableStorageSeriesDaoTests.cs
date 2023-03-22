@@ -30,7 +30,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
     public async Task DeleteAsync_should_do_nothing_when_series_null()
     {
         await GetDao().DeleteAsync(null!);
-        tableClient.Verify(x => x.DeleteEntityAsync(It.IsAny<string>(), It.IsAny<string>(), default, default), Times.Never);
+        tableClient!.Verify(x => x.DeleteEntityAsync(It.IsAny<string>(), It.IsAny<string>(), default, default), Times.Never);
     }
 
     [Test]
@@ -45,7 +45,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             "link1080p");
 
         await GetDao().DeleteAsync(series);
-        tableClient.Verify(x => x.DeleteEntityAsync(series.Name, series.Name, default, default), Times.Once);
+        tableClient!.Verify(x => x.DeleteEntityAsync(series.Name, series.Name, default, default), Times.Once);
     }
 
     [Test]
@@ -62,13 +62,13 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             "link1080p");
 
         await GetDao().DeleteAsync(series);
-        tableClient.Verify(x => x.DeleteEntityAsync(escapedName, escapedName, default, default), Times.Once);
+        tableClient!.Verify(x => x.DeleteEntityAsync(escapedName, escapedName, default, default), Times.Once);
     }
 
     [Test]
     public async Task LoadAsync_name_should_return_null_when_series_not_found()
     {
-        tableClient
+        tableClient!
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>("Name", "Name", null, default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var series = await GetDao().LoadAsync("Name");
@@ -83,7 +83,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             Name = "Name"
         };
 
-        tableClient
+        tableClient!
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>(entity.Name, entity.Name, null, default))
             .ReturnsAsync(new TestResponse<SeriesTableEntity>(entity));
         var loadedSeries = await GetDao().LoadAsync(entity.Name);
@@ -93,7 +93,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
     [Test]
     public async Task TaskAsync_should_return_empty_array()
     {
-        tableClient
+        tableClient!
             .Setup(x => x.QueryAsync<SeriesTableEntity>(
                 null as string,
                 null as int?,
@@ -114,7 +114,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
         };
         var expected = new TestAsyncPageable<SeriesTableEntity>(values);
 
-        tableClient
+        tableClient!
             .Setup(x => x.QueryAsync<SeriesTableEntity>(
                 null as string,
                 null as int?,
@@ -142,7 +142,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             "linkMP4",
             "link1080p");
         await GetDao().SaveAsync(series);
-        tableClient.Verify(x => x.UpsertEntityAsync(
+        tableClient!.Verify(x => x.UpsertEntityAsync(
             It.Is<SeriesTableEntity>(x => 
                 x.Name == series.Name
                 && x.LastEpisode == series.LastEpisode
@@ -156,5 +156,5 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
     }
 
     protected override AzureTableStorageSeriesDao GetDao()
-        => new(this.serviceClient.Object, this.logger.Object);
+        => new(this.serviceClient!.Object, this.logger!.Object);
 }

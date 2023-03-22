@@ -26,9 +26,9 @@ namespace LostFilmMonitoring.DAO.Azure.Tests;
 [ExcludeFromCodeCoverage]
 public class AzureBlobStorageFeedDAOTests
 {
-    private Mock<IAzureBlobStorageClient> azureBlobStorageClient;
-    private Mock<Common.ILogger> logger;
-    private string baseFeed;
+    private Mock<IAzureBlobStorageClient>? azureBlobStorageClient;
+    private Mock<Common.ILogger>? logger;
+    private string? baseFeed;
 
     [SetUp]
     public void SetUp()
@@ -46,20 +46,20 @@ public class AzureBlobStorageFeedDAOTests
     public async Task DeleteAsync_should_call_azureBlobStorageClient_deleteAsync()
     {
         await GetDao().DeleteAsync("userId");
-        azureBlobStorageClient.Verify(x => x.DeleteAsync("rssfeeds", "userId"));
+        azureBlobStorageClient!.Verify(x => x.DeleteAsync("rssfeeds", "userId"));
     }
 
     [Test]
     public async Task LoadBaseFeedAsync_should_call_azureBlobStorageClient_downloadStringAsync()
     {
         var result = await GetDao().LoadBaseFeedAsync();
-        azureBlobStorageClient.Verify(x => x.DownloadStringAsync("rssfeeds", "baseFeed.xml"));
+        azureBlobStorageClient!.Verify(x => x.DownloadStringAsync("rssfeeds", "baseFeed.xml"));
         var newXml = result.ToArray().GenerateXml();
         Assert.That(newXml, Is.EqualTo(this.baseFeed));
     }
 
     private AzureBlobStorageFeedDao GetDao()
-        => new(azureBlobStorageClient.Object, logger.Object);
+        => new(azureBlobStorageClient!.Object, logger!.Object);
 
     private static string GetFile(string fileName)
     {

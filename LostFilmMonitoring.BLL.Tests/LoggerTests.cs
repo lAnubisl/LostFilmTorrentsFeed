@@ -26,8 +26,8 @@ namespace LostFilmMonitoring.BLL.Tests;
 [ExcludeFromCodeCoverage]
 public class LoggerTests
 {
-    private Mock<ILoggerFactory> loggerFactoryMock;
-    private Mock<Microsoft.Extensions.Logging.ILogger> loggerMock;
+    private Mock<ILoggerFactory>? loggerFactoryMock;
+    private Mock<Microsoft.Extensions.Logging.ILogger>? loggerMock;
 
     [SetUp]
     public void Setup()
@@ -49,7 +49,7 @@ public class LoggerTests
     {
         GetLogger().Debug("message");
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Debug,
                It.IsAny<EventId>(),
@@ -64,7 +64,7 @@ public class LoggerTests
     {
         GetLogger().Error("message");
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Error,
                It.IsAny<EventId>(),
@@ -79,7 +79,7 @@ public class LoggerTests
     {
         GetLogger().Fatal("message");
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
@@ -95,7 +95,7 @@ public class LoggerTests
     {
         GetLogger().Info("message");
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Information,
                It.IsAny<EventId>(),
@@ -110,7 +110,7 @@ public class LoggerTests
     {
         GetLogger().Warning("message");
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Warning,
                It.IsAny<EventId>(),
@@ -126,7 +126,7 @@ public class LoggerTests
         var ex = new Exception();
         GetLogger().Log(ex);
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
@@ -143,7 +143,7 @@ public class LoggerTests
         var message = "message";
         GetLogger().Log(message, ex);
 
-        loggerMock.Verify(
+        loggerMock!.Verify(
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
@@ -153,5 +153,5 @@ public class LoggerTests
            Times.Once);
     }
 
-    private Common.ILogger GetLogger() => new Logger(loggerFactoryMock.Object).CreateScope("testingScope");
+    private Common.ILogger GetLogger() => new Logger(loggerFactoryMock!.Object).CreateScope("testingScope");
 }

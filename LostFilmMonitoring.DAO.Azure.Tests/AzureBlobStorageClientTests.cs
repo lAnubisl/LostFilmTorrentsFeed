@@ -26,10 +26,10 @@ namespace LostFilmMonitoring.DAO.Azure.Tests;
 [ExcludeFromCodeCoverage]
 public class AzureBlobStorageClientTests
 {
-    Mock<BlobClient> blobClient;
-    Mock<BlobContainerClient> blobContainerClient;
-    Mock<BlobServiceClient> blobServiceClient;
-    private Mock<Common.ILogger> logger;
+    Mock<BlobClient>? blobClient;
+    Mock<BlobContainerClient>? blobContainerClient;
+    Mock<BlobServiceClient>? blobServiceClient;
+    private Mock<Common.ILogger>? logger;
 
     private readonly string containerName = "TestContatinerName";
     private readonly string blobName = "TestBlobName";
@@ -63,7 +63,7 @@ public class AzureBlobStorageClientTests
         var azureBlobStorageClient = GetClient();
         var content = new MemoryStream();
         await azureBlobStorageClient.UploadAsync(containerName, blobName, content, "contentType");
-        blobClient.Verify(x => x.UploadAsync(content, It.IsAny<BlobUploadOptions>(), default), Times.Once);
+        blobClient!.Verify(x => x.UploadAsync(content, It.IsAny<BlobUploadOptions>(), default), Times.Once);
     }
 
     [Test]
@@ -72,7 +72,7 @@ public class AzureBlobStorageClientTests
         var azureBlobStorageClient = GetClient();
         var stream = new MemoryStream();
         await azureBlobStorageClient.UploadAsync(containerName, blobName, "content", "contentType");
-        blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
+        blobClient!.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
     }
 
     [Test]
@@ -81,14 +81,14 @@ public class AzureBlobStorageClientTests
         var azureBlobStorageClient = GetClient();
         var content = new MemoryStream();
         await azureBlobStorageClient.UploadAsync(containerName, dirName, blobName, content, "contentType");
-        blobClient.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
+        blobClient!.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
     }
     
     [Test]
     public async Task DownloadAsync_should_download_stream()
     {
         var testData = "TEST DATA";
-        blobClient.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
+        blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
             (s, ct) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
@@ -107,7 +107,7 @@ public class AzureBlobStorageClientTests
     public async Task DownloadAsync_should_download_stream_2()
     {
         var testData = "TEST DATA";
-        blobClient.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
+        blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
             (s, ct) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
@@ -127,7 +127,7 @@ public class AzureBlobStorageClientTests
     [Test]
     public async Task DownloadAsync_should_return_null_when_blob_not_found_2()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .Throws(new RequestFailedException(404, "Not Found", "BlobNotFound", null));
 
@@ -139,7 +139,7 @@ public class AzureBlobStorageClientTests
     [Test]
     public async Task DownloadAsync_should_return_null_when_blob_not_found()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
         var azureBlobStorageClient = GetClient();
@@ -151,7 +151,7 @@ public class AzureBlobStorageClientTests
     public async Task DownloadAsync_should_return_throw_when_unexpected_error()
     {
         var azureBlobStorageClient = GetClient();
-        blobClient
+        blobClient!
             .Setup(x => x.DownloadToAsync(It.IsAny<Stream>()))
             .ThrowsAsync(new Exception());
         var func = async () => { await azureBlobStorageClient.DownloadAsync("containerName", "fileName"); };
@@ -161,7 +161,7 @@ public class AzureBlobStorageClientTests
     [Test]
     public async Task DownloadStringAsync_should_return_null_when_blob_not_found()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
         
@@ -174,7 +174,7 @@ public class AzureBlobStorageClientTests
     public async Task DownloadStringAsync_should_return_string()
     {
         var testData = "TEST DATA";
-        blobClient.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
+        blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
             (s, ct) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
@@ -194,7 +194,7 @@ public class AzureBlobStorageClientTests
     {
         var azureBlobStorageClient = GetClient();
         await azureBlobStorageClient.DeleteAsync(containerName, blobName);
-        blobClient.Verify(x => x.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, null, default), Times.Once);
+        blobClient!.Verify(x => x.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, null, default), Times.Once);
     }
 
     [Test]
@@ -202,13 +202,13 @@ public class AzureBlobStorageClientTests
     {
         var azureBlobStorageClient = GetClient();
         await azureBlobStorageClient.DeleteAsync(containerName, dirName, blobName);
-        blobClient.Verify(x => x.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, null, default), Times.Once);
+        blobClient!.Verify(x => x.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, null, default), Times.Once);
     }
 
     [Test]
     public async Task DeleteAsync_should_not_fail_when_blob_not_found()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.DeleteAsync(It.IsAny<DeleteSnapshotsOption>(), It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
 
@@ -219,7 +219,7 @@ public class AzureBlobStorageClientTests
     [Test]
     public async Task DeleteAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.DeleteAsync(It.IsAny<DeleteSnapshotsOption>(), It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
@@ -232,7 +232,7 @@ public class AzureBlobStorageClientTests
     public async Task ExistsAsync_should_check_if_file_exists()
     {
         var azureBlobStorageClient = GetClient();
-        blobClient
+        blobClient!
             .Setup(x => x.ExistsAsync(default))
             .ReturnsAsync(new TestResponse<bool>(true));
         await azureBlobStorageClient.ExistsAsync(containerName, blobName);
@@ -242,7 +242,7 @@ public class AzureBlobStorageClientTests
     [Test]
     public async Task ExistsAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.ExistsAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
@@ -256,13 +256,13 @@ public class AzureBlobStorageClientTests
     {
         var azureBlobStorageClient = GetClient();
         await azureBlobStorageClient.SetCacheControlAsync(containerName, blobName, "cacheControl");
-        blobClient.Verify(x => x.SetHttpHeadersAsync(It.Is<BlobHttpHeaders>(y => y.CacheControl == "cacheControl"), null, It.IsAny<CancellationToken>()), Times.Once);
+        blobClient!.Verify(x => x.SetHttpHeadersAsync(It.Is<BlobHttpHeaders>(y => y.CacheControl == "cacheControl"), null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
     public async Task SetCacheControlAsync_should_throw_ExternalServiceUnavailableException_when_anything_unexpected()
     {
-        blobClient
+        blobClient!
             .Setup(x => x.SetHttpHeadersAsync(It.IsAny<BlobHttpHeaders>(), It.IsAny<BlobRequestConditions>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
@@ -279,7 +279,7 @@ public class AzureBlobStorageClientTests
         exception.Which.ParamName.Should().Be("content");
     }
 
-    private AzureBlobStorageClient GetClient() => new(blobServiceClient.Object, this.logger.Object);
+    private AzureBlobStorageClient GetClient() => new(blobServiceClient!.Object, this.logger!.Object);
 
     private static byte[] ReadFully(Stream? input)
     {
