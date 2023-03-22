@@ -54,6 +54,7 @@ public static class Program
         services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
         services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddSingleton<ILostFilmClient, LostFilmClient>();
+        services.AddSingleton<IImageProcessor, ImageMagickImageProcessor>();
         services.AddHttpClient();
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
@@ -70,7 +71,8 @@ public static class Program
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<ISeriesDao>() !,
                 sp.GetService<ILostFilmClient>() !,
-                sp.GetService<IDictionaryDao>() !));
+                sp.GetService<IDictionaryDao>() !,
+                sp.GetService<IImageProcessor>() !));
         services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
         services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
         services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();

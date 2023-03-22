@@ -34,6 +34,7 @@ public class DownloadCoverImagesCommand : ICommand
     private readonly ISeriesDao seriesDao;
     private readonly ILostFilmClient lostFilmClient;
     private readonly IDictionaryDao dictionaryDao;
+    private readonly IImageProcessor imageProcessor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadCoverImagesCommand"/> class.
@@ -44,13 +45,15 @@ public class DownloadCoverImagesCommand : ICommand
     /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
     /// <param name="lostFilmClient">Instance of <see cref="ILostFilmClient"/>.</param>
     /// <param name="dictionaryDao">Instance of <see cref="IDictionaryDao"/>.</param>
+    /// <param name="imageProcessor">Instance of <see cref="IImageProcessor"/>.</param>
     public DownloadCoverImagesCommand(
         ILogger logger,
         IFileSystem fileSystem,
         IConfiguration configuration,
         ISeriesDao seriesDao,
         ILostFilmClient lostFilmClient,
-        IDictionaryDao dictionaryDao)
+        IDictionaryDao dictionaryDao,
+        IImageProcessor imageProcessor)
     {
         this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
@@ -58,6 +61,7 @@ public class DownloadCoverImagesCommand : ICommand
         this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
         this.lostFilmClient = lostFilmClient ?? throw new ArgumentNullException(nameof(lostFilmClient));
         this.dictionaryDao = dictionaryDao ?? throw new ArgumentNullException(nameof(dictionaryDao));
+        this.imageProcessor = imageProcessor ?? throw new ArgumentNullException(nameof(imageProcessor));
     }
 
     /// <inheritdoc/>
@@ -111,7 +115,8 @@ public class DownloadCoverImagesCommand : ICommand
             return;
         }
 
-        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", imageStream);
+        var compressedImageStream = await this.imageProcessor.CompressImageAsync(imageStream).ConfigureAwait(false);
+        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", compressedImageStream);
     }
 
     private Task<bool> PosterExistsAsync(string lostFilmId) =>

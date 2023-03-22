@@ -1,4 +1,4 @@
-﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
+// <copyright file="IImageProcessor.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,23 +21,20 @@
 // SOFTWARE.
 // </copyright>
 
-#pragma warning disable SA1200 // Using directives should be placed correctly
-global using System;
-global using System.Collections.Generic;
-global using System.IO;
-global using System.Linq;
-global using System.Runtime.Serialization;
-global using System.Threading.Tasks;
-global using ImageMagick;
-global using LostFilmMonitoring.BLL.Interfaces;
-global using LostFilmMonitoring.BLL.Localization;
-global using LostFilmMonitoring.BLL.Models;
-global using LostFilmMonitoring.BLL.Models.Request;
-global using LostFilmMonitoring.BLL.Models.Response;
-global using LostFilmMonitoring.BLL.Models.ViewModel;
-global using LostFilmMonitoring.Common;
-global using LostFilmMonitoring.DAO.Interfaces;
-global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-global using LostFilmTV.Client;
-global using LostFilmTV.Client.Response;
-#pragma warning restore SA1200 // Using directives should be placed correctly
+namespace LostFilmMonitoring.BLL;
+
+/// <summary>
+/// Responsible for compressing images.
+/// </summary>
+public interface IImageProcessor
+{
+    /// <summary>
+    /// Compress image.
+    /// </summary>
+    /// <param name="imageStream">Image stream.</param>
+    /// <param name="quality">Quality.</param>
+    /// <param name="width">Width.</param>
+    /// <param name="height">Height.</param>
+    /// <returns>Compressed image stream.</returns>
+    Task<MemoryStream> CompressImageAsync(Stream imageStream, int quality = 75, int width = 420, int height = 630);
+}

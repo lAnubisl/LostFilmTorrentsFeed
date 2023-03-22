@@ -9,7 +9,7 @@
             Checks series cover images.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmTV.Client.ILostFilmClient,LostFilmMonitoring.DAO.Interfaces.IDictionaryDao)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmTV.Client.ILostFilmClient,LostFilmMonitoring.DAO.Interfaces.IDictionaryDao,LostFilmMonitoring.BLL.IImageProcessor)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand"/> class.
             </summary>
@@ -19,6 +19,7 @@
             <param name="seriesDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.ISeriesDao"/>.</param>
             <param name="lostFilmClient">Instance of <see cref="T:LostFilmTV.Client.ILostFilmClient"/>.</param>
             <param name="dictionaryDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.IDictionaryDao"/>.</param>
+            <param name="imageProcessor">Instance of <see cref="T:LostFilmMonitoring.BLL.IImageProcessor"/>.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.ExecuteAsync">
             <inheritdoc/>
@@ -246,6 +247,29 @@
             Set current user id.
             </summary>
             <param name="userId">UserId.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.IImageProcessor">
+            <summary>
+            Responsible for compressing images.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.IImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Compress image.
+            </summary>
+            <param name="imageStream">Image stream.</param>
+            <param name="quality">Quality.</param>
+            <param name="width">Width.</param>
+            <param name="height">Height.</param>
+            <returns>Compressed image stream.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.ImageMagickImageProcessor">
+            <summary>
+            Responsible for compressing images.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.ImageMagickImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc/>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem">
             <summary>

@@ -23,7 +23,6 @@
 
 namespace LostFilmMonitoring.DAO.Interfaces;
 
-
 /// <summary>
 /// Extension methods.
 /// </summary>
