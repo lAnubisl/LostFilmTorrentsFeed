@@ -74,14 +74,14 @@ internal class SignInCommandTests
     [Test]
     public void Constructor_should_throw_exception_when_userDao_null()
     {
-        var action = () => CreateSignInCommand();
+        var action = () => new SignInCommand(null!, this.logger!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDao");
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
-        var action = () => CreateSignInCommand();
+        var action = () => new SignInCommand(this.userDao!.Object, null!);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
 
