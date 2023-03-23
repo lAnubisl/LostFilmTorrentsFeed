@@ -100,7 +100,7 @@ public class DownloadCoverImagesCommand : ICommand
             }
 
             var lostFilmId = seriesItem.LostFilmId.ToString()!;
-            if (await this.PosterExistsAsync(lostFilmId))
+            if (!await this.PosterExistsAsync(lostFilmId))
             {
                 await this.DownloadImageAsync(lostFilmId);
             }
