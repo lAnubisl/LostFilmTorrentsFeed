@@ -37,6 +37,8 @@ public class EditSubscriptionRequestModel
     /// Gets or sets Selected Items.
     /// </summary>
 #pragma warning disable SA1011 // Closing square brackets should be spaced correctly
+#pragma warning disable CA1819 // Closing square brackets should be spaced correctly
     public SubscriptionItem[]? Items { get; set; }
+#pragma warning restore CA1819 // Closing square brackets should be spaced correctly
 #pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 }

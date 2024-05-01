@@ -44,7 +44,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{userId}')");
         return this.TryGetEntityAsync(async (tc) =>
         {
-            var response = await tc.GetEntityAsync<UserTableEntity>(userId, userId);
+            var response = await tc.GetEntityAsync<UserTableEntity>(userId, userId).ConfigureAwait(false);
             return Mapper.Map(response.Value);
         });
     }
@@ -62,7 +62,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
             }
 
             return result.ToArray();
-        }) ?? Array.Empty<User>();
+        }).ConfigureAwait(false) ?? Array.Empty<User>();
     }
 
     /// <inheritdoc/>
@@ -71,7 +71,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}(User user)");
         try
         {
-            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(user)));
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(user))).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException)
         {

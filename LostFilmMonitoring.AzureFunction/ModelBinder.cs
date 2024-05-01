@@ -37,13 +37,19 @@ internal static class ModelBinder
     internal static T? Bind<T>(HttpRequestData req)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(req);
+        ArgumentNullException.ThrowIfNull(req.Body);
         try
         {
             using var reader = new StreamReader(req.Body);
             var json = reader.ReadToEnd();
             return JsonSerializer.Deserialize<T>(json);
         }
-        catch
+        catch (ArgumentException)
+        {
+            return null;
+        }
+        catch (JsonException)
         {
             return null;
         }

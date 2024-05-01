@@ -22,6 +22,7 @@
 // </copyright>
 
 using System.Reflection;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -31,3 +32,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("3.0.0.0")]
 [assembly: InternalsVisibleTo("LostFilmTV.Client.Tests")]
 [assembly: InternalsVisibleTo("LostFilmMonitoring.BLL.Tests")]
+[assembly: NeutralResourcesLanguage("en")]

@@ -54,11 +54,13 @@ public class Logger : Common.ILogger
         return scope;
     }
 
+#pragma warning disable CA1848
+
     /// <inheritdoc/>
     public void Debug(string message) => this.logger.LogDebug(this.WrapMessage(message));
 
     /// <inheritdoc/>
-    public void Error(string message) => this.logger.LogError(this.WrapMessage(message));
+    public void LogError(string message) => this.logger.LogError(this.WrapMessage(message));
 
     /// <inheritdoc/>
     public void Fatal(string message) => this.logger.LogCritical(this.WrapMessage(message));
@@ -74,6 +76,8 @@ public class Logger : Common.ILogger
 
     /// <inheritdoc/>
     public void Warning(string message) => this.logger.LogWarning(this.WrapMessage(message));
+
+#pragma warning restore CA1848
 
     private void SetScope(string name)
     {

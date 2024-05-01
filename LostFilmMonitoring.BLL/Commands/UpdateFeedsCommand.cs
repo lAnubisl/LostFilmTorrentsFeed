@@ -67,9 +67,9 @@ public class UpdateFeedsCommand : ICommand
     public async Task ExecuteAsync()
     {
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-        var feedItemsResponse = await this.LoadFeedUpdatesAsync();
+        var feedItemsResponse = await this.LoadFeedUpdatesAsync().ConfigureAwait(false);
         CleanForbiddenCharacters(feedItemsResponse);
-        var persistedItemsRespone = await this.LoadLastFeedUpdatesAsync();
+        var persistedItemsRespone = await this.LoadLastFeedUpdatesAsync().ConfigureAwait(false);
         if (!FeedItemResponse.HasUpdates(feedItemsResponse, persistedItemsRespone))
         {
             this.logger.Info("No updates.");
@@ -77,10 +77,10 @@ public class UpdateFeedsCommand : ICommand
         }
 
         this.logger.Info("Found an Update.");
-        var success = await this.ProcessFeedItemsAsync(feedItemsResponse);
+        var success = await this.ProcessFeedItemsAsync(feedItemsResponse).ConfigureAwait(false);
         if (success)
         {
-            await this.SaveFeedUpdatesAsync(feedItemsResponse);
+            await this.SaveFeedUpdatesAsync(feedItemsResponse).ConfigureAwait(false);
         }
     }
 
@@ -176,13 +176,12 @@ public class UpdateFeedsCommand : ICommand
                 return null;
             }
 
-            if (!existingSeries.ContainsKey(series.Name))
+            if (!existingSeries.TryGetValue(series.Name, out var existing))
             {
                 existingSeries.Add(series.Name, series);
                 return existingSeries[series.Name];
             }
 
-            var existing = existingSeries[series.Name];
             existing.MergeFrom(series);
             return existing;
         }
@@ -190,14 +189,14 @@ public class UpdateFeedsCommand : ICommand
 
     private async Task<bool> ProcessFeedItemsAsync(SortedSet<FeedItemResponse> feedItems)
     {
-        var allSeries = await this.LoadSeriesAsync();
+        var allSeries = await this.LoadSeriesAsync().ConfigureAwait(false);
         var success = true;
         foreach (var feedItem in feedItems)
         {
-            success &= await this.ProcessFeedItemAsync(feedItem, allSeries);
+            success &= await this.ProcessFeedItemAsync(feedItem, allSeries).ConfigureAwait(false);
         }
 
-        await this.UpdateIndexViewModelAsync(allSeries.Values);
+        await this.UpdateIndexViewModelAsync(allSeries.Values).ConfigureAwait(false);
         return success;
     }
 
@@ -212,7 +211,7 @@ public class UpdateFeedsCommand : ICommand
             return true;
         }
 
-        if (await this.EpisodeAlreadyExistAsync(episode!))
+        if (await this.EpisodeAlreadyExistAsync(episode!).ConfigureAwait(false))
         {
             return true;
         }
@@ -223,15 +222,15 @@ public class UpdateFeedsCommand : ICommand
             return true;
         }
 
-        var torrent = await this.GetTorrentAsync(feedItem);
+        var torrent = await this.GetTorrentAsync(feedItem).ConfigureAwait(false);
         if (torrent == null)
         {
             return false;
         }
 
-        await this.SaveEpisodeAsync(feedItem);
-        await this.UpdateAllSubscribedUsersAsync(feedItem, torrent);
-        await this.dal.Series.SaveAsync(seriesToUpdate);
+        await this.SaveEpisodeAsync(feedItem).ConfigureAwait(false);
+        await this.UpdateAllSubscribedUsersAsync(feedItem, torrent).ConfigureAwait(false);
+        await this.dal.Series.SaveAsync(seriesToUpdate).ConfigureAwait(false);
         return true;
     }
 
@@ -240,21 +239,21 @@ public class UpdateFeedsCommand : ICommand
         var episode = ToEpisode(feedItem);
         if (episode != null)
         {
-            await this.dal.Episode.SaveAsync(episode);
+            await this.dal.Episode.SaveAsync(episode).ConfigureAwait(false);
         }
     }
 
     private async Task<SortedSet<FeedItemResponse>> LoadFeedUpdatesAsync()
-        => (await this.rssFeed.LoadFeedItemsAsync()) ?? new SortedSet<FeedItemResponse>();
+        => (await this.rssFeed.LoadFeedItemsAsync().ConfigureAwait(false)) ?? new SortedSet<FeedItemResponse>();
 
     private async Task<SortedSet<FeedItemResponse>> LoadLastFeedUpdatesAsync()
-        => (await this.modelPersister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems")) ?? new SortedSet<FeedItemResponse>();
+        => (await this.modelPersister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems").ConfigureAwait(false)) ?? new SortedSet<FeedItemResponse>();
 
     private Task SaveFeedUpdatesAsync(SortedSet<FeedItemResponse> feedItemsResponse)
         => this.modelPersister.PersistAsync("ReteOrgItems", feedItemsResponse);
 
     private async Task<Dictionary<string, Series>> LoadSeriesAsync()
-        => (await this.dal.Series.LoadAsync()).ToDictionary(x => x.Name, x => x);
+        => (await this.dal.Series.LoadAsync().ConfigureAwait(false)).ToDictionary(x => x.Name, x => x);
 
     private Task UpdateIndexViewModelAsync(ICollection<Series> existingSeries)
         => this.modelPersister.PersistAsync("index", new IndexViewModel(existingSeries));
@@ -264,18 +263,18 @@ public class UpdateFeedsCommand : ICommand
         var torrentId = feedResponseItem.GetTorrentId();
         if (torrentId == null)
         {
-            this.logger.Error($"Could not get torrent id for {feedResponseItem.Title}");
+            this.logger.LogError($"Could not get torrent id for {feedResponseItem.Title}");
             return null;
         }
 
-        var torrentFileResponse = await this.client.DownloadTorrentFileAsync(this.configuration.BaseUID, this.configuration.BaseUSESS, torrentId);
+        var torrentFileResponse = await this.client.DownloadTorrentFileAsync(this.configuration.BaseUID, this.configuration.BaseUSESS, torrentId).ConfigureAwait(false);
         if (torrentFileResponse == null)
         {
             return null;
         }
 
         var torrent = ToTorrentDataStructure(torrentFileResponse);
-        await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, ToTorrentFile(torrentFileResponse));
+        await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, ToTorrentFile(torrentFileResponse)).ConfigureAwait(false);
         return torrent;
     }
 
@@ -283,12 +282,12 @@ public class UpdateFeedsCommand : ICommand
     {
         if (string.IsNullOrEmpty(feedResponseItem.SeriesName) || string.IsNullOrEmpty(feedResponseItem.Quality))
         {
-            this.logger.Error($"Cannot update users for feed item {feedResponseItem} because it has no series name or quality.");
+            this.logger.LogError($"Cannot update users for feed item {feedResponseItem} because it has no series name or quality.");
             return;
         }
 
-        var userIds = await this.dal.Subscription.LoadUsersIdsAsync(feedResponseItem.SeriesName, feedResponseItem.Quality);
-        await this.UpdateAllSubscribedUsersAsync(userIds, feedResponseItem, torrent);
+        var userIds = await this.dal.Subscription.LoadUsersIdsAsync(feedResponseItem.SeriesName, feedResponseItem.Quality).ConfigureAwait(false);
+        await this.UpdateAllSubscribedUsersAsync(userIds, feedResponseItem, torrent).ConfigureAwait(false);
     }
 
     private Task UpdateAllSubscribedUsersAsync(string[] userIds, FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
@@ -296,18 +295,18 @@ public class UpdateFeedsCommand : ICommand
 
     private async Task UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)
     {
-        if (await this.SaveTorrentFileForUserAsync(userId, torrent))
+        if (await this.SaveTorrentFileForUserAsync(userId, torrent).ConfigureAwait(false))
         {
-            await this.UpdateUserFeedAsync(userId, feedResponseItem, torrent.DisplayNameUtf8 ?? torrent.DisplayName);
+            await this.UpdateUserFeedAsync(userId, feedResponseItem, torrent.DisplayNameUtf8 ?? torrent.DisplayName).ConfigureAwait(false);
         }
     }
 
     private async Task<bool> SaveTorrentFileForUserAsync(string userId, BencodeNET.Torrents.Torrent torrent)
     {
-        var user = await this.dal.User.LoadAsync(userId);
+        var user = await this.dal.User.LoadAsync(userId).ConfigureAwait(false);
         if (user == null)
         {
-            this.logger.Error($"User '{userId}' not found.");
+            this.logger.LogError($"User '{userId}' not found.");
             return false;
         }
 
@@ -318,19 +317,19 @@ public class UpdateFeedsCommand : ICommand
             torrentFile = torrent.ToTorrentFile();
         }
 
-        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile);
+        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile).ConfigureAwait(false);
         return true;
     }
 
     private async Task UpdateUserFeedAsync(string userId, FeedItemResponse item, string torrentFileName)
     {
-        string link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, userId, torrentFileName);
+        string link = LostFilmMonitoringBllExtensions.GenerateTorrentLink(this.configuration.BaseUrl, userId, torrentFileName);
         var userFeedItem = ToFeedItem(item, link);
-        var userFeed = (await this.dal.Feed.LoadUserFeedAsync(userId)) ?? new SortedSet<FeedItem>();
+        var userFeed = (await this.dal.Feed.LoadUserFeedAsync(userId).ConfigureAwait(false)) ?? new SortedSet<FeedItem>();
         userFeed.Add(userFeedItem);
         userFeed.RemoveWhere(x => x == null);
-        await this.dal.Feed.SaveUserFeedAsync(userId, userFeed.Take(15).ToArray());
-        await this.CleanupOldRssFilesAsync(userId, userFeed.Skip(15).ToArray());
+        await this.dal.Feed.SaveUserFeedAsync(userId, userFeed.Take(15).ToArray()).ConfigureAwait(false);
+        await this.CleanupOldRssFilesAsync(userId, userFeed.Skip(15).ToArray()).ConfigureAwait(false);
     }
 
     private async Task CleanupOldRssFileAsync(string userId, FeedItem item)
@@ -339,15 +338,15 @@ public class UpdateFeedsCommand : ICommand
         var fileName = item.GetUserFileName(userId);
         if (fileName == null)
         {
-            this.logger.Error($"Cannot get fileName from FeedItem '{item.Link}'.");
+            this.logger.LogError($"Cannot get fileName from FeedItem '{item.Link}'.");
             return;
         }
 
         try
         {
-            await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName);
+            await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (ExternalServiceUnavailableException ex)
         {
             this.logger.Log($"Error deleting FeedItem '{item.Link}' for user '{userId}'.", ex);
         }

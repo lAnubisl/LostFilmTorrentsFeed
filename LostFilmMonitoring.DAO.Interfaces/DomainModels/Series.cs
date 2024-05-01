@@ -145,6 +145,7 @@ public class Series
     /// <param name="from">Instance of <see cref="Series"/> to merge changes from.</param>
     public void MergeFrom(Series from)
     {
+        ArgumentNullException.ThrowIfNull(from, nameof(from));
         this.LastEpisodeName = from.LastEpisodeName;
         this.LastEpisode = from.LastEpisode;
         this.LastEpisodeTorrentLink1080 = from.LastEpisodeTorrentLink1080 ?? this.LastEpisodeTorrentLink1080;

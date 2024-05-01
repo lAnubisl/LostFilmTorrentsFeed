@@ -108,7 +108,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           }
         ]
         numberOfWorkers: 1
-        linuxFxVersion: 'DOTNET-ISOLATED|6.0'
+        linuxFxVersion: 'DOTNET-ISOLATED|8.0'
         ftpsState: 'FtpsOnly'
         minTlsVersion: '1.2'
     }

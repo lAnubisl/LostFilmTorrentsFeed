@@ -24,8 +24,11 @@
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
-internal class GetUserCommandTests
+internal sealed class GetUserCommandTests
 {
+    private static readonly CompositeFormat FieldEmpty = CompositeFormat.Parse(ErrorMessages.FieldEmpty);
+    private static readonly CompositeFormat UserDoesNotExist = CompositeFormat.Parse(ErrorMessages.UserDoesNotExist);
+
     private Mock<IUserDao>? userDao;
     private Mock<Common.ILogger>? logger;
 
@@ -63,7 +66,7 @@ internal class GetUserCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_is_null()
     {
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(null);
+        var response = await command.ExecuteAsync(null).ConfigureAwait(false);
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
@@ -76,13 +79,13 @@ internal class GetUserCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_userId_is_null()
     {
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new GetUserRequestModel());
+        var response = await command.ExecuteAsync(new GetUserRequestModel()).ConfigureAwait(false);
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
         response.ValidationResult.Errors.Count.Should().Be(1);
         response.ValidationResult.Errors.First().Key.Should().Be(nameof(GetUserRequestModel.UserId));
-        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)));
+        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(GetUserRequestModel.UserId)));
     }
 
     [Test]
@@ -91,13 +94,13 @@ internal class GetUserCommandTests
         var testUserIdValue = "123";
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(null as User);
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = testUserIdValue });
+        var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = testUserIdValue }).ConfigureAwait(false);
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
         response.ValidationResult.Errors.Count.Should().Be(1);
         response.ValidationResult.Errors.First().Key.Should().Be(nameof(GetUserRequestModel.UserId));
-        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
+        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(CultureInfo.InvariantCulture, UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
     }
 
     [Test]
@@ -106,7 +109,7 @@ internal class GetUserCommandTests
         var testTrackerIdValue = "TrackerId";
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, testTrackerIdValue));
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = "123" });
+        var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = "123" }).ConfigureAwait(false);
         response.TrackerId.Should().Be(testTrackerIdValue);
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeTrue();

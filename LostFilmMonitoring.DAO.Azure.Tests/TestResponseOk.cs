@@ -26,16 +26,16 @@ namespace LostFilmMonitoring.DAO.Azure.Tests;
 [ExcludeFromCodeCoverage]
 public class TestResponseOk : Response
 {
-    public override int Status => throw new NotImplementedException();
+    public override int Status => 200;
 
-    public override string ReasonPhrase => throw new NotImplementedException();
+    public override string ReasonPhrase => "Ok";
 
-    public override Stream? ContentStream { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string ClientRequestId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override Stream? ContentStream { get => null; set => throw new NotImplementedException(); }
+    public override string ClientRequestId { get => string.Empty; set => throw new NotImplementedException(); }
 
     public override void Dispose()
     {
-        throw new NotImplementedException();
+        GC.SuppressFinalize(this);
     }
 
     protected override bool ContainsHeader(string name)

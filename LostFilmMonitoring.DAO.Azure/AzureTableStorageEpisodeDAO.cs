@@ -50,7 +50,7 @@ public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
                 entity.SeasonNumber == seasonNumber &&
                 entity.EpisodeNumber == episideNumber);
             return CountAsync(query);
-        })) > 0;
+        }).ConfigureAwait(false)) > 0;
     }
 
     /// <inheritdoc/>
@@ -59,7 +59,7 @@ public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Episode episode)");
         try
         {
-            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(episode)));
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(episode))).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException)
         {

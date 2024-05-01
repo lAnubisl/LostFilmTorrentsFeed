@@ -56,12 +56,15 @@ public interface IConfiguration
     /// Gets base url where website is hosted.
     /// </summary>
     /// <returns>Base url where website is hosted.</returns>
+#pragma warning disable CA1056 // URI-like properties should not be strings
+
     string BaseUrl { get; }
+#pragma warning restore CA1056 // URI-like properties should not be strings
 
     /// <summary>
     /// Get list of torrent trackers for torrent file.
     /// </summary>
-    /// <param name="link_uid">Torrent tracker user identifier.</param>
+    /// <param name="linkUid">Torrent tracker user identifier.</param>
     /// <returns>List of torrent trackers for torrent file.</returns>
-    string[] GetTorrentAnnounceList(string link_uid);
+    string[] GetTorrentAnnounceList(string linkUid);
 }

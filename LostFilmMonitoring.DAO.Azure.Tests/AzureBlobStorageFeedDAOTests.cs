@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
-public class AzureBlobStorageFeedDAOTests
+internal sealed class AzureBlobStorageFeedDAOTests
 {
     private Mock<IAzureBlobStorageClient>? azureBlobStorageClient;
     private Mock<Common.ILogger>? logger;
@@ -45,14 +45,14 @@ public class AzureBlobStorageFeedDAOTests
     [Test]
     public async Task DeleteAsync_should_call_azureBlobStorageClient_deleteAsync()
     {
-        await GetDao().DeleteAsync("userId");
+        await GetDao().DeleteAsync("userId").ConfigureAwait(false);
         azureBlobStorageClient!.Verify(x => x.DeleteAsync("rssfeeds", "userId"));
     }
 
     [Test]
     public async Task LoadBaseFeedAsync_should_call_azureBlobStorageClient_downloadStringAsync()
     {
-        var result = await GetDao().LoadBaseFeedAsync();
+        var result = await GetDao().LoadBaseFeedAsync().ConfigureAwait(false);
         azureBlobStorageClient!.Verify(x => x.DownloadStringAsync("rssfeeds", "baseFeed.xml"));
         var newXml = result.ToArray().GenerateXml();
         Assert.That(newXml, Is.EqualTo(this.baseFeed));

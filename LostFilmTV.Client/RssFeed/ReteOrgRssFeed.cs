@@ -50,7 +50,7 @@ public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
         string rss;
         try
         {
-            rss = await this.DownloadRssTextAsync(RssUrl);
+            rss = await this.DownloadRssTextAsync(RssUrl).ConfigureAwait(false);
         }
         catch (RemoteServiceUnavailableException)
         {

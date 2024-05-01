@@ -51,7 +51,7 @@ public class UpdateRssFeedFunction
     public async Task RunAsync([TimerTrigger("0 */5 * * * *")] object myTimer)
     {
         this.logger.Info($"Start {DateTime.Now}");
-        await this.updateFeedCommand.ExecuteAsync();
+        await this.updateFeedCommand.ExecuteAsync().ConfigureAwait(false);
         this.logger.Info($"Finish: {DateTime.Now}");
     }
 }

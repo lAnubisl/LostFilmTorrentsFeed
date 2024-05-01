@@ -50,7 +50,7 @@ public static class Program
         services.AddSingleton<IRssFeed, LostFilmRssFeed>();
         services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
         services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
-        services.AddSingleton<IConfiguration, Configuration>();
+        services.AddSingleton<IConfiguration, LostFilmMonoitoringBllConfiguration>();
         services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
         services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddSingleton<ILostFilmClient, LostFilmClient>();
@@ -59,7 +59,7 @@ public static class Program
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
                 sp.GetService<ILogger>() !,
-                sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
+                sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed), StringComparison.Ordinal)) !,
                 sp.GetService<IDal>() !,
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,

@@ -24,7 +24,7 @@
 namespace LostFilmTV.Client.Tests.RssFeed;
 
 [ExcludeFromCodeCoverage]
-public class LostFilmRssFeedTests
+internal sealed class LostFilmRssFeedTests
 {
     private Mock<IHttpClientFactory> httpControllerFactory;
     private Mock<ILogger> logger;
@@ -37,7 +37,11 @@ public class LostFilmRssFeedTests
         this.logger = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.mockHttp = new();
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
         this.httpControllerFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
     }
 
     [Test]
@@ -67,7 +71,7 @@ public class LostFilmRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
             .Respond("application/xml", Helper.GetEmbeddedResource($"LostFilmTV.Client.Tests.TestData.LostFilmFeed1.xml"));
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().NotBeEmpty();
     }
@@ -78,7 +82,7 @@ public class LostFilmRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://www.lostfilm.tv/rss.xml")
             .Respond("application/xml", string.Empty);
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }

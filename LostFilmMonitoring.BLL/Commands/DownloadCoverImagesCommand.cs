@@ -68,14 +68,14 @@ public class DownloadCoverImagesCommand : ICommand
     public async Task ExecuteAsync()
     {
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-        var series = await this.seriesDao.LoadAsync();
-        var dictionary = await this.dictionaryDao.LoadAsync();
+        var series = await this.seriesDao.LoadAsync().ConfigureAwait(false);
+        var dictionary = await this.dictionaryDao.LoadAsync().ConfigureAwait(false);
         foreach (var seriesItem in series)
         {
             if (seriesItem.LostFilmId == null)
             {
-                var openBraceIndex = seriesItem.Name.IndexOf('(');
-                var closeBraceIndex = seriesItem.Name.IndexOf(')');
+                var openBraceIndex = seriesItem.Name.IndexOf('(', StringComparison.OrdinalIgnoreCase);
+                var closeBraceIndex = seriesItem.Name.IndexOf(')', StringComparison.OrdinalIgnoreCase);
                 if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
                 {
                     // cannot parse the series original name
@@ -90,7 +90,7 @@ public class DownloadCoverImagesCommand : ICommand
                 }
 
                 seriesItem.LostFilmId = dictionary[originalName];
-                await this.seriesDao.SaveAsync(seriesItem);
+                await this.seriesDao.SaveAsync(seriesItem).ConfigureAwait(false);
             }
 
             if (seriesItem.LostFilmId == null)
@@ -99,24 +99,24 @@ public class DownloadCoverImagesCommand : ICommand
                 continue;
             }
 
-            var lostFilmId = seriesItem.LostFilmId.ToString()!;
-            if (!await this.PosterExistsAsync(lostFilmId))
+            var lostFilmId = seriesItem.LostFilmId.Value.ToString(CultureInfo.InvariantCulture)!;
+            if (!await this.PosterExistsAsync(lostFilmId).ConfigureAwait(false))
             {
-                await this.DownloadImageAsync(lostFilmId);
+                await this.DownloadImageAsync(lostFilmId).ConfigureAwait(false);
             }
         }
     }
 
     private async Task DownloadImageAsync(string lostFilmId)
     {
-        using var imageStream = await this.lostFilmClient.DownloadImageAsync(lostFilmId);
+        using var imageStream = await this.lostFilmClient.DownloadImageAsync(lostFilmId).ConfigureAwait(false);
         if (imageStream == null)
         {
             return;
         }
 
         var compressedImageStream = await this.imageProcessor.CompressImageAsync(imageStream).ConfigureAwait(false);
-        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", compressedImageStream);
+        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", compressedImageStream).ConfigureAwait(false);
     }
 
     private Task<bool> PosterExistsAsync(string lostFilmId) =>

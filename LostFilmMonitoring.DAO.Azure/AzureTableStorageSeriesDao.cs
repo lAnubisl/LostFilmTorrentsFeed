@@ -50,7 +50,7 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
 
         try
         {
-            await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(series.Name), EscapeKey(series.Name)));
+            await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(series.Name), EscapeKey(series.Name))).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException ex)
         {
@@ -64,9 +64,9 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{name}')");
         return await this.TryGetEntityAsync(async (tc) =>
         {
-            var response = await tc.GetEntityAsync<SeriesTableEntity>(name, name);
+            var response = await tc.GetEntityAsync<SeriesTableEntity>(name, name).ConfigureAwait(false);
             return Mapper.Map(response.Value);
-        });
+        }).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -82,7 +82,7 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
             }
 
             return result.ToArray();
-        }) ?? Array.Empty<Series>();
+        }).ConfigureAwait(false) ?? Array.Empty<Series>();
     }
 
     /// <inheritdoc/>
@@ -91,11 +91,11 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Series series)");
         try
         {
-            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series))).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException)
         {
-            this.Logger.Error($"Error saving series (Name='{series.Name}')");
+            this.Logger.LogError($"Error saving series (Name='{series?.Name}')");
             throw;
         }
     }

@@ -49,11 +49,11 @@ public class AzureTableStorageDictionaryDao : BaseAzureTableStorageDao, IDiction
             {
                 if (!result.ContainsKey(item.Title))
                 {
-                    result.Add(item.Title, int.Parse(item.RowKey));
+                    result.Add(item.Title, int.Parse(item.RowKey, CultureInfo.InvariantCulture));
                 }
             }
 
             return result;
-        }) ?? new Dictionary<string, int>();
+        }).ConfigureAwait(false) ?? new Dictionary<string, int>();
     }
 }

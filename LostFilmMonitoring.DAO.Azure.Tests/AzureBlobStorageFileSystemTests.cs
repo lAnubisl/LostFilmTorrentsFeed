@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
-public class AzureBlobStorageFileSystemTests
+internal sealed class AzureBlobStorageFileSystemTests
 {
     private Mock<IAzureBlobStorageClient>? azureBlobStorageClientMock;
     private Mock<Common.ILogger>? logger;
@@ -40,7 +40,7 @@ public class AzureBlobStorageFileSystemTests
     [Test]
     public async Task ExistsAsync_should_call_IAzureBlobStorageClient()
     {
-        await GetServide().ExistsAsync("directory", "fileName");
+        await GetService().ExistsAsync("directory", "fileName").ConfigureAwait(false);
         azureBlobStorageClientMock!.Verify(x => x.ExistsAsync("directory", "fileName"), Times.Once);
     }
 
@@ -48,10 +48,10 @@ public class AzureBlobStorageFileSystemTests
     public async Task SaveAsync_should_call_IAzureBlobStorageClient()
     {
         var ms = new MemoryStream();
-        await GetServide().SaveAsync("directory", "fileName", "contentType", ms);
+        await GetService().SaveAsync("directory", "fileName", "contentType", ms).ConfigureAwait(false);
         azureBlobStorageClientMock!.Verify(x => x.UploadAsync("directory", "fileName", ms, "contentType", "no-cache"), Times.Once);
     }
 
-    protected AzureBlobStorageFileSystem GetServide()
+    private AzureBlobStorageFileSystem GetService()
         => new(this.azureBlobStorageClientMock!.Object, this.logger!.Object);
 }

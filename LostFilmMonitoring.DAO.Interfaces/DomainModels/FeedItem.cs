@@ -26,6 +26,8 @@ namespace LostFilmMonitoring.DAO.Interfaces.DomainModels;
 /// <summary>
 /// FeedItem.
 /// </summary>
+#pragma warning disable CA1036 // Override methods on comparable types
+
 public class FeedItem : IComparable<FeedItem>
 {
     private const string XmlDateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -43,6 +45,7 @@ public class FeedItem : IComparable<FeedItem>
     /// <param name="xElement">XElement.</param>
     public FeedItem(XElement xElement)
     {
+        ArgumentNullException.ThrowIfNull(xElement, nameof(xElement));
         this.Link = xElement.Elements().First(i => i.Name.LocalName == "link").Value;
         this.PublishDate = xElement.Elements().First(i => i.Name.LocalName == "pubDate").Value;
         this.PublishDateParsed = DateTime.ParseExact(this.PublishDate, XmlDateFormat, CultureInfo.InvariantCulture);
@@ -60,7 +63,7 @@ public class FeedItem : IComparable<FeedItem>
     {
         this.Link = link;
         this.PublishDateParsed = publishedDateTime;
-        this.PublishDate = publishedDateTime.ToString(XmlDateFormat);
+        this.PublishDate = publishedDateTime.ToString(XmlDateFormat, CultureInfo.InvariantCulture);
         this.Title = title;
     }
 
@@ -91,12 +94,13 @@ public class FeedItem : IComparable<FeedItem>
     /// <returns>File name.</returns>
     public string? GetUserFileName(string userId)
     {
-        if (string.IsNullOrEmpty(this?.Link))
+        ArgumentNullException.ThrowIfNull(userId, nameof(userId));
+        if (string.IsNullOrEmpty(this.Link))
         {
             return null;
         }
 
-        var index = this.Link.IndexOf(userId);
+        var index = this.Link.IndexOf(userId, StringComparison.Ordinal);
         if (index < 0)
         {
             return null;
@@ -109,7 +113,7 @@ public class FeedItem : IComparable<FeedItem>
         }
 
         var fileName = subStr[1..];
-        if (!fileName.EndsWith(".torrent"))
+        if (!fileName.EndsWith(".torrent", StringComparison.Ordinal))
         {
             return null;
         }
@@ -140,7 +144,7 @@ public class FeedItem : IComparable<FeedItem>
             return 1;
         }
 
-        return this.Title.CompareTo(other.Title);
+        return string.Compare(this.Title, other.Title, StringComparison.Ordinal);
     }
 
     /// <inheritdoc/>
@@ -151,8 +155,8 @@ public class FeedItem : IComparable<FeedItem>
             return false;
         }
 
-        return string.Equals(this.Title, other.Title)
-            && string.Equals(this.Link, other.Link);
+        return string.Equals(this.Title, other.Title, StringComparison.Ordinal)
+            && string.Equals(this.Link, other.Link, StringComparison.Ordinal);
     }
 
     /// <inheritdoc/>
@@ -176,5 +180,7 @@ public class FeedItem : IComparable<FeedItem>
             "item",
             new XElement("title", this.Title),
             new XElement("link", this.Link),
-            new XElement("pubDate", this.PublishDateParsed.ToString(XmlDateFormat)));
+            new XElement("pubDate", this.PublishDateParsed.ToString(XmlDateFormat, CultureInfo.InvariantCulture)));
 }
+
+#pragma warning restore CA1036 // Override methods on comparable types

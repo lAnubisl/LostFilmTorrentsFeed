@@ -38,13 +38,10 @@ public abstract class BaseAzureTableStorageDao
     /// <param name="logger">Instance of Logger.</param>
     protected BaseAzureTableStorageDao(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
     {
-        if (tableServiceClient == null)
-        {
-            throw new ArgumentNullException(nameof(tableServiceClient));
-        }
+        ArgumentNullException.ThrowIfNull(tableServiceClient);
 
         tableServiceClient.CreateTableIfNotExists(tableName);
-        this.tableClient = tableServiceClient.GetTableClient(tableName);
+        this.tableClient = tableServiceClient.GetTableClient(tableName) ?? throw new ArgumentNullException(nameof(tableName));
         this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -59,7 +56,15 @@ public abstract class BaseAzureTableStorageDao
     /// </summary>
     /// <param name="str">A sting that can contain "'".</param>
     /// <returns>An escaped string.</returns>
-    protected static string EscapeKey(string str) => str.Replace("'", "''");
+    protected static string EscapeKey(string str)
+    {
+        if (str == null)
+        {
+            return string.Empty;
+        }
+
+        return str.Replace("'", "''", StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>
     /// Iterates through Azure Response and generates an array of items.
@@ -73,11 +78,8 @@ public abstract class BaseAzureTableStorageDao
     protected static Task<TResult[]> IterateAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
         where TSource : class
     {
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentNullException.ThrowIfNull(func);
         return IterateInnerAsync(items, func);
     }
 
@@ -91,11 +93,7 @@ public abstract class BaseAzureTableStorageDao
     protected static Task<int> CountAsync<TSource>(AsyncPageable<TSource> items)
         where TSource : class
     {
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-
+        ArgumentNullException.ThrowIfNull(items);
         return CountInnerAsync(items);
     }
 
@@ -107,9 +105,10 @@ public abstract class BaseAzureTableStorageDao
     /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
     protected async Task TryExecuteAsync(Func<TableClient, Task> func)
     {
+        ArgumentNullException.ThrowIfNull(func);
         try
         {
-            await func(this.tableClient);
+            await func(this.tableClient).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -128,9 +127,10 @@ public abstract class BaseAzureTableStorageDao
     protected async Task<T?> TryGetEntityAsync<T>(Func<TableClient, Task<T>> func)
         where T : class?
     {
+        ArgumentNullException.ThrowIfNull(func);
         try
         {
-            return await func(this.tableClient);
+            return await func(this.tableClient).ConfigureAwait(false);
         }
         catch (RequestFailedException ex)
         {
@@ -156,9 +156,10 @@ public abstract class BaseAzureTableStorageDao
     /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
     protected async Task<int> TryCountAsync(Func<TableClient, Task<int>> func)
     {
+        ArgumentNullException.ThrowIfNull(func);
         try
         {
-            return await func(this.tableClient);
+            return await func(this.tableClient).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

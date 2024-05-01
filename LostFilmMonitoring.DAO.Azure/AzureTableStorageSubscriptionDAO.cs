@@ -51,7 +51,7 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
         {
             var query = tc.QueryAsync<SubscriptionTableEntity>(entity => entity.RowKey == userId);
             return IterateAsync(query, Mapper.Map);
-        }) ?? Array.Empty<Subscription>();
+        }).ConfigureAwait(false) ?? Array.Empty<Subscription>();
     }
 
     /// <inheritdoc/>
@@ -67,24 +67,24 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
         {
             var query = tc.QueryAsync<SubscriptionTableEntity>(entity => entity.PartitionKey == seriesName && entity.Quality == quality);
             return IterateAsync(query, item => item.RowKey);
-        }) ?? Array.Empty<string>();
+        }).ConfigureAwait(false) ?? Array.Empty<string>();
     }
 
     /// <inheritdoc/>
     public async Task SaveAsync(string userId, Subscription[] subscriptions)
     {
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}('{userId}', Subscription[] subscriptions)");
-        var storedSubscriptions = await this.LoadAsync(userId);
+        var storedSubscriptions = await this.LoadAsync(userId).ConfigureAwait(false);
         var subscriptionsToDelete = storedSubscriptions.Where(ss => subscriptions.All(s => !string.Equals(s.SeriesName, ss.SeriesName, StringComparison.OrdinalIgnoreCase)));
-        await Task.WhenAll(subscriptionsToDelete.Select(ss => this.DeleteAsync(userId, ss)));
-        await Task.WhenAll(subscriptions.Select(s => this.SaveAsync(userId, s)));
+        await Task.WhenAll(subscriptionsToDelete.Select(ss => this.DeleteAsync(userId, ss))).ConfigureAwait(false);
+        await Task.WhenAll(subscriptions.Select(s => this.SaveAsync(userId, s))).ConfigureAwait(false);
     }
 
     private async Task DeleteAsync(string userId, Subscription subscription)
     {
         try
         {
-            await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(subscription.SeriesName), userId));
+            await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(subscription.SeriesName), userId)).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException ex)
         {
@@ -101,7 +101,7 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
 
         try
         {
-            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(subscription, userId)));
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(subscription, userId))).ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException ex)
         {

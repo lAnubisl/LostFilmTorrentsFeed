@@ -137,31 +137,31 @@
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.Configuration">
+        <member name="T:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration">
             <inheritdoc/>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Configuration.#ctor(LostFilmMonitoring.BLL.IConfigurationValuesProvider)">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.#ctor(LostFilmMonitoring.BLL.IConfigurationValuesProvider)">
             <summary>
-            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Configuration"/> class.
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration"/> class.
             </summary>
             <param name="provider">Instance of <see cref="T:LostFilmMonitoring.BLL.IConfigurationValuesProvider"/>.</param>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Configuration.BaseUSESS">
+        <member name="P:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.BaseUSESS">
             <inheritdoc/>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Configuration.ImagesDirectory">
+        <member name="P:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.ImagesDirectory">
             <inheritdoc/>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Configuration.TorrentsDirectory">
+        <member name="P:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.TorrentsDirectory">
             <inheritdoc/>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Configuration.BaseUrl">
+        <member name="P:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.BaseUrl">
             <inheritdoc/>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Configuration.BaseUID">
+        <member name="P:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.BaseUID">
             <inheritdoc/>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Configuration.GetTorrentAnnounceList(System.String)">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonoitoringBllConfiguration.GetTorrentAnnounceList(System.String)">
             <inheritdoc/>
         </member>
         <member name="T:LostFilmMonitoring.BLL.EnvironmentConfigurationValuesProvider">
@@ -184,12 +184,18 @@
             <param name="message">Message that describes what happened.</param>
             <param name="innerException">Actual exception occurred.</param>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.Extensions">
+        <member name="M:LostFilmMonitoring.BLL.Exceptions.ExternalServiceUnavailableException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Exceptions.ExternalServiceUnavailableException"/> class.
+            </summary>
+            <param name="message">Message that describes what happened.</param>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.LostFilmMonitoringBllExtensions">
             <summary>
             Usefull extensions.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.GenerateTorrentLink(System.String,System.String,System.String)">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonitoringBllExtensions.GenerateTorrentLink(System.String,System.String,System.String)">
             <summary>
             Generates torrent link for user's feed.
             </summary>
@@ -198,21 +204,21 @@
             <param name="torrentFileName">Torrent Id.</param>
             <returns>Torrent link.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.FixTrackers(BencodeNET.Torrents.Torrent,System.String[])">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonitoringBllExtensions.FixTrackers(BencodeNET.Torrents.Torrent,System.String[])">
             <summary>
             Replaces trackers for an instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.
             </summary>
             <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
             <param name="announces">Array of trackers.</param>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentFile(BencodeNET.Torrents.Torrent)">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonitoringBllExtensions.ToTorrentFile(BencodeNET.Torrents.Torrent)">
             <summary>
             Map instance of <see cref="T:BencodeNET.Torrents.Torrent"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.
             </summary>
             <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
             <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentDataStructure(System.IO.Stream)">
+        <member name="M:LostFilmMonitoring.BLL.LostFilmMonitoringBllExtensions.ToTorrentDataStructure(System.IO.Stream)">
             <summary>
             Generate instance of <see cref="T:BencodeNET.Torrents.Torrent"/> from a <see cref="T:System.IO.Stream"/>.
             </summary>
@@ -399,7 +405,7 @@
         <member name="M:LostFilmMonitoring.BLL.Logger.Debug(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Logger.Error(System.String)">
+        <member name="M:LostFilmMonitoring.BLL.Logger.LogError(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Logger.Fatal(System.String)">

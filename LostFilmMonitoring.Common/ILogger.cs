@@ -57,7 +57,7 @@ public interface ILogger
     /// Log Error message.
     /// </summary>
     /// <param name="message">message.</param>
-    void Error(string message);
+    void LogError(string message);
 
     /// <summary>
     /// Log fatal message.

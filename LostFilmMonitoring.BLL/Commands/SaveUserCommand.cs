@@ -68,9 +68,9 @@ public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseMo
 
         var userId = string.IsNullOrWhiteSpace(request.UserId) ? Guid.NewGuid().ToString() : request.UserId;
         var user = new User(userId, request.TrackerId);
-        await this.userDAO.SaveAsync(user);
-        await this.persister.PersistAsync($"subscription_{user.Id}", Array.Empty<SubscriptionItem>());
-        await this.feedDAO.SaveUserFeedAsync(user.Id, Array.Empty<FeedItem>());
+        await this.userDAO.SaveAsync(user).ConfigureAwait(false);
+        await this.persister.PersistAsync($"subscription_{user.Id}", Array.Empty<SubscriptionItem>()).ConfigureAwait(false);
+        await this.feedDAO.SaveUserFeedAsync(user.Id, Array.Empty<FeedItem>()).ConfigureAwait(false);
         return new EditUserResponseModel(user.Id);
     }
 }

@@ -24,11 +24,14 @@
 #pragma warning disable SA1200 // Using directives should be placed correctly
 global using System;
 global using System.Collections.Generic;
+global using System.Globalization;
 global using System.IO;
 global using System.Linq;
 global using System.Runtime.Serialization;
+global using System.Text;
 global using System.Threading.Tasks;
 global using ImageMagick;
+global using LostFilmMonitoring.BLL.Exceptions;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.BLL.Localization;
 global using LostFilmMonitoring.BLL.Models;

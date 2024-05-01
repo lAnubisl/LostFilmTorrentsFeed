@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.BLL.Tests;
 
 [ExcludeFromCodeCoverage]
-public class LoggerTests
+internal sealed class LoggerTests
 {
     private Mock<ILoggerFactory>? loggerFactoryMock;
     private Mock<Microsoft.Extensions.Logging.ILogger>? loggerMock;
@@ -62,7 +62,7 @@ public class LoggerTests
     [Test]
     public void Error_should_call_logger()
     {
-        GetLogger().Error("message");
+        GetLogger().LogError("message");
 
         loggerMock!.Verify(
            x => x.Log(
@@ -123,7 +123,7 @@ public class LoggerTests
     [Test]
     public void Log_should_call_logger_with_exception_details()
     {
-        var ex = new Exception();
+        var ex = new InvalidOperationException();
         GetLogger().Log(ex);
 
         loggerMock!.Verify(
@@ -139,7 +139,7 @@ public class LoggerTests
     [Test]
     public void Log_should_call_logger_with_message_and_exception_details()
     {
-        var ex = new Exception();
+        var ex = new InvalidOperationException();
         var message = "message";
         GetLogger().Log(message, ex);
 

@@ -41,7 +41,7 @@ public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
     public AzureBlobStorageTorrentFileDao(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
     {
         this.azureBlobStorageClient = azureBlobStorageClient;
-        this.logger = logger.CreateScope(nameof(AzureBlobStorageTorrentFileDao));
+        this.logger = logger?.CreateScope(nameof(AzureBlobStorageTorrentFileDao)) ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc/>
@@ -56,7 +56,7 @@ public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
     {
         this.logger.Info($"Call: {nameof(this.LoadBaseFileAsync)}('{torrentId}')");
         var name = GetBaseTorrentFileName(torrentId);
-        var fileStream = await this.azureBlobStorageClient.DownloadAsync(this.baseTorrentsDirectory, name);
+        var fileStream = await this.azureBlobStorageClient.DownloadAsync(this.baseTorrentsDirectory, name).ConfigureAwait(false);
         return fileStream == null ? null : new TorrentFile(name, fileStream);
     }
 
@@ -64,6 +64,7 @@ public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
     public Task SaveBaseFileAsync(string torrentId, TorrentFile torrentFile)
     {
         this.logger.Info($"Call: {nameof(this.SaveBaseFileAsync)}('{torrentId}', TorrentFile torrentFile)");
+        ArgumentNullException.ThrowIfNull(torrentFile);
         return this.azureBlobStorageClient.UploadAsync(this.baseTorrentsDirectory, GetBaseTorrentFileName(torrentId), torrentFile.Stream, "applications/x-bittorrent");
     }
 
@@ -71,6 +72,7 @@ public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
     public Task SaveUserFileAsync(string userId, TorrentFile torrentFile)
     {
         this.logger.Info($"Call: {nameof(this.SaveUserFileAsync)}('{userId}', TorrentFile torrentFile)");
+        ArgumentNullException.ThrowIfNull(torrentFile);
         return this.azureBlobStorageClient.UploadAsync(this.userTorrentsDirectory, userId, $"{torrentFile.FileName}.torrent", torrentFile.Stream, "applications/x-bittorrent");
     }
 

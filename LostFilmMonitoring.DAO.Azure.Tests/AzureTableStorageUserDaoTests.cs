@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
-public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageUserDao>
+internal sealed class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageUserDao>
 {
     [Test]
     public async Task LoadAsync_should_return_empty_array_when_no_users()
@@ -32,7 +32,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
         tableClient!
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(Array.Empty<UserTableEntity>()));
-        var result = await GetDao().LoadAsync();
+        var result = await GetDao().LoadAsync().ConfigureAwait(false);
         Assert.That(result, Is.EqualTo(Array.Empty<User>()));
     }
 
@@ -57,7 +57,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
         tableClient!
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(users));
-        var result = await GetDao().LoadAsync();
+        var result = await GetDao().LoadAsync().ConfigureAwait(false);
         Assert.That(result, Is.EquivalentTo(expected));
     }
 
@@ -65,7 +65,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
     public async Task SaveAsync_should_save_user()
     {
         var user = new User("UserId", "TrackerId");
-        await GetDao().SaveAsync(user);
+        await GetDao().SaveAsync(user).ConfigureAwait(false);
         tableClient!.Verify(x => x.UpsertEntityAsync(It.Is<UserTableEntity>(x => x.RowKey == "UserId" && x.TrackerId == "TrackerId"), TableUpdateMode.Merge, default), Times.Once);
     }
 
@@ -76,7 +76,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Setup(x => x.GetEntityAsync<UserTableEntity>(It.IsAny<string>(), It.IsAny<string>(), null, default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
 
-        var result = await GetDao().LoadAsync("UserId");
+        var result = await GetDao().LoadAsync("UserId").ConfigureAwait(false);
         Assert.That(result, Is.Null);
     }
 
@@ -93,7 +93,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Setup(x => x.GetEntityAsync<UserTableEntity>(It.IsAny<string>(), It.IsAny<string>(), null, default))
             .ReturnsAsync(new TestResponse<UserTableEntity>(userTableEntity));
 
-        var result = await GetDao().LoadAsync("UserId");
+        var result = await GetDao().LoadAsync("UserId").ConfigureAwait(false);
         Assert.That(result?.Id == userTableEntity.RowKey && result?.TrackerId == userTableEntity.TrackerId);
     }
 

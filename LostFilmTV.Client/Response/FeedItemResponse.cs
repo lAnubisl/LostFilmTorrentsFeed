@@ -26,6 +26,8 @@ namespace LostFilmTV.Client.Response;
 /// <summary>
 /// FeedItemResponse.
 /// </summary>
+#pragma warning disable CA1036 // Override methods on comparable types
+
 public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable<FeedItemResponse>
 {
     // Уокер (Walker). То, чего раньше не было (S03E06) [1080p]
@@ -53,8 +55,8 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
     internal FeedItemResponse(XElement xElement)
         : this()
     {
-        var elements = xElement.Elements();
-        if (elements == null || !elements.Any())
+        var elements = xElement.Elements().ToList();
+        if (elements == null || elements.Count == 0)
         {
             return;
         }
@@ -79,12 +81,12 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
         this.SeriesNameRu = match.Groups["SeriesNameRu"].Value;
         this.SeriesNameEn = match.Groups["SeriesNameEng"].Value;
         this.EpisodeName = match.Groups["EpisodeNameRu"].Value;
-        this.SeasonNumber = int.Parse(match.Groups["SeasonNumber"].Value);
-        this.EpisodeNumber = int.Parse(match.Groups["EpisodeNumber"].Value);
+        this.SeasonNumber = int.Parse(match.Groups["SeasonNumber"].Value, CultureInfo.InvariantCulture);
+        this.EpisodeNumber = int.Parse(match.Groups["EpisodeNumber"].Value, CultureInfo.InvariantCulture);
         this.SeriesName = $"{this.SeriesNameRu} ({this.SeriesNameEn})";
         if (match.Groups.ContainsKey("Quality"))
         {
-            this.Quality = match.Groups["Quality"].Value.Replace("1080p", "1080");
+            this.Quality = match.Groups["Quality"].Value.Replace("1080p", "1080", StringComparison.Ordinal);
         }
     }
 
@@ -157,15 +159,9 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
     /// <exception cref="ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
     public static bool HasUpdates(SortedSet<FeedItemResponse> newItems, SortedSet<FeedItemResponse> oldItems)
     {
-        if (newItems == null)
-        {
-            throw new ArgumentNullException(nameof(newItems));
-        }
+        ArgumentNullException.ThrowIfNull(newItems);
 
-        if (oldItems == null)
-        {
-            throw new ArgumentNullException(nameof(oldItems));
-        }
+        ArgumentNullException.ThrowIfNull(oldItems);
 
         if (newItems.Count != oldItems.Count)
         {
@@ -197,9 +193,9 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
             return false;
         }
 
-        return string.Equals(this.Title, other.Title)
-            && string.Equals(this.Link, other.Link)
-            && this.PublishDate.Equals(other.PublishDate);
+        return string.Equals(this.Title, other.Title, StringComparison.Ordinal)
+            && string.Equals(this.Link, other.Link, StringComparison.Ordinal)
+            && this.PublishDate.Equals(other.PublishDate, StringComparison.Ordinal);
     }
 
     /// <inheritdoc/>
@@ -254,7 +250,7 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
             return -1;
         }
 
-        return this.Title.CompareTo(that.Title);
+        return string.Compare(this.Title, that.Title, StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -262,5 +258,7 @@ public sealed class FeedItemResponse : IComparable<FeedItemResponse>, IEquatable
     /// </summary>
     /// <returns>Torrent file id.</returns>
     public string? GetTorrentId()
-        => Extensions.GetTorrentId(this.Link);
+        => LostFilmTvExtensions.GetTorrentId(this.Link);
 }
+
+#pragma warning restore CA1036 // Override methods on comparable types

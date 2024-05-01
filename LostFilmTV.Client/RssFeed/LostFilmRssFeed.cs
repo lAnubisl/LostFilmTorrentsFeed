@@ -54,7 +54,7 @@ public class LostFilmRssFeed : BaseRssFeed, IRssFeed
         string rssText;
         try
         {
-            rssText = await this.DownloadRssTextAsync(RssUrl, requestHeaders);
+            rssText = await this.DownloadRssTextAsync(RssUrl, requestHeaders).ConfigureAwait(false);
         }
         catch (RemoteServiceUnavailableException)
         {
@@ -67,13 +67,13 @@ public class LostFilmRssFeed : BaseRssFeed, IRssFeed
 
     private static string FixAmpBug(string rss)
     {
-        var ampIndex = rss.IndexOf('&');
+        var ampIndex = rss.IndexOf('&', StringComparison.Ordinal);
         if (ampIndex == -1)
         {
             return rss;
         }
 
-        var escapedAmpIndex = rss.IndexOf("&amp;");
+        var escapedAmpIndex = rss.IndexOf("&amp;", StringComparison.Ordinal);
         if (ampIndex == escapedAmpIndex)
         {
             return rss[.. (ampIndex + 1)] + FixAmpBug(rss[(ampIndex + 1) ..]);

@@ -51,7 +51,7 @@ public class CheckImagesFunction
     public async Task RunAsync([TimerTrigger("0 0 0 * * *")] object myTimer)
     {
         this.logger.Info($"Start CheckImagesFunction {DateTime.Now}");
-        await this.command.ExecuteAsync();
+        await this.command.ExecuteAsync().ConfigureAwait(false);
         this.logger.Info($"Finish: CheckImagesFunction {DateTime.Now}");
     }
 }

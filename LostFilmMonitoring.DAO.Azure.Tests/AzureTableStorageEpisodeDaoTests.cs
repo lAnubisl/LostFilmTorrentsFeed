@@ -24,13 +24,13 @@
 namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
-public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageEpisodeDao>
+internal sealed class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageEpisodeDao>
 {
     [Test]
     public async Task SaveAsync_should_save_episode()
     {
         var episode = new Episode("SeriesName", "EpisodeName", 1, 1, "123", "SD");
-        await GetDao().SaveAsync(episode);
+        await GetDao().SaveAsync(episode).ConfigureAwait(false);
         tableClient!.Verify(x => x.UpsertEntityAsync(
             It.Is<EpisodeTableEntity>(x =>
                 x.SeasonNumber == episode.SeasonNumber
@@ -50,8 +50,8 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
         var episode = new Episode("SeriesName", "EpisodeName", 1, 1, "123", "SD");
         tableClient!.Setup(x => x.UpsertEntityAsync(It.IsAny<EpisodeTableEntity>(), TableUpdateMode.Merge, default))
             .ThrowsAsync(new RequestFailedException(500, "Internal Server Error"));
-        var action = async () => await GetDao().SaveAsync(episode);
-        await action.Should().ThrowAsync<ExternalServiceUnavailableException>().WithMessage("Azure Table Storage is not accessible");
+        var action = async () => await GetDao().SaveAsync(episode).ConfigureAwait(false);
+        await action.Should().ThrowAsync<ExternalServiceUnavailableException>().WithMessage("Azure Table Storage is not accessible").ConfigureAwait(false);
     }
 
     [Test]
@@ -69,7 +69,7 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
                 entity.EpisodeNumber == episodeNumber;
 
         tableClient!.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>(Array.Empty<EpisodeTableEntity>()));
-        await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality);
+        await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality).ConfigureAwait(false);
         tableClient.Verify(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default), Times.Once);
     }
     

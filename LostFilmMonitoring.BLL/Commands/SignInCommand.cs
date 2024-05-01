@@ -56,7 +56,7 @@ public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
             return new SignInResponseModel { Success = false };
         }
 
-        var user = await this.userDao.LoadAsync(request.UserId);
+        var user = await this.userDao.LoadAsync(request.UserId).ConfigureAwait(false);
         return new SignInResponseModel { Success = user != null };
     }
 }

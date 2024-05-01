@@ -28,8 +28,8 @@ namespace LostFilmMonitoring.DAO.Azure;
 /// </summary>
 public class AzureBlobStorageFeedDao : IFeedDao
 {
-    private static readonly string ConteinerName = "rssfeeds";
-    private static readonly string BaseFeedName = "baseFeed.xml";
+    private const string ConteinerName = "rssfeeds";
+    private const string BaseFeedName = "baseFeed.xml";
     private readonly IAzureBlobStorageClient azureBlobStorageClient;
     private readonly ILogger logger;
 
@@ -41,7 +41,7 @@ public class AzureBlobStorageFeedDao : IFeedDao
     public AzureBlobStorageFeedDao(IAzureBlobStorageClient azureBlobStorageClient, ILogger logger)
     {
         this.azureBlobStorageClient = azureBlobStorageClient;
-        this.logger = logger.CreateScope(nameof(AzureBlobStorageFeedDao));
+        this.logger = logger?.CreateScope(nameof(AzureBlobStorageFeedDao)) ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public class AzureBlobStorageFeedDao : IFeedDao
     public async Task<SortedSet<FeedItem>> LoadBaseFeedAsync()
     {
         this.logger.Info($"Call: {nameof(this.LoadBaseFeedAsync)}()");
-        return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, BaseFeedName));
+        return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, BaseFeedName).ConfigureAwait(false));
     }
 
     /// <inheritdoc/>
@@ -69,7 +69,7 @@ public class AzureBlobStorageFeedDao : IFeedDao
     public async Task<SortedSet<FeedItem>> LoadUserFeedAsync(string userId)
     {
         this.logger.Info($"Call: {nameof(this.LoadUserFeedAsync)}('{userId}')");
-        return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, GetUserFeedFileName(userId)));
+        return ToSortedSet(await this.azureBlobStorageClient.DownloadStringAsync(ConteinerName, GetUserFeedFileName(userId)).ConfigureAwait(false));
     }
 
     /// <inheritdoc/>

@@ -39,6 +39,15 @@ public sealed class ExternalServiceUnavailableException : Exception, ISerializab
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
+    /// </summary>
+    /// <param name="message">Message that describes what happened.</param>
+    public ExternalServiceUnavailableException(string message)
+        : base(message)
+    {
+    }
+
     private ExternalServiceUnavailableException()
     {
     }

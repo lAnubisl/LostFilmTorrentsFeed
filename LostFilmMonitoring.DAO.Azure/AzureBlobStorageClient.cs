@@ -40,17 +40,13 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     public AzureBlobStorageClient(BlobServiceClient blobServiceClient, ILogger logger)
     {
         this.blobServiceClient = blobServiceClient ?? throw new ArgumentNullException(nameof(blobServiceClient));
-        this.logger = logger.CreateScope(nameof(AzureBlobStorageClient)) ?? throw new ArgumentNullException(nameof(logger));
+        this.logger = logger?.CreateScope(nameof(AzureBlobStorageClient)) ?? throw new ArgumentNullException(nameof(logger));
     }
 
     /// <inheritdoc/>
     public Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl = "no-cache")
     {
-        if (content == null)
-        {
-            throw new ArgumentNullException(nameof(content));
-        }
-
+        ArgumentNullException.ThrowIfNull(content);
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', Stream, '{contentType}', '{cacheControl}')");
         return this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl);
     }
@@ -65,10 +61,10 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
         using Stream ms = new MemoryStream();
         using StreamWriter sw = new StreamWriter(ms, Encoding.UTF8);
-        await sw.WriteAsync(content);
-        await sw.FlushAsync();
+        await sw.WriteAsync(content).ConfigureAwait(false);
+        await sw.FlushAsync().ConfigureAwait(false);
         ms.Position = 0;
-        await this.UploadAsync(containerName, fileName, ms, contentType, cacheControl);
+        await this.UploadAsync(containerName, fileName, ms, contentType, cacheControl).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -77,7 +73,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.DownloadAsync)}('{containerName}', '{fileName}')");
         try
         {
-            return await this.DownloadAsync(this.GetBlobClient(containerName, fileName));
+            return await this.DownloadAsync(this.GetBlobClient(containerName, fileName)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -95,14 +91,14 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     public async Task<string?> DownloadStringAsync(string containerName, string fileName)
     {
         this.logger.Info($"Call: {nameof(this.DownloadStringAsync)}('{containerName}', '{fileName}')");
-        using var stream = await this.DownloadAsync(containerName, fileName);
+        using var stream = await this.DownloadAsync(containerName, fileName).ConfigureAwait(false);
         if (stream == null)
         {
             return null;
         }
 
         using StreamReader streamReader = new StreamReader(stream, Encoding.UTF8);
-        return await streamReader.ReadToEndAsync();
+        return await streamReader.ReadToEndAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -111,7 +107,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.DeleteAsync)}('{containerName}', '{fileName}')");
         try
         {
-            await this.GetBlobClient(containerName, fileName).DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
+            await this.GetBlobClient(containerName, fileName).DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots).ConfigureAwait(false);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound")
         {
@@ -138,7 +134,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.ExistsAsync)}('{containerName}', '{fileName}')");
         try
         {
-            return await this.GetBlobClient(containerName, fileName).ExistsAsync(this.cancellationToken);
+            return await this.GetBlobClient(containerName, fileName).ExistsAsync(this.cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -155,7 +151,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         var blobClient = this.GetBlobClient(containerName, fileName);
         try
         {
-            await this.SetCacheControlAsync(blobClient, cacheControl);
+            await this.SetCacheControlAsync(blobClient, cacheControl).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -167,7 +163,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
 
     private async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
     {
-        var properties = await blobClient.GetPropertiesAsync();
+        var properties = await blobClient.GetPropertiesAsync().ConfigureAwait(false);
         var httpHeaders = new BlobHttpHeaders
         {
             CacheControl = cacheControl,
@@ -177,14 +173,14 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
             ContentEncoding = properties.Value.ContentEncoding,
             ContentHash = properties.Value.ContentHash,
         };
-        await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
+        await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken).ConfigureAwait(false);
     }
 
     private async Task CreateContainerAsync(string containerName)
     {
         try
         {
-            await this.blobServiceClient.CreateBlobContainerAsync(containerName);
+            await this.blobServiceClient.CreateBlobContainerAsync(containerName).ConfigureAwait(false);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
         {
@@ -214,12 +210,12 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
                         ContentType = contentType,
                     },
                     Conditions = null,
-                });
+                }).ConfigureAwait(false);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
         {
-            await this.CreateContainerAsync(containerName);
-            await this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl);
+            await this.CreateContainerAsync(containerName).ConfigureAwait(false);
+            await this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -237,7 +233,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         try
         {
             MemoryStream ms = new MemoryStream();
-            await blobClient.DownloadToAsync(ms, this.cancellationToken);
+            await blobClient.DownloadToAsync(ms, this.cancellationToken).ConfigureAwait(false);
             ms.Position = 0;
             return ms;
         }
@@ -245,7 +241,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         {
             if (ex.ErrorCode == "BlobNotFound")
             {
-                this.logger.Error($"File '{blobClient.Name}' not found in container '{blobClient.BlobContainerName}'.");
+                this.logger.LogError($"File '{blobClient.Name}' not found in container '{blobClient.BlobContainerName}'.");
                 return null;
             }
 

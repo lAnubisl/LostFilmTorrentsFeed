@@ -48,16 +48,17 @@ public class SignInFunction
     /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
     /// <returns>A <see cref="Task{HttpResponseData}"/> representing the result of the asynchronous operation.</returns>
     [Function("SignInFunction")]
-    [OpenApiOperation(operationId: "SignInFunction", tags: new[] { "user" }, Visibility = OpenApiVisibilityType.Important)]
+    [OpenApiOperation(operationId: "SignInFunction", Visibility = OpenApiVisibilityType.Important)]
     [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(SignInRequestModel), Required = true)]
     [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(SignInResponseModel))]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
     {
         this.logger.Info($"Call: {nameof(this.RunAsync)}(HttpRequestData)");
-        var responseModel = await this.command.ExecuteAsync(ModelBinder.Bind<SignInRequestModel>(req));
+        ArgumentNullException.ThrowIfNull(req);
+        var responseModel = await this.command.ExecuteAsync(ModelBinder.Bind<SignInRequestModel>(req)).ConfigureAwait(false);
         var response = req.CreateResponse(HttpStatusCode.OK);
         response.Headers.Add("Content-Type", "application/json");
-        await response.WriteStringAsync(JsonSerializer.Serialize(responseModel, CommonSerializationOptions.Default));
+        await response.WriteStringAsync(JsonSerializer.Serialize(responseModel, CommonSerializationOptions.Default)).ConfigureAwait(false);
         return response;
     }
 }

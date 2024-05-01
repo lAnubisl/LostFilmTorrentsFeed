@@ -23,8 +23,10 @@
 
 namespace LostFilmMonitoring.BLL.Tests;
 
+#pragma warning disable CA1861
+
 [ExcludeFromCodeCoverage]
-public class ConfigurationTests
+internal sealed class ConfigurationTests
 {
     private Mock<IConfigurationValuesProvider>? providerMock;
 
@@ -49,7 +51,7 @@ public class ConfigurationTests
         service.ImagesDirectory.Should().BeEquivalentTo("IMAGESDIRECTORY");
         service.TorrentsDirectory.Should().BeEquivalentTo("TORRENTSDIRECTORY");
         service.BaseUrl.Should().BeEquivalentTo("BASEURL");
-        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(new[] { "#1USERID", "#2USERID", "#3USERID" });
+        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(["#1USERID", "#2USERID", "#3USERID"]);
     }
 
     [Test]
@@ -62,7 +64,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(new[] { "#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID" });
+        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]);
     }
 
     [Test]
@@ -147,5 +149,7 @@ public class ConfigurationTests
         action.Should().Throw<Exception>().WithMessage("Environment variable 'TORRENTTRACKERS' is not defined.");
     }
 
-    private Configuration GetService() => new (providerMock!.Object);
+    private LostFilmMonoitoringBllConfiguration GetService() => new (providerMock!.Object);
 }
+
+#pragma warning restore CA1861

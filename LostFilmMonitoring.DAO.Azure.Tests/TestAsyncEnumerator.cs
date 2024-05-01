@@ -26,7 +26,11 @@ namespace LostFilmMonitoring.DAO.Azure.Tests;
 [ExcludeFromCodeCoverage]
 public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 {
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+
     private IEnumerable<T> values;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
     private IEnumerator<T> enumerator;
     
     public TestAsyncEnumerator(T[] values)
@@ -39,6 +43,8 @@ public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 
     public ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
+        this.enumerator.Dispose();
         return new ValueTask();
     }
 

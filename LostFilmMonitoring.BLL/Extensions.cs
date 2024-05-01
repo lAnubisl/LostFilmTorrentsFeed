@@ -26,7 +26,7 @@ namespace LostFilmMonitoring.BLL;
 /// <summary>
 /// Usefull extensions.
 /// </summary>
-public static class Extensions
+public static class LostFilmMonitoringBllExtensions
 {
     /// <summary>
     /// Generates torrent link for user's feed.
@@ -66,13 +66,14 @@ public static class Extensions
     internal static BencodeNET.Torrents.Torrent ToTorrentDataStructure(this Stream stream)
     {
         var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
-        var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(stream));
+        using var reader = new BencodeNET.IO.BencodeReader(stream);
+        var torrent = parser.Parse(reader);
         torrent.IsPrivate = false;
         stream.Position = 0;
         return torrent;
     }
 
-    private static Stream ToStream(this BencodeNET.Torrents.Torrent torrent)
+    private static MemoryStream ToStream(this BencodeNET.Torrents.Torrent torrent)
     {
         var ms = new MemoryStream();
         torrent.EncodeTo(ms);

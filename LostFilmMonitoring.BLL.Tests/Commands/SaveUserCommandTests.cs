@@ -24,8 +24,10 @@
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
-internal class SaveUserCommandTests
+internal sealed class SaveUserCommandTests
 {
+    private static readonly CompositeFormat FieldEmpty = CompositeFormat.Parse(ErrorMessages.FieldEmpty);
+
     private Mock<IUserDao>? userDao;
     private Mock<IFeedDao>? feedDao;
     private Mock<IModelPersister>? persister;
@@ -81,7 +83,7 @@ internal class SaveUserCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_is_null()
     {
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(null);
+        var response = await command.ExecuteAsync(null).ConfigureAwait(false);
         response.UserId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
@@ -94,13 +96,13 @@ internal class SaveUserCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_trackerId_is_null()
     {
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel());
+        var response = await command.ExecuteAsync(new EditUserRequestModel()).ConfigureAwait(false);
         response.UserId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
         response.ValidationResult.Errors.Count.Should().Be(1);
         response.ValidationResult.Errors.First().Key.Should().Be(nameof(EditUserRequestModel.TrackerId));
-        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)));
+        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(EditUserRequestModel.TrackerId)));
     }
 
     [Test]
@@ -108,7 +110,7 @@ internal class SaveUserCommandTests
     {
         var trackerIdValue = "TrackerId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = null, TrackerId = trackerIdValue });
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = null, TrackerId = trackerIdValue }).ConfigureAwait(false);
         response.UserId.Should().NotBeNull();
     }
 
@@ -118,7 +120,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue }).ConfigureAwait(false);
         response.UserId.Should().Be(userIdValue);
     }
 
@@ -128,7 +130,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue }).ConfigureAwait(false);
         this.userDao!.Verify(x => x.SaveAsync(It.Is<User>(x => x.Id == userIdValue && x.TrackerId == trackerIdValue)), Times.Once);
     }
 
@@ -138,7 +140,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue }).ConfigureAwait(false);
         this.persister!.Verify(x => x.PersistAsync($"subscription_{userIdValue}", Array.Empty<SubscriptionItem>()), Times.Once);
     }
 
@@ -148,7 +150,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue }).ConfigureAwait(false);
         this.feedDao!.Verify(x => x.SaveUserFeedAsync(userIdValue, Array.Empty<FeedItem>()), Times.Once);
     }
 

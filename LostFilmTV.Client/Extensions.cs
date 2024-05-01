@@ -26,13 +26,15 @@ namespace LostFilmTV.Client;
 /// <summary>
 /// Useful extensions.
 /// </summary>
-public static class Extensions
+public static class LostFilmTvExtensions
 {
     /// <summary>
     /// Extracts torrent id from ReteOrg url.
     /// </summary>
     /// <param name="reteOrgUrl">reteOrgUrl.</param>
     /// <returns>Torrent Id.</returns>
+#pragma warning disable CA1054 // URI-like parameters should not be strings
+
     public static string? GetTorrentId(string? reteOrgUrl)
     {
         // http://tracktor.in/rssdownloader.php?id=33572
@@ -42,7 +44,7 @@ public static class Extensions
         }
 
         string marker = "rssdownloader.php?id=";
-        int index = reteOrgUrl.IndexOf(marker);
+        int index = reteOrgUrl.IndexOf(marker, StringComparison.Ordinal);
         if (index < 0)
         {
             return null;
@@ -50,4 +52,6 @@ public static class Extensions
 
         return reteOrgUrl[(index + marker.Length) ..];
     }
+
+#pragma warning restore CA1054 // URI-like parameters should not be strings
 }

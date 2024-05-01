@@ -40,6 +40,8 @@ public class IndexViewModel
         this.OlderItems = Filter(series, s => s.LastEpisode < DateTime.Now.AddDays(-7));
     }
 
+#pragma warning disable CA1819
+
     /// <summary>
     /// Gets or sets episodes updated within last 24 hours.
     /// </summary>
@@ -59,6 +61,8 @@ public class IndexViewModel
     /// Gets or sets items to be shown in home screen.
     /// </summary>
     public IndexViewItemModel[] Items { get; set; }
+
+#pragma warning restore CA1819 // Closing square brackets should be spaced correctly
 
     private static string[] Filter(ICollection<Series> series, Func<Series, bool> predicate)
     {

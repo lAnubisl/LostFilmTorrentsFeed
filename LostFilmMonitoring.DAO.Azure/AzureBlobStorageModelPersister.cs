@@ -49,7 +49,7 @@ public class AzureBlobStorageModelPersister : IModelPersister
         this.logger.Info($"Call: {nameof(this.LoadAsync)}('{modelName}')");
         try
         {
-            var json = await this.azureBlobStorageClient.DownloadStringAsync("models", modelName + ".json");
+            var json = await this.azureBlobStorageClient.DownloadStringAsync("models", modelName + ".json").ConfigureAwait(false);
             if (json == null)
             {
                 return null;
@@ -70,7 +70,7 @@ public class AzureBlobStorageModelPersister : IModelPersister
         this.logger.Info($"Call: {nameof(this.PersistAsync)}('{modelName}', model)");
         try
         {
-            await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonSerializer.Serialize(model, CommonSerializationOptions.Default), "application/json");
+            await this.azureBlobStorageClient.UploadAsync("models", $"{modelName}.json", JsonSerializer.Serialize(model, CommonSerializationOptions.Default), "application/json").ConfigureAwait(false);
         }
         catch (ExternalServiceUnavailableException ex)
         {

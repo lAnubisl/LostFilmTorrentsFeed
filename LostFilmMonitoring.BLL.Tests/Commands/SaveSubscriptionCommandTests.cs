@@ -24,8 +24,10 @@
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
-internal class SaveSubscriptionCommandTests
+internal sealed class SaveSubscriptionCommandTests
 {
+    private static readonly CompositeFormat FieldEmpty = CompositeFormat.Parse(ErrorMessages.FieldEmpty);
+
     private Mock<IUserDao>? userDao;
     private Mock<Common.ILogger>? logger;
     private Mock<IValidator<EditSubscriptionRequestModel>>? validator;
@@ -134,7 +136,7 @@ internal class SaveSubscriptionCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_is_null()
     {
         var command = GetCommand();
-        var response = await command.ExecuteAsync(null);
+        var response = await command.ExecuteAsync(null).ConfigureAwait(false);
         Verify(response, "model", ErrorMessages.RequestNull);
     }
 
@@ -142,16 +144,16 @@ internal class SaveSubscriptionCommandTests
     public async Task ExecuteAsync_should_return_error_when_request_userId_is_null()
     {
         var command = GetCommand();
-        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = null });
-        Verify(response, nameof(EditSubscriptionRequestModel.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.UserId)));
+        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = null }).ConfigureAwait(false);
+        Verify(response, nameof(EditSubscriptionRequestModel.UserId), string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(EditUserRequestModel.UserId)));
     }
 
     [Test]
     public async Task ExecuteAsync_should_return_error_when_request_items_is_null()
     {
         var command = GetCommand();
-        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = null });
-        Verify(response, nameof(EditSubscriptionRequestModel.Items), string.Format(ErrorMessages.FieldEmpty, nameof(EditSubscriptionRequestModel.Items)));
+        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = null }).ConfigureAwait(false);
+        Verify(response, nameof(EditSubscriptionRequestModel.Items), string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(EditSubscriptionRequestModel.Items)));
     }
 
     [Test]
@@ -161,7 +163,7 @@ internal class SaveSubscriptionCommandTests
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(validationError);
 
         var command = GetCommand();
-        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = Array.Empty<SubscriptionItem>() });
+        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = Array.Empty<SubscriptionItem>() }).ConfigureAwait(false);
         response.ValidationResult.Should().Be(validationError);
     }
 
@@ -171,8 +173,8 @@ internal class SaveSubscriptionCommandTests
         var request = new EditSubscriptionRequestModel
         {
             UserId = "user#123",
-            Items = new []
-            {
+            Items =
+            [
                 new SubscriptionItem
                 {
                     SeriesName = "Series#1",
@@ -183,11 +185,11 @@ internal class SaveSubscriptionCommandTests
                     SeriesName = "Series#2",
                     Quality = Quality.H720,
                 }
-            }
+            ]
         };
 
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
-        var response = await GetCommand().ExecuteAsync(request);
+        var response = await GetCommand().ExecuteAsync(request).ConfigureAwait(false);
 
         // load user
         this.userDao!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
@@ -215,18 +217,18 @@ internal class SaveSubscriptionCommandTests
         var request = new EditSubscriptionRequestModel
         {
             UserId = "user#123",
-            Items = new[]
-            {
+            Items =
+            [
                 new SubscriptionItem
                 {
                     SeriesName = "Series#2",
                     Quality = Quality.H1080,
                 }
-            }
+            ]
         };
 
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
-        var response = await GetCommand().ExecuteAsync(request);
+        var response = await GetCommand().ExecuteAsync(request).ConfigureAwait(false);
 
         // load user
         this.userDao!.Verify(x => x.LoadAsync(request.UserId), Times.Once);

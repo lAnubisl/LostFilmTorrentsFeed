@@ -70,7 +70,7 @@ public class ValidationResult
     internal static ValidationResult Fail(string property, string message, params string[] objects)
         => new (
             property,
-            string.Format(message, new string[] { property }
+            string.Format(CultureInfo.InvariantCulture, message, new string[] { property }
             .Union(objects ?? Array.Empty<string>()).ToArray()));
 
     /// <summary>

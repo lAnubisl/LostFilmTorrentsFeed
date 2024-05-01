@@ -52,11 +52,13 @@ public abstract class BaseRssFeed
     /// <param name="rssUri">URL.</param>
     /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
     /// <returns>Content.</returns>
+#pragma warning disable CA1054 // URI-like parameters should not be strings
+
     protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
     {
         this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
         using var client = this.httpClientFactory.CreateClient();
-        var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
+        using var message = new HttpRequestMessage(HttpMethod.Get, rssUri);
         if (requestHeaders != null)
         {
             foreach (var header in requestHeaders)
@@ -67,8 +69,8 @@ public abstract class BaseRssFeed
 
         try
         {
-            var response = await client.SendAsync(message);
-            var rssText = await response.Content.ReadAsStringAsync();
+            var response = await client.SendAsync(message).ConfigureAwait(false);
+            var rssText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             this.Logger.Debug(rssText);
             return rssText;
         }
@@ -89,6 +91,8 @@ public abstract class BaseRssFeed
         }
     }
 
+#pragma warning restore CA1054 // URI-like parameters should not be strings
+
     /// <summary>
     /// Reads Feed item objects from RSS content.
     /// </summary>
@@ -99,11 +103,13 @@ public abstract class BaseRssFeed
         this.Logger.Info($"Call: {nameof(this.GetItems)}(rssText)");
         if (string.IsNullOrWhiteSpace(rssText))
         {
-            this.Logger.Error("RSS content is empty.");
+            this.Logger.LogError("RSS content is empty.");
             return new SortedSet<FeedItemResponse>();
         }
 
         XDocument document;
+#pragma warning disable CA1031 // Do not catch general exception types
+
         try
         {
             document = Parse(rssText);
@@ -113,6 +119,7 @@ public abstract class BaseRssFeed
             this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}'{rssText}'", ex);
             return new SortedSet<FeedItemResponse>();
         }
+#pragma warning restore CA1031 // Do not catch general exception types
 
         return GetItems(document);
     }
@@ -129,6 +136,8 @@ public abstract class BaseRssFeed
                     m.Groups["start"].Value +
                     HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
                     m.Groups["end"].Value);
+#pragma warning disable CA1031 // Do not catch general exception types
+
         try
         {
             return XDocument.Parse(result);
@@ -137,6 +146,8 @@ public abstract class BaseRssFeed
         {
             return XDocument.Parse(rssString);
         }
+#pragma warning restore CA1031 // Do not catch general exception types
+
     }
 
     /// <summary>

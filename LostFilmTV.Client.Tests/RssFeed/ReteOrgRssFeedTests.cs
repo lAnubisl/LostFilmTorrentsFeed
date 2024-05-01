@@ -24,7 +24,7 @@
 namespace LostFilmTV.Client.Tests.RssFeed;
 
 [ExcludeFromCodeCoverage]
-public class ReteOrgRssFeedTests
+internal sealed class ReteOrgRssFeedTests
 {
     private Mock<IHttpClientFactory> httpClientFactory;
     private Mock<ILogger> logger;
@@ -37,7 +37,11 @@ public class ReteOrgRssFeedTests
         this.logger = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.mockHttp = new();
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
         this.httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
     }
 
     [Test]
@@ -67,7 +71,7 @@ public class ReteOrgRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", Helper.GetEmbeddedResource($"LostFilmTV.Client.Tests.TestData.BaseFeed1.xml"));
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().NotBeEmpty();
     }
@@ -78,7 +82,7 @@ public class ReteOrgRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", string.Empty);
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -89,7 +93,7 @@ public class ReteOrgRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Throw(new TaskCanceledException());
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -100,7 +104,7 @@ public class ReteOrgRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Throw(new IOException());
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -110,8 +114,8 @@ public class ReteOrgRssFeedTests
     {
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
-            .Throw(new Exception());
-        var result = await GetService().LoadFeedItemsAsync();
+            .Throw(new HttpRequestException());
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }
@@ -122,7 +126,7 @@ public class ReteOrgRssFeedTests
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", "BROKEN RSS DATA");
-        var result = await GetService().LoadFeedItemsAsync();
+        var result = await GetService().LoadFeedItemsAsync().ConfigureAwait(false);
         result.Should().NotBeNull();
         result.Should().BeEmpty();
     }

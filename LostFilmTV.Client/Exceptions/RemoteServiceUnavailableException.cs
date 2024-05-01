@@ -40,4 +40,30 @@ public class RemoteServiceUnavailableException : Exception, ISerializable
         : base("Remote Service Unavailable", innerException)
     {
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoteServiceUnavailableException"/> class.
+    /// </summary>
+    public RemoteServiceUnavailableException()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoteServiceUnavailableException"/> class.
+    /// </summary>
+    /// <param name="message">Error message.</param>
+    public RemoteServiceUnavailableException(string message)
+        : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoteServiceUnavailableException"/> class.
+    /// </summary>
+    /// <param name="message">Error message.</param>
+    /// <param name="innerException">Inner exception.</param>
+    public RemoteServiceUnavailableException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 }

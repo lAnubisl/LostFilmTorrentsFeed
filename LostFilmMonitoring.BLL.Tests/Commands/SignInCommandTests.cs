@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
-internal class SignInCommandTests
+internal sealed class SignInCommandTests
 {
     private Mock<IUserDao>? userDao;
     private Mock<Common.ILogger>? logger;
@@ -41,7 +41,7 @@ internal class SignInCommandTests
     public async Task ExecuteAsync_should_return_success_false_when_request_is_null()
     {
         var command = CreateSignInCommand();
-        var response = await command.ExecuteAsync(null);
+        var response = await command.ExecuteAsync(null).ConfigureAwait(false);
         response.Success.Should().BeFalse();
     }
 
@@ -49,7 +49,7 @@ internal class SignInCommandTests
     public async Task ExecuteAsync_should_return_success_false_when_request_userId_is_null()
     {
         var command = CreateSignInCommand();
-        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel());
+        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel()).ConfigureAwait(false);
         response.Success.Should().BeFalse();
     }
 
@@ -58,7 +58,7 @@ internal class SignInCommandTests
     {
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(null as User);
         var command = CreateSignInCommand();
-        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" });
+        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" }).ConfigureAwait(false);
         response.Success.Should().BeFalse();
     }
 
@@ -67,7 +67,7 @@ internal class SignInCommandTests
     {
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, string.Empty));
         var command = CreateSignInCommand();
-        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" });
+        var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" }).ConfigureAwait(false);
         response.Success.Should().BeTrue();
     }
 

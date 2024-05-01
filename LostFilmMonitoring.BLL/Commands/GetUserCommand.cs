@@ -56,7 +56,7 @@ public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel
             return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.FieldEmpty));
         }
 
-        var user = await this.userDao.LoadAsync(request.UserId);
+        var user = await this.userDao.LoadAsync(request.UserId).ConfigureAwait(false);
         if (user == null)
         {
             return new GetUserResponseModel(ValidationResult.Fail(nameof(GetUserRequestModel.UserId), ErrorMessages.UserDoesNotExist, request.UserId));

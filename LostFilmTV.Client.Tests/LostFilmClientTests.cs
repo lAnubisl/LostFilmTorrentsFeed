@@ -25,7 +25,7 @@ namespace LostFilmTV.Client.Tests;
 
 [TestFixture]
 [ExcludeFromCodeCoverage]
-public class LostFilmClientTests
+internal sealed class LostFilmClientTests
 {
     private Mock<IHttpClientFactory> httpClientFactory;
     private Mock<ILogger> logger;
@@ -38,7 +38,11 @@ public class LostFilmClientTests
         this.logger = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.mockHttp = new();
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
         this.httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
     }
 
     [Test]
@@ -72,9 +76,9 @@ public class LostFilmClientTests
             .Respond("image/jpeg", new MemoryStream(Encoding.UTF8.GetBytes(testString)));
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var actualString = Encoding.UTF8.GetString(ReadFully(await client.DownloadImageAsync(lostFilmId)));
+        var actualString = Encoding.UTF8.GetString(ReadFully(await client.DownloadImageAsync(lostFilmId).ConfigureAwait(false)));
         
-        Assert.That(string.Equals(testString, actualString));
+        Assert.That(string.Equals(testString, actualString, StringComparison.Ordinal));
     }
 
     [Test]
@@ -86,7 +90,7 @@ public class LostFilmClientTests
             .Throw(new HttpRequestException());
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var resultStream = await client.DownloadImageAsync(lostFilmId);
+        var resultStream = await client.DownloadImageAsync(lostFilmId).ConfigureAwait(false);
         resultStream.Should().BeNull();
     }
 
@@ -95,12 +99,14 @@ public class LostFilmClientTests
     {
         var testString = "Test Data";
         var torrentFileId = "torrentId";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(testString));
+        using var content = new StreamContent(stream);
         mockHttp
             .When(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}")
-            .Respond(new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes(testString))));
+            .Respond(content);
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
+        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId).ConfigureAwait(false);
         result.Should().BeNull();
     }
 
@@ -114,7 +120,7 @@ public class LostFilmClientTests
             .Respond("text/html", new MemoryStream(Encoding.UTF8.GetBytes(testString)));
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
+        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId).ConfigureAwait(false);
         result.Should().BeNull();
     }
 
@@ -128,7 +134,7 @@ public class LostFilmClientTests
             .Respond("application/x-bittorrent", new MemoryStream(Encoding.UTF8.GetBytes(testString)));
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
+        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId).ConfigureAwait(false);
         result.Should().BeNull();
     }
 
@@ -141,7 +147,7 @@ public class LostFilmClientTests
             .Throw(new HttpRequestException());
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
+        var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId).ConfigureAwait(false);
         result.Should().BeNull();
     }
 

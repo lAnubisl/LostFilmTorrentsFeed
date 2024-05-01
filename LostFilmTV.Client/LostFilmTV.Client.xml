@@ -15,12 +15,30 @@
             </summary>
             <param name="innerException">Instance of <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="T:LostFilmTV.Client.Extensions">
+        <member name="M:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException"/> class.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException"/> class.
+            </summary>
+            <param name="message">Error message.</param>
+        </member>
+        <member name="M:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Exceptions.RemoteServiceUnavailableException"/> class.
+            </summary>
+            <param name="message">Error message.</param>
+            <param name="innerException">Inner exception.</param>
+        </member>
+        <member name="T:LostFilmTV.Client.LostFilmTvExtensions">
             <summary>
             Useful extensions.
             </summary>
         </member>
-        <member name="M:LostFilmTV.Client.Extensions.GetTorrentId(System.String)">
+        <member name="M:LostFilmTV.Client.LostFilmTvExtensions.GetTorrentId(System.String)">
             <summary>
             Extracts torrent id from ReteOrg url.
             </summary>

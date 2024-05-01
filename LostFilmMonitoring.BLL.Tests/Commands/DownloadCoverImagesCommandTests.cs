@@ -24,7 +24,7 @@
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
-public class DownloadCoverImagesCommandTests
+internal sealed class DownloadCoverImagesCommandTests
 {
     private Mock<ISeriesDao>? seriesDao;
     private Mock<Common.ILogger>? logger;

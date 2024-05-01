@@ -64,7 +64,7 @@ public sealed class Subscription : IEquatable<Subscription>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(this.SeriesName.GetHashCode(), this.Quality.GetHashCode());
+        return HashCode.Combine(this.SeriesName.GetHashCode(StringComparison.InvariantCulture), this.Quality.GetHashCode(StringComparison.InvariantCulture));
     }
 
     /// <inheritdoc/>

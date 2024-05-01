@@ -34,6 +34,7 @@ public class IndexViewItemModel
     /// <param name="series">Series.</param>
     public IndexViewItemModel(Series series)
     {
+        ArgumentNullException.ThrowIfNull(series);
         this.Name = series.Name;
         this.ImageFileName = series.LostFilmId + ".jpg";
     }

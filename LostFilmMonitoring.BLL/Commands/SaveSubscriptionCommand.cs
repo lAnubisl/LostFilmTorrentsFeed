@@ -58,34 +58,34 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     }
 
     /// <inheritdoc/>
-    public async Task<EditSubscriptionResponseModel> ExecuteAsync(EditSubscriptionRequestModel? model)
+    public async Task<EditSubscriptionResponseModel> ExecuteAsync(EditSubscriptionRequestModel? request)
     {
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(EditSubscriptionRequestModel model)");
-        if (model == null)
+        if (request == null)
         {
             return new EditSubscriptionResponseModel(ValidationResult.Fail(ErrorMessages.RequestNull));
         }
 
-        if (model.UserId == null)
+        if (request.UserId == null)
         {
             return new EditSubscriptionResponseModel(ValidationResult.Fail(nameof(EditSubscriptionRequestModel.UserId), ErrorMessages.FieldEmpty));
         }
 
-        if (model.Items == null)
+        if (request.Items == null)
         {
             return new EditSubscriptionResponseModel(ValidationResult.Fail(nameof(EditSubscriptionRequestModel.Items), ErrorMessages.FieldEmpty));
         }
 
-        var validationResult = await this.validator.ValidateAsync(model);
+        var validationResult = await this.validator.ValidateAsync(request).ConfigureAwait(false);
         if (!validationResult.IsValid)
         {
             return new EditSubscriptionResponseModel(validationResult);
         }
 
-        var newUserSubscriptions = SubscriptionItem.ToSubscriptions(model.Items);
-        await this.UpdateUserFeedItemsAsync(model.UserId, newUserSubscriptions);
-        await this.dal.Subscription.SaveAsync(model.UserId, newUserSubscriptions);
-        await this.UpdatePresentationModelAsync(model.UserId, model.Items);
+        var newUserSubscriptions = SubscriptionItem.ToSubscriptions(request.Items);
+        await this.UpdateUserFeedItemsAsync(request.UserId, newUserSubscriptions).ConfigureAwait(false);
+        await this.dal.Subscription.SaveAsync(request.UserId, newUserSubscriptions).ConfigureAwait(false);
+        await this.UpdatePresentationModelAsync(request.UserId, request.Items).ConfigureAwait(false);
         return new EditSubscriptionResponseModel(ValidationResult.Ok);
     }
 
@@ -108,9 +108,9 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     {
         return quality switch
         {
-            Quality.SD => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLinkSD),
-            Quality.H1080 => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLink1080),
-            Quality.H720 => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLinkMP4),
+            Quality.SD => LostFilmTV.Client.LostFilmTvExtensions.GetTorrentId(series.LastEpisodeTorrentLinkSD),
+            Quality.H1080 => LostFilmTV.Client.LostFilmTvExtensions.GetTorrentId(series.LastEpisodeTorrentLink1080),
+            Quality.H720 => LostFilmTV.Client.LostFilmTvExtensions.GetTorrentId(series.LastEpisodeTorrentLinkMP4),
             _ => throw new InvalidOperationException("Quality not supported"),
         };
     }
@@ -123,27 +123,27 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
         var userSubscriptionsTask = this.dal.Subscription.LoadAsync(userId);
         var userFeedItemsTask = this.dal.Feed.LoadUserFeedAsync(userId);
         var userTask = this.dal.User.LoadAsync(userId);
-        await Task.WhenAll(userSubscriptionsTask, userFeedItemsTask, userTask);
-        var userFeedItems = await userFeedItemsTask ?? new SortedSet<FeedItem>();
-        var user = await userTask;
+        await Task.WhenAll(userSubscriptionsTask, userFeedItemsTask, userTask).ConfigureAwait(false);
+        var userFeedItems = await userFeedItemsTask.ConfigureAwait(false) ?? new SortedSet<FeedItem>();
+        var user = await userTask.ConfigureAwait(false);
         if (user == null)
         {
-            this.logger.Error($"User for id '{userId}' not found.");
+            this.logger.LogError($"User for id '{userId}' not found.");
             return;
         }
 
-        var newSubscriptions = Subscription.Filter(selectedSubscriptions, await userSubscriptionsTask);
-        await Task.WhenAll(newSubscriptions.Select(async s => await this.UpdateUserFeedItemsAsync(user, userFeedItems, s)));
-        await this.dal.Feed.SaveUserFeedAsync(userId, userFeedItems.Take(15).ToArray());
-        await this.CleanupOldRssFilesAsync(userId, userFeedItems.Skip(15).ToArray());
+        var newSubscriptions = Subscription.Filter(selectedSubscriptions, await userSubscriptionsTask.ConfigureAwait(false));
+        await Task.WhenAll(newSubscriptions.Select(async s => await this.UpdateUserFeedItemsAsync(user, userFeedItems, s).ConfigureAwait(false))).ConfigureAwait(false);
+        await this.dal.Feed.SaveUserFeedAsync(userId, userFeedItems.Take(15).ToArray()).ConfigureAwait(false);
+        await this.CleanupOldRssFilesAsync(userId, userFeedItems.Skip(15).ToArray()).ConfigureAwait(false);
     }
 
     private async Task UpdateUserFeedItemsAsync(User user, SortedSet<FeedItem> userFeedItems, Subscription subscription)
     {
-        var series = await this.dal.Series.LoadAsync(subscription.SeriesName);
+        var series = await this.dal.Series.LoadAsync(subscription.SeriesName).ConfigureAwait(false);
         if (series == null)
         {
-            this.logger.Error($"Tried to update users feed with series '{subscription.SeriesName}' but haven't found this series in the storage. ");
+            this.logger.LogError($"Tried to update users feed with series '{subscription.SeriesName}' but haven't found this series in the storage. ");
             return;
         }
 
@@ -153,7 +153,7 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
             return;
         }
 
-        var torrentFile = await this.dal.TorrentFile.LoadBaseFileAsync(torrentId);
+        var torrentFile = await this.dal.TorrentFile.LoadBaseFileAsync(torrentId).ConfigureAwait(false);
         if (torrentFile?.Stream == null)
         {
             return;
@@ -164,23 +164,23 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
         var userTorrentFile = torrent.ToTorrentFile();
         if (userTorrentFile.FileName == null)
         {
-            this.logger.Error($"File name for torrent id '{torrent}' is null.");
+            this.logger.LogError($"File name for torrent id '{torrent}' is null.");
             return;
         }
 
-        await this.dal.TorrentFile.SaveUserFileAsync(user.Id, userTorrentFile);
+        await this.dal.TorrentFile.SaveUserFileAsync(user.Id, userTorrentFile).ConfigureAwait(false);
         FeedItem? itemToRemove;
         lock (this.locker)
         {
             itemToRemove = AddFeedItem(
                 userFeedItems,
                 series.LastEpisodeName,
-                Extensions.GenerateTorrentLink(this.configuration.BaseUrl, user.Id, userTorrentFile.FileName));
+                LostFilmMonitoringBllExtensions.GenerateTorrentLink(this.configuration.BaseUrl, user.Id, userTorrentFile.FileName));
         }
 
         if (itemToRemove != null)
         {
-            await this.CleanupOldRssFileAsync(user.Id, itemToRemove);
+            await this.CleanupOldRssFileAsync(user.Id, itemToRemove).ConfigureAwait(false);
         }
     }
 
@@ -195,9 +195,9 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
                 return;
             }
 
-            await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName);
+            await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (ExternalServiceUnavailableException ex)
         {
             this.logger.Log(ex);
         }

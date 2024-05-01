@@ -37,7 +37,7 @@ public class ImageMagickImageProcessor : IImageProcessor
         image.Resize(size);
         image.Quality = quality;
         var ms = new MemoryStream();
-        await image.WriteAsync(ms);
+        await image.WriteAsync(ms).ConfigureAwait(false);
         return ms;
     }
 }

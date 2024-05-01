@@ -26,6 +26,11 @@ namespace LostFilmMonitoring.BLL.Validators;
 /// <inheritdoc/>
 public class EditSubscriptionRequestModelValidator : IValidator<EditSubscriptionRequestModel>
 {
+    private static readonly CompositeFormat FieldEmpty = CompositeFormat.Parse(ErrorMessages.FieldEmpty);
+    private static readonly CompositeFormat ShouldBeIn = CompositeFormat.Parse(ErrorMessages.ShouldBeIn);
+    private static readonly CompositeFormat SeriesDoesNotExist = CompositeFormat.Parse(ErrorMessages.SeriesDoesNotExist);
+    private static readonly CompositeFormat UserDoesNotExist = CompositeFormat.Parse(ErrorMessages.UserDoesNotExist);
+
     private readonly IUserDao userDAO;
     private readonly ISeriesDao seriesDAO;
 
@@ -47,39 +52,39 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
 
         if (model == null || string.IsNullOrEmpty(model.UserId))
         {
-            return ValidationResult.Fail(nameof(model.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(model.UserId)));
+            return ValidationResult.Fail(nameof(model.UserId), string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(model.UserId)));
         }
 
         if (model.Items == null)
         {
-            return ValidationResult.Fail(nameof(model.Items), string.Format(ErrorMessages.FieldEmpty, nameof(model.Items)));
+            return ValidationResult.Fail(nameof(model.Items), string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(model.Items)));
         }
 
         foreach (var item in model.Items)
         {
             if (string.IsNullOrEmpty(item.SeriesName))
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.FieldEmpty, nameof(item.SeriesName)));
+                result.SetError(nameof(item.SeriesName), string.Format(CultureInfo.InvariantCulture, FieldEmpty, nameof(item.SeriesName)));
                 return result;
             }
 
             if (!IsIn(item.Quality, Quality.SD, Quality.H1080, Quality.H720))
             {
-                result.SetError(nameof(item.Quality), string.Format(ErrorMessages.ShouldBeIn, nameof(item.Quality), string.Join(", ", new[] { Quality.SD, Quality.H1080, Quality.H720 })));
+                result.SetError(nameof(item.Quality), string.Format(CultureInfo.InvariantCulture, ShouldBeIn, nameof(item.Quality), string.Join(", ", new[] { Quality.SD, Quality.H1080, Quality.H720 })));
                 return result;
             }
 
-            var series = await this.seriesDAO.LoadAsync(item.SeriesName);
+            var series = await this.seriesDAO.LoadAsync(item.SeriesName).ConfigureAwait(false);
             if (series == null)
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesName));
+                result.SetError(nameof(item.SeriesName), string.Format(CultureInfo.InvariantCulture, SeriesDoesNotExist, item.SeriesName));
                 return result;
             }
         }
 
-        if ((await this.userDAO.LoadAsync(model.UserId)) == null)
+        if ((await this.userDAO.LoadAsync(model.UserId).ConfigureAwait(false)) == null)
         {
-            result.SetError(nameof(model.UserId), string.Format(ErrorMessages.UserDoesNotExist, model.UserId));
+            result.SetError(nameof(model.UserId), string.Format(CultureInfo.InvariantCulture, UserDoesNotExist, model.UserId));
             return result;
         }
 

@@ -35,6 +35,7 @@ public static class Extensions
     /// <returns>XML.</returns>
     public static string GenerateXml(this FeedItem[] items)
     {
+        ArgumentNullException.ThrowIfNull(items, nameof(items));
         var rss = new XDocument();
         var channel = new XElement("channel");
         rss.Add(new XElement("rss", new XAttribute("version", "2.0"), channel));
@@ -53,6 +54,7 @@ public static class Extensions
     /// <returns>SortedSet.</returns>
     public static SortedSet<FeedItem> GetItems(this XDocument doc)
     {
+        ArgumentNullException.ThrowIfNull(doc, nameof(doc));
         if (doc.Root == null)
         {
             return new SortedSet<FeedItem>();

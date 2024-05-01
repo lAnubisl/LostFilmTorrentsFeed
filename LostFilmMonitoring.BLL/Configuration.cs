@@ -24,20 +24,21 @@
 namespace LostFilmMonitoring.BLL;
 
 /// <inheritdoc/>
-public class Configuration : IConfiguration
+public class LostFilmMonoitoringBllConfiguration : IConfiguration
 {
     private readonly string[] torrentAnnounceListPatterns;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Configuration"/> class.
+    /// Initializes a new instance of the <see cref="LostFilmMonoitoringBllConfiguration"/> class.
     /// </summary>
     /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
-    public Configuration(IConfigurationValuesProvider provider)
+    public LostFilmMonoitoringBllConfiguration(IConfigurationValuesProvider provider)
     {
-        this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
-        this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
-        this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
-        this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
+        ArgumentNullException.ThrowIfNull(provider);
+        this.BaseUrl = provider.GetValue("BASEURL") ?? throw new ArgumentException("Environment variable 'BASEURL' is not defined.");
+        this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new ArgumentException("Environment variable 'BASEFEEDCOOKIE' is not defined.");
+        this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new ArgumentException("Environment variable 'BASELINKUID' is not defined.");
+        this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new ArgumentException("Environment variable 'TORRENTTRACKERS' is not defined.");
         this.ImagesDirectory = provider.GetValue("IMAGESDIRECTORY") ?? "images";
         this.TorrentsDirectory = provider.GetValue("TORRENTSDIRECTORY") ?? "torrentfiles";
     }
@@ -58,10 +59,10 @@ public class Configuration : IConfiguration
     public string BaseUID { get; private set; }
 
     /// <inheritdoc/>
-    public string[] GetTorrentAnnounceList(string link_uid)
+    public string[] GetTorrentAnnounceList(string linkUid)
     {
         return this.torrentAnnounceListPatterns
-            .Select(p => string.Format(p, link_uid ?? this.BaseUID))
+            .Select(p => string.Format(CultureInfo.InvariantCulture, p, linkUid ?? this.BaseUID))
             .Select(s => s)
             .ToArray();
     }

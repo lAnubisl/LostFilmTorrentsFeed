@@ -49,10 +49,13 @@ public class LostFilmClient : ILostFilmClient
         using var client = this.httpClientFactory.CreateClient();
         try
         {
-            var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg");
+#pragma warning disable CA2234 // Pass system uri objects instead of strings
+            var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg").ConfigureAwait(false);
+#pragma warning restore CA2234 // Pass system uri objects instead of strings
+
             return stream;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             this.logger.Log(ex);
             return null;
@@ -68,16 +71,16 @@ public class LostFilmClient : ILostFilmClient
     /// <returns>TorrentFile object which contain file name and content stream.</returns>
     public async Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
     {
-        var client = this.httpClientFactory.CreateClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
+        using var client = this.httpClientFactory.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
         request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
         HttpResponseMessage response;
 
         try
         {
-            response = await client.SendAsync(request);
+            response = await client.SendAsync(request).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             this.logger.Log(ex);
             return null;
@@ -85,7 +88,7 @@ public class LostFilmClient : ILostFilmClient
 
         if (response?.Content?.Headers?.ContentType == null)
         {
-            this.logger.Error("response?.Content?.Headers?.ContentType == null");
+            this.logger.LogError("response?.Content?.Headers?.ContentType == null");
             return null;
         }
 
@@ -94,10 +97,10 @@ public class LostFilmClient : ILostFilmClient
             string? responseBody = null;
             if (response.Content.Headers.ContentType.MediaType == "text/html")
             {
-                responseBody = await response.Content.ReadAsStringAsync();
+                responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            this.logger.Error($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. Response content is: '{responseBody}'. TorrentFileId is: '{torrentFileId}'.");
+            this.logger.LogError($"contentType is not 'application/x-bittorrent' it is '{response.Content.Headers.ContentType.MediaType}'. Response content is: '{responseBody}'. TorrentFileId is: '{torrentFileId}'.");
             return null;
         }
 
@@ -105,12 +108,12 @@ public class LostFilmClient : ILostFilmClient
         var fileName = cd?.FirstOrDefault()?[("attachment;filename=\"".Length + 1) ..];
         if (fileName == null)
         {
-            this.logger.Error("Something wrong with 'Content-Disposition' header of the response.");
+            this.logger.LogError("Something wrong with 'Content-Disposition' header of the response.");
             return null;
         }
 
         fileName = fileName[0..^1];
-        var stream = await response.Content.ReadAsStreamAsync();
+        var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
         return new TorrentFileResponse(fileName, stream);
     }
 }

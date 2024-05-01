@@ -22,6 +22,7 @@
 // </copyright>
 
 #pragma warning disable SA1200 // Using directives should be placed correctly
+global using System.Globalization;
 global using System.Text;
 global using System.Text.Json;
 global using System.Xml.Linq;
