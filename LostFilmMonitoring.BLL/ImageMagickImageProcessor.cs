@@ -32,10 +32,10 @@ public class ImageMagickImageProcessor : IImageProcessor
     public async Task<MemoryStream> CompressImageAsync(Stream imageStream, int quality = 75, int width = 420, int height = 630)
     {
         using var image = new MagickImage(imageStream);
-        var size = new MagickGeometry(width, height);
+        var size = new MagickGeometry((uint)width, (uint)height);
         size.IgnoreAspectRatio = true;
         image.Resize(size);
-        image.Quality = quality;
+        image.Quality = (uint)quality;
         var ms = new MemoryStream();
         await image.WriteAsync(ms);
         return ms;
