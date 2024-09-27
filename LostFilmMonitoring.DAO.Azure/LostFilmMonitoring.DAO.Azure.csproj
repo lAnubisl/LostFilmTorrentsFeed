@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.9.0" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.22.1" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
       <PrivateAssets>all</PrivateAssets>
@@ -33,5 +33,4 @@
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
     <ProjectReference Include="..\LostFilmMonitoring.DAO.Interfaces\LostFilmMonitoring.DAO.Interfaces.csproj" />
   </ItemGroup>
-
 </Project>
