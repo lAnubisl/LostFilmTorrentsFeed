@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.0.0" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.5.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
