@@ -31,6 +31,11 @@ public class ImageMagickImageProcessor : IImageProcessor
     /// <inheritdoc/>
     public async Task<MemoryStream> CompressImageAsync(Stream imageStream, int quality = 75, int width = 420, int height = 630)
     {
+        ArgumentNullException.ThrowIfNull(imageStream);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(quality, 100);
+        ArgumentOutOfRangeException.ThrowIfLessThan(quality, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(width, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(height, 0);
         using var image = new MagickImage(imageStream);
         var size = new MagickGeometry((uint)width, (uint)height);
         size.IgnoreAspectRatio = true;
@@ -38,6 +43,7 @@ public class ImageMagickImageProcessor : IImageProcessor
         image.Quality = (uint)quality;
         var ms = new MemoryStream();
         await image.WriteAsync(ms);
+        ms.Position = 0; // Reset position to start for reading
         return ms;
     }
 }

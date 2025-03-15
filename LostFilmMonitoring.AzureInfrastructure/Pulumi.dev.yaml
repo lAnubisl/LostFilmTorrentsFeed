@@ -1,0 +1,2 @@
+config:
+  LostFilmMonitoring.AzureInfrastructure:location: westeurope

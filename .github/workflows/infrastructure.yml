@@ -1,0 +1,45 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./LostFilmMonitoring.AzureInfrastructure
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Pulumi
+        uses: pulumi/actions/setup-pulumi@v4
+
+      - name: Configure Pulumi Backend
+        run: |
+          pulumi login "${{ vars.PULUMI_BACKEND_URL }}"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Pulumi Up
+        run: pulumi up --stack dev --yes
+        env:
+          PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}"

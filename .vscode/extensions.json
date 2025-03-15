@@ -1,6 +1,10 @@
 {
   "recommendations": [
     "ms-azuretools.vscode-azurefunctions",
-    "ms-dotnettools.csharp"
+    "ms-dotnettools.csharp",
+    "formulahendry.dotnet-test-explorer",
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "pulumi.pulumi-vscode-tools"
   ]
 }
