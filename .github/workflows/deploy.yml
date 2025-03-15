@@ -75,7 +75,7 @@ jobs:
 
       - name: Publish Artifact
         run: |
-          dotnet build LostFilmMonitoring.AzureFunction/LostFilmMonitoring.AzureFunction.csproj --configuration Release --output publish --runtime linux-x64 --self-contained false
+          dotnet build LostFilmMonitoring.AzureFunction/LostFilmMonitoring.AzureFunction.csproj --configuration Release --output publish --runtime linux-x64 --self-contained true
 
       - uses: azure/login@v2
         with:
