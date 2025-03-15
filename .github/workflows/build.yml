@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -25,7 +25,7 @@ jobs:
           dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: DotNET Tests
@@ -39,7 +39,7 @@ jobs:
           dotnet build LostFilmMonitoring.AzureFunction/LostFilmMonitoring.AzureFunction.csproj --configuration Release --output publish
 
       - name: 'Store artifact'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: azure-functionapp
           path: |
@@ -55,7 +55,7 @@ jobs:
     environment: 'Staging'
     steps:
       - name: 'Download artifact'
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: azure-functionapp
           path: packageDir
@@ -76,7 +76,7 @@ jobs:
     environment: 'Production'
     steps:
       - name: 'Download artifact'
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           name: azure-functionapp
           path: packageDir
