@@ -22,24 +22,20 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Azure Login
-        uses: azure/login@v1
+      - uses: pulumi/actions@v6
+        name: Pulumi Up
+        id: pulumi
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Setup Pulumi
-        uses: pulumi/actions/setup-pulumi@v4
-
-      - name: Configure Pulumi Backend
-        run: |
-          pulumi login "${{ vars.PULUMI_BACKEND_URL }}"
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Pulumi Up
-        run: pulumi up --stack dev --yes
+          command: up
+          stack-name: dev
+          work-dir: LostFilmMonitoring.AzureInfrastructure
+          cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
+          refresh: true
+          secrets-provider: passphrase
         env:
+          ARM_USE_OIDC: "true"
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}"
+
