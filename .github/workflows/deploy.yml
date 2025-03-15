@@ -6,6 +6,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  checks: write # This is required by dorny/test-reporter https://github.com/dorny/test-reporter/issues/149
 
 jobs:
   infrastructure:
