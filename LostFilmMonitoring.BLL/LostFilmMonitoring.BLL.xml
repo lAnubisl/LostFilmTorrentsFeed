@@ -164,6 +164,14 @@
         <member name="M:LostFilmMonitoring.BLL.Configuration.GetTorrentAnnounceList(System.String)">
             <inheritdoc/>
         </member>
+        <member name="T:LostFilmMonitoring.BLL.DefaultImageProcessor">
+            <summary>
+            Responsible for compressing images.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.DefaultImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
         <member name="T:LostFilmMonitoring.BLL.EnvironmentConfigurationValuesProvider">
             <summary>
             Provides configuration values from environment variables.
@@ -262,14 +270,6 @@
             <param name="width">Width.</param>
             <param name="height">Height.</param>
             <returns>Compressed image stream.</returns>
-        </member>
-        <member name="T:LostFilmMonitoring.BLL.ImageMagickImageProcessor">
-            <summary>
-            Responsible for compressing images.
-            </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.ImageMagickImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
-            <inheritdoc/>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem">
             <summary>

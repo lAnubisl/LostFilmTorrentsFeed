@@ -58,7 +58,7 @@ public static class Program
         services.AddTransient<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
         services.AddTransient<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddTransient<ILostFilmClient, LostFilmClient>();
-        services.AddTransient<IImageProcessor, ImageMagickImageProcessor>();
+        services.AddTransient<IImageProcessor,  DefaultImageProcessor>();
         services.AddHttpClient();
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
