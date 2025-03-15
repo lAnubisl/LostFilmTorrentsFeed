@@ -34,12 +34,12 @@ public class Configuration : IConfiguration
     /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
     public Configuration(IConfigurationValuesProvider provider)
     {
-        this.BaseUrl = provider.GetValue("BASEURL") ?? throw new Exception("Environment variable 'BASEURL' is not defined.");
-        this.BaseUSESS = provider.GetValue("BASEFEEDCOOKIE") ?? throw new Exception("Environment variable 'BASEFEEDCOOKIE' is not defined.");
-        this.BaseUID = provider.GetValue("BASELINKUID") ?? throw new Exception("Environment variable 'BASELINKUID' is not defined.");
-        this.torrentAnnounceListPatterns = provider.GetValue("TORRENTTRACKERS")?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception("Environment variable 'TORRENTTRACKERS' is not defined.");
-        this.ImagesDirectory = provider.GetValue("IMAGESDIRECTORY") ?? "images";
-        this.TorrentsDirectory = provider.GetValue("TORRENTSDIRECTORY") ?? "torrentfiles";
+        this.BaseUrl = provider.GetValue(EnvironmentVariables.BaseUrl) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseUrl}' is not defined.");
+        this.BaseUSESS = provider.GetValue(EnvironmentVariables.BaseFeedCookie) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseFeedCookie}' is not defined.");
+        this.BaseUID = provider.GetValue(EnvironmentVariables.BaseLinkUID) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseLinkUID}' is not defined.");
+        this.torrentAnnounceListPatterns = provider.GetValue(EnvironmentVariables.TorrentTrackers)?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception($"Environment variable '{EnvironmentVariables.TorrentTrackers}' is not defined.");
+        this.ImagesDirectory = provider.GetValue(EnvironmentVariables.ImagesDirectory) ?? "images";
+        this.TorrentsDirectory = provider.GetValue(EnvironmentVariables.TorrentsDirectory) ?? "torrentfiles";
     }
 
     /// <inheritdoc/>

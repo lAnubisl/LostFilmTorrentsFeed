@@ -1,2 +1,11 @@
 config:
   LostFilmMonitoring.AzureInfrastructure:location: westeurope
+  LostFilmMonitoring.AzureInfrastructure:baseurl: https://lostfilm.tv
+  LostFilmMonitoring.AzureInfrastructure:basefeedcookie:
+    secure: v1:9i2Uloz+r/W0CA57:P+U9EUo1HSCVs2qbIrK2ikXEu3/5mZN1rVL3gGDZ38L6JcJbVvNT8yZtj9mmB45o
+  LostFilmMonitoring.AzureInfrastructure:baselinkuid:
+    secure: v1:Lzz+7IPQeDehkVV5:NYQyoVd4y8z0FqIeDLK/k6EU7WFYAus=
+  LostFilmMonitoring.AzureInfrastructure:torrenttrackers: http://bt.tracktor.in/tracker.php/{0}/announce,http://bt99.tracktor.in/tracker.php/{0}/announce,http://bt0.tracktor.in/tracker.php/{0}/announce,http://user5.newtrack.info/tracker.php/{0}/announce,http://user1.newtrack.info/tracker.php/{0}/announce
+  LostFilmMonitoring.AzureInfrastructure:imagesdirectory: images
+  LostFilmMonitoring.AzureInfrastructure:torrentsdirectory: torrentfiles
+encryptionsalt: v1:LU8s6Y6q9F8=:v1:ZJwGG9EiM+7X+Gx0:RTBZXikompsX3mH1o72on17kxI7pXA==
