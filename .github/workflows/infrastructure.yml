@@ -22,6 +22,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - uses: pulumi/actions@v6
         name: Pulumi Up
         id: pulumi
@@ -33,9 +39,5 @@ jobs:
           refresh: true
           secrets-provider: passphrase
         env:
-          ARM_USE_OIDC: "true"
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}"
 
