@@ -30,8 +30,6 @@ public static class Program
 {
     private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
     {
-        var storageAccountConnectionString = Environment.GetEnvironmentVariable("StorageAccountConnectionString") ?? throw new ArgumentException("Environment variable 'StorageAccountConnectionString' not set.");
-
         services.AddLogging();
         services.AddSingleton<ILogger, Logger>();
         services.AddTransient(r => new BlobServiceClient(
