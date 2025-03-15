@@ -34,27 +34,33 @@ public static class Program
 
         services.AddLogging();
         services.AddSingleton<ILogger, Logger>();
-        services.AddSingleton(r => new BlobServiceClient(storageAccountConnectionString));
-        services.AddSingleton(r => new TableServiceClient(storageAccountConnectionString));
-        services.AddSingleton<IAzureBlobStorageClient, AzureBlobStorageClient>();
-        services.AddSingleton<IModelPersister, AzureBlobStorageModelPersister>();
-        services.AddSingleton<IDal, Dal>();
-        services.AddSingleton<ITorrentFileDao, AzureBlobStorageTorrentFileDao>();
-        services.AddSingleton<IFeedDao, AzureBlobStorageFeedDao>();
-        services.AddSingleton<IUserDao, AzureTableStorageUserDao>();
-        services.AddSingleton<ISeriesDao, AzureTableStorageSeriesDao>();
-        services.AddSingleton<IDictionaryDao, AzureTableStorageDictionaryDao>();
-        services.AddSingleton<IEpisodeDao, AzureTableStorageEpisodeDao>();
-        services.AddSingleton<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
-        services.AddSingleton<IRssFeed, ReteOrgRssFeed>();
-        services.AddSingleton<IRssFeed, LostFilmRssFeed>();
-        services.AddSingleton<IFileSystem, AzureBlobStorageFileSystem>();
-        services.AddSingleton<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
-        services.AddSingleton<IConfiguration, Configuration>();
-        services.AddSingleton<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
-        services.AddSingleton<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
-        services.AddSingleton<ILostFilmClient, LostFilmClient>();
-        services.AddSingleton<IImageProcessor, ImageMagickImageProcessor>();
+        services.AddTransient(r => new BlobServiceClient(
+            new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
+            new DefaultAzureCredential()));
+        services.AddTransient(r => new TableServiceClient(
+            new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.table.core.windows.net/"),
+            new TableSharedKeyCredential(
+                Env(EnvironmentVariables.MetadataStorageAccountName),
+                Env(EnvironmentVariables.MetadataStorageAccountKey))));
+        services.AddTransient<IAzureBlobStorageClient, AzureBlobStorageClient>();
+        services.AddTransient<IModelPersister, AzureBlobStorageModelPersister>();
+        services.AddTransient<IDal, Dal>();
+        services.AddTransient<ITorrentFileDao, AzureBlobStorageTorrentFileDao>();
+        services.AddTransient<IFeedDao, AzureBlobStorageFeedDao>();
+        services.AddTransient<IUserDao, AzureTableStorageUserDao>();
+        services.AddTransient<ISeriesDao, AzureTableStorageSeriesDao>();
+        services.AddTransient<IDictionaryDao, AzureTableStorageDictionaryDao>();
+        services.AddTransient<IEpisodeDao, AzureTableStorageEpisodeDao>();
+        services.AddTransient<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
+        services.AddTransient<IRssFeed, ReteOrgRssFeed>();
+        services.AddTransient<IRssFeed, LostFilmRssFeed>();
+        services.AddTransient<IFileSystem, AzureBlobStorageFileSystem>();
+        services.AddTransient<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
+        services.AddTransient<IConfiguration, Configuration>();
+        services.AddTransient<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
+        services.AddTransient<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
+        services.AddTransient<ILostFilmClient, LostFilmClient>();
+        services.AddTransient<IImageProcessor, ImageMagickImageProcessor>();
         services.AddHttpClient();
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
@@ -92,4 +98,6 @@ public static class Program
 
         host.Run();
     }
+
+    private static string Env(string key) => Environment.GetEnvironmentVariable(key!)!;
 }

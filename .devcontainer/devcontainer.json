@@ -1,0 +1,27 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "features": {
+      "ghcr.io/devcontainers/features/dotnet:2": {
+        "version": "8.0"
+      },
+      "ghcr.io/devcontainers/features/terraform:1": {
+        "version": "1.6.2"
+      }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.copilot",
+                "ms-azuretools.vscode-azurefunctions",
+                "eamodio.gitlens",
+                "ms-dotnettools.csdevkit",
+                "vscode-icons-team.vscode-icons",
+                "GitHub.vscode-github-actions",
+                "formulahendry.dotnet-test-explorer",
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.vscode-dotnet-runtime",
+                "pulumi.pulumi-vscode-tools"
+            ]
+        }
+    }
+  }
