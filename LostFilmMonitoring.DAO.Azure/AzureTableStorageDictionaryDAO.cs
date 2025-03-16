@@ -34,7 +34,7 @@ public class AzureTableStorageDictionaryDao : BaseAzureTableStorageDao, IDiction
     /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
     /// <param name="logger">Instance of Logger.</param>
     public AzureTableStorageDictionaryDao(TableServiceClient tableServiceClient, ILogger? logger)
-        : base(tableServiceClient, "dictionary", logger)
+        : base(tableServiceClient, Constants.MetadataStorageTableNameDictionary, logger)
     {
     }
 

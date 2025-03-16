@@ -34,7 +34,7 @@ public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
     /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
     /// <param name="logger">Instance of Logger.</param>
     public AzureTableStorageEpisodeDao(TableServiceClient tableServiceClient, ILogger? logger)
-        : base(tableServiceClient, "episodes", logger)
+        : base(tableServiceClient, Constants.MetadataStorageTableNameEpisodes, logger)
     {
     }
 

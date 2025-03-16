@@ -111,5 +111,10 @@
             </summary>
             <param name="ex">exception.</param>
         </member>
+        <member name="F:Constants.MetadataStorageTableNameDictionary">
+            <summary>
+            
+            </summary>
+        </member>
     </members>
 </doc>

@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       functionAppName: ${{ steps.pulumi.outputs.FunctionName }}
+      websiteStorageAccountName: ${{ steps.pulumi.outputs.WebsiteStorageAccountName }}
     defaults:
       run:
         working-directory: ./LostFilmMonitoring.AzureInfrastructure
@@ -88,3 +89,23 @@ jobs:
         with:
           app-name: ${{ needs.infrastructure.outputs.functionAppName }}
           package: './publish'
+
+  frontend:
+    runs-on: ubuntu-latest
+    needs: infrastructure
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name ${{ needs.infrastructure.outputs.websiteStorageAccountName }}  --auth-mode login -d '$web' -s ./LostFilmMonitoring.Web
+
+      

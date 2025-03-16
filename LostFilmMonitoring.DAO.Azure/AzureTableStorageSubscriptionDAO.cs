@@ -34,7 +34,7 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
     /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
     /// <param name="logger">Instance of Logger.</param>
     public AzureTableStorageSubscriptionDao(TableServiceClient tableServiceClient, ILogger logger)
-        : base(tableServiceClient, "subscription", logger?.CreateScope(nameof(AzureTableStorageSubscriptionDao)))
+        : base(tableServiceClient, Constants.MetadataStorageTableNameSubscriptions, logger?.CreateScope(nameof(AzureTableStorageSubscriptionDao)))
     {
     }
 

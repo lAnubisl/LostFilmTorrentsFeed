@@ -34,7 +34,7 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
     /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
     /// <param name="logger">Instance of Logger.</param>
     public AzureTableStorageSeriesDao(TableServiceClient tableServiceClient, ILogger logger)
-        : base(tableServiceClient, "series", logger?.CreateScope(nameof(AzureTableStorageUserDao)))
+        : base(tableServiceClient, Constants.MetadataStorageTableNameSeries, logger?.CreateScope(nameof(AzureTableStorageUserDao)))
     {
     }
 

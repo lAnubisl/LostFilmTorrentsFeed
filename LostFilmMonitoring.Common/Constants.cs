@@ -1,6 +1,9 @@
 
 public static class Constants
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public const string MetadataStorageTableNameDictionary = "dictionary";
     public const string MetadataStorageTableNameEpisodes = "episodes";
     public const string MetadataStorageTableNameSeries = "series";

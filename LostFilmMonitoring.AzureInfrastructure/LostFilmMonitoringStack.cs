@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using Pulumi;
 using Azure = Pulumi.AzureNative;
+using Cloudflare = Pulumi.Cloudflare;
 
 public class LostFilmMonitoringStack : Pulumi.Stack
 {
-    private readonly string project = "lfmon";
-    private readonly string environment = Pulumi.Deployment.Instance.StackName.ToLowerInvariant();
     private readonly Pulumi.Config config = new Pulumi.Config();
+    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(new Cloudflare.GetZoneInvokeArgs { Name = "byalex.dev" }).Apply(zone => zone.Id);
 
     // Storage Blob Data Contributor: https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage:~:text=ba92f5b4%2D2d11%2D453d%2Da403%2De96b0029c9fe
 
@@ -16,15 +16,103 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Resources.ResourceGroup rg = CreateResourceGroup();
         Azure.OperationalInsights.Workspace log = CreateLogAnalyticsWorkspace(rg);
         Azure.Insights.Component appi = CreateApplicationInsights(rg, log);
-        Azure.Storage.StorageAccount func_st = CreateFunctionStorageAccount(rg);
         Azure.Web.AppServicePlan plan = CreatePlan(rg);
-        Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg);
+        Cloudflare.Record data_record = CreateDataRecord();
+        Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
+        Azure.Storage.StorageAccount func_st = CreateFunctionStorageAccount(rg);
         Azure.Web.WebApp function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
-        Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg);
+        Cloudflare.Record web_record = CreateWebRecord();
+        Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
+        Cloudflare.Record api_record = CreateApiRecord(function);
+        Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, function, api_record);
         SetPermissions(function, metadata_st);
-
-        // Export the Azure Function name
+        // Export the Azure Function name and CDN endpoints
         FunctionName = function.Name;
+        WebsiteStorageAccountName = web_st.Name;
+    }
+
+    private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.Record api_record)
+    {
+        var domainBinding = new Azure.Web.WebAppHostNameBinding("api_custom_domain_binding", new Azure.Web.WebAppHostNameBindingArgs
+        {
+            ResourceGroupName = rg.Name,
+            Name = function.Name,
+            SiteName = function.Name,
+            HostName = config.Require("apidomain"),
+            CustomHostNameDnsRecordType = Azure.Web.CustomHostNameDnsRecordType.CName,        
+        }, new CustomResourceOptions 
+        { 
+            DependsOn = { api_record },
+            IgnoreChanges = { "sslState", "thumbprint" }
+        });
+
+        return domainBinding;
+    }
+
+    private Cloudflare.Record CreateWebRecord()
+    {
+        var dataRecord = new Cloudflare.Record("web_cname_record", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = config.Require("webdomain"),
+            Type = "CNAME",
+            Content = $"{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
+            Proxied = true
+        });
+
+        var asverifyDataRecord = new Cloudflare.Record("asverify_web_cname_record", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = $"asverify.{config.Require("webdomain")}",
+            Type = "CNAME",
+            Content = $"asverify.{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
+            Proxied = false
+        });
+
+        return dataRecord;
+    }
+
+    private Cloudflare.Record CreateDataRecord()
+    {
+        var dataRecord = new Cloudflare.Record("data_cname_record", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = config.Require("datadomain"),
+            Type = "CNAME",
+            Content = $"{Locals.MetadataStorageAccountName}.blob.core.windows.net",
+            Proxied = true
+        });
+
+        var asverifyDataRecord = new Cloudflare.Record("asverify_data_cname_record", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = $"asverify.{config.Require("datadomain")}",
+            Type = "CNAME",
+            Content = $"asverify.{Locals.MetadataStorageAccountName}.blob.core.windows.net",
+            Proxied = false
+        });
+
+        return dataRecord;
+    }
+
+    private Cloudflare.Record CreateApiRecord(Azure.Web.WebApp function)
+    {
+        var txt_record = new Cloudflare.Record("api_txt_record", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = $"asuid.{config.Require("apidomain")}",
+            Type = "TXT",
+            Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\"")
+        });
+        
+        return new Cloudflare.Record("api", new Cloudflare.RecordArgs
+        {
+            ZoneId = zoneId,
+            Name = config.Require("apidomain"),
+            Type = "CNAME",
+            Content = function.DefaultHostName,
+            Proxied = true
+        });
     }
 
     private void SetPermissions(Azure.Web.WebApp function, Azure.Storage.StorageAccount metadata_st)
@@ -67,7 +155,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Location = rg.Location,
             RequestSource = Azure.Insights.RequestSource.Rest,
             ResourceGroupName = rg.Name,
-            ResourceName = $"appi-{project}-{environment}",
+            ResourceName = Locals.ApplicationInsightsName,
             WorkspaceResourceId = log.Id,
             RetentionInDays = 30,
             SamplingPercentage = 100
@@ -78,7 +166,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
     {
         return new Azure.OperationalInsights.Workspace("log", new()
         {
-            WorkspaceName = $"log-{project}-{environment}",
+            WorkspaceName = Locals.LogAnalyticsWorkspaceName,
             Location = rg.Location,
             ResourceGroupName = rg.Name,
             RetentionInDays = 30,
@@ -93,23 +181,51 @@ public class LostFilmMonitoringStack : Pulumi.Stack
     {
         return new Azure.Resources.ResourceGroup("rg", new Azure.Resources.ResourceGroupArgs
         {
-            ResourceGroupName = $"rg-{project}-{environment}",
+            ResourceGroupName = Locals.ResourceGroupName,
             Location = config.Require("location")
         });
     }
 
-    private Azure.Storage.StorageAccount CreateMetadataStorageAccount(Azure.Resources.ResourceGroup rg)
+    private Azure.Storage.StorageAccount CreateMetadataStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.Record data_record)
     {
         var storageAccount = new Azure.Storage.StorageAccount("sametadata", new Azure.Storage.StorageAccountArgs
         {
             ResourceGroupName = rg.Name,
-            AccountName = $"stmeta{project}{environment}",
+            AccountName = Locals.MetadataStorageAccountName,
             Sku = new Azure.Storage.Inputs.SkuArgs
             {
                 Name = Azure.Storage.SkuName.Standard_LRS,
             },
             Kind = Azure.Storage.Kind.StorageV2,
             AllowBlobPublicAccess = true,
+            EnableHttpsTrafficOnly = false,
+            AllowSharedKeyAccess = false,
+            DefaultToOAuthAuthentication = true,
+            CustomDomain = new Azure.Storage.Inputs.CustomDomainArgs
+            {
+                Name = data_record.Name.Apply(name => name),
+                UseSubDomainName = true
+            } 
+        });
+
+        var corsRule = new Azure.Storage.BlobServiceProperties("cors_stmetadata", new Azure.Storage.BlobServicePropertiesArgs
+        {
+            AccountName = storageAccount.Name,
+            ResourceGroupName = rg.Name,
+            Cors = new Azure.Storage.Inputs.CorsRulesArgs
+            {
+                CorsRules = 
+                {
+                    new Azure.Storage.Inputs.CorsRuleArgs
+                    {
+                        AllowedOrigins = {$"https://{config.Require("webdomain")}"},
+                        AllowedMethods = {"GET", "OPTIONS"},
+                        AllowedHeaders = {"*"},
+                        ExposedHeaders = {"*"},
+                        MaxAgeInSeconds = 3600
+                    }
+                }
+            }
         });
 
         var usertorrents = new Azure.Storage.BlobContainer("usertorrents", new Azure.Storage.BlobContainerArgs
@@ -190,17 +306,25 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return storageAccount;
     }
 
-    private Azure.Storage.StorageAccount CreateWebsiteStorageAccount(Azure.Resources.ResourceGroup rg)
+    private Azure.Storage.StorageAccount CreateWebsiteStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.Record web_record)
     {
         var storageAccount = new Azure.Storage.StorageAccount("saweb", new Azure.Storage.StorageAccountArgs
         {
             ResourceGroupName = rg.Name,
-            AccountName = $"stweb{project}{environment}",
+            AccountName = Locals.WebsiteStorageAccountName,
             Sku = new Azure.Storage.Inputs.SkuArgs
             {
                 Name = Azure.Storage.SkuName.Standard_LRS,
             },
             Kind = Azure.Storage.Kind.StorageV2,
+            EnableHttpsTrafficOnly = false,
+            AllowSharedKeyAccess = false,
+            DefaultToOAuthAuthentication = true,
+            CustomDomain = new Azure.Storage.Inputs.CustomDomainArgs
+            {
+                Name = web_record.Name.Apply(name => name),
+                UseSubDomainName = true
+            }
         });
 
         // Enable static website hosting
@@ -220,7 +344,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return new Azure.Storage.StorageAccount("sa", new Azure.Storage.StorageAccountArgs
         {
             ResourceGroupName = rg.Name,
-            AccountName = $"stfunc{project}{environment}",
+            AccountName = Locals.FunctionAppStorageAccountName,
             Sku = new Azure.Storage.Inputs.SkuArgs
             {
                 Name = Azure.Storage.SkuName.Standard_LRS,
@@ -234,7 +358,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return new Azure.Web.AppServicePlan("plan", new Azure.Web.AppServicePlanArgs
         {
             ResourceGroupName = rg.Name,
-            Name = $"plan-{project}-{environment}",
+            Name = Locals.AppServicePlanName,
             Location = rg.Location,
             Sku = new Azure.Web.Inputs.SkuDescriptionArgs
             {
@@ -260,7 +384,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         {
             ResourceGroupName = rg.Name,
             Kind = "FunctionApp",
-            Name = $"func-{project}-{environment}",
+            Name = Locals.FunctionAppName,
             Location = rg.Location,
             ServerFarmId = plan.Id,
             Identity = new Azure.Web.Inputs.ManagedServiceIdentityArgs
@@ -274,6 +398,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 {
                     { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
                     { "AzureWebJobsStorage", GetConnectionString(rg.Name, st.Name) },
+                    { "AzureWebJobsDisableHomepage", "true" },
                     { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
                     { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
                     { EnvironmentVariables.BaseUrl, config.Require("baseurl") },
@@ -288,8 +413,18 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     { "WEBSITE_ENABLE_SYNC_UPDATE_SITE", "true" },
                     { "SCM_DO_BUILD_DURING_DEPLOYMENT", "false" },
                 }),
+                Cors = new Azure.Web.Inputs.CorsSettingsArgs
+                {
+                    AllowedOrigins = {$"https://{config.Require("webdomain")}"},
+                    SupportCredentials = true
+                }
             }
-        });
+        }, new CustomResourceOptions { 
+            IgnoreChanges = { 
+                "hostNameSslStates",
+                "enabledHostNames"
+            }
+         });
     }
 
     private static Pulumi.InputList<Azure.Web.Inputs.NameValuePairArgs> GetAppSettings(Dictionary<Pulumi.Input<string>, Pulumi.Input<string>> settings)
@@ -339,4 +474,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     [Output]
     public Output<string> FunctionName { get; set; }
+
+    [Output]
+    public Output<string> WebsiteStorageAccountName { get; set; }
 }

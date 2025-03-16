@@ -28,7 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure;
 /// </summary>
 public class AzureBlobStorageFeedDao : IFeedDao
 {
-    private static readonly string ConteinerName = "rssfeeds";
+    private static readonly string ConteinerName = Constants.MetadataStorageContainerRssFeeds;
     private static readonly string BaseFeedName = "baseFeed.xml";
     private readonly IAzureBlobStorageClient azureBlobStorageClient;
     private readonly ILogger logger;

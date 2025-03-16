@@ -30,8 +30,8 @@ public class AzureBlobStorageTorrentFileDao : ITorrentFileDao
 {
     private readonly IAzureBlobStorageClient azureBlobStorageClient;
     private readonly ILogger logger;
-    private readonly string baseTorrentsDirectory = "basetorrents";
-    private readonly string userTorrentsDirectory = "usertorrents";
+    private readonly string baseTorrentsDirectory = Constants.MetadataStorageContainerBaseTorrents;
+    private readonly string userTorrentsDirectory = Constants.MetadataStorageContainerUserTorrents;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AzureBlobStorageTorrentFileDao"/> class.

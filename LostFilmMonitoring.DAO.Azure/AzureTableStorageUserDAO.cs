@@ -34,7 +34,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
     /// <param name="tableServiceClient">Instance of Azure.Data.Tables.TableServiceClient.</param>
     /// <param name="logger">Instance of Logger.</param>
     public AzureTableStorageUserDao(TableServiceClient tableServiceClient, ILogger logger)
-        : base(tableServiceClient, "users", logger?.CreateScope(nameof(AzureTableStorageUserDao)))
+        : base(tableServiceClient, Constants.MetadataStorageTableNameUsers, logger?.CreateScope(nameof(AzureTableStorageUserDao)))
     {
     }
 

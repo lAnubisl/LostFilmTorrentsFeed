@@ -8,4 +8,9 @@ config:
   LostFilmMonitoring.AzureInfrastructure:torrenttrackers: http://bt.tracktor.in/tracker.php/{0}/announce,http://bt99.tracktor.in/tracker.php/{0}/announce,http://bt0.tracktor.in/tracker.php/{0}/announce,http://user5.newtrack.info/tracker.php/{0}/announce,http://user1.newtrack.info/tracker.php/{0}/announce
   LostFilmMonitoring.AzureInfrastructure:imagesdirectory: images
   LostFilmMonitoring.AzureInfrastructure:torrentsdirectory: torrentfiles
+  LostFilmMonitoring.AzureInfrastructure:webdomain: lostfilmfeeddev.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:datadomain: datalostfilmfeeddev.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:apidomain: apilostfilmfeeddev.byalex.dev
+  cloudflare:apiToken:
+    secure: v1:tCi5ZDEp+rIMrnkJ:VvyrTHON/w2UsBM8QV3npWeIU+H40kPGOGXP5YV5AfOpAp9R0bnSvio6LN7+I3EX8Y2AidBYTd8=
 encryptionsalt: v1:LU8s6Y6q9F8=:v1:ZJwGG9EiM+7X+Gx0:RTBZXikompsX3mH1o72on17kxI7pXA==
