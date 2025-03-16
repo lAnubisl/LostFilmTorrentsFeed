@@ -1,7 +1,7 @@
-var baseApiUri = "https://lostfilmfeed.azurewebsites.net/api/";
-var baseDataUri = "https://lostfilmfeedstorage.blob.core.windows.net/models/";
-var imagesBaseUri = "https://lostfilmfeedstorage.blob.core.windows.net/images/";
-var baseRssUri = "https://lostfilmfeedstorage.blob.core.windows.net/rssfeeds/"
+var baseApiUri = config.baseApiUri;
+var baseDataUri = config.baseDataUri;
+var imagesBaseUri = config.imagesBaseUri;
+var baseRssUri = config.baseRssUri;
 
 var initMySubscriptionPage = function() {
     var userId = getCookie("UserId");

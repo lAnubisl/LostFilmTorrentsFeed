@@ -96,6 +96,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Update Configuration
+        working-directory: ./LostFilmMonitoring.Web
+        run: node update-config.js
+        env:
+          BASE_API_URI: ${{ vars.BASE_API_URI }}
+          BASE_DATA_URI: ${{ vars.BASE_DATA_URI }}
+          IMAGES_BASE_URI: ${{ vars.IMAGES_BASE_URI }}
+          BASE_RSS_URI: ${{ vars.BASE_RSS_URI }}
+
       - uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
