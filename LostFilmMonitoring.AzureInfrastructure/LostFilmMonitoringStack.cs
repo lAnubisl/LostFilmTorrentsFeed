@@ -211,6 +211,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         var corsRule = new Azure.Storage.BlobServiceProperties("cors_stmetadata", new Azure.Storage.BlobServicePropertiesArgs
         {
             AccountName = storageAccount.Name,
+            BlobServicesName = "default",
             ResourceGroupName = rg.Name,
             Cors = new Azure.Storage.Inputs.CorsRulesArgs
             {
