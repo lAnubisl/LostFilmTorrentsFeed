@@ -199,7 +199,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Kind = Azure.Storage.Kind.StorageV2,
             AllowBlobPublicAccess = true,
             EnableHttpsTrafficOnly = false,
-            AllowSharedKeyAccess = false,
+            AllowSharedKeyAccess = true,
             DefaultToOAuthAuthentication = true,
             CustomDomain = new Azure.Storage.Inputs.CustomDomainArgs
             {
