@@ -1,4 +1,4 @@
-﻿// <copyright file="TorrentFileResponse.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IRssFeed.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,31 +21,16 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client.Response;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
 /// <summary>
-/// Represents torrent file with content.
+/// Interface that provides access to RSS feed.
 /// </summary>
-public class TorrentFileResponse : ITorrentFileResponse
+public interface IRssFeed
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TorrentFileResponse"/> class.
+    /// Get RSS feed items.
     /// </summary>
-    /// <param name="fileName">File Name.</param>
-    /// <param name="content">Content stream.</param>
-    internal TorrentFileResponse(string fileName, Stream content)
-    {
-        this.FileName = fileName;
-        this.Content = content;
-    }
-
-    /// <summary>
-    /// Gets File Name.
-    /// </summary>
-    public string FileName { get; }
-
-    /// <summary>
-    /// Gets content stream.
-    /// </summary>
-    public Stream Content { get; }
+    /// <returns>Awaitable task with RSS feed items.</returns>
+    Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync();
 }

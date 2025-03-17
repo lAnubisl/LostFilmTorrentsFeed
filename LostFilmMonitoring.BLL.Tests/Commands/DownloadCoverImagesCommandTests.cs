@@ -30,7 +30,7 @@ public class DownloadCoverImagesCommandTests
     private Mock<Common.ILogger>? logger;
     private Mock<IFileSystem>? fileSystem;
     private Mock<IConfiguration>? configuration;
-    private Mock<ILostFilmClient>? lostFilmClient;
+    private Mock<ITmdbClient>? tmdbClient;
     private Mock<IDictionaryDao>? dictionaryDao;
     private Mock<IImageProcessor>? imageProcessor;
 
@@ -40,7 +40,7 @@ public class DownloadCoverImagesCommandTests
         this.fileSystem = new();
         this.dictionaryDao = new();
         this.configuration = new();
-        this.lostFilmClient = new();
+        this.tmdbClient = new();
         this.seriesDao = new();
         this.logger = new();
         this.imageProcessor = new();
@@ -48,5 +48,5 @@ public class DownloadCoverImagesCommandTests
     }
 
     private DownloadCoverImagesCommand GetService()
-        => new(this.logger!.Object, this.fileSystem!.Object, this.configuration!.Object, this.seriesDao!.Object, this.lostFilmClient!.Object, this.dictionaryDao!.Object, this.imageProcessor!.Object);
+            => new(this.logger!.Object, this.fileSystem!.Object, this.configuration!.Object, this.seriesDao!.Object, this.tmdbClient!.Object, this.dictionaryDao!.Object, this.imageProcessor!.Object);
 }

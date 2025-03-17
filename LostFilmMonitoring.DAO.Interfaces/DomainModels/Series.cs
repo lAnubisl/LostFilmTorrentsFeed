@@ -31,6 +31,7 @@ public class Series
     /// <summary>
     /// Initializes a new instance of the <see cref="Series"/> class.
     /// </summary>
+    /// <param name="id">Series id.</param>
     /// <param name="name">Series name.</param>
     /// <param name="lastEposide">Last episode date.</param>
     /// <param name="lastEpisodeName">Last episode name.</param>

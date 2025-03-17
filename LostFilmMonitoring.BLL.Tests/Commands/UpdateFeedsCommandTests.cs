@@ -205,27 +205,54 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>() 
         { 
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [1080p]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51438</link>
-                </item>")),
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [SD]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51437</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            },
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [1080p]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51438",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H1080,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51438"
+            },
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [SD]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51437",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.SD,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51437"
+            }
         };
 
         // RSS feed returns new series
@@ -258,27 +285,54 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [1080p]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51438</link>
-                </item>")),
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [SD]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51437</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            },
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [1080p]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51438",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H1080,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51438"
+            },
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [SD]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51437",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.SD,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51437"
+            }
         };
 
         // RSS feed returns new series
@@ -320,13 +374,22 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>"))
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -335,7 +398,7 @@ public class UpdateFeedsCommandTests
         // There is no such series in the system
         this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>);
 
-        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(null as TorrentFileResponse);
+        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, "51439")).ReturnsAsync(null as ITorrentFileResponse);
 
         await command.ExecuteAsync();
 
@@ -351,13 +414,22 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -385,13 +457,22 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -420,13 +501,22 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -446,13 +536,22 @@ public class UpdateFeedsCommandTests
         SetupPersister_LoadAsync(null);
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -494,13 +593,22 @@ public class UpdateFeedsCommandTests
         var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -549,13 +657,22 @@ public class UpdateFeedsCommandTests
         var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -604,13 +721,22 @@ public class UpdateFeedsCommandTests
         var torrentFileName = "Andor.S01E10.1080p.rus.LostFilm.TV.mkv.torrent";
         var rssItems = new SortedSet<FeedItemResponse>()
         {
-            new FeedItemResponse(XElement.Parse(
-            @"<item>
-                    <title>Флэш (The Flash). Падение смерти (S08E13) [MP4]</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
-                </item>")),
+            new FeedItemResponse()
+            {
+                Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
+                Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
+                PublishDate = "Sat, 21 May 2022 20:58:00 +0000",
+                PublishDateParsed = new DateTime(2022, 05, 21, 20, 58, 00, DateTimeKind.Utc),
+                Description = string.Empty,
+                Quality = Quality.H720,
+                SeriesName = "Флэш (The Flash)",
+                SeriesNameRu = "Флэш",
+                SeriesNameEn = "The Flash",
+                EpisodeName = "Падение смерти",
+                SeasonNumber = 8,
+                EpisodeNumber = 13,
+                TorrentId = "51439"
+            }
         };
 
         // RSS feed returns new series
@@ -660,7 +786,11 @@ public class UpdateFeedsCommandTests
             return;
         }
 
-        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(new TorrentFileResponse("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent", torrentFileStream));
+        var torrentFileResponse = new Mock<ITorrentFileResponse>(); 
+        torrentFileResponse.Setup(x => x.FileName).Returns("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent");
+        torrentFileResponse.Setup(x => x.Content).Returns(torrentFileStream);
+
+        this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(torrentFileResponse.Object);
     }
 
     private void SetupPersister_LoadAsync(SortedSet<FeedItemResponse>? feedItems)

@@ -32,7 +32,7 @@ public class DownloadCoverImagesCommand : ICommand
     private readonly IFileSystem fileSystem;
     private readonly IConfiguration configuration;
     private readonly ISeriesDao seriesDao;
-    private readonly ILostFilmClient lostFilmClient;
+    private readonly ITmdbClient tmdbClient;
     private readonly IDictionaryDao dictionaryDao;
     private readonly IImageProcessor imageProcessor;
 
@@ -43,7 +43,7 @@ public class DownloadCoverImagesCommand : ICommand
     /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
     /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
     /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
-    /// <param name="lostFilmClient">Instance of <see cref="ILostFilmClient"/>.</param>
+    /// <param name="tmdbClient">Instance of <see cref="ITmdbClient"/>.</param>
     /// <param name="dictionaryDao">Instance of <see cref="IDictionaryDao"/>.</param>
     /// <param name="imageProcessor">Instance of <see cref="IImageProcessor"/>.</param>
     public DownloadCoverImagesCommand(
@@ -51,7 +51,7 @@ public class DownloadCoverImagesCommand : ICommand
         IFileSystem fileSystem,
         IConfiguration configuration,
         ISeriesDao seriesDao,
-        ILostFilmClient lostFilmClient,
+        ITmdbClient tmdbClient,
         IDictionaryDao dictionaryDao,
         IImageProcessor imageProcessor)
     {
@@ -59,7 +59,7 @@ public class DownloadCoverImagesCommand : ICommand
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
-        this.lostFilmClient = lostFilmClient ?? throw new ArgumentNullException(nameof(lostFilmClient));
+        this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
         this.dictionaryDao = dictionaryDao ?? throw new ArgumentNullException(nameof(dictionaryDao));
         this.imageProcessor = imageProcessor ?? throw new ArgumentNullException(nameof(imageProcessor));
     }
@@ -90,16 +90,16 @@ public class DownloadCoverImagesCommand : ICommand
         }
 
         var originalName = series.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
-        using var imageStream = await this.lostFilmClient.DownloadImageAsync(originalName);
+        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
         if (imageStream == null)
         {
             return;
         }
 
         var compressedImageStream = await this.imageProcessor.CompressImageAsync(imageStream).ConfigureAwait(false);
-        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{series.Id}.jpg", "image/jpeg", compressedImageStream);
+        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", compressedImageStream);
     }
 
     private Task<bool> PosterExistsAsync(Guid seriesId) =>
-        this.fileSystem.ExistsAsync(this.configuration.ImagesDirectory, $"{seriesId}.jpg");
+        this.fileSystem.ExistsAsync(Constants.MetadataStorageContainerImages, $"{seriesId}.jpg");
 }

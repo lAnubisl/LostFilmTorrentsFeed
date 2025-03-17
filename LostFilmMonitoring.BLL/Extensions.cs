@@ -72,6 +72,45 @@ public static class Extensions
         return torrent;
     }
 
+    /// <summary>
+    /// Calculates if there are any updates in <paramref name="newItems"/> in comparison to <paramref name="oldItems"/>.
+    /// </summary>
+    /// <param name="newItems">Instance of <see cref="SortedSet{IFeedItemResponse}"/> representing new items.</param>
+    /// <param name="oldItems">Instance of <see cref="SortedSet{IFeedItemResponse}"/> representing old items.</param>
+    /// <returns>returns true in case when <paramref name="newItems"/> has updates in comparison to <paramref name="oldItems"/>, otherwise false.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
+    internal static bool HasUpdates(SortedSet<FeedItemResponse>? newItems, SortedSet<FeedItemResponse>? oldItems)
+    {
+        if (newItems == null)
+        {
+            throw new ArgumentNullException(nameof(newItems));
+        }
+
+        if (oldItems == null)
+        {
+            throw new ArgumentNullException(nameof(oldItems));
+        }
+
+        if (newItems.Count != oldItems.Count)
+        {
+            return true;
+        }
+
+        var newEnum = newItems.GetEnumerator();
+        var oldEnum = oldItems.GetEnumerator();
+
+        var comparer = new FeedItemResponseComparer();
+        while (newEnum.MoveNext() && oldEnum.MoveNext())
+        {
+            if (!comparer.Equals(newEnum.Current, oldEnum.Current))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static Stream ToStream(this BencodeNET.Torrents.Torrent torrent)
     {
         var ms = new MemoryStream();

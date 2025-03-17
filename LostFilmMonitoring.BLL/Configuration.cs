@@ -38,18 +38,10 @@ public class Configuration : IConfiguration
         this.BaseUSESS = provider.GetValue(EnvironmentVariables.BaseFeedCookie) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseFeedCookie}' is not defined.");
         this.BaseUID = provider.GetValue(EnvironmentVariables.BaseLinkUID) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseLinkUID}' is not defined.");
         this.torrentAnnounceListPatterns = provider.GetValue(EnvironmentVariables.TorrentTrackers)?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception($"Environment variable '{EnvironmentVariables.TorrentTrackers}' is not defined.");
-        this.ImagesDirectory = provider.GetValue(EnvironmentVariables.ImagesDirectory) ?? "images";
-        this.TorrentsDirectory = provider.GetValue(EnvironmentVariables.TorrentsDirectory) ?? "torrentfiles";
     }
 
     /// <inheritdoc/>
     public string BaseUSESS { get; private set; }
-
-    /// <inheritdoc/>
-    public string ImagesDirectory { get; private set; }
-
-    /// <inheritdoc/>
-    public string TorrentsDirectory { get; private set; }
 
     /// <inheritdoc/>
     public string BaseUrl { get; private set; }

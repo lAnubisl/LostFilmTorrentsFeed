@@ -56,7 +56,7 @@ public class FeedItem : IComparable<FeedItem>
     /// <param name="title">Feed Item Title.</param>
     /// <param name="link">Feed Item Link.</param>
     /// <param name="publishedDateTime">Feed Item Date.</param>
-    public FeedItem(string title, string link, DateTime publishedDateTime)
+    public FeedItem(string? title, string link, DateTime publishedDateTime)
     {
         this.Link = link;
         this.PublishDateParsed = publishedDateTime;

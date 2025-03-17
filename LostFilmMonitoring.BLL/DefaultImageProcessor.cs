@@ -1,4 +1,4 @@
-// <copyright file="ImageMagickImageProcessor.cs" company="Alexander Panfilenok">
+// <copyright file="DefaultImageProcessor.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //

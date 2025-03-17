@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
+    <ProjectReference Include="..\LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj" />
   </ItemGroup>
 
 </Project>

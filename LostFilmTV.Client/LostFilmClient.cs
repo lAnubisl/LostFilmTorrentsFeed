@@ -43,22 +43,6 @@ public class LostFilmClient : ILostFilmClient
         this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
     }
 
-    /// <inheritdoc/>
-    public async Task<Stream?> DownloadImageAsync(string lostFilmId)
-    {
-        using var client = this.httpClientFactory.CreateClient();
-        try
-        {
-            var stream = await client.GetStreamAsync($"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg");
-            return stream;
-        }
-        catch (Exception ex)
-        {
-            this.logger.Log(ex);
-            return null;
-        }
-    }
-
     /// <summary>
     /// Get torrent file for user.
     /// </summary>
@@ -66,7 +50,7 @@ public class LostFilmClient : ILostFilmClient
     /// <param name="usess">User ss key.</param>
     /// <param name="torrentFileId">Torrent file Id.</param>
     /// <returns>TorrentFile object which contain file name and content stream.</returns>
-    public async Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
+    public async Task<ITorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId)
     {
         var client = this.httpClientFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");

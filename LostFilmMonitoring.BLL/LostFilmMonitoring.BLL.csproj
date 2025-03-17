@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -34,7 +35,6 @@
   <ItemGroup>
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
     <ProjectReference Include="..\LostFilmMonitoring.DAO.Interfaces\LostFilmMonitoring.DAO.Interfaces.csproj" />
-    <ProjectReference Include="..\LostFilmTV.Client\LostFilmTV.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

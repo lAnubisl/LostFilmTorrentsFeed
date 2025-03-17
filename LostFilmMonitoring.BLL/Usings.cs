@@ -37,6 +37,4 @@ global using LostFilmMonitoring.BLL.Models.ViewModel;
 global using LostFilmMonitoring.Common;
 global using LostFilmMonitoring.DAO.Interfaces;
 global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-global using LostFilmTV.Client;
-global using LostFilmTV.Client.Response;
 #pragma warning restore SA1200 // Using directives should be placed correctly

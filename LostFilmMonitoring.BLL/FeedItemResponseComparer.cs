@@ -1,4 +1,4 @@
-﻿// <copyright file="Extensions.cs" company="Alexander Panfilenok">
+// <copyright file="FeedItemResponseComparer.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,33 +21,56 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client;
+namespace LostFilmMonitoring.BLL;
 
 /// <summary>
-/// Useful extensions.
+/// FeedItemResponseComparer class.
 /// </summary>
-public static class Extensions
+public class FeedItemResponseComparer : IEqualityComparer<FeedItemResponse>
 {
     /// <summary>
-    /// Extracts torrent id from ReteOrg url.
+    /// Equals method.
     /// </summary>
-    /// <param name="reteOrgUrl">reteOrgUrl.</param>
-    /// <returns>Torrent Id.</returns>
-    public static string? GetTorrentId(string? reteOrgUrl)
+    /// <param name="x">First item.</param>
+    /// <param name="y">Second item.</param>
+    /// <returns>bool.</returns>
+    public bool Equals(FeedItemResponse? x, FeedItemResponse? y)
     {
-        // http://tracktor.in/rssdownloader.php?id=33572
-        if (string.IsNullOrEmpty(reteOrgUrl))
+        if (x == null && y == null)
         {
-            return null;
+            return true;
         }
 
-        string marker = "rssdownloader.php?id=";
-        int index = reteOrgUrl.IndexOf(marker);
-        if (index < 0)
+        if (x == null || y == null)
         {
-            return null;
+            return false;
         }
 
-        return reteOrgUrl[(index + marker.Length) ..];
+        if (!string.Equals(x.Title, y.Title, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (!string.Equals(x.Link, y.Link, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (!string.Equals(x.PublishDate, y.PublishDate, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// GetHashCode method.
+    /// </summary>
+    /// <param name="obj">Item.</param>
+    /// <returns>int.</returns>
+    public int GetHashCode(FeedItemResponse obj)
+    {
+        return HashCode.Combine(obj.Title, obj.Link, obj.PublishDate);
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LostFilmMonitoring.Common;
 using Pulumi;
 using Azure = Pulumi.AzureNative;
 using Cloudflare = Pulumi.Cloudflare;
@@ -371,8 +372,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     { EnvironmentVariables.BaseFeedCookie, config.RequireSecret("basefeedcookie") },
                     { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
                     { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
-                    { EnvironmentVariables.ImagesDirectory, config.Require("imagesdirectory") },
-                    { EnvironmentVariables.TorrentsDirectory, config.Require("torrentsdirectory") },
+                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
                     { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
                     { "FUNCTIONS_EXTENSION_VERSION", "~4" },
                     { "AzureWebJobsFeatureFlags", "EnableWorkerIndexing" },

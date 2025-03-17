@@ -150,7 +150,7 @@ public abstract class BaseRssFeed
                       .First(i => i.Name.LocalName == "channel")
                       .Elements()
                       .Where(i => i.Name.LocalName == "item")
-                      select new FeedItemResponse(item);
+                      select new ReteOrgFeedItemResponse(item);
         return new SortedSet<FeedItemResponse>(entries);
     }
 }
