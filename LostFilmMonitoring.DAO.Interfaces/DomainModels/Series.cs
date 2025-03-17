@@ -43,8 +43,8 @@ public class Series
     /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
     /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
     /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
-    /// <param name="lostFilmId">LostFilm Id.</param>
     public Series(
+        Guid id,
         string name,
         DateTime lastEposide,
         string lastEpisodeName,
@@ -56,9 +56,9 @@ public class Series
         int? qSDSeasonNumber = null,
         int? q1080EpisodeNumber = null,
         int? qMP4EpisodeNumber = null,
-        int? qSDEpisodeNumber = null,
-        int? lostFilmId = null)
+        int? qSDEpisodeNumber = null)
     {
+        this.Id = id;
         this.Name = name;
         this.LastEpisode = lastEposide;
         this.LastEpisodeName = lastEpisodeName;
@@ -71,8 +71,12 @@ public class Series
         this.Q1080SeasonNumber = q1080SeasonNumber;
         this.QMP4SeasonNumber = qMP4SeasonNumber;
         this.QSDSeasonNumber = qSDSeasonNumber;
-        this.LostFilmId = lostFilmId;
     }
+
+    /// <summary>
+    /// Gets Id.
+    /// </summary>
+    public Guid Id { get; }
 
     /// <summary>
     /// Gets Name.
@@ -135,16 +139,16 @@ public class Series
     public int? QSDEpisodeNumber { get; private set; }
 
     /// <summary>
-    /// Gets or sets LostFilm Id.
-    /// </summary>
-    public int? LostFilmId { get; set; }
-
-    /// <summary>
     /// Merge updates from <paramref name="from"/> to current instance.
     /// </summary>
     /// <param name="from">Instance of <see cref="Series"/> to merge changes from.</param>
     public void MergeFrom(Series from)
     {
+        if (from == null)
+        {
+            return;
+        }
+
         this.LastEpisodeName = from.LastEpisodeName;
         this.LastEpisode = from.LastEpisode;
         this.LastEpisodeTorrentLink1080 = from.LastEpisodeTorrentLink1080 ?? this.LastEpisodeTorrentLink1080;
@@ -156,6 +160,5 @@ public class Series
         this.Q1080EpisodeNumber = from.Q1080EpisodeNumber ?? this.Q1080EpisodeNumber;
         this.QMP4EpisodeNumber = from.QMP4EpisodeNumber ?? this.QMP4EpisodeNumber;
         this.QSDEpisodeNumber = from.QSDEpisodeNumber ?? this.QSDEpisodeNumber;
-        this.LostFilmId = from.LostFilmId ?? this.LostFilmId;
     }
 }

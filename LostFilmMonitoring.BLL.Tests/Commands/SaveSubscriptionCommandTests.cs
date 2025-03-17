@@ -275,6 +275,7 @@ internal class SaveSubscriptionCommandTests
             {
                 "Series#1",
                 new Series(
+                    Guid.NewGuid(),
                     "Series#1",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#1_Title",
@@ -285,6 +286,7 @@ internal class SaveSubscriptionCommandTests
             {
                 "Series#2",
                 new Series(
+                    Guid.NewGuid(),
                     "Series#2",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#2_Title",

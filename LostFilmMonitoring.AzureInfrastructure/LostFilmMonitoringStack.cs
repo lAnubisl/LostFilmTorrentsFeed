@@ -268,41 +268,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             ContainerName = Constants.MetadataStorageContainerBaseTorrents,
             PublicAccess = Azure.Storage.PublicAccess.None,
         });
-
-        var dictionary = new Azure.Storage.Table("dictionary", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameDictionary,
-        });
-
-        var episodes = new Azure.Storage.Table("episodes", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameEpisodes,
-        });
-
-        var series = new Azure.Storage.Table("series", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameSeries,
-        });
-
-        var subscriptions = new Azure.Storage.Table("subscriptions", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameSubscriptions,
-        });
-
-        var users = new Azure.Storage.Table("users", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameUsers,
-        });
         
         return storageAccount;
     }

@@ -131,6 +131,7 @@ public class UpdateFeedsCommand : ICommand
         }
 
         return new (
+            Guid.NewGuid(),
             feedItem.SeriesName,
             feedItem.PublishDateParsed,
             $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",

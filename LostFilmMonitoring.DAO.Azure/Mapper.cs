@@ -64,6 +64,7 @@ internal static class Mapper
         {
             PartitionKey = series.Name,
             RowKey = series.Name,
+            Id = series.Id,
             Timestamp = DateTime.UtcNow,
             LastEpisode = series.LastEpisode,
             LastEpisodeName = series.LastEpisodeName,
@@ -77,7 +78,6 @@ internal static class Mapper
             EpisodeNumberMP4 = series.QMP4EpisodeNumber,
             EpisodeNumberSD = series.QSDEpisodeNumber,
             Name = series.Name,
-            LostFilmId = series.LostFilmId,
         };
 
         return result;
@@ -109,6 +109,7 @@ internal static class Mapper
     /// <returns>Instance of <see cref="Series"/>.</returns>
     internal static Series Map(SeriesTableEntity entity)
         => new (
+            entity.Id,
             entity.Name,
             entity.LastEpisode,
             entity.LastEpisodeName,
@@ -120,8 +121,7 @@ internal static class Mapper
             entity.SeasonNumberSD,
             entity.EpisodeNumber1080,
             entity.EpisodeNumberMP4,
-            entity.EpisodeNumberSD,
-            entity.LostFilmId);
+            entity.EpisodeNumberSD);
 
     /// <summary>
     /// Map <see cref="UserTableEntity"/> to <see cref="User"/>.

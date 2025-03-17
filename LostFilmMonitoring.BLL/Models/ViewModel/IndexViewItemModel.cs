@@ -35,7 +35,7 @@ public class IndexViewItemModel
     public IndexViewItemModel(Series series)
     {
         this.Name = series.Name;
-        this.ImageFileName = series.LostFilmId + ".jpg";
+        this.ImageFileName = series.Id + ".jpg";
     }
 
     /// <summary>

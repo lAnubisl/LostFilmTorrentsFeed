@@ -287,6 +287,7 @@ public class UpdateFeedsCommandTests
         // There is an old series in the system
         this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new Series[] {
             new Series(
+                Guid.NewGuid(),
                 "Флэш (The Flash)",
                 new DateTime(2022, 1, 1, 1, 1, 1, DateTimeKind.Utc),
                 "Флэш (The Flash). Предыдущая серия (S08E12) ",
@@ -464,6 +465,7 @@ public class UpdateFeedsCommandTests
         this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
         {
             new Series(
+                Guid.NewGuid(),
                 "Флэш (The Flash)",
                 new DateTime(2022, 5, 22, 20, 15, 0, DateTimeKind.Utc),
                 "Флэш (The Flash). Падение смерти (S08E14) ",
