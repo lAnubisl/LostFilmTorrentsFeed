@@ -63,34 +63,6 @@ public class LostFilmClientTests
     }
 
     [Test]
-    public async Task DownloadImageAsync_should_download_image()
-    {
-        var lostFilmId = "ID";
-        var testString = "Test Data";
-        mockHttp
-            .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg")
-            .Respond("image/jpeg", new MemoryStream(Encoding.UTF8.GetBytes(testString)));
-
-        var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var actualString = Encoding.UTF8.GetString(ReadFully(await client.DownloadImageAsync(lostFilmId)));
-        
-        Assert.That(string.Equals(testString, actualString));
-    }
-
-    [Test]
-    public async Task DownloadImageAsync_should_not_fail()
-    {
-        var lostFilmId = "ID";
-        mockHttp
-            .When(HttpMethod.Get, $"https://static.lostfilm.top/Images/{lostFilmId}/Posters/shmoster_s1.jpg")
-            .Throw(new HttpRequestException());
-
-        var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
-        var resultStream = await client.DownloadImageAsync(lostFilmId);
-        resultStream.Should().BeNull();
-    }
-
-    [Test]
     public async Task DownloadTorrentFileAsync_should_return_null_when_contentType_not_set()
     {
         var testString = "Test Data";

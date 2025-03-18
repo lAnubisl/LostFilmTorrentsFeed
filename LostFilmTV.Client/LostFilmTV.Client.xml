@@ -15,39 +15,6 @@
             </summary>
             <param name="innerException">Instance of <see cref="T:System.Exception"/>.</param>
         </member>
-        <member name="T:LostFilmTV.Client.Extensions">
-            <summary>
-            Useful extensions.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.Extensions.GetTorrentId(System.String)">
-            <summary>
-            Extracts torrent id from ReteOrg url.
-            </summary>
-            <param name="reteOrgUrl">reteOrgUrl.</param>
-            <returns>Torrent Id.</returns>
-        </member>
-        <member name="T:LostFilmTV.Client.ILostFilmClient">
-            <summary>
-            LostFilmTV client interface.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.ILostFilmClient.DownloadTorrentFileAsync(System.String,System.String,System.String)">
-            <summary>
-            Downloads the torrent file asynchronous.
-            </summary>
-            <param name="uid">The uid.</param>
-            <param name="usess">The usess.</param>
-            <param name="torrentFileId">The torrent file identifier.</param>
-            <returns>Torrent file response container.</returns>
-        </member>
-        <member name="M:LostFilmTV.Client.ILostFilmClient.DownloadImageAsync(System.String)">
-            <summary>
-            Downloads the series cover asynchronous.
-            </summary>
-            <param name="lostFilmId">Series Id in LostFilm.</param>
-            <returns>Stream of the series cover file.</returns>
-        </member>
         <member name="T:LostFilmTV.Client.LostFilmClient">
             <summary>
             Client for LostFilm.TV
@@ -61,9 +28,6 @@
             <param name="logger">Logger.</param>
             <param name="httpClientFactory">IHttpClientFactory.</param>
         </member>
-        <member name="M:LostFilmTV.Client.LostFilmClient.DownloadImageAsync(System.String)">
-            <inheritdoc/>
-        </member>
         <member name="M:LostFilmTV.Client.LostFilmClient.DownloadTorrentFileAsync(System.String,System.String,System.String)">
             <summary>
             Get torrent file for user.
@@ -73,112 +37,25 @@
             <param name="torrentFileId">Torrent file Id.</param>
             <returns>TorrentFile object which contain file name and content stream.</returns>
         </member>
-        <member name="T:LostFilmTV.Client.Response.FeedItemResponse">
+        <member name="T:LostFilmTV.Client.Response.ReteOrgFeedItemResponse">
             <summary>
             FeedItemResponse.
             </summary>
         </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.#ctor">
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.FeedItemResponse"/> class.
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.ReteOrgFeedItemResponse"/> class.
             This constructor is required for JSON deserializer.
             </summary>
         </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.#ctor(System.Xml.Linq.XElement)">
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.#ctor(System.Xml.Linq.XElement)">
             <summary>
-            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.FeedItemResponse"/> class.
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.ReteOrgFeedItemResponse"/> class.
             </summary>
             <param name="xElement">element.</param>
         </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.SeriesNameRu">
-            <summary>
-            Gets or sets Series Name (Russian Part only).
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.SeriesNameEn">
-            <summary>
-            Gets or sets Series Name (English Part only).
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.SeriesName">
-            <summary>
-            Gets or sets Series Name.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.EpisodeName">
-            <summary>
-            Gets or sets Episode Name.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.EpisodeNumber">
-            <summary>
-            Gets or sets Episode Number.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.SeasonNumber">
-            <summary>
-            Gets or sets Season Number..
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Quality">
-            <summary>
-            Gets or sets Quality.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Title">
-            <summary>
-            Gets or sets Title.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Link">
-            <summary>
-            Gets or sets Link.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.Description">
-            <summary>
-            Gets or sets Description.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.PublishDateParsed">
-            <summary>
-            Gets or sets PublishDateParsed.
-            </summary>
-        </member>
-        <member name="P:LostFilmTV.Client.Response.FeedItemResponse.PublishDate">
-            <summary>
-            Gets or sets PublishDate.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.HasUpdates(System.Collections.Generic.SortedSet{LostFilmTV.Client.Response.FeedItemResponse},System.Collections.Generic.SortedSet{LostFilmTV.Client.Response.FeedItemResponse})">
-            <summary>
-            Calculates if there are any updates in <paramref name="newItems"/> in comparison to <paramref name="oldItems"/>.
-            </summary>
-            <param name="newItems">Instance of <see cref="T:System.Collections.Generic.SortedSet`1"/> representing new items.</param>
-            <param name="oldItems">Instance of <see cref="T:System.Collections.Generic.SortedSet`1"/> representing old items.</param>
-            <returns>returns true in case when <paramref name="newItems"/> has updates in comparison to <paramref name="oldItems"/>, otherwise false.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.Equals(System.Object)">
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.ToString">
             <inheritdoc/>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.Equals(LostFilmTV.Client.Response.FeedItemResponse)">
-            <inheritdoc/>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetHashCode">
-            <inheritdoc/>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.System#IComparable{LostFilmTV#Client#Response#FeedItemResponse}#CompareTo(LostFilmTV.Client.Response.FeedItemResponse)">
-            <inheritdoc/>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.FeedItemResponse.GetTorrentId">
-            <summary>
-            Get torrent file Id.
-            </summary>
-            <returns>Torrent file id.</returns>
         </member>
         <member name="T:LostFilmTV.Client.Response.TorrentFileResponse">
             <summary>
@@ -283,17 +160,6 @@
             Get FeedItemResponse from n.retre.org.
             </summary>
             <returns>Set of FeedItemResponse.</returns>
-        </member>
-        <member name="T:LostFilmTV.Client.IRssFeed">
-            <summary>
-            Interface that provides access to RSS feed.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.IRssFeed.LoadFeedItemsAsync">
-            <summary>
-            Get RSS feed items.
-            </summary>
-            <returns>Awaitable task with RSS feed items.</returns>
         </member>
     </members>
 </doc>

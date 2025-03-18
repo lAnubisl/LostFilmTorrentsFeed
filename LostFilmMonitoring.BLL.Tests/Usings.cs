@@ -11,8 +11,6 @@ global using LostFilmMonitoring.BLL.Models.Response;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.BLL.Models;
 global using LostFilmMonitoring.BLL.Validators;
-global using LostFilmTV.Client;
-global using LostFilmTV.Client.Response;
 global using System.Reflection;
 global using System.Xml.Linq;
 global using System.Diagnostics.CodeAnalysis;

@@ -1,4 +1,4 @@
-﻿// <copyright file="IRssFeed.cs" company="Alexander Panfilenok">
+﻿// <copyright file="ILostFilmClient.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,16 +21,19 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
 /// <summary>
-/// Interface that provides access to RSS feed.
+/// LostFilmTV client interface.
 /// </summary>
-public interface IRssFeed
+public interface ILostFilmClient
 {
     /// <summary>
-    /// Get RSS feed items.
+    /// Downloads the torrent file asynchronous.
     /// </summary>
-    /// <returns>Awaitable task with RSS feed items.</returns>
-    Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync();
+    /// <param name="uid">The uid.</param>
+    /// <param name="usess">The usess.</param>
+    /// <param name="torrentFileId">The torrent file identifier.</param>
+    /// <returns>Torrent file response container.</returns>
+    Task<ITorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);
 }

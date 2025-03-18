@@ -58,6 +58,7 @@ public static class Program
         services.AddTransient<IValidator<EditUserRequestModel>, EditUserRequestModelValidator>();
         services.AddTransient<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddTransient<ILostFilmClient, LostFilmClient>();
+        services.AddTransient<ITmdbClient>(r => new TmdbClient(Env(EnvironmentVariables.TmdbApiKey), r.GetService<ILogger>()!));
         services.AddTransient<IImageProcessor,  DefaultImageProcessor>();
         services.AddHttpClient();
         services.AddTransient(sp =>
@@ -74,7 +75,7 @@ public static class Program
                 sp.GetService<IFileSystem>() !,
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<ISeriesDao>() !,
-                sp.GetService<ILostFilmClient>() !,
+                sp.GetService<ITmdbClient>() !,
                 sp.GetService<IDictionaryDao>() !,
                 sp.GetService<IImageProcessor>() !));
         services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();

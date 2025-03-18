@@ -41,18 +41,6 @@ public interface IConfiguration
     string BaseUSESS { get; }
 
     /// <summary>
-    /// Gets physical path where series covers are stored.
-    /// </summary>
-    /// <returns>Physical path where series covers are stored.</returns>
-    string ImagesDirectory { get; }
-
-    /// <summary>
-    /// Gets physical path where torrent files are stored.
-    /// </summary>
-    /// <returns>Physical path where torrent files are stored.</returns>
-    string TorrentsDirectory { get; }
-
-    /// <summary>
     /// Gets base url where website is hosted.
     /// </summary>
     /// <returns>Base url where website is hosted.</returns>

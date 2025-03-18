@@ -108,11 +108,29 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     {
         return quality switch
         {
-            Quality.SD => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLinkSD),
-            Quality.H1080 => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLink1080),
-            Quality.H720 => LostFilmTV.Client.Extensions.GetTorrentId(series.LastEpisodeTorrentLinkMP4),
+            Quality.SD => GetTorrentId(series.LastEpisodeTorrentLinkSD),
+            Quality.H1080 => GetTorrentId(series.LastEpisodeTorrentLink1080),
+            Quality.H720 => GetTorrentId(series.LastEpisodeTorrentLinkMP4),
             _ => throw new InvalidOperationException("Quality not supported"),
         };
+    }
+
+    private static string? GetTorrentId(string? reteOrgUrl)
+    {
+        // http://tracktor.in/rssdownloader.php?id=33572
+        if (string.IsNullOrEmpty(reteOrgUrl))
+        {
+            return null;
+        }
+
+        string marker = "rssdownloader.php?id=";
+        int index = reteOrgUrl.IndexOf(marker);
+        if (index < 0)
+        {
+            return null;
+        }
+
+        return reteOrgUrl[(index + marker.Length) ..];
     }
 
     private Task UpdatePresentationModelAsync(string userId, SubscriptionItem[] selectedSubscriptions)

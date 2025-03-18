@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LostFilmMonitoring.Common;
 using Pulumi;
 using Azure = Pulumi.AzureNative;
 using Cloudflare = Pulumi.Cloudflare;
@@ -29,6 +30,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         // Export the Azure Function name and CDN endpoints
         FunctionName = function.Name;
         WebsiteStorageAccountName = web_st.Name;
+        ApiDomain = api_record.Name;
+        DataDomain = data_record.Name;
     }
 
     private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.Record api_record)
@@ -268,41 +271,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             ContainerName = Constants.MetadataStorageContainerBaseTorrents,
             PublicAccess = Azure.Storage.PublicAccess.None,
         });
-
-        var dictionary = new Azure.Storage.Table("dictionary", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameDictionary,
-        });
-
-        var episodes = new Azure.Storage.Table("episodes", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameEpisodes,
-        });
-
-        var series = new Azure.Storage.Table("series", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameSeries,
-        });
-
-        var subscriptions = new Azure.Storage.Table("subscriptions", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameSubscriptions,
-        });
-
-        var users = new Azure.Storage.Table("users", new Azure.Storage.TableArgs
-        {
-            ResourceGroupName = rg.Name,
-            AccountName = storageAccount.Name,
-            TableName = Constants.MetadataStorageTableNameUsers,
-        });
         
         return storageAccount;
     }
@@ -406,8 +374,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     { EnvironmentVariables.BaseFeedCookie, config.RequireSecret("basefeedcookie") },
                     { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
                     { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
-                    { EnvironmentVariables.ImagesDirectory, config.Require("imagesdirectory") },
-                    { EnvironmentVariables.TorrentsDirectory, config.Require("torrentsdirectory") },
+                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
                     { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
                     { "FUNCTIONS_EXTENSION_VERSION", "~4" },
                     { "AzureWebJobsFeatureFlags", "EnableWorkerIndexing" },
@@ -478,4 +445,10 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     [Output]
     public Output<string> WebsiteStorageAccountName { get; set; }
+
+    [Output]
+    public Output<string> ApiDomain { get; set; }
+
+    [Output]
+    public Output<string> DataDomain { get; set; }
 }

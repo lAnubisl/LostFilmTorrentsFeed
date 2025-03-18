@@ -37,6 +37,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
     public async Task DeleteAsync_should_delete_series()
     {
         var series = new Series(
+            Guid.NewGuid(),
             "Name",
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",
@@ -54,6 +55,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
         var originalName = "Test'o-bug";
         var escapedName = "Test''o-bug";
         var series = new Series(
+            Guid.NewGuid(),
             originalName,
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",
@@ -135,6 +137,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
     public async Task SaveAsync_should_save_series()
     {
         var series = new Series(
+            Guid.NewGuid(),
             "Name",
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",

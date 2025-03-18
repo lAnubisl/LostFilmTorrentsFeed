@@ -49,4 +49,5 @@ global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
+global using Tmdb.Client;
 #pragma warning restore SA1200 // Using directives should be placed correctly

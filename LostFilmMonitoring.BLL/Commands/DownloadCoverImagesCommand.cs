@@ -32,7 +32,7 @@ public class DownloadCoverImagesCommand : ICommand
     private readonly IFileSystem fileSystem;
     private readonly IConfiguration configuration;
     private readonly ISeriesDao seriesDao;
-    private readonly ILostFilmClient lostFilmClient;
+    private readonly ITmdbClient tmdbClient;
     private readonly IDictionaryDao dictionaryDao;
     private readonly IImageProcessor imageProcessor;
 
@@ -43,7 +43,7 @@ public class DownloadCoverImagesCommand : ICommand
     /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
     /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
     /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
-    /// <param name="lostFilmClient">Instance of <see cref="ILostFilmClient"/>.</param>
+    /// <param name="tmdbClient">Instance of <see cref="ITmdbClient"/>.</param>
     /// <param name="dictionaryDao">Instance of <see cref="IDictionaryDao"/>.</param>
     /// <param name="imageProcessor">Instance of <see cref="IImageProcessor"/>.</param>
     public DownloadCoverImagesCommand(
@@ -51,7 +51,7 @@ public class DownloadCoverImagesCommand : ICommand
         IFileSystem fileSystem,
         IConfiguration configuration,
         ISeriesDao seriesDao,
-        ILostFilmClient lostFilmClient,
+        ITmdbClient tmdbClient,
         IDictionaryDao dictionaryDao,
         IImageProcessor imageProcessor)
     {
@@ -59,7 +59,7 @@ public class DownloadCoverImagesCommand : ICommand
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
-        this.lostFilmClient = lostFilmClient ?? throw new ArgumentNullException(nameof(lostFilmClient));
+        this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
         this.dictionaryDao = dictionaryDao ?? throw new ArgumentNullException(nameof(dictionaryDao));
         this.imageProcessor = imageProcessor ?? throw new ArgumentNullException(nameof(imageProcessor));
     }
@@ -72,53 +72,34 @@ public class DownloadCoverImagesCommand : ICommand
         var dictionary = await this.dictionaryDao.LoadAsync();
         foreach (var seriesItem in series)
         {
-            if (seriesItem.LostFilmId == null)
+            if (!await this.PosterExistsAsync(seriesItem.Id))
             {
-                var openBraceIndex = seriesItem.Name.IndexOf('(');
-                var closeBraceIndex = seriesItem.Name.IndexOf(')');
-                if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
-                {
-                    // cannot parse the series original name
-                    continue;
-                }
-
-                var originalName = seriesItem.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
-                if (!dictionary.ContainsKey(originalName))
-                {
-                    // the series is not found in the dictionary
-                    continue;
-                }
-
-                seriesItem.LostFilmId = dictionary[originalName];
-                await this.seriesDao.SaveAsync(seriesItem);
-            }
-
-            if (seriesItem.LostFilmId == null)
-            {
-                // cannot continue without LostFilmId
-                continue;
-            }
-
-            var lostFilmId = seriesItem.LostFilmId.ToString()!;
-            if (!await this.PosterExistsAsync(lostFilmId))
-            {
-                await this.DownloadImageAsync(lostFilmId);
+                await this.DownloadImageAsync(seriesItem);
             }
         }
     }
 
-    private async Task DownloadImageAsync(string lostFilmId)
+    private async Task DownloadImageAsync(Series series)
     {
-        using var imageStream = await this.lostFilmClient.DownloadImageAsync(lostFilmId);
+        var openBraceIndex = series.Name.IndexOf('(');
+        var closeBraceIndex = series.Name.IndexOf(')');
+        if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
+        {
+            // cannot parse the series original name
+            return;
+        }
+
+        var originalName = series.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
+        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
         if (imageStream == null)
         {
             return;
         }
 
         var compressedImageStream = await this.imageProcessor.CompressImageAsync(imageStream).ConfigureAwait(false);
-        await this.fileSystem.SaveAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg", "image/jpeg", compressedImageStream);
+        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", compressedImageStream);
     }
 
-    private Task<bool> PosterExistsAsync(string lostFilmId) =>
-        this.fileSystem.ExistsAsync(this.configuration.ImagesDirectory, $"{lostFilmId}.jpg");
+    private Task<bool> PosterExistsAsync(Guid seriesId) =>
+        this.fileSystem.ExistsAsync(Constants.MetadataStorageContainerImages, $"{seriesId}.jpg");
 }

@@ -14,6 +14,101 @@
             Gets default serialization options.
             </summary>
         </member>
+        <member name="T:LostFilmMonitoring.Common.Constants">
+            <summary>
+            Constants.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageTableNameDictionary">
+            <summary>
+            Table Storage dictionary table name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageTableNameEpisodes">
+            <summary>
+            Table Storage episodes table name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageTableNameSeries">
+            <summary>
+            Table Storage series table name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageTableNameSubscriptions">
+            <summary>
+            Table Storage subscriptions table name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageTableNameUsers">
+            <summary>
+            Table Storage users table name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageContainerImages">
+            <summary>
+            Blob Storage container name for images.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageContainerBaseTorrents">
+            <summary>
+            Blob Storage container name for base torrents.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageContainerModels">
+            <summary>
+            Blob Storage container name for models.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageContainerRssFeeds">
+            <summary>
+            Blob Storage container name for RSS feeds.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.Constants.MetadataStorageContainerUserTorrents">
+            <summary>
+            Blob Storage container name for user torrents.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.Common.EnvironmentVariables">
+            <summary>
+            Constants.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.MetadataStorageAccountName">
+            <summary>
+            Metadata Storage Account Name.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.MetadataStorageAccountKey">
+            <summary>
+            Metadata Storage Account Key.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.TmdbApiKey">
+            <summary>
+            TMDB Api Key.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.BaseUrl">
+            <summary>
+            Base URI for website.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.BaseFeedCookie">
+            <summary>
+            LostFilm Base Cookie.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.BaseLinkUID">
+            <summary>
+            LostFilm Base User Identifier.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.TorrentTrackers">
+            <summary>
+            List of torrent trackers.
+            </summary>
+        </member>
         <member name="T:LostFilmMonitoring.Common.IConfiguration">
             <summary>
             Configuration.
@@ -30,18 +125,6 @@
             Gets BaseFeedCookie.
             </summary>
             <returns>BaseFeedCookie.</returns>
-        </member>
-        <member name="P:LostFilmMonitoring.Common.IConfiguration.ImagesDirectory">
-            <summary>
-            Gets physical path where series covers are stored.
-            </summary>
-            <returns>Physical path where series covers are stored.</returns>
-        </member>
-        <member name="P:LostFilmMonitoring.Common.IConfiguration.TorrentsDirectory">
-            <summary>
-            Gets physical path where torrent files are stored.
-            </summary>
-            <returns>Physical path where torrent files are stored.</returns>
         </member>
         <member name="P:LostFilmMonitoring.Common.IConfiguration.BaseUrl">
             <summary>
@@ -110,11 +193,6 @@
             Log exception.
             </summary>
             <param name="ex">exception.</param>
-        </member>
-        <member name="F:Constants.MetadataStorageTableNameDictionary">
-            <summary>
-            
-            </summary>
         </member>
     </members>
 </doc>

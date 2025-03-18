@@ -46,8 +46,6 @@ public class ConfigurationTests
         var service = GetService();
         service.BaseUID.Should().BeEquivalentTo("BASELINKUID");
         service.BaseUSESS.Should().BeEquivalentTo("BASEFEEDCOOKIE");
-        service.ImagesDirectory.Should().BeEquivalentTo("IMAGESDIRECTORY");
-        service.TorrentsDirectory.Should().BeEquivalentTo("TORRENTSDIRECTORY");
         service.BaseUrl.Should().BeEquivalentTo("BASEURL");
         service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(new[] { "#1USERID", "#2USERID", "#3USERID" });
     }
@@ -63,32 +61,6 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
         service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(new[] { "#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID" });
-    }
-
-    [Test]
-    public void ImagesDirectory_should_have_default_value()
-    {
-        providerMock!.Setup(x => x.GetValue("BASEURL")).Returns("BASEURL");
-        providerMock!.Setup(x => x.GetValue("BASEFEEDCOOKIE")).Returns("BASEFEEDCOOKIE");
-        providerMock!.Setup(x => x.GetValue("BASELINKUID")).Returns("BASELINKUID");
-        providerMock!.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns("#1{0},#2{0},#3{0}");
-        providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns(null as string);
-        providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
-        var service = GetService();
-        service.ImagesDirectory.Should().BeEquivalentTo("images");
-    }
-
-    [Test]
-    public void TorrentsDirectory_should_have_default_value()
-    {
-        providerMock!.Setup(x => x.GetValue("BASEURL")).Returns("BASEURL");
-        providerMock!.Setup(x => x.GetValue("BASEFEEDCOOKIE")).Returns("BASEFEEDCOOKIE");
-        providerMock!.Setup(x => x.GetValue("BASELINKUID")).Returns("BASELINKUID");
-        providerMock!.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns("#1{0},#2{0},#3{0}");
-        providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
-        providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns(null as string);
-        var service = GetService();
-        service.TorrentsDirectory.Should().BeEquivalentTo("torrentfiles");
     }
 
     [Test]

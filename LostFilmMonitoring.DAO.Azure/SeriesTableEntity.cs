@@ -101,7 +101,7 @@ public class SeriesTableEntity : ITableEntity
     public int? EpisodeNumberSD { get; set; }
 
     /// <summary>
-    /// Gets or sets LostFilm Id.
+    /// Gets or sets Id.
     /// </summary>
-    public int? LostFilmId { get; set; }
+    public Guid Id { get; set; }
 }

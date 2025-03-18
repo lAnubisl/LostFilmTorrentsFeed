@@ -1,0 +1,18 @@
+config:
+  LostFilmMonitoring.AzureInfrastructure:location: westeurope
+  LostFilmMonitoring.AzureInfrastructure:baseurl: https://datalostfilmfeed.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:torrenttrackers: http://bt.tracktor.in/tracker.php/{0}/announce,http://bt99.tracktor.in/tracker.php/{0}/announce,http://bt0.tracktor.in/tracker.php/{0}/announce,http://user5.newtrack.info/tracker.php/{0}/announce,http://user1.newtrack.info/tracker.php/{0}/announce
+  LostFilmMonitoring.AzureInfrastructure:imagesdirectory: images
+  LostFilmMonitoring.AzureInfrastructure:torrentsdirectory: torrentfiles
+  LostFilmMonitoring.AzureInfrastructure:webdomain: lostfilmfeed.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:datadomain: datalostfilmfeed.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:apidomain: apilostfilmfeed.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:tmdbapikey:
+    secure: v1:AzaG0jNlHNuNQCNo:6nHjkIwRNUuySjjjiA9X34IBi/RkWTOq+YWw8SE3o7YYUfseavMmYAIUMkr9Tvbs
+  cloudflare:apiToken:
+    secure: v1:jismMqC7cmKppFaC:ErireYsyNzUQFtGqT2Hhnh51Zu9Dk4Zn/sEN6tmhT8kL8NhbQRVWovk26pR6aYFkCdrUkm7bbjk=
+  LostFilmMonitoring.AzureInfrastructure:basefeedcookie:
+    secure: v1:qojYbu0yP3pGShfS:pZz4wFEaWOSc3PImEnNm1lDV90ifvZpV0MmxkNHMWuxGVdCJNAN5M0yZSlaGgQ4L
+  LostFilmMonitoring.AzureInfrastructure:baselinkuid:
+    secure: v1:blqt/4C1yZ+SITkW:y4mpTR7Ki8Fx6NhN+FmQMRxZhXgfR4Y=
+encryptionsalt: v1:5e1UjhWHPd0=:v1:YQXzzDqusKpJhrh6:cKoXFq7AzhD1VypqS1q7YN1ptthCZg==

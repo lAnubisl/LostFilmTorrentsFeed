@@ -1,4 +1,4 @@
-﻿// <copyright file="ILostFilmClient.cs" company="Alexander Panfilenok">
+// <copyright file="ITorrentFileResponse.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,26 +21,20 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmTV.Client;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
 /// <summary>
-/// LostFilmTV client interface.
+/// TorrentFileResponse interface.
 /// </summary>
-public interface ILostFilmClient
+public interface ITorrentFileResponse
 {
     /// <summary>
-    /// Downloads the torrent file asynchronous.
+    /// Gets File Name.
     /// </summary>
-    /// <param name="uid">The uid.</param>
-    /// <param name="usess">The usess.</param>
-    /// <param name="torrentFileId">The torrent file identifier.</param>
-    /// <returns>Torrent file response container.</returns>
-    Task<TorrentFileResponse?> DownloadTorrentFileAsync(string uid, string usess, string torrentFileId);
+    public string FileName { get; }
 
     /// <summary>
-    /// Downloads the series cover asynchronous.
+    /// Gets content stream.
     /// </summary>
-    /// <param name="lostFilmId">Series Id in LostFilm.</param>
-    /// <returns>Stream of the series cover file.</returns>
-    Task<Stream?> DownloadImageAsync(string lostFilmId);
+    public Stream Content { get; }
 }

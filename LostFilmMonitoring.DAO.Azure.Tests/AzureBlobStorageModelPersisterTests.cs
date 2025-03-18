@@ -35,18 +35,6 @@ public class AzureBlobStorageModelPersisterTests
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
     }
     
-    [Test]
-    public async Task LoadAsync_should_deserialize_json_file()
-    {
-        var client = new Mock<IAzureBlobStorageClient>();
-        client
-            .Setup(x => x.DownloadStringAsync("models", "ReteOrgItems.json"))
-            .ReturnsAsync(GetFile("ReteOrgItems.json"));
-        var persister = new AzureBlobStorageModelPersister(client.Object, this.logger!.Object);
-        var model = await persister.LoadAsync<SortedSet<FeedItemResponse>>("ReteOrgItems");
-        Assert.That(model, Is.Not.Null);
-    }
-    
     private static string GetFile(string fileName)
     {
         var assembly = Assembly.GetExecutingAssembly();

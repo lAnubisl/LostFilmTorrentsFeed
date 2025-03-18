@@ -70,7 +70,7 @@ public class UpdateFeedsCommand : ICommand
         var feedItemsResponse = await this.LoadFeedUpdatesAsync();
         CleanForbiddenCharacters(feedItemsResponse);
         var persistedItemsRespone = await this.LoadLastFeedUpdatesAsync();
-        if (!FeedItemResponse.HasUpdates(feedItemsResponse, persistedItemsRespone))
+        if (!Extensions.HasUpdates(feedItemsResponse, persistedItemsRespone))
         {
             this.logger.Info("No updates.");
             return;
@@ -103,7 +103,7 @@ public class UpdateFeedsCommand : ICommand
 
     private static Episode? ToEpisode(FeedItemResponse feedItem)
     {
-        var torrentId = feedItem.GetTorrentId();
+        var torrentId = feedItem.TorrentId;
         if (string.IsNullOrEmpty(feedItem.SeriesName)
             || string.IsNullOrEmpty(feedItem.EpisodeName)
             || feedItem.EpisodeNumber == null
@@ -131,6 +131,7 @@ public class UpdateFeedsCommand : ICommand
         }
 
         return new (
+            Guid.NewGuid(),
             feedItem.SeriesName,
             feedItem.PublishDateParsed,
             $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",
@@ -145,7 +146,7 @@ public class UpdateFeedsCommand : ICommand
             ParseEpisodeNumber(feedItem, Quality.SD));
     }
 
-    private static BencodeNET.Torrents.Torrent ToTorrentDataStructure(TorrentFileResponse torrentFileResponse)
+    private static BencodeNET.Torrents.Torrent ToTorrentDataStructure(ITorrentFileResponse torrentFileResponse)
         => torrentFileResponse.Content.ToTorrentDataStructure();
 
     private static int? ParseEpisodeNumber(FeedItemResponse feedItem, string quality)
@@ -160,7 +161,7 @@ public class UpdateFeedsCommand : ICommand
     private static bool EpisodeIsCorrect(Episode? episode)
         => episode != null && episode.EpisodeNumber != 999;
 
-    private static TorrentFile ToTorrentFile(TorrentFileResponse x)
+    private static TorrentFile ToTorrentFile(ITorrentFileResponse x)
         => new (x.FileName, x.Content);
 
     private static FeedItem ToFeedItem(FeedItemResponse x, string link)
@@ -261,7 +262,7 @@ public class UpdateFeedsCommand : ICommand
 
     private async Task<BencodeNET.Torrents.Torrent?> GetTorrentAsync(FeedItemResponse feedResponseItem)
     {
-        var torrentId = feedResponseItem.GetTorrentId();
+        var torrentId = feedResponseItem.TorrentId;
         if (torrentId == null)
         {
             this.logger.Error($"Could not get torrent id for {feedResponseItem.Title}");

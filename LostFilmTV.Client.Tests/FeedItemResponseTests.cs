@@ -31,195 +31,21 @@ namespace LostFilmTV.Client.Tests;
 public class FeedItemResponseTests
 {
     [Test]
-    public void FeedItemResponse_HasUpdates_should_return_false_for_identical_lists()
-    {
-        var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-        var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-
-        Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.False);
-    }
-
-    [Test]
-    public void FeedItemResponse_HasUpdates_should_return_true_for_lists_of_different_length()
-    {
-        var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-        var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-
-        Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.True);
-    }
-
-    [Test]
-    public void FeedItemResponse_HasUpdates_should_return_true_for_different_lists()
-    {
-        var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-        var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E02) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [SD]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-                new FeedItemResponse()
-                {
-                    Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [1080p]",
-                    Link = "http://n.tracktor.site/rssdownloader.php?id=51230",
-                    PublishDate = "2022-05-09T16:00:54Z",
-                    PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
-                },
-            });
-
-        Assert.That(FeedItemResponse.HasUpdates(newItems, existingItems), Is.True);
-    }
-
-    [Test]
-    public void FeedItemResponse_HasUpdates_should_throw_exception_if_newItems_null()
-    {
-        SortedSet<FeedItemResponse> oldItems = new SortedSet<FeedItemResponse>();
-        SortedSet<FeedItemResponse> newItems = null;
-        Assert.Throws<ArgumentNullException>(() => FeedItemResponse.HasUpdates(oldItems, newItems));
-    }
-
-    [Test]
-    public void FeedItemResponse_HasUpdates_should_throw_exception_if_oldItems_null()
-    {
-        SortedSet<FeedItemResponse> oldItems = null;
-        SortedSet<FeedItemResponse> newItems = new SortedSet<FeedItemResponse>();
-        Assert.Throws<ArgumentNullException>(() => FeedItemResponse.HasUpdates(oldItems, newItems));
-    }
-
-    [Test]
     [TestCase("http://tracktor.in/rssdownloader.php?id=33572", "33572")]
     [TestCase(null, null)]
     [TestCase("", null)]
     [TestCase("http://tracktor.in/test.php?id=33572", null)]
     public void FeedItemResponse_GetTorrentId_should_return_id(string link, string expected)
     {
-        FeedItemResponse feedItemResponse = new FeedItemResponse();
-        feedItemResponse.Link = link;
-        Assert.That(feedItemResponse.GetTorrentId(), Is.EqualTo(expected));
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>Title</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>{link}</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        Assert.That(feedItemResponse.TorrentId, Is.EqualTo(expected));
     }
 
     [Test]
@@ -236,7 +62,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        FeedItemResponse feedItemResponse = new FeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
         Assert.That(feedItemResponse.SeriesName, Is.EqualTo(expected));
     }
 
@@ -254,7 +80,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        FeedItemResponse feedItemResponse = new FeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
         Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expected));
     }
 
@@ -277,16 +103,23 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        FeedItemResponse feedItemResponse = new FeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
         Assert.That(feedItemResponse.Quality, Is.EqualTo(expected));
     }
 
     [Test]
     public void FeedItemResponse_ToString_should_return_string()
     {
-        FeedItemResponse feedItemResponse = new FeedItemResponse();
-        feedItemResponse.Title = "test";
-        Assert.That(feedItemResponse.ToString(), Is.EqualTo("test"));
+        var title ="Внешние сферы (Outer Range). Неведомое (S01E07) (MP4)";
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{title}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        Assert.That(feedItemResponse.ToString(), Is.EqualTo(title));
     }
 
     [Test]
@@ -299,7 +132,7 @@ public class FeedItemResponseTests
                     <pubDate>Mon, 09 May 2022 20:27:53 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
-        var item = new FeedItemResponse(element);
+        var item = new ReteOrgFeedItemResponse(element);
         Assert.Multiple(() =>
         {
             Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
@@ -312,24 +145,24 @@ public class FeedItemResponseTests
     [Test]
     public void FeedItemResponse_should_be_sortable()
     {
-        var items = new SortedSet<FeedItemResponse>(
+        var items = new SortedSet<ReteOrgFeedItemResponse>(
             new[]
             {
-                new FeedItemResponse()
+                new ReteOrgFeedItemResponse()
                 {
                     Title = "Title1",
                     Link = "http://any.com",
                     PublishDate = "2022-05-09T00:00:00Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 00, 0, 0, DateTimeKind.Utc),
                 },
-                new FeedItemResponse()
+                new ReteOrgFeedItemResponse()
                 {
                     Title = "Title2",
                     Link = "http://any.com",
                     PublishDate = "2022-05-08T00:00:00Z",
                     PublishDateParsed = new DateTime(2022, 5, 8, 00, 0, 0, DateTimeKind.Utc),
                 },
-                new FeedItemResponse()
+                new ReteOrgFeedItemResponse()
                 {
                     Title = "Title3",
                     Link = "http://any.com",

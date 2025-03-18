@@ -2,6 +2,16 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to'
+        required: true
+        type: choice
+        options:
+        - dev
+        - prod
+
+run-name: Deploy to ${{ inputs.environment }}
 
 permissions:
   id-token: write
@@ -14,6 +24,8 @@ jobs:
     outputs:
       functionAppName: ${{ steps.pulumi.outputs.FunctionName }}
       websiteStorageAccountName: ${{ steps.pulumi.outputs.WebsiteStorageAccountName }}
+      apiDomain: ${{ steps.pulumi.outputs.ApiDomain }}
+      dataDomain: ${{ steps.pulumi.outputs.DataDomain }}
     defaults:
       run:
         working-directory: ./LostFilmMonitoring.AzureInfrastructure
@@ -37,7 +49,7 @@ jobs:
         id: pulumi
         with:
           command: up
-          stack-name: dev
+          stack-name: ${{inputs.environment}}
           work-dir: LostFilmMonitoring.AzureInfrastructure
           cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
           refresh: true
@@ -105,10 +117,10 @@ jobs:
         working-directory: ./LostFilmMonitoring.Web
         run: node update-config.js
         env:
-          BASE_API_URI: ${{ vars.BASE_API_URI }}
-          BASE_DATA_URI: ${{ vars.BASE_DATA_URI }}
-          IMAGES_BASE_URI: ${{ vars.IMAGES_BASE_URI }}
-          BASE_RSS_URI: ${{ vars.BASE_RSS_URI }}
+          BASE_API_URI: https://${{ needs.infrastructure.outputs.apiDomain }}/api/
+          BASE_DATA_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/models/
+          IMAGES_BASE_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/images/
+          BASE_RSS_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/rssfeeds/
 
       - uses: azure/login@v2
         with:
