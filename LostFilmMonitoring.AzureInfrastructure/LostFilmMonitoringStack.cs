@@ -30,6 +30,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         // Export the Azure Function name and CDN endpoints
         FunctionName = function.Name;
         WebsiteStorageAccountName = web_st.Name;
+        ApiDomain = api_record.Name;
+        DataDomain = data_record.Name;
     }
 
     private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.Record api_record)
@@ -443,4 +445,10 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     [Output]
     public Output<string> WebsiteStorageAccountName { get; set; }
+
+    [Output]
+    public Output<string> ApiDomain { get; set; }
+
+    [Output]
+    public Output<string> DataDomain { get; set; }
 }
