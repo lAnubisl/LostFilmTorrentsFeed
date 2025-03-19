@@ -64,7 +64,7 @@ internal static class Mapper
         {
             PartitionKey = series.Name,
             RowKey = series.Name,
-            Id = series.Id,
+            Id = series.Id == Guid.Empty ? Guid.NewGuid() : series.Id,
             Timestamp = DateTime.UtcNow,
             LastEpisode = series.LastEpisode,
             LastEpisodeName = series.LastEpisodeName,

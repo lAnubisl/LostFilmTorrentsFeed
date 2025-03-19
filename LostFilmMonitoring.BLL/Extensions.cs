@@ -28,6 +28,8 @@ namespace LostFilmMonitoring.BLL;
 /// </summary>
 public static class Extensions
 {
+    private static readonly HashSet<char> ForbiddenPrimaryKeyCharacters = new () { '/', '\\', '?', '#', '\t', '\r', '\n', '+' };
+
     /// <summary>
     /// Generates torrent link for user's feed.
     /// </summary>
@@ -59,6 +61,32 @@ public static class Extensions
         => new (torrent.DisplayNameUtf8 ?? torrent.DisplayName, torrent.ToStream());
 
     /// <summary>
+    /// Clean forbidden characters in a collection of <see cref="FeedItemResponse"/>.
+    /// </summary>
+    /// <param name="feedItemResponses">Collection of <see cref="FeedItemResponse"/>.</param>
+    internal static void CleanForbiddenCharacters(this IEnumerable<FeedItemResponse> feedItemResponses)
+    {
+        foreach (var feedItemResponse in feedItemResponses)
+        {
+            feedItemResponse.CleanForbiddenCharacters();
+        }
+    }
+
+    /// <summary>
+    /// Clean forbidden characters in an instance of <see cref="FeedItemResponse"/>.
+    /// </summary>
+    /// <param name="feedItemResponse">Instance of <see cref="FeedItemResponse"/>.</param>
+    internal static void CleanForbiddenCharacters(this FeedItemResponse feedItemResponse)
+    {
+        feedItemResponse.Title = ReplaceForbiddenCharacters(feedItemResponse.Title) !;
+        feedItemResponse.EpisodeName = ReplaceForbiddenCharacters(feedItemResponse.EpisodeName);
+        feedItemResponse.SeriesName = ReplaceForbiddenCharacters(feedItemResponse.SeriesName);
+        feedItemResponse.SeriesNameEn = ReplaceForbiddenCharacters(feedItemResponse.SeriesNameEn);
+        feedItemResponse.SeriesNameRu = ReplaceForbiddenCharacters(feedItemResponse.SeriesNameRu);
+    }
+
+
+    /// <summary>
     /// Generate instance of <see cref="BencodeNET.Torrents.Torrent"/> from a <see cref="Stream"/>.
     /// </summary>
     /// <param name="stream">An instance of <see cref="Stream"/> to torrent file.</param>
@@ -70,6 +98,61 @@ public static class Extensions
         torrent.IsPrivate = false;
         stream.Position = 0;
         return torrent;
+    }
+
+    /// <summary>
+    /// Map instance of <see cref="FeedItemResponse"/> to <see cref="Episode"/>.
+    /// </summary>
+    /// <param name="feedItem">Instance of <see cref="FeedItemResponse"/>.</param>
+    /// <returns>Instance of <see cref="Episode"/>.</returns>
+    internal static Episode? ToEpisode(this FeedItemResponse feedItem)
+    {
+        var torrentId = feedItem.TorrentId;
+        if (string.IsNullOrEmpty(feedItem.SeriesName)
+            || string.IsNullOrEmpty(feedItem.EpisodeName)
+            || feedItem.EpisodeNumber == null
+            || feedItem.SeasonNumber == null
+            || string.IsNullOrEmpty(feedItem.Quality)
+            || string.IsNullOrEmpty(torrentId))
+        {
+            return null;
+        }
+
+        return new (
+            feedItem.SeriesName,
+            feedItem.EpisodeName,
+            feedItem.SeasonNumber.Value,
+            feedItem.EpisodeNumber.Value,
+            torrentId,
+            feedItem.Quality);
+    }
+
+    /// <summary>
+    /// Map instance of <see cref="FeedItemResponse"/> to <see cref="Series"/>.
+    /// </summary>
+    /// <param name="feedItem">Instance of <see cref="FeedItemResponse"/>.</param>
+    /// <returns>Instance of <see cref="Series"/>.</returns>
+    internal static Series? ToSeries(this FeedItemResponse feedItem)
+    {
+        if (feedItem == null || string.IsNullOrEmpty(feedItem.SeriesName))
+        {
+            return null;
+        }
+
+        return new (
+            Guid.Empty,
+            feedItem.SeriesName,
+            feedItem.PublishDateParsed,
+            $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",
+            ParseLink(feedItem, Quality.SD),
+            ParseLink(feedItem, Quality.H720),
+            ParseLink(feedItem, Quality.H1080),
+            ParseSeasonNumber(feedItem, Quality.H1080),
+            ParseSeasonNumber(feedItem, Quality.H720),
+            ParseSeasonNumber(feedItem, Quality.SD),
+            ParseEpisodeNumber(feedItem, Quality.H1080),
+            ParseEpisodeNumber(feedItem, Quality.H720),
+            ParseEpisodeNumber(feedItem, Quality.SD));
     }
 
     /// <summary>
@@ -111,6 +194,11 @@ public static class Extensions
         return false;
     }
 
+    private static string? ReplaceForbiddenCharacters(string? str)
+        => str == null
+            ? null
+            : new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
+
     private static Stream ToStream(this BencodeNET.Torrents.Torrent torrent)
     {
         var ms = new MemoryStream();
@@ -118,4 +206,13 @@ public static class Extensions
         ms.Position = 0;
         return ms;
     }
+
+    private static string? ParseLink(FeedItemResponse feedItem, string quality)
+        => feedItem.Quality == quality ? feedItem.Link : null;
+
+    private static int? ParseEpisodeNumber(FeedItemResponse feedItem, string quality)
+        => feedItem.Quality == quality ? feedItem.EpisodeNumber : null;
+
+    private static int? ParseSeasonNumber(FeedItemResponse feedItem, string quality)
+        => feedItem.Quality == quality ? feedItem.SeasonNumber : null;
 }

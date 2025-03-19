@@ -75,9 +75,9 @@ public class Series
     }
 
     /// <summary>
-    /// Gets Id.
+    /// Gets or sets Id.
     /// </summary>
-    public Guid Id { get; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets Name.

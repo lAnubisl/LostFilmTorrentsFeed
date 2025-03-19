@@ -123,7 +123,7 @@
             Update all feeds.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Interfaces.ITmdbClient,LostFilmMonitoring.BLL.Interfaces.IFileSystem)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand"/> class.
             </summary>
@@ -133,6 +133,8 @@
             <param name="configuration">IConfiguration.</param>
             <param name="modelPersister">modelPersister.</param>
             <param name="client">client.</param>
+            <param name="tmdbClient">tmdbClient.</param>
+            <param name="fileSystem">fileSystem.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>
@@ -214,12 +216,38 @@
             <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
             <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.</returns>
         </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(System.Collections.Generic.IEnumerable{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse})">
+            <summary>
+            Clean forbidden characters in a collection of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.
+            </summary>
+            <param name="feedItemResponses">Collection of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+            <summary>
+            Clean forbidden characters in an instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.
+            </summary>
+            <param name="feedItemResponse">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+        </member>
         <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentDataStructure(System.IO.Stream)">
             <summary>
             Generate instance of <see cref="T:BencodeNET.Torrents.Torrent"/> from a <see cref="T:System.IO.Stream"/>.
             </summary>
             <param name="stream">An instance of <see cref="T:System.IO.Stream"/> to torrent file.</param>
             <returns>Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.ToEpisode(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+            <summary>
+            Map instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Episode"/>.
+            </summary>
+            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Episode"/>.</returns>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Extensions.ToSeries(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+            <summary>
+            Map instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Series"/>.
+            </summary>
+            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Series"/>.</returns>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Extensions.HasUpdates(System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse},System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse})">
             <summary>
