@@ -68,7 +68,9 @@ public static class Program
                 sp.GetService<IDal>() !,
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,
-                sp.GetService<ILostFilmClient>() !));
+                sp.GetService<ILostFilmClient>() !,
+                sp.GetService<ITmdbClient>() !,
+                sp.GetService<IFileSystem>() !));
         services.AddTransient(sp =>
             new DownloadCoverImagesCommand(
                 sp.GetService<ILogger>() !,

@@ -28,7 +28,6 @@ namespace LostFilmMonitoring.BLL.Commands;
 /// </summary>
 public class UpdateFeedsCommand : ICommand
 {
-    private static readonly HashSet<char> ForbiddenPrimaryKeyCharacters = new () { '/', '\\', '?', '#', '\t', '\r', '\n', '+' };
     private static readonly object SeriesLocker = new ();
     private static readonly object TorrentFileLocker = new ();
     private readonly ILogger logger;
@@ -37,6 +36,8 @@ public class UpdateFeedsCommand : ICommand
     private readonly IConfiguration configuration;
     private readonly IModelPersister modelPersister;
     private readonly ILostFilmClient client;
+    private readonly ITmdbClient tmdbClient;
+    private readonly IFileSystem fileSystem;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateFeedsCommand"/> class.
@@ -47,13 +48,17 @@ public class UpdateFeedsCommand : ICommand
     /// <param name="configuration">IConfiguration.</param>
     /// <param name="modelPersister">modelPersister.</param>
     /// <param name="client">client.</param>
+    /// <param name="tmdbClient">tmdbClient.</param>
+    /// <param name="fileSystem">fileSystem.</param>
     public UpdateFeedsCommand(
         ILogger logger,
         IRssFeed rssFeed,
         IDal dal,
         IConfiguration configuration,
         IModelPersister modelPersister,
-        ILostFilmClient client)
+        ILostFilmClient client,
+        ITmdbClient tmdbClient,
+        IFileSystem fileSystem)
     {
         this.logger = logger != null ? logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(logger));
         this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
@@ -61,15 +66,22 @@ public class UpdateFeedsCommand : ICommand
         this.rssFeed = rssFeed ?? throw new ArgumentNullException(nameof(rssFeed));
         this.modelPersister = modelPersister ?? throw new ArgumentNullException(nameof(modelPersister));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
+        this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
     }
 
     /// <inheritdoc/>
     public async Task ExecuteAsync()
     {
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-        var feedItemsResponse = await this.LoadFeedUpdatesAsync();
-        CleanForbiddenCharacters(feedItemsResponse);
-        var persistedItemsRespone = await this.LoadLastFeedUpdatesAsync();
+
+        var loadFeedUpdatesTask = this.LoadFeedUpdatesAsync();
+        var loadLastFeedUpdatesTask = this.LoadLastFeedUpdatesAsync();
+        await Task.WhenAll(loadFeedUpdatesTask, loadLastFeedUpdatesTask);
+        var feedItemsResponse = await loadFeedUpdatesTask;
+        var persistedItemsRespone = await loadLastFeedUpdatesTask;
+
+        feedItemsResponse.CleanForbiddenCharacters();
         if (!Extensions.HasUpdates(feedItemsResponse, persistedItemsRespone))
         {
             this.logger.Info("No updates.");
@@ -84,94 +96,14 @@ public class UpdateFeedsCommand : ICommand
         }
     }
 
-    private static string? ReplaceForbiddenCharacters(string? str)
-        => str == null
-            ? null
-            : new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
-
-    private static void CleanForbiddenCharacters(IEnumerable<FeedItemResponse> items)
-    {
-        foreach (var item in items)
-        {
-            item.Title = ReplaceForbiddenCharacters(item.Title) !;
-            item.EpisodeName = ReplaceForbiddenCharacters(item.EpisodeName);
-            item.SeriesName = ReplaceForbiddenCharacters(item.SeriesName);
-            item.SeriesNameEn = ReplaceForbiddenCharacters(item.SeriesNameEn);
-            item.SeriesNameRu = ReplaceForbiddenCharacters(item.SeriesNameRu);
-        }
-    }
-
-    private static Episode? ToEpisode(FeedItemResponse feedItem)
-    {
-        var torrentId = feedItem.TorrentId;
-        if (string.IsNullOrEmpty(feedItem.SeriesName)
-            || string.IsNullOrEmpty(feedItem.EpisodeName)
-            || feedItem.EpisodeNumber == null
-            || feedItem.SeasonNumber == null
-            || string.IsNullOrEmpty(feedItem.Quality)
-            || string.IsNullOrEmpty(torrentId))
-        {
-            return null;
-        }
-
-        return new (
-            feedItem.SeriesName,
-            feedItem.EpisodeName,
-            feedItem.SeasonNumber.Value,
-            feedItem.EpisodeNumber.Value,
-            torrentId,
-            feedItem.Quality);
-    }
-
-    private static Series? ToSeries(FeedItemResponse feedItem)
-    {
-        if (feedItem == null || string.IsNullOrEmpty(feedItem.SeriesName))
-        {
-            return null;
-        }
-
-        return new (
-            Guid.NewGuid(),
-            feedItem.SeriesName,
-            feedItem.PublishDateParsed,
-            $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",
-            ParseLink(feedItem, Quality.SD),
-            ParseLink(feedItem, Quality.H720),
-            ParseLink(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H720),
-            ParseSeasonNumber(feedItem, Quality.SD),
-            ParseEpisodeNumber(feedItem, Quality.H1080),
-            ParseEpisodeNumber(feedItem, Quality.H720),
-            ParseEpisodeNumber(feedItem, Quality.SD));
-    }
-
-    private static BencodeNET.Torrents.Torrent ToTorrentDataStructure(ITorrentFileResponse torrentFileResponse)
-        => torrentFileResponse.Content.ToTorrentDataStructure();
-
-    private static int? ParseEpisodeNumber(FeedItemResponse feedItem, string quality)
-        => feedItem.Quality == quality ? feedItem.EpisodeNumber : null;
-
-    private static int? ParseSeasonNumber(FeedItemResponse feedItem, string quality)
-        => feedItem.Quality == quality ? feedItem.SeasonNumber : null;
-
-    private static string? ParseLink(FeedItemResponse feedItem, string quality)
-        => feedItem.Quality == quality ? feedItem.Link : null;
-
-    private static bool EpisodeIsCorrect(Episode? episode)
+    private static bool IsEpisodeCorrect(Episode? episode)
         => episode != null && episode.EpisodeNumber != 999;
-
-    private static TorrentFile ToTorrentFile(ITorrentFileResponse x)
-        => new (x.FileName, x.Content);
-
-    private static FeedItem ToFeedItem(FeedItemResponse x, string link)
-        => new (x.Title, link, x.PublishDateParsed);
 
     private static Series? GetSeriesToUpdate(Dictionary<string, Series> existingSeries, FeedItemResponse feedItem)
     {
         lock (SeriesLocker)
         {
-            var series = ToSeries(feedItem);
+            var series = feedItem.ToSeries();
             if (series == null)
             {
                 return null;
@@ -207,8 +139,8 @@ public class UpdateFeedsCommand : ICommand
 
     private async Task<bool> ProcessFeedItemAsync(FeedItemResponse feedItem, Dictionary<string, Series> series)
     {
-        var episode = ToEpisode(feedItem);
-        if (!EpisodeIsCorrect(episode))
+        var episode = feedItem.ToEpisode();
+        if (!IsEpisodeCorrect(episode))
         {
             return true;
         }
@@ -232,17 +164,26 @@ public class UpdateFeedsCommand : ICommand
 
         await this.SaveEpisodeAsync(feedItem);
         await this.UpdateAllSubscribedUsersAsync(feedItem, torrent);
-        await this.dal.Series.SaveAsync(seriesToUpdate);
+        var newSeriesDetected = seriesToUpdate.Id == Guid.Empty;
+
+        seriesToUpdate.Id = await this.dal.Series.SaveAsync(seriesToUpdate);
+        if (newSeriesDetected && !await this.PosterExistsAsync(seriesToUpdate.Id))
+        {
+            await this.DownloadImageAsync(seriesToUpdate);
+        }
+
         return true;
     }
 
     private async Task SaveEpisodeAsync(FeedItemResponse feedItem)
     {
-        var episode = ToEpisode(feedItem);
-        if (episode != null)
+        var episode = feedItem.ToEpisode();
+        if (episode == null)
         {
-            await this.dal.Episode.SaveAsync(episode);
+            return;
         }
+
+        await this.dal.Episode.SaveAsync(episode);
     }
 
     private async Task<SortedSet<FeedItemResponse>> LoadFeedUpdatesAsync()
@@ -275,8 +216,8 @@ public class UpdateFeedsCommand : ICommand
             return null;
         }
 
-        var torrent = ToTorrentDataStructure(torrentFileResponse);
-        await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, ToTorrentFile(torrentFileResponse));
+        var torrent = torrentFileResponse.Content.ToTorrentDataStructure();
+        await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, new TorrentFile(torrentFileResponse.FileName, torrentFileResponse.Content));
         return torrent;
     }
 
@@ -326,7 +267,7 @@ public class UpdateFeedsCommand : ICommand
     private async Task UpdateUserFeedAsync(string userId, FeedItemResponse item, string torrentFileName)
     {
         string link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, userId, torrentFileName);
-        var userFeedItem = ToFeedItem(item, link);
+        var userFeedItem = new FeedItem(item.Title, link, item.PublishDateParsed);
         var userFeed = (await this.dal.Feed.LoadUserFeedAsync(userId)) ?? new SortedSet<FeedItem>();
         userFeed.Add(userFeedItem);
         userFeed.RemoveWhere(x => x == null);
@@ -356,4 +297,27 @@ public class UpdateFeedsCommand : ICommand
 
     private Task CleanupOldRssFilesAsync(string userId, FeedItem[] oldRssFeedItems)
         => Task.WhenAll(oldRssFeedItems.Select(i => this.CleanupOldRssFileAsync(userId, i)));
+
+    private async Task DownloadImageAsync(Series series)
+    {
+        var openBraceIndex = series.Name.IndexOf('(');
+        var closeBraceIndex = series.Name.IndexOf(')');
+        if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
+        {
+            // cannot parse the series original name
+            return;
+        }
+
+        var originalName = series.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
+        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
+        if (imageStream == null)
+        {
+            return;
+        }
+
+        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", imageStream);
+    }
+
+    private Task<bool> PosterExistsAsync(Guid seriesId) =>
+        this.fileSystem.ExistsAsync(Constants.MetadataStorageContainerImages, $"{seriesId}.jpg");
 }

@@ -46,7 +46,7 @@ public interface ISeriesDao
     /// </summary>
     /// <param name="series">Series to save.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    Task SaveAsync(Series series);
+    Task<Guid> SaveAsync(Series series);
 
     /// <summary>
     /// Delete series.

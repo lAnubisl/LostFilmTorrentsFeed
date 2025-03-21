@@ -86,12 +86,14 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
     }
 
     /// <inheritdoc/>
-    public async Task SaveAsync(Series series)
+    public async Task<Guid> SaveAsync(Series series)
     {
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Series series)");
         try
         {
-            await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(series)));
+            var entity = Mapper.Map(series);
+            await this.TryExecuteAsync(c => c.UpsertEntityAsync(entity));
+            return entity.Id;
         }
         catch (ExternalServiceUnavailableException)
         {

@@ -40,6 +40,8 @@ public class UpdateFeedsCommandTests
     private Mock<ISubscriptionDao>? subscriptionDAO;
     private Mock<IUserDao>? userDao;
     private Mock<IEpisodeDao>? episodeDao;
+    private Mock<ITmdbClient>? tmdbClient;
+    private Mock<IFileSystem>? fileSystem;
 
     private UpdateFeedsCommand CreateCommand()
     {
@@ -49,7 +51,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             this.configuration!.Object,
             this.persister!.Object,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
     }
 
     [SetUp]
@@ -76,6 +80,8 @@ public class UpdateFeedsCommandTests
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.configuration.Setup(x => x.BaseUID).Returns(BaseUid);
         this.configuration.Setup(x => x.BaseUSESS).Returns(BaseUsess);
+        this.tmdbClient = new();
+        this.fileSystem = new();
     }
 
     [Test]
@@ -87,7 +93,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             this.configuration!.Object,
             this.persister!.Object,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
 
@@ -100,7 +108,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             this.configuration!.Object,
             this.persister!.Object,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("rssFeed");
     }
 
@@ -113,7 +123,9 @@ public class UpdateFeedsCommandTests
             null!,
             this.configuration!.Object,
             this.persister!.Object,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
 
@@ -126,7 +138,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             null!,
             this.persister!.Object,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
 
@@ -139,7 +153,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             this.configuration!.Object,
             null!,
-            this.lostFilmClient!.Object);
+            this.lostFilmClient!.Object,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("modelPersister");
     }
 
@@ -152,7 +168,9 @@ public class UpdateFeedsCommandTests
             this.dal!.Object,
             this.configuration!.Object,
             this.persister!.Object,
-            null!);
+            null!,
+            this.tmdbClient!.Object,
+            this.fileSystem!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("client");
     }
 
@@ -205,7 +223,7 @@ public class UpdateFeedsCommandTests
 
         var rssItems = new SortedSet<FeedItemResponse>() 
         { 
-            new FeedItemResponse()
+            new ()
             {
                 Title = "Флэш (The Flash). Падение смерти (S08E13) [MP4]",
                 Link = "http://n.tracktor.site/rssdownloader.php?id=51439",
@@ -221,7 +239,7 @@ public class UpdateFeedsCommandTests
                 EpisodeNumber = 13,
                 TorrentId = "51439"
             },
-            new FeedItemResponse()
+            new ()
             {
                 Title = "Флэш (The Flash). Падение смерти (S08E13) [1080p]",
                 Link = "http://n.tracktor.site/rssdownloader.php?id=51438",
@@ -237,7 +255,7 @@ public class UpdateFeedsCommandTests
                 EpisodeNumber = 13,
                 TorrentId = "51438"
             },
-            new FeedItemResponse()
+            new ()
             {
                 Title = "Флэш (The Flash). Падение смерти (S08E13) [SD]",
                 Link = "http://n.tracktor.site/rssdownloader.php?id=51437",
@@ -260,6 +278,18 @@ public class UpdateFeedsCommandTests
 
         // There is no such series in the system
         this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        var newSeriesId = Guid.NewGuid();
+        var savedSeries = new List<Series>();
+        this.seriesDAO!.Setup(x => x.SaveAsync(It.IsAny<Series>()))
+            .Callback<Series>(series => savedSeries.Add(new Series(
+                series.Id,
+                series.Name,
+                series.LastEpisode,
+                series.LastEpisodeName,
+                series.LastEpisodeTorrentLinkSD,
+                series.LastEpisodeTorrentLinkMP4,
+                series.LastEpisodeTorrentLink1080)))
+            .ReturnsAsync(newSeriesId);
 
         SetupTorrentFile("51439");
         SetupTorrentFile("51438");
@@ -267,14 +297,17 @@ public class UpdateFeedsCommandTests
         
         await command.ExecuteAsync();
 
-        // Verify series is saved
-        this.seriesDAO.Verify(x => x.SaveAsync(It.Is<Series>(x => 
-            x.Name == "Флэш (The Flash)"
+        // Verify series is saved with initial empty ID
+        savedSeries.Should().Contain(x => x.Id == Guid.Empty);
+        // Verify series is saved with final properties
+        savedSeries.Should().Contain(x => 
+            x.Id == newSeriesId
+         && x.Name == "Флэш (The Flash)"
          && x.LastEpisodeName == "Флэш (The Flash). Падение смерти (S08E13) "
          && x.LastEpisode == new DateTime(2022, 5, 21, 20, 58, 00, DateTimeKind.Utc)
          && x.LastEpisodeTorrentLink1080 == "http://n.tracktor.site/rssdownloader.php?id=51438"
          && x.LastEpisodeTorrentLinkMP4 == "http://n.tracktor.site/rssdownloader.php?id=51439"
-         && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437")));
+         && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437");
     }
 
     [Test]
