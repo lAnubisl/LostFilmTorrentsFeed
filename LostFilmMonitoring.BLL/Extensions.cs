@@ -85,7 +85,6 @@ public static class Extensions
         feedItemResponse.SeriesNameRu = ReplaceForbiddenCharacters(feedItemResponse.SeriesNameRu);
     }
 
-
     /// <summary>
     /// Generate instance of <see cref="BencodeNET.Torrents.Torrent"/> from a <see cref="Stream"/>.
     /// </summary>

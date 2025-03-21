@@ -21,7 +21,9 @@ public class TmdbClient : ITmdbClient
         try
         {
             var searchResult = await this.client.SearchTvShowAsync(originalName);
-            var series = searchResult.Results.FirstOrDefault();
+            var series = searchResult.Results
+                .OrderByDescending(x => x.FirstAirDate)
+                .FirstOrDefault(x => string.Equals(x.Name, originalName, StringComparison.OrdinalIgnoreCase));
             if (series == null)
             {
                 this.logger.Error($"Series not found: {originalName}");
