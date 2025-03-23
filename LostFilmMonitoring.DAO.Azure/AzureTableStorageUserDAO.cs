@@ -53,15 +53,10 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
     public async Task<User[]> LoadAsync()
     {
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
-        return await this.TryGetEntityAsync(async (tc) =>
+        return await this.TryGetEntityAsync(tc =>
         {
-            var result = new List<User>();
-            await foreach (var item in tc.QueryAsync<UserTableEntity>())
-            {
-                result.Add(Mapper.Map(item));
-            }
-
-            return result.ToArray();
+            var query = tc.QueryAsync<UserTableEntity>();
+            return IterateAsync(query, Mapper.Map);
         }) ?? Array.Empty<User>();
     }
 

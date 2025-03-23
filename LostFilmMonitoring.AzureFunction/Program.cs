@@ -50,7 +50,6 @@ public static class Program
         services.AddTransient<IEpisodeDao, AzureTableStorageEpisodeDao>();
         services.AddTransient<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
         services.AddTransient<IRssFeed, ReteOrgRssFeed>();
-        services.AddTransient<IRssFeed, LostFilmRssFeed>();
         services.AddTransient<IFileSystem, AzureBlobStorageFileSystem>();
         services.AddTransient<IConfigurationValuesProvider, EnvironmentConfigurationValuesProvider>();
         services.AddTransient<IConfiguration, Configuration>();
@@ -62,7 +61,7 @@ public static class Program
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
                 sp.GetService<ILogger>() !,
-                sp.GetServices<IRssFeed>().First(x => x.GetType().Name.Equals(nameof(ReteOrgRssFeed))) !,
+                sp.GetService<IRssFeed>() !,
                 sp.GetService<IDal>() !,
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,
