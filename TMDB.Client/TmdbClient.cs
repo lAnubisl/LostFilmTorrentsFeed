@@ -12,7 +12,7 @@ public class TmdbClient : ITmdbClient
     public TmdbClient(string apiKey, ILogger logger)
     {
         this.client = new TMDbClient(apiKey);
-        this.logger = logger;
+        this.logger = logger.CreateScope(nameof(TmdbClient)) ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Stream?> DownloadImageAsync(string originalName)
@@ -21,13 +21,25 @@ public class TmdbClient : ITmdbClient
         try
         {
             var searchResult = await this.client.SearchTvShowAsync(originalName);
-            var series = searchResult.Results
-                .OrderByDescending(x => x.FirstAirDate)
-                .FirstOrDefault(x => string.Equals(x.Name, originalName, StringComparison.OrdinalIgnoreCase));
-            if (series == null)
+            if (searchResult.Results.Count == 0)
             {
                 this.logger.Error($"Series not found: {originalName}");
                 return null;
+            }
+
+            var ordered = searchResult.Results.OrderByDescending(x => x.FirstAirDate);
+
+            // Try to find series with the same name ignoring case
+            var series = ordered.FirstOrDefault(x => string.Equals(x.Name, originalName, StringComparison.OrdinalIgnoreCase));
+            if (series == null)
+            {
+                // Try to find any matching series
+                series = ordered.FirstOrDefault();
+                if (series == null)
+                {
+                    this.logger.Error($"Series not found: {originalName}");
+                    return null;
+                }
             }
 
             var image = await this.client.GetTvShowImagesAsync(series.Id);
