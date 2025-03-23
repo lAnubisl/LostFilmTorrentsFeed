@@ -200,7 +200,7 @@ body {
 
 #rssItems > div > span {
     margin-right: 1rem;
-    color: var(--light-text);
+    color: var(---text-color);
 }
 
 @media (max-width: 768px) {
