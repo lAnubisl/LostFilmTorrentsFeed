@@ -29,24 +29,18 @@ public class DownloadCoverImagesCommandTests
     private Mock<ISeriesDao>? seriesDao;
     private Mock<Common.ILogger>? logger;
     private Mock<IFileSystem>? fileSystem;
-    private Mock<IConfiguration>? configuration;
     private Mock<ITmdbClient>? tmdbClient;
-    private Mock<IDictionaryDao>? dictionaryDao;
-    private Mock<IImageProcessor>? imageProcessor;
 
     [SetUp]
     public void Setup()
     {
         this.fileSystem = new();
-        this.dictionaryDao = new();
-        this.configuration = new();
         this.tmdbClient = new();
         this.seriesDao = new();
         this.logger = new();
-        this.imageProcessor = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
     }
 
     private DownloadCoverImagesCommand GetService()
-            => new(this.logger!.Object, this.fileSystem!.Object, this.configuration!.Object, this.seriesDao!.Object, this.tmdbClient!.Object, this.dictionaryDao!.Object, this.imageProcessor!.Object);
+            => new(this.logger!.Object, this.fileSystem!.Object, this.seriesDao!.Object, this.tmdbClient!.Object);
 }

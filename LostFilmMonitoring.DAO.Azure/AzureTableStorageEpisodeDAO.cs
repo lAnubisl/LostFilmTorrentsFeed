@@ -54,6 +54,22 @@ public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
     }
 
     /// <inheritdoc/>
+    public async Task<Episode[]> LoadAsync()
+    {
+        this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
+        return await this.TryGetEntityAsync(async (tc) =>
+        {
+            var result = new List<Episode>();
+            await foreach (var item in tc.QueryAsync<EpisodeTableEntity>())
+            {
+                result.Add(Mapper.Map(item));
+            }
+
+            return result.ToArray();
+        }) ?? Array.Empty<Episode>();
+    }
+
+    /// <inheritdoc/>
     public async Task SaveAsync(Episode episode)
     {
         this.Logger.Info($"Call: {nameof(this.SaveAsync)}(Episode episode)");

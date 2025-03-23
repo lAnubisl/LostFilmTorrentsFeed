@@ -37,6 +37,20 @@ public class User
     {
         this.Id = id;
         this.TrackerId = trackerId;
+        this.CreatedAt = null;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="User"/> class.
+    /// </summary>
+    /// <param name="id">User Id.</param>
+    /// <param name="trackerId">Tracker Id.</param>
+    /// <param name="createdAt">Created At.</param>
+    public User(string id, string trackerId, DateTime createdAt)
+    {
+        this.Id = id;
+        this.TrackerId = trackerId;
+        this.CreatedAt = createdAt;
     }
 
     /// <summary>
@@ -54,6 +68,11 @@ public class User
     /// Here '1b07a52cb12a12945e15cca756f83789' is the user id.
     /// </summary>
     public string TrackerId { get; }
+
+    /// <summary>
+    /// Gets CreatedAt.
+    /// </summary>
+    public DateTime? CreatedAt { get; }
 
     /// <inheritdoc/>
     public override string ToString() => $"{this.Id}, {this.TrackerId}";

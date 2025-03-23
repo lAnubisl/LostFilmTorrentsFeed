@@ -47,7 +47,6 @@ public static class Program
         services.AddTransient<IFeedDao, AzureBlobStorageFeedDao>();
         services.AddTransient<IUserDao, AzureTableStorageUserDao>();
         services.AddTransient<ISeriesDao, AzureTableStorageSeriesDao>();
-        services.AddTransient<IDictionaryDao, AzureTableStorageDictionaryDao>();
         services.AddTransient<IEpisodeDao, AzureTableStorageEpisodeDao>();
         services.AddTransient<ISubscriptionDao, AzureTableStorageSubscriptionDao>();
         services.AddTransient<IRssFeed, ReteOrgRssFeed>();
@@ -59,7 +58,6 @@ public static class Program
         services.AddTransient<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddTransient<ILostFilmClient, LostFilmClient>();
         services.AddTransient<ITmdbClient>(r => new TmdbClient(Env(EnvironmentVariables.TmdbApiKey), r.GetService<ILogger>()!));
-        services.AddTransient<IImageProcessor,  DefaultImageProcessor>();
         services.AddHttpClient();
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
@@ -75,11 +73,8 @@ public static class Program
             new DownloadCoverImagesCommand(
                 sp.GetService<ILogger>() !,
                 sp.GetService<IFileSystem>() !,
-                sp.GetService<IConfiguration>() !,
                 sp.GetService<ISeriesDao>() !,
-                sp.GetService<ITmdbClient>() !,
-                sp.GetService<IDictionaryDao>() !,
-                sp.GetService<IImageProcessor>() !));
+                sp.GetService<ITmdbClient>() !));
         services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
         services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
         services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();

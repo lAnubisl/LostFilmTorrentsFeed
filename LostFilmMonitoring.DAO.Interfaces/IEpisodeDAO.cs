@@ -44,4 +44,10 @@ public interface IEpisodeDao
     /// <param name="quality">The quality.</param>
     /// <returns>True is such episode exists. Otherwise false.</returns>
     Task<bool> ExistsAsync(string seriesName, int seasonNumber, int episideNumber, string quality);
+
+    /// <summary>
+    /// Load all episodes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    Task<Episode[]> LoadAsync();
 }

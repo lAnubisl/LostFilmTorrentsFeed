@@ -49,7 +49,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
         });
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc/>`
     public async Task<User[]> LoadAsync()
     {
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");
@@ -78,5 +78,12 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
             this.Logger.Fatal($"Error while saving user: '{JsonSerializer.Serialize(user, CommonSerializationOptions.Default)}'");
             throw;
         }
+    }
+
+    /// <inheritdoc/>
+    public async Task DeleteAsync(string userId)
+    {
+        this.Logger.Info($"Call: {nameof(this.DeleteAsync)}('{userId}')");
+        await this.TryExecuteAsync(c => c.DeleteEntityAsync(EscapeKey(userId), userId));
     }
 }
