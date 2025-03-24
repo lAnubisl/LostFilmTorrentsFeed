@@ -21,7 +21,7 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL.Interfaces;
+namespace LostFilmMonitoring.BLL;
 
 /// <summary>
 /// FeedItemResponse interface.

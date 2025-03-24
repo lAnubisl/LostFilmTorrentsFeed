@@ -29,7 +29,6 @@ namespace LostFilmMonitoring.BLL.Commands;
 public class UpdateFeedsCommand : ICommand
 {
     private static readonly object SeriesLocker = new ();
-    private static readonly object TorrentFileLocker = new ();
     private readonly ILogger logger;
     private readonly IDal dal;
     private readonly IRssFeed rssFeed;
@@ -38,6 +37,7 @@ public class UpdateFeedsCommand : ICommand
     private readonly ILostFilmClient client;
     private readonly ITmdbClient tmdbClient;
     private readonly IFileSystem fileSystem;
+    private readonly UpdateUserFeedCommand updateUserFeedCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateFeedsCommand"/> class.
@@ -68,6 +68,7 @@ public class UpdateFeedsCommand : ICommand
         this.client = client ?? throw new ArgumentNullException(nameof(client));
         this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        this.updateUserFeedCommand = new UpdateUserFeedCommand(logger, dal, configuration);
     }
 
     /// <inheritdoc/>
@@ -150,13 +151,13 @@ public class UpdateFeedsCommand : ICommand
             return true;
         }
 
-        var seriesToUpdate = GetSeriesToUpdate(series, feedItem);
+        Series? seriesToUpdate = GetSeriesToUpdate(series, feedItem);
         if (seriesToUpdate == null)
         {
             return true;
         }
 
-        var torrent = await this.GetTorrentAsync(feedItem);
+        BencodeNET.Torrents.Torrent? torrent = await this.GetTorrentAsync(feedItem).ConfigureAwait(false);
         if (torrent == null)
         {
             return false;
@@ -203,20 +204,20 @@ public class UpdateFeedsCommand : ICommand
 
     private async Task<BencodeNET.Torrents.Torrent?> GetTorrentAsync(FeedItemResponse feedResponseItem)
     {
-        var torrentId = feedResponseItem.TorrentId;
+        string? torrentId = feedResponseItem.TorrentId;
         if (torrentId == null)
         {
             this.logger.Error($"Could not get torrent id for {feedResponseItem.Title}");
             return null;
         }
 
-        var torrentFileResponse = await this.client.DownloadTorrentFileAsync(this.configuration.BaseUID, this.configuration.BaseUSESS, torrentId);
+        ITorrentFileResponse? torrentFileResponse = await this.client.DownloadTorrentFileAsync(this.configuration.BaseUID, this.configuration.BaseUSESS, torrentId).ConfigureAwait(false);
         if (torrentFileResponse == null)
         {
             return null;
         }
 
-        var torrent = torrentFileResponse.Content.ToTorrentDataStructure();
+        BencodeNET.Torrents.Torrent torrent = torrentFileResponse.Content.ToTorrentDataStructure();
         await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, new TorrentFile(torrentFileResponse.FileName, torrentFileResponse.Content));
         return torrent;
     }
@@ -234,69 +235,7 @@ public class UpdateFeedsCommand : ICommand
     }
 
     private Task UpdateAllSubscribedUsersAsync(string[] userIds, FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
-        => Task.WhenAll(userIds.Select(x => this.UpdateSubscribedUserAsync(feedResponseItem, torrent, x)));
-
-    private async Task UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)
-    {
-        if (await this.SaveTorrentFileForUserAsync(userId, torrent))
-        {
-            await this.UpdateUserFeedAsync(userId, feedResponseItem, torrent.DisplayNameUtf8 ?? torrent.DisplayName);
-        }
-    }
-
-    private async Task<bool> SaveTorrentFileForUserAsync(string userId, BencodeNET.Torrents.Torrent torrent)
-    {
-        var user = await this.dal.User.LoadAsync(userId);
-        if (user == null)
-        {
-            this.logger.Error($"User '{userId}' not found.");
-            return false;
-        }
-
-        TorrentFile torrentFile;
-        lock (TorrentFileLocker)
-        {
-            torrent.FixTrackers(this.configuration.GetTorrentAnnounceList(user.TrackerId));
-            torrentFile = torrent.ToTorrentFile();
-        }
-
-        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile);
-        return true;
-    }
-
-    private async Task UpdateUserFeedAsync(string userId, FeedItemResponse item, string torrentFileName)
-    {
-        string link = Extensions.GenerateTorrentLink(this.configuration.BaseUrl, userId, torrentFileName);
-        var userFeedItem = new FeedItem(item.Title, link, item.PublishDateParsed);
-        var userFeed = (await this.dal.Feed.LoadUserFeedAsync(userId)) ?? new SortedSet<FeedItem>();
-        userFeed.Add(userFeedItem);
-        userFeed.RemoveWhere(x => x == null);
-        await this.dal.Feed.SaveUserFeedAsync(userId, userFeed.Take(15).ToArray());
-        await this.CleanupOldRssFilesAsync(userId, userFeed.Skip(15).ToArray());
-    }
-
-    private async Task CleanupOldRssFileAsync(string userId, FeedItem item)
-    {
-        this.logger.Info($"Call: {nameof(this.CleanupOldRssFileAsync)}('{userId}', '{item.Link}')");
-        var fileName = item.GetUserFileName(userId);
-        if (fileName == null)
-        {
-            this.logger.Error($"Cannot get fileName from FeedItem '{item.Link}'.");
-            return;
-        }
-
-        try
-        {
-            await this.dal.TorrentFile.DeleteUserFileAsync(userId, fileName);
-        }
-        catch (Exception ex)
-        {
-            this.logger.Log($"Error deleting FeedItem '{item.Link}' for user '{userId}'.", ex);
-        }
-    }
-
-    private Task CleanupOldRssFilesAsync(string userId, FeedItem[] oldRssFeedItems)
-        => Task.WhenAll(oldRssFeedItems.Select(i => this.CleanupOldRssFileAsync(userId, i)));
+        => Task.WhenAll(userIds.Select(x => this.updateUserFeedCommand.ExecuteAsync(new UpdateUserFeedCommandRequestModel(x, feedResponseItem, torrent))));
 
     private async Task DownloadImageAsync(Series series)
     {

@@ -32,6 +32,7 @@ global using System.Text.RegularExpressions;
 global using System.Threading.Tasks;
 global using System.Web;
 global using System.Xml.Linq;
+global using LostFilmMonitoring.BLL;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.Common;
 global using LostFilmTV.Client.Exceptions;

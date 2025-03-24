@@ -1,4 +1,4 @@
-﻿// <copyright file="ICurrentUserProvider.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IConfigurationValuesProvider.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,22 +21,17 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
 /// <summary>
-/// Responsible for accessing current user Id.
+/// Provides configuration values.
 /// </summary>
-public interface ICurrentUserProvider
+public interface IConfigurationValuesProvider
 {
     /// <summary>
-    /// Get current user id.
+    /// Gets the value by key.
     /// </summary>
-    /// <returns>UserID.</returns>
-    Guid GetCurrentUserId();
-
-    /// <summary>
-    /// Set current user id.
-    /// </summary>
-    /// <param name="userId">UserId.</param>
-    void SetCurrentUserId(Guid userId);
+    /// <param name="key">Key.</param>
+    /// <returns>Value.</returns>
+    string? GetValue(string key);
 }
