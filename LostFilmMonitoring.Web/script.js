@@ -86,8 +86,8 @@ var saveChanges = function() {
     var items = [];
     Array.from(document.getElementsByClassName("series-item-selected")).forEach(item => {
         items.push({
-            SeriesName: escape(item.childNodes[0].value),
-            Quality: item.childNodes[4].value
+            SeriesName: escape(item.querySelector('input').value),
+            Quality: item.querySelector('select').value
         })
     });
 

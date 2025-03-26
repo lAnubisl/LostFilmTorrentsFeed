@@ -39,7 +39,7 @@ public static class Extensions
     /// <returns>Torrent link.</returns>
     internal static string GenerateTorrentLink(string baseUrl, string userId, string torrentFileName)
     {
-        return $"{baseUrl}/{userId}/{torrentFileName}.torrent";
+        return $"{baseUrl}/{Constants.MetadataStorageContainerUserTorrents}/{userId}/{torrentFileName}.torrent";
     }
 
     /// <summary>
