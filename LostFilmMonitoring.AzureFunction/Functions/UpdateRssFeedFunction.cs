@@ -48,7 +48,7 @@ public class UpdateRssFeedFunction
     /// <param name="myTimer">Timer object.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Function("UpdateRssFeedFunction")]
-    public async Task RunAsync([TimerTrigger("0 */5 * * * *")] object myTimer)
+    public async Task RunAsync([TimerTrigger("0 */3 * * * *")] object myTimer)
     {
         this.logger.Info($"Start {DateTime.Now}");
         await this.updateFeedCommand.ExecuteAsync();
