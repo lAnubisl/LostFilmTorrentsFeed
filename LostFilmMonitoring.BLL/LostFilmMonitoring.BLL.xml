@@ -9,17 +9,14 @@
             Checks series cover images.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmMonitoring.BLL.Interfaces.ITmdbClient,LostFilmMonitoring.DAO.Interfaces.IDictionaryDao,LostFilmMonitoring.BLL.IImageProcessor)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmMonitoring.BLL.Interfaces.ITmdbClient)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand"/> class.
             </summary>
             <param name="logger">Instance of <see cref="T:LostFilmMonitoring.Common.ILogger"/>.</param>
             <param name="fileSystem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem"/>.</param>
-            <param name="configuration">Instance of <see cref="T:LostFilmMonitoring.Common.IConfiguration"/>.</param>
             <param name="seriesDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.ISeriesDao"/>.</param>
             <param name="tmdbClient">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.ITmdbClient"/>.</param>
-            <param name="dictionaryDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.IDictionaryDao"/>.</param>
-            <param name="imageProcessor">Instance of <see cref="T:LostFilmMonitoring.BLL.IImageProcessor"/>.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.ExecuteAsync">
             <inheritdoc/>
@@ -139,14 +136,30 @@
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>
         </member>
+        <member name="T:LostFilmMonitoring.BLL.Commands.UpdateUserFeedCommand">
+            <summary>
+            Update all feeds.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateUserFeedCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.UpdateUserFeedCommand"/> class.
+            </summary>
+            <param name="logger">Logger.</param>
+            <param name="dal">Data Access Layer.</param>
+            <param name="configuration">Configuration.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateUserFeedCommand.ExecuteAsync(LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel)">
+            <inheritdoc/>
+        </member>
         <member name="T:LostFilmMonitoring.BLL.Configuration">
             <inheritdoc/>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Configuration.#ctor(LostFilmMonitoring.BLL.IConfigurationValuesProvider)">
+        <member name="M:LostFilmMonitoring.BLL.Configuration.#ctor(LostFilmMonitoring.BLL.Interfaces.IConfigurationValuesProvider)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Configuration"/> class.
             </summary>
-            <param name="provider">Instance of <see cref="T:LostFilmMonitoring.BLL.IConfigurationValuesProvider"/>.</param>
+            <param name="provider">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.IConfigurationValuesProvider"/>.</param>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Configuration.BaseUSESS">
             <inheritdoc/>
@@ -158,14 +171,6 @@
             <inheritdoc/>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Configuration.GetTorrentAnnounceList(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="T:LostFilmMonitoring.BLL.DefaultImageProcessor">
-            <summary>
-            Responsible for compressing images.
-            </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.DefaultImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
             <inheritdoc/>
         </member>
         <member name="T:LostFilmMonitoring.BLL.EnvironmentConfigurationValuesProvider">
@@ -216,17 +221,17 @@
             <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
             <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(System.Collections.Generic.IEnumerable{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse})">
+        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(System.Collections.Generic.IEnumerable{LostFilmMonitoring.BLL.FeedItemResponse})">
             <summary>
-            Clean forbidden characters in a collection of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.
+            Clean forbidden characters in a collection of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.
             </summary>
-            <param name="feedItemResponses">Collection of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <param name="feedItemResponses">Collection of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.</param>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+        <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
-            Clean forbidden characters in an instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.
+            Clean forbidden characters in an instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.
             </summary>
-            <param name="feedItemResponse">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <param name="feedItemResponse">Instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentDataStructure(System.IO.Stream)">
             <summary>
@@ -235,21 +240,21 @@
             <param name="stream">An instance of <see cref="T:System.IO.Stream"/> to torrent file.</param>
             <returns>Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToEpisode(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+        <member name="M:LostFilmMonitoring.BLL.Extensions.ToEpisode(LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
-            Map instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Episode"/>.
+            Map instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Episode"/>.
             </summary>
-            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.</param>
             <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Episode"/>.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToSeries(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+        <member name="M:LostFilmMonitoring.BLL.Extensions.ToSeries(LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
-            Map instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Series"/>.
+            Map instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Series"/>.
             </summary>
-            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse"/>.</param>
+            <param name="feedItem">Instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.</param>
             <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.Series"/>.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.HasUpdates(System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse},System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.Interfaces.FeedItemResponse})">
+        <member name="M:LostFilmMonitoring.BLL.Extensions.HasUpdates(System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.FeedItemResponse},System.Collections.Generic.SortedSet{LostFilmMonitoring.BLL.FeedItemResponse})">
             <summary>
             Calculates if there are any updates in <paramref name="newItems"/> in comparison to <paramref name="oldItems"/>.
             </summary>
@@ -258,12 +263,85 @@
             <returns>returns true in case when <paramref name="newItems"/> has updates in comparison to <paramref name="oldItems"/>, otherwise false.</returns>
             <exception cref="T:System.ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.FeedItemResponseComparer">
+        <member name="T:LostFilmMonitoring.BLL.FeedItemResponse">
             <summary>
-            FeedItemResponseComparer class.
+            FeedItemResponse interface.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.FeedItemResponseComparer.Equals(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse,LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.SeriesNameRu">
+            <summary>
+            Gets or sets Series Name (Russian Part only).
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.SeriesNameEn">
+            <summary>
+            Gets or sets Series Name (English Part only).
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.SeriesName">
+            <summary>
+            Gets or sets Series Name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.EpisodeName">
+            <summary>
+            Gets or sets Episode Name.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.EpisodeNumber">
+            <summary>
+            Gets or sets Episode Number.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.SeasonNumber">
+            <summary>
+            Gets or sets Season Number..
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.Quality">
+            <summary>
+            Gets or sets Quality.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.Title">
+            <summary>
+            Gets or sets Title.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.Link">
+            <summary>
+            Gets or sets Link.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.Description">
+            <summary>
+            Gets or sets Description.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.PublishDateParsed">
+            <summary>
+            Gets or sets PublishDateParsed.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.PublishDate">
+            <summary>
+            Gets or sets PublishDate.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.FeedItemResponse.TorrentId">
+            <summary>
+            Gets or sets TorrentId.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.FeedItemResponse.System#IComparable{LostFilmMonitoring#BLL#FeedItemResponse}#CompareTo(LostFilmMonitoring.BLL.FeedItemResponse)">
+            <inheritdoc/>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.FeedItemResponseEqualityComparer">
+            <summary>
+            This comparer is used to detect updates in the feed.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.FeedItemResponseEqualityComparer.Equals(LostFilmMonitoring.BLL.FeedItemResponse,LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
             Equals method.
             </summary>
@@ -271,129 +349,41 @@
             <param name="y">Second item.</param>
             <returns>bool.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.FeedItemResponseComparer.GetHashCode(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
+        <member name="M:LostFilmMonitoring.BLL.FeedItemResponseEqualityComparer.GetHashCode(LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
             GetHashCode method.
             </summary>
             <param name="obj">Item.</param>
             <returns>int.</returns>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.IConfigurationValuesProvider">
+        <member name="T:LostFilmMonitoring.BLL.Interfaces.IConfigurationValuesProvider">
             <summary>
             Provides configuration values.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.IConfigurationValuesProvider.GetValue(System.String)">
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.IConfigurationValuesProvider.GetValue(System.String)">
             <summary>
             Gets the value by key.
             </summary>
             <param name="key">Key.</param>
             <returns>Value.</returns>
         </member>
-        <member name="T:LostFilmMonitoring.BLL.ICurrentUserProvider">
+        <member name="T:LostFilmMonitoring.BLL.Interfaces.ICurrentUserProvider">
             <summary>
             Responsible for accessing current user Id.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.ICurrentUserProvider.GetCurrentUserId">
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.ICurrentUserProvider.GetCurrentUserId">
             <summary>
             Get current user id.
             </summary>
             <returns>UserID.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.ICurrentUserProvider.SetCurrentUserId(System.Guid)">
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.ICurrentUserProvider.SetCurrentUserId(System.Guid)">
             <summary>
             Set current user id.
             </summary>
             <param name="userId">UserId.</param>
-        </member>
-        <member name="T:LostFilmMonitoring.BLL.IImageProcessor">
-            <summary>
-            Responsible for compressing images.
-            </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.IImageProcessor.CompressImageAsync(System.IO.Stream,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Compress image.
-            </summary>
-            <param name="imageStream">Image stream.</param>
-            <param name="quality">Quality.</param>
-            <param name="width">Width.</param>
-            <param name="height">Height.</param>
-            <returns>Compressed image stream.</returns>
-        </member>
-        <member name="T:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse">
-            <summary>
-            FeedItemResponse interface.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.SeriesNameRu">
-            <summary>
-            Gets or sets Series Name (Russian Part only).
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.SeriesNameEn">
-            <summary>
-            Gets or sets Series Name (English Part only).
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.SeriesName">
-            <summary>
-            Gets or sets Series Name.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.EpisodeName">
-            <summary>
-            Gets or sets Episode Name.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.EpisodeNumber">
-            <summary>
-            Gets or sets Episode Number.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.SeasonNumber">
-            <summary>
-            Gets or sets Season Number..
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.Quality">
-            <summary>
-            Gets or sets Quality.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.Title">
-            <summary>
-            Gets or sets Title.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.Link">
-            <summary>
-            Gets or sets Link.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.Description">
-            <summary>
-            Gets or sets Description.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.PublishDateParsed">
-            <summary>
-            Gets or sets PublishDateParsed.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.PublishDate">
-            <summary>
-            Gets or sets PublishDate.
-            </summary>
-        </member>
-        <member name="P:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.TorrentId">
-            <summary>
-            Gets or sets TorrentId.
-            </summary>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.Interfaces.FeedItemResponse.System#IComparable{LostFilmMonitoring#BLL#Interfaces#FeedItemResponse}#CompareTo(LostFilmMonitoring.BLL.Interfaces.FeedItemResponse)">
-            <inheritdoc/>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem">
             <summary>
@@ -592,6 +582,39 @@
         </member>
         <member name="M:LostFilmMonitoring.BLL.Logger.Warning(System.String)">
             <inheritdoc/>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel">
+            <summary>
+            UpdateUserFeedCommandRequestModel.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.#ctor(System.String,LostFilmMonitoring.BLL.FeedItemResponse,BencodeNET.Torrents.Torrent)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel"/> class.
+            </summary>
+            <param name="userId"></param>
+            <param name="feedResponseItem"></param>
+            <param name="torrent"></param>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.UserId">
+            <summary>
+            Gets UserId.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.FeedResponseItem">
+            <summary>
+            Gets FeedItemResponse.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.Torrent">
+            <summary>
+            Gets Torrent.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandResponseModel.Success">
+            <summary>
+            Gets or sets Success.
+            </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Models.Request.EditSubscriptionRequestModel">
             <summary>

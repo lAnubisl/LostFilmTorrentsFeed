@@ -66,12 +66,12 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
             return new EditSubscriptionResponseModel(ValidationResult.Fail(ErrorMessages.RequestNull));
         }
 
-        if (model.UserId == null)
+        if (string.IsNullOrEmpty(model.UserId))
         {
             return new EditSubscriptionResponseModel(ValidationResult.Fail(nameof(EditSubscriptionRequestModel.UserId), ErrorMessages.FieldEmpty));
         }
 
-        if (model.Items == null)
+        if (model.Items == null || model.Items.Length == 0)
         {
             return new EditSubscriptionResponseModel(ValidationResult.Fail(nameof(EditSubscriptionRequestModel.Items), ErrorMessages.FieldEmpty));
         }

@@ -161,7 +161,7 @@ internal class SaveSubscriptionCommandTests
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(validationError);
 
         var command = GetCommand();
-        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = Array.Empty<SubscriptionItem>() });
+        var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = [ new SubscriptionItem() ] });
         response.ValidationResult.Should().Be(validationError);
     }
 

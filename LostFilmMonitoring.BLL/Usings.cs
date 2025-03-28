@@ -31,6 +31,7 @@ global using System.Threading.Tasks;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.BLL.Localization;
 global using LostFilmMonitoring.BLL.Models;
+global using LostFilmMonitoring.BLL.Models.CommandModels;
 global using LostFilmMonitoring.BLL.Models.Request;
 global using LostFilmMonitoring.BLL.Models.Response;
 global using LostFilmMonitoring.BLL.Models.ViewModel;

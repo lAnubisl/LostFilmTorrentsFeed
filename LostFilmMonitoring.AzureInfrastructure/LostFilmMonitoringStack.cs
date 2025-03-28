@@ -222,7 +222,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 {
                     new Azure.Storage.Inputs.CorsRuleArgs
                     {
-                        AllowedOrigins = {$"https://{config.Require("webdomain")}"},
+                        AllowedOrigins = MetadataAllowedOrigins(),
                         AllowedMethods = {"GET", "OPTIONS"},
                         AllowedHeaders = {"*"},
                         ExposedHeaders = {"*"},
@@ -383,7 +383,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 }),
                 Cors = new Azure.Web.Inputs.CorsSettingsArgs
                 {
-                    AllowedOrigins = {$"https://{config.Require("webdomain")}"},
+                    AllowedOrigins = AzureFunctionAllowedOrigins(),
                     SupportCredentials = true
                 }
             }
@@ -394,6 +394,25 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             }
          });
     }
+
+    private string[] AllowedOrigins()
+    {
+        var result = new List<string>
+        {
+            $"https://{config.Require("webdomain")}"
+        };
+        
+        if (Locals.Environment == "dev")
+        {
+            result.Add("https://localhost:11443");
+        }
+
+        return [.. result];
+    }
+
+    private string[] MetadataAllowedOrigins() => AllowedOrigins();
+
+    private string[] AzureFunctionAllowedOrigins() => AllowedOrigins();
 
     private static Pulumi.InputList<Azure.Web.Inputs.NameValuePairArgs> GetAppSettings(Dictionary<Pulumi.Input<string>, Pulumi.Input<string>> settings)
     {

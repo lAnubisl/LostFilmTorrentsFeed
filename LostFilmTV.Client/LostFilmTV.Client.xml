@@ -125,24 +125,6 @@
             <param name="doc">XDocument.</param>
             <returns>Set of FeedItemResponse.</returns>
         </member>
-        <member name="T:LostFilmTV.Client.RssFeed.LostFilmRssFeed">
-            <summary>
-            LostFilmRssFeed.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.RssFeed.LostFilmRssFeed.#ctor(LostFilmMonitoring.Common.ILogger,System.Net.Http.IHttpClientFactory)">
-            <summary>
-            Initializes a new instance of the <see cref="T:LostFilmTV.Client.RssFeed.LostFilmRssFeed"/> class.
-            </summary>
-            <param name="logger">Logger.</param>
-            <param name="httpClientFactory">httpClientFactory.</param>
-        </member>
-        <member name="M:LostFilmTV.Client.RssFeed.LostFilmRssFeed.LoadFeedItemsAsync">
-            <summary>
-            Reads Feed items.
-            </summary>
-            <returns>Feed items.</returns>
-        </member>
         <member name="T:LostFilmTV.Client.RssFeed.ReteOrgRssFeed">
             <summary>
             ReteOrgRssFeedService.

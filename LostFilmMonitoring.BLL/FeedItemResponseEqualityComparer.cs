@@ -1,4 +1,4 @@
-// <copyright file="FeedItemResponseComparer.cs" company="Alexander Panfilenok">
+// <copyright file="FeedItemResponseEqualityComparer.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -24,9 +24,9 @@
 namespace LostFilmMonitoring.BLL;
 
 /// <summary>
-/// FeedItemResponseComparer class.
+/// This comparer is used to detect updates in the feed.
 /// </summary>
-public class FeedItemResponseComparer : IEqualityComparer<FeedItemResponse>
+public class FeedItemResponseEqualityComparer : IEqualityComparer<FeedItemResponse>
 {
     /// <summary>
     /// Equals method.

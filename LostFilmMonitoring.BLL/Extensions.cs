@@ -181,7 +181,7 @@ public static class Extensions
         var newEnum = newItems.GetEnumerator();
         var oldEnum = oldItems.GetEnumerator();
 
-        var comparer = new FeedItemResponseComparer();
+        var comparer = new FeedItemResponseEqualityComparer();
         while (newEnum.MoveNext() && oldEnum.MoveNext())
         {
             if (!comparer.Equals(newEnum.Current, oldEnum.Current))

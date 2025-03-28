@@ -1,6 +1,6 @@
 config:
   LostFilmMonitoring.AzureInfrastructure:location: westeurope
-  LostFilmMonitoring.AzureInfrastructure:baseurl: https://lostfilm.tv
+  LostFilmMonitoring.AzureInfrastructure:baseurl: https://datalostfilmfeeddev.byalex.dev
   LostFilmMonitoring.AzureInfrastructure:basefeedcookie:
     secure: v1:9i2Uloz+r/W0CA57:P+U9EUo1HSCVs2qbIrK2ikXEu3/5mZN1rVL3gGDZ38L6JcJbVvNT8yZtj9mmB45o
   LostFilmMonitoring.AzureInfrastructure:baselinkuid:

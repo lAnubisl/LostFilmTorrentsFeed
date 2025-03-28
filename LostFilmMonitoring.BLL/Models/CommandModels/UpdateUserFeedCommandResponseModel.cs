@@ -1,4 +1,4 @@
-﻿// <copyright file="Subscription.cs" company="Alexander Panfilenok">
+// <copyright file="UpdateUserFeedCommandResponseModel.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,33 +21,15 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.DAO.Sql.DomainModels
+namespace LostFilmMonitoring.BLL.Models.CommandModels;
+
+/// <summary>
+/// Defines user selected subscriptions.
+/// </summary>
+public class UpdateUserFeedCommandResponseModel
 {
-    using System;
-
     /// <summary>
-    /// Subscription.
+    /// Gets or sets a value indicating whether the command was executed successfully.
     /// </summary>
-    public class Subscription
-    {
-        /// <summary>
-        /// Gets or sets UserId.
-        /// </summary>
-        public Guid UserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets Series.
-        /// </summary>
-        public string SeriesName { get; set; }
-
-        /// <summary>
-        /// Gets or sets Quantity.
-        /// </summary>
-        public string Quality { get; set; }
-
-        /// <summary>
-        /// Gets or sets User.
-        /// </summary>
-        public User User { get; set; }
-    }
+    public bool Success { get; set; }
 }

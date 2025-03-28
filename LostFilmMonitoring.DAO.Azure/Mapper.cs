@@ -103,6 +103,23 @@ internal static class Mapper
     }
 
     /// <summary>
+    /// Map <see cref="EpisodeTableEntity"/> to <see cref="Episode"/>.
+    /// </summary>
+    /// <param name="entity">Instance of <see cref="EpisodeTableEntity"/>.</param>
+    /// <returns>Instance of <see cref="Episode"/>.</returns>
+    internal static Episode Map(EpisodeTableEntity entity)
+    {
+        return new (
+            seriesName: entity.PartitionKey,
+            episodeName: entity.EpisodeName,
+            seasonNumber: entity.SeasonNumber,
+            episodeNumber: entity.EpisodeNumber,
+            torrentId: entity.RowKey,
+            quality: entity.Quality
+        );
+    }
+
+    /// <summary>
     /// Map <see cref="SeriesTableEntity"/> to <see cref="Series"/>.
     /// </summary>
     /// <param name="entity">Instance of <see cref="SeriesTableEntity"/>.</param>
@@ -129,7 +146,10 @@ internal static class Mapper
     /// <param name="entity">Instance of <see cref="UserTableEntity"/>.</param>
     /// <returns>Instance of <see cref="User"/>.</returns>
     internal static User Map(UserTableEntity entity)
-        => new (entity.RowKey, entity.TrackerId);
+        => new (
+            id: entity.RowKey,
+            trackerId: entity.TrackerId,
+            createdAt: entity.Timestamp.HasValue ? entity.Timestamp.Value.DateTime : DateTime.MinValue);
 
     /// <summary>
     /// Map <see cref="User"/> to <see cref="UserTableEntity"/>.
@@ -142,7 +162,7 @@ internal static class Mapper
         {
             PartitionKey = user.Id,
             RowKey = user.Id,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = user.CreatedAt ?? DateTime.UtcNow,
             TrackerId = user.TrackerId,
         };
     }

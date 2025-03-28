@@ -30,38 +30,26 @@ public class DownloadCoverImagesCommand : ICommand
 {
     private readonly ILogger logger;
     private readonly IFileSystem fileSystem;
-    private readonly IConfiguration configuration;
     private readonly ISeriesDao seriesDao;
     private readonly ITmdbClient tmdbClient;
-    private readonly IDictionaryDao dictionaryDao;
-    private readonly IImageProcessor imageProcessor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadCoverImagesCommand"/> class.
     /// </summary>
     /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
     /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
-    /// <param name="configuration">Instance of <see cref="IConfiguration"/>.</param>
     /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
     /// <param name="tmdbClient">Instance of <see cref="ITmdbClient"/>.</param>
-    /// <param name="dictionaryDao">Instance of <see cref="IDictionaryDao"/>.</param>
-    /// <param name="imageProcessor">Instance of <see cref="IImageProcessor"/>.</param>
     public DownloadCoverImagesCommand(
         ILogger logger,
         IFileSystem fileSystem,
-        IConfiguration configuration,
         ISeriesDao seriesDao,
-        ITmdbClient tmdbClient,
-        IDictionaryDao dictionaryDao,
-        IImageProcessor imageProcessor)
+        ITmdbClient tmdbClient)
     {
         this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
-        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
         this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
-        this.dictionaryDao = dictionaryDao ?? throw new ArgumentNullException(nameof(dictionaryDao));
-        this.imageProcessor = imageProcessor ?? throw new ArgumentNullException(nameof(imageProcessor));
     }
 
     /// <inheritdoc/>
@@ -69,7 +57,6 @@ public class DownloadCoverImagesCommand : ICommand
     {
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
         var series = await this.seriesDao.LoadAsync();
-        var dictionary = await this.dictionaryDao.LoadAsync();
         foreach (var seriesItem in series)
         {
             if (!await this.PosterExistsAsync(seriesItem.Id))
@@ -96,8 +83,7 @@ public class DownloadCoverImagesCommand : ICommand
             return;
         }
 
-        var compressedImageStream = await this.imageProcessor.CompressImageAsync(imageStream).ConfigureAwait(false);
-        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", compressedImageStream);
+        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", imageStream);
     }
 
     private Task<bool> PosterExistsAsync(Guid seriesId) =>

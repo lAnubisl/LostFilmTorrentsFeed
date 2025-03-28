@@ -1,331 +1,616 @@
-var baseApiUri = config.baseApiUri;
-var baseDataUri = config.baseDataUri;
-var imagesBaseUri = config.imagesBaseUri;
-var baseRssUri = config.baseRssUri;
+// Configuration and constants
+const baseApiUri = config.baseApiUri;
+const baseDataUri = config.baseDataUri;
+const imagesBaseUri = config.imagesBaseUri;
+const baseRssUri = config.baseRssUri;
 
-var initMySubscriptionPage = function() {
-    var userId = getCookie("UserId");
-    var linkElement = document.getElementById("rssLink");
-    var spanElement = document.getElementById("userIdSpan");
-    var link = baseRssUri + userId + ".xml";
-    linkElement.innerHTML = link;
-    spanElement.innerHTML = userId;
+/**
+ * Initializes the user subscription page
+ */
+const initMySubscriptionPage = () => {
+    const userId = getCookie("UserId");
+    const linkElement = document.getElementById("rssLink");
+    const spanElement = document.getElementById("userIdSpan");
+    const link = `${baseRssUri}${userId}.xml`;
+    
+    linkElement.textContent = link;
+    spanElement.textContent = userId;
     linkElement.setAttribute('href', link);
+    
     loadUser(userId);
     loadFeedItems(link);
-}
+};
 
-var loadFeedItems = function(link) {
-    getXML(link, function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            var parser = new DOMParser();
-            var xmlDoc = parser.parseFromString(data,"text/xml");
-            var items = xmlDoc.children[0].children[0].children;
-            for (var i = 0; i < items.length; i++) {
-                var title = items[i].children[0].innerHTML;
-                var link = items[i].children[1].innerHTML;
-                var date = items[i].children[2].innerHTML;
-                document.getElementById("rssItems").appendChild(createRssItemElement(title, new Date(date).toLocaleString(), link));
-            }
+/**
+ * Loads RSS feed items from the provided link
+ * @param {string} link - The RSS feed URL
+ */
+const loadFeedItems = async (link) => {
+    try {
+        const data = await fetchXML(link);
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "text/xml");
+        const items = xmlDoc.children[0].children[0].children;
+        const rssItemsContainer = document.getElementById("rssItems");
+        
+        Array.from(items).forEach(item => {
+            const title = item.children[0].textContent;
+            const link = item.children[1].textContent;
+            const date = item.children[2].textContent;
+            rssItemsContainer.appendChild(
+                createRssItemElement(title, new Date(date).toLocaleString(), link)
+            );
+        });
+    } catch (error) {
+        showError(`Failed to load feed items: ${error.message}`);
+    }
+};
+
+/**
+ * Loads user data based on user ID
+ * @param {string} userId - The user's ID
+ */
+const loadUser = async (userId) => {
+    try {
+        const model = { UserId: userId };
+        const data = await postJSONAsync(`${baseApiUri}GetUserFunction`, model);
+        document.getElementById('TrackerId').value = data.TrackerId;
+    } catch (error) {
+        showError(`Failed to load user data: ${error.message}`);
+    }
+};
+
+/**
+ * Loads items from the data source
+ */
+const loadItems = async () => {
+    try {
+        const data = await fetchJSONAsync(`${baseDataUri}index.json`);
+        const imageMap = new Map(
+            data.Items.map(item => [item.Name, item.ImageFileName])
+        );
+        
+        // Add items to their respective containers
+        appendItemsToContainer("series-group-items-24-hours", data.Last24HoursItems, imageMap, createElement);
+        appendItemsToContainer("series-group-items-7-days", data.Last7DaysItems, imageMap, createElement);
+        appendItemsToContainer("series-group-items-older", data.OlderItems, imageMap, createElementOldItem);
+        
+        addClickEvents();
+        getCurrentSelections();
+    } catch (error) {
+        showError(`Failed to load items: ${error.message}`);
+    }
+};
+
+/**
+ * Helper function to append items to a container
+ * @param {string} containerId - The ID of the container element
+ * @param {Array} items - The array of items to append
+ * @param {Map} imageMap - Map of image names
+ * @param {Function} createElementFunc - Function to create elements
+ */
+const appendItemsToContainer = (containerId, items, imageMap, createElementFunc) => {
+    const container = document.getElementById(containerId);
+    items.forEach(item => {
+        container.appendChild(createElementFunc(item, imageMap));
+    });
+};
+
+/**
+ * Escapes special characters in a string
+ * @param {string} str - The string to escape
+ * @returns {string} The escaped string
+ */
+const escapeHtml = (str) => {
+    return str
+        .replaceAll('«', "&laquo;")
+        .replaceAll('»', "&raquo;");
+};
+
+/**
+ * Saves user subscription changes
+ */
+const saveChanges = async () => {
+    const saveButton = document.getElementById("fixed-save-changes-link");
+    buttonChangeStyleToProcessing(saveButton);
+    
+    const selectedItems = Array.from(document.getElementsByClassName("series-item-selected"));
+    const items = selectedItems.map(item => ({
+        SeriesName: escapeHtml(item.querySelector('input').value),
+        Quality: item.querySelector('select').value
+    }));
+
+    const userId = getCookie("UserId");
+    if (!userId) {
+        showError("Зарегистрируйтесь или выполните вход, чтобы сохранить подписки");
+        buttonChangeStyleToError(saveButton);
+        hideButtonAfterDelay(saveButton);
+        return;
+    }
+
+    const model = { UserId: userId, Items: items };
+
+    try {
+        const data = await postJSONAsync(`${baseApiUri}SubscriptionUpdateFunction`, model);
+        
+        if (data && data.ValidationResult && data.ValidationResult.IsValid === false) {
+            throw new Error("Validation failed");
         }
-    });
-}
+        
+        buttonChangeStyleToCompleted(saveButton);
+    } catch (error) {
+        showError("Что-то пошло не так");
+        buttonChangeStyleToError(saveButton);
+    } finally {
+        hideButtonAfterDelay(saveButton);
+    }
+};
 
-var loadUser = function(userId) {
-    var model = {
-        "UserId" : userId
-    };
+/**
+ * Hides a button after a delay
+ * @param {HTMLElement} button - The button to hide
+ * @param {number} delay - Delay in milliseconds
+ */
+const hideButtonAfterDelay = (button, delay = 3000) => {
+    setTimeout(() => {
+        button.style.display = 'none';
+        buttonChangeStyleToDefault(button);
+    }, delay);
+};
 
-    postJSON(baseApiUri + "GetUserFunction", model, function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            document.getElementById('TrackerId').value = data.TrackerId;
-        }
-    });
-}
+/**
+ * Displays an error message to the user
+ * @param {string} message - The error message
+ */
+const showError = (message) => {
+    console.error(message);
+    alert(message);
+};
 
-var loadItems = function() {
-    getJSON(baseDataUri + 'index.json',
-        function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            var map = new Map();
-            data.Items.forEach(item => {
-                map.set(item.Name, item.ImageFileName);
-            });
+/**
+ * Resets button style to default
+ * @param {HTMLElement} button - The button element
+ */
+const buttonChangeStyleToDefault = (button) => {
+    button.style.backgroundColor = ""; // Reset to default color
+    button.innerHTML = '<i class="fas fa-save"></i>'; // Reset to save icon
+};
 
-            data.Last24HoursItems.forEach(item => {
-                document.getElementById("series-group-items-24-hours").appendChild(createElement(item, map));
-            });
-            data.Last7DaysItems.forEach(item => {
-                document.getElementById("series-group-items-7-days").appendChild(createElement(item, map));
-            });
-            data.OlderItems.forEach(item => {
-                document.getElementById("series-group-items-older").appendChild(createElementOldItem(item, map));
-            });
+/**
+ * Changes button style to processing state
+ * @param {HTMLElement} button - The button element
+ */
+const buttonChangeStyleToProcessing = (button) => {
+    button.style.backgroundColor = "#FF9800"; // Orange color
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; // Processing icon
+};
 
-            addClickEvents();
-            getCurrentSelections();
-        }
-    });
-}
+/**
+ * Changes button style to completed state
+ * @param {HTMLElement} button - The button element
+ */
+const buttonChangeStyleToCompleted = (button) => {
+    button.style.backgroundColor = "#4CAF50"; // Green color
+    button.innerHTML = '<i class="fas fa-check"></i>'; // Completed icon
+};
 
-var escape = function(str) {
-	return str
-		.replaceAll('«', "&laquo;")
-		.replaceAll('»', "&raquo;");
-}
+/**
+ * Changes button style to error state
+ * @param {HTMLElement} button - The button element
+ */
+const buttonChangeStyleToError = (button) => {
+    button.style.backgroundColor = "#F44336"; // Red color
+    button.innerHTML = '<i class="fas fa-exclamation-triangle"></i>'; // Error icon
+};
 
-var saveChanges = function() {
-    hideSaveSubscriptionsButton();
-    document.getElementById("savingSpan").style.display = 'inline-block';
-    var items = [];
-    Array.from(document.getElementsByClassName("series-item-selected")).forEach(item => {
-        items.push({
-            SeriesName: escape(item.querySelector('input').value),
-            Quality: item.querySelector('select').value
-        })
-    });
+/**
+ * Gets current user selections
+ */
+const getCurrentSelections = async () => {
+    const userId = getCookie("UserId");
+    if (!userId) return;
 
-    var model = {
-        UserId: getCookie("UserId"),
-        Items: items
-    };
-
-    postJSON(baseApiUri + "SubscriptionUpdateFunction", model, function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            document.getElementById("savingSpan").style.display = 'none';
-            document.getElementById("savedSpan").style.display = 'inline-block';
-            setTimeout(() => {
-                document.getElementById("savedSpan").style.display = 'none';
-              }, 1000);
-        }
-    });
-}
-
-var getCurrentSelections = function() {
-    var uid = getCookie("UserId");
-    if (uid == "") return;
-
-    getJSON(baseDataUri + "subscription_" + uid + ".json",
-        function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            data.forEach(item => {
-                var seriesElement = document.getElementById(createElementId(item.SeriesName));
+    try {
+        const data = await fetchJSONAsync(`${baseDataUri}subscription_${userId}.json`);
+        
+        data.forEach(item => {
+            const seriesElement = document.getElementById(createElementId(item.SeriesName));
+            if (seriesElement) {
                 seriesElement.classList.add("series-item-selected");
-                var selectBoxElement = document.getElementById(createSelectBoxElementId(item.SeriesName));
-                selectBoxElement.value = item.Quality;
-            });
+                const selectBoxElement = document.getElementById(createSelectBoxElementId(item.SeriesName));
+                if (selectBoxElement) {
+                    selectBoxElement.value = item.Quality;
+                }
+            }
+        });
+        updateSelectionCounters();
+    } catch (error) {
+        showError(`Failed to get current selections: ${error.message}`);
+    }
+};
+
+/**
+ * Creates an RSS item element
+ * @param {string} title - The item title
+ * @param {string} date - The formatted date
+ * @param {string} link - The item link
+ * @returns {HTMLElement} The created element
+ */
+const createRssItemElement = (title, date, link) => {
+    return createElementFromHTML(`
+        <div>
+            <span>${date}</span>
+            <a href="${link}" rel="noreferrer">${title}</a>
+        </div>
+    `);
+};
+
+/**
+ * Gets the image name for a series
+ * @param {string} name - The series name
+ * @param {Map} imagesMap - Map of image names
+ * @returns {string} The image name
+ */
+const getImageName = (name, imagesMap) => {
+    if (imagesMap.has(name)) {
+        const imageFileName = imagesMap.get(name);
+        if (imageFileName && imageFileName !== "") {
+            return imageFileName.substring(0, imageFileName.indexOf('.'));
         }
-    });
-}
-
-var createRssItemElement = function(title, date, link){
-    return createElementFromHTML(
-    "<div>" +
-        "<span>" + date + "</span>" +
-        "<a href=\"" + link + "\" rel=\"noreferrer\">" + title + "</a>"+
-    "</div>"
-    );
-}
-
-var getImageName = function(name, imagesMap) {
-	if (imagesMap.has(name)) {
-		var imageFileName = imagesMap.get(name);
-		if (imageFileName && imageFileName != "")
-		{
-			return imageFileName.substring(0, imageFileName.indexOf('.'));
-		}
-	}
+    }
     return name.replace(/:/g, "_");
-}
+};
 
-var createElement = function(name, imagesMap) {
-    var displayName = getDisplayName(name);
-    var imageName = getImageName(name, imagesMap);
-    var elementId = createElementId(name);
-    var selectBoxId = createSelectBoxElementId(name);
+/**
+ * Creates a series element
+ * @param {string} name - The series name
+ * @param {Map} imagesMap - Map of image names
+ * @returns {HTMLElement} The created element
+ */
+const createElement = (name, imagesMap) => {
+    const displayName = getDisplayName(name);
+    const imageName = getImageName(name, imagesMap);
+    const elementId = createElementId(name);
+    const selectBoxId = createSelectBoxElementId(name);
     
-    return createElementFromHTML(
-        "<div class=\"series-item\" id=" + elementId + ">" +
-            "<input type=\"hidden\" value=\"" + name + "\">" +
-            "<div class=\"series-title\">" + displayName + "</div>" +
-            "<img src=\"" + imagesBaseUri + imageName + ".jpg\" width=\"120\" height=\"160\">" +
-            "<a onclick=\"window.event.stopPropagation();\" target=\"_blank\" href=\"https://www.google.by/search?q=Трейлер " + displayName + "\">Смотреть трейлер</a>" +
-            "<select id=\"" + selectBoxId + "\" onclick=\"window.event.stopPropagation();\">" +
-                "<option>SD</option>" +
-                "<option>1080</option>" +
-                "<option>MP4</option>" +
-            "</select>" +
-        "</div>"
-    );
-}
+    return createElementFromHTML(`
+        <div class="series-item" id="${elementId}">
+            <input type="hidden" value="${name}">
+            <div class="series-title">${displayName}</div>
+            <img src="${imagesBaseUri}${imageName}.jpg" width="120" height="160">
+            <a onclick="window.event.stopPropagation();" target="_blank" href="https://www.google.by/search?q=Трейлер ${displayName}">Смотреть трейлер</a>
+            <select id="${selectBoxId}" onclick="window.event.stopPropagation();">
+                <option>SD</option>
+                <option>1080</option>
+                <option>MP4</option>
+            </select>
+        </div>
+    `);
+};
 
-var createElementOldItem = function(name, imagesMap) {
-    var displayName = getDisplayName(name);
-    var elementId = createElementId(name);
-    var selectBoxId = createSelectBoxElementId(name);
+/**
+ * Creates an old series element
+ * @param {string} name - The series name
+ * @param {Map} imagesMap - Map of image names
+ * @returns {HTMLElement} The created element
+ */
+const createElementOldItem = (name, imagesMap) => {
+    const displayName = getDisplayName(name);
+    const elementId = createElementId(name);
+    const selectBoxId = createSelectBoxElementId(name);
     
-    return createElementFromHTML(
-        "<div class=\"series-item\" id=" + elementId + ">" +
-            "<input type=\"hidden\" value=\"" + name + "\">" +
-            "<div class=\"series-title\">" + displayName + "</div>" +
-            "<select id=\"" + selectBoxId + "\" onclick=\"window.event.stopPropagation();\">" +
-                "<option>SD</option>" +
-                "<option>1080</option>" +
-                "<option>MP4</option>" +
-            "</select>" +
-            "<a onclick=\"window.event.stopPropagation();\" target=\"_blank\" href=\"https://www.google.by/search?q=Трейлер " + displayName + "\">Смотреть трейлер</a>" +
-        "</div>"
-    );
-}
+    return createElementFromHTML(`
+        <div class="series-item" id="${elementId}">
+            <input type="hidden" value="${name}">
+            <div class="series-title">${displayName}</div>
+            <select id="${selectBoxId}" onclick="window.event.stopPropagation();">
+                <option>SD</option>
+                <option>1080</option>
+                <option>MP4</option>
+            </select>
+            <a onclick="window.event.stopPropagation();" target="_blank" href="https://www.google.by/search?q=Трейлер ${displayName}">Смотреть трейлер</a>
+        </div>
+    `);
+};
 
-var createSelectBoxElementId = function(name) {
-    return "selectBox_" + createElementId(name);
-}
+/**
+ * Creates a select box element ID
+ * @param {string} name - The series name
+ * @returns {string} The select box element ID
+ */
+const createSelectBoxElementId = (name) => {
+    return `selectBox_${createElementId(name)}`;
+};
 
-var createElementId = function(name) {
-    return name.replace(/[\W_]+/g,"_");;
-}
+/**
+ * Creates an element ID from a name
+ * @param {string} name - The name to convert to an ID
+ * @returns {string} The element ID
+ */
+const createElementId = (name) => {
+    return name.replace(/[\W_]+/g, "_");
+};
 
-var getCookie = function(cname) {
-    return localStorage.getItem(cname) ?? "";
-}
+/**
+ * Gets a cookie value (actually from localStorage)
+ * @param {string} key - The key to retrieve
+ * @returns {string} The cookie value
+ */
+const getCookie = (key) => {
+    return localStorage.getItem(key) ?? "";
+};
 
-var setCookie = function(cname, cvalue, exdays) {
-    localStorage.setItem(cname, cvalue);
-}
+/**
+ * Sets a cookie value (actually in localStorage)
+ * @param {string} key - The key to set
+ * @param {string} value - The value to store
+ */
+const setCookie = (key, value) => {
+    localStorage.setItem(key, value);
+};
 
-var getDisplayName = function(name) {
-    return name.substr(0, name.indexOf(" ("));
-}
+/**
+ * Gets the display name from a series name
+ * @param {string} name - The full series name
+ * @returns {string} The display name
+ */
+const getDisplayName = (name) => {
+    const parenIndex = name.indexOf(" (");
+    return parenIndex > -1 ? name.substr(0, parenIndex) : name;
+};
 
-var addClickEvents = function() {
+/**
+ * Adds click event listeners to series items
+ */
+const addClickEvents = () => {
+    // Add click events to series items
     document.querySelectorAll('.series-item').forEach(item => {
-        item.addEventListener('click', event => {
+        item.addEventListener('click', () => {
             item.classList.toggle("series-item-selected");
             showSaveSubscriptionsButton();
+            updateSelectionCounters();
         });
 
-        item.getElementsByTagName("select")[0].addEventListener('change', event => {
-            showSaveSubscriptionsButton();
-        });
+        const selectElement = item.querySelector('select');
+        if (selectElement) {
+            selectElement.addEventListener('change', () => {
+                showSaveSubscriptionsButton();
+                updateSelectionCounters();
+            });
+        }
     });
-}
+    
+    // Global click handler for save button
+    document.addEventListener('click', (event) => {
+        const saveButton = document.getElementById("fixed-save-changes-link");
+        if (saveButton.style.display === 'none' && !event.target.closest('#fixed-save-changes-link')) {
+            showSaveSubscriptionsButton();
+        }
+    });
+};
 
-var showSaveSubscriptionsButton = function() {
-    document.getElementById("save-changes-link").style.display = 'inline-block';
-}
+/**
+ * Shows the save subscriptions button
+ */
+const showSaveSubscriptionsButton = () => {
+    const fixedButton = document.getElementById("fixed-save-changes-link");
+    fixedButton.style.display = 'flex';
+    
+    // Also show the counters
+    showCounters();
+};
 
-var hideSaveSubscriptionsButton = function() {
-    document.getElementById("save-changes-link").style.display = 'none';
-}
+/**
+ * Updates the selection counters for SD, 1080, and MP4 options
+ */
+const updateSelectionCounters = () => {
+    // Initialize counters
+    let sdCount = 0;
+    let count1080 = 0;
+    let mp4Count = 0;
+    
+    // Count all selected values
+    document.querySelectorAll('.series-item-selected select').forEach(select => {
+        const value = select.value;
+        if (value.includes('SD')) {
+            sdCount++;
+        }
+        if (value.includes('1080')) {
+            count1080++;
+        }
+        if (value.includes('MP4')) {
+            mp4Count++;
+        }
+    });
+    
+    // Update counter displays
+    document.querySelector('#counter-sd .counter-value').textContent = sdCount;
+    document.querySelector('#counter-1080 .counter-value').textContent = count1080;
+    document.querySelector('#counter-mp4 .counter-value').textContent = mp4Count;
+    if (sdCount > 0 || count1080 > 0 || mp4Count > 0) {
+        showCounters();
+    } else {
+        hideCounters();
+    }
+};
 
-var createElementFromHTML = function(htmlString) {
-    var div = document.createElement('div');
+/**
+ * Hides the counters
+ */
+const hideCounters = () => {
+    document.querySelector('.selection-counters').style.display = 'none';
+};
+
+/**
+ * Shows the counters
+ */
+const showCounters = () => {
+    document.querySelector('.selection-counters').style.display = 'flex';
+};
+
+/**
+ * Creates an element from an HTML string
+ * @param {string} htmlString - The HTML string
+ * @returns {HTMLElement} The created element
+ */
+const createElementFromHTML = (htmlString) => {
+    const div = document.createElement('div');
     div.innerHTML = htmlString.trim();
     return div.firstChild;
-}
-
-var getXML = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'text';
-    xhr.onload = function() {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status, xhr.response);
-        }
-    };
-    xhr.send();
 };
 
-var getJSON = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
-    xhr.onload = function() {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status, xhr.response);
-        }
-    };
-    xhr.send();
+/**
+ * Fetches XML data from a URL
+ * @param {string} url - The URL to fetch from
+ * @returns {Promise<string>} The XML data
+ */
+const fetchXML = (url) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'text';
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(`Status: ${xhr.status}`));
+            }
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send();
+    });
 };
 
-var postJSON = function(url, model, callback){
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.responseType = 'json';
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            callback(null, xhr.response);
-        }
-    };
-
-    var data = JSON.stringify(model);
-    xhr.send(data);
-}
-
-var register = function() {
-    var model = {
-        "UserId" : getCookie("UserId"),
-        "TrackerId" : document.getElementById('TrackerId').value
-    };
-
-    postJSON(baseApiUri + "RegisterFunction", model, function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            if (data.UserId != "") {
-                setCookie("UserId", data.UserId, 365);
-                document.location.href = "/index.html";
-                return;
+/**
+ * Fetches JSON data from a URL
+ * @param {string} url - The URL to fetch from
+ * @returns {Promise<Object>} The JSON data
+ */
+const fetchJSONAsync = (url) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(`Status: ${xhr.status}`));
             }
-
-            alert('Something went wrong: ');
-        }
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send();
     });
-}
+};
 
-var signIn = function() {
-    var model = {
-        "UserId" : document.getElementById('userId').value
-    };
+/**
+ * Legacy getJSON function for backward compatibility
+ * @param {string} url - The URL to fetch from
+ * @param {Function} callback - The callback function
+ */
+const getJSON = (url, callback) => {
+    fetchJSONAsync(url)
+        .then(data => callback(null, data))
+        .catch(error => callback(error.message, null));
+};
 
-    postJSON(baseApiUri + "SignInFunction", model, function(err, data) {
-        if (err !== null) {
-            alert('Something went wrong: ' + err);
-        } else {
-            if (data.Success) {
-                setCookie("UserId", document.getElementById('userId').value, 265);
-                document.location.href = "/index.html";
-                return;
+/**
+ * Posts JSON data to a URL
+ * @param {string} url - The URL to post to
+ * @param {Object} model - The data to post
+ * @returns {Promise<Object>} The response data
+ */
+const postJSONAsync = (url, model) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(`Status: ${xhr.status}`));
             }
-
-            alert('Something went wrong: ');
-        }
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send(JSON.stringify(model));
     });
-}
+};
 
-var initMenu = function() {
-    if (getCookie("UserId") == "") {
+/**
+ * Legacy postJSON function for backward compatibility
+ * @param {string} url - The URL to post to
+ * @param {Object} model - The data to post
+ * @param {Function} callback - The callback function
+ */
+const postJSON = (url, model, callback) => {
+    postJSONAsync(url, model)
+        .then(data => callback(null, data))
+        .catch(error => callback(error.message, null));
+};
+
+/**
+ * Registers a new user
+ */
+const register = async () => {
+    try {
+        const userId = getCookie("UserId");
+        const trackerId = document.getElementById('TrackerId').value;
+        
+        const model = { UserId: userId, TrackerId: trackerId };
+        const data = await postJSONAsync(`${baseApiUri}RegisterFunction`, model);
+        
+        if (data.UserId) {
+            setCookie("UserId", data.UserId);
+            window.location.href = "/index.html";
+            return;
+        }
+        
+        throw new Error("Registration failed");
+    } catch (error) {
+        showError(`Registration failed: ${error.message}`);
+    }
+};
+
+/**
+ * Signs in an existing user
+ */
+const signIn = async () => {
+    try {
+        const userId = document.getElementById('userId').value;
+        const model = { UserId: userId };
+        
+        const data = await postJSONAsync(`${baseApiUri}SignInFunction`, model);
+        
+        if (data.Success) {
+            setCookie("UserId", userId);
+            window.location.href = "/index.html";
+            return;
+        }
+        
+        throw new Error("Sign in failed");
+    } catch (error) {
+        showError(`Sign in failed: ${error.message}`);
+    }
+};
+
+/**
+ * Checks if a user is logged in
+ * @returns {boolean} True if user is logged in
+ */
+const loggedInUser = () => {
+    return getCookie("UserId") !== "";
+};
+
+/**
+ * Initializes the menu based on login status
+ */
+const initMenu = () => {
+    if (loggedInUser()) {
+        document.getElementById("my-subscription-link").style.display = 'inline-block';
+    } else {
         document.getElementById("sign-in-link").style.display = 'inline-block';
         document.getElementById("sign-up-link").style.display = 'inline-block';
-    } else {
-        document.getElementById("my-subscription-link").style.display = 'inline-block';
     }
-}
+};

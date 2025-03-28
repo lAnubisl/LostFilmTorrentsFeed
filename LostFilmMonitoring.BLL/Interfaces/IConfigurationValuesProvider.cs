@@ -1,4 +1,4 @@
-﻿// <copyright file="GlobalSuppressions.cs" company="Alexander Panfilenok">
+﻿// <copyright file="IConfigurationValuesProvider.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,6 +21,17 @@
 // SOFTWARE.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
-[assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Because I don't like it.", Scope = "namespaceanddescendants", Target = "LostFilmMonitoring.DAO")]
+/// <summary>
+/// Provides configuration values.
+/// </summary>
+public interface IConfigurationValuesProvider
+{
+    /// <summary>
+    /// Gets the value by key.
+    /// </summary>
+    /// <param name="key">Key.</param>
+    /// <returns>Value.</returns>
+    string? GetValue(string key);
+}

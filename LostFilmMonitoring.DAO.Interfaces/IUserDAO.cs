@@ -49,4 +49,11 @@ public interface IUserDao
     /// <param name="user">User to create.</param>
     /// <returns>New user GUID.</returns>
     Task SaveAsync(User user);
+
+    /// <summary>
+    /// Update user.
+    /// </summary>
+    /// <param name="userId">User Id to update.</param>
+    /// <returns>Task.</returns>
+    Task DeleteAsync(string userId);
 }

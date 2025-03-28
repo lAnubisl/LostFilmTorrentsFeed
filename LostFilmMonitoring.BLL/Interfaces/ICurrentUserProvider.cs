@@ -21,7 +21,7 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.BLL;
+namespace LostFilmMonitoring.BLL.Interfaces;
 
 /// <summary>
 /// Responsible for accessing current user Id.
