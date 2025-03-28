@@ -101,7 +101,7 @@ const appendItemsToContainer = (containerId, items, imageMap, createElementFunc)
  * @param {string} str - The string to escape
  * @returns {string} The escaped string
  */
-const escape = (str) => {
+const escapeHtml = (str) => {
     return str
         .replaceAll('«', "&laquo;")
         .replaceAll('»', "&raquo;");
@@ -116,7 +116,7 @@ const saveChanges = async () => {
     
     const selectedItems = Array.from(document.getElementsByClassName("series-item-selected"));
     const items = selectedItems.map(item => ({
-        SeriesName: escape(item.querySelector('input').value),
+        SeriesName: escapeHtml(item.querySelector('input').value),
         Quality: item.querySelector('select').value
     }));
 
