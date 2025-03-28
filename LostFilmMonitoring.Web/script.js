@@ -77,6 +77,7 @@ const loadItems = async () => {
         
         addClickEvents();
         getCurrentSelections();
+        updateSelectionCounters();
     } catch (error) {
         showError(`Failed to load items: ${error.message}`);
     }
