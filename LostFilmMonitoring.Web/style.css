@@ -190,12 +190,30 @@ body {
     padding: 0 0.5rem;
 }
 
-#save-changes-link {
-    font-weight: 500;
-    color: var(--text-color);
-    background-color: var(--background-color);
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
+.fixed-save-button {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    background-color: var(--secondary-color);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all var(--transition-speed) ease;
+    display: none; /* Hide by default */
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.fixed-save-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-50%) translateX(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 #rssItems > div > span {
@@ -328,8 +346,7 @@ body {
 /* Display styles */
 #my-subscription-link,
 #sign-in-link,
-#sign-up-link,
-#save-changes-link {
+#sign-up-link {
     display: none;
 }
 
