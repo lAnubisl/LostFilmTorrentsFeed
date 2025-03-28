@@ -47,9 +47,10 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
         }
 
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.Torrent}, {model.UserId})");
-        var result = new UpdateUserFeedCommandResponseModel();
-        result.Success = await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!);
-        return result;
+        return new UpdateUserFeedCommandResponseModel
+        {
+            Success = await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!),
+        };
     }
 
     private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)
@@ -72,14 +73,14 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
             return false;
         }
 
-        TorrentFile torrentFile;
+        TorrentFile? torrentFile = null;
         lock (TorrentFileLocker)
         {
             torrent.FixTrackers(this.configuration.GetTorrentAnnounceList(user.TrackerId));
             torrentFile = torrent.ToTorrentFile();
         }
 
-        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile);
+        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile!);
         return true;
     }
 
