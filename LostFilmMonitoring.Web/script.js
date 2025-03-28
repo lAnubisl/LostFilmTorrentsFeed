@@ -367,12 +367,14 @@ const addClickEvents = () => {
         item.addEventListener('click', () => {
             item.classList.toggle("series-item-selected");
             showSaveSubscriptionsButton();
+            updateSelectionCounters();
         });
 
         const selectElement = item.querySelector('select');
         if (selectElement) {
             selectElement.addEventListener('change', () => {
                 showSaveSubscriptionsButton();
+                updateSelectionCounters();
             });
         }
     });
@@ -392,6 +394,38 @@ const addClickEvents = () => {
 const showSaveSubscriptionsButton = () => {
     const fixedButton = document.getElementById("fixed-save-changes-link");
     fixedButton.style.display = 'flex';
+    
+    // Also show the counters
+    document.querySelector('.selection-counters').style.display = 'flex';
+};
+
+/**
+ * Updates the selection counters for SD, 1080, and MP4 options
+ */
+const updateSelectionCounters = () => {
+    // Initialize counters
+    let sdCount = 0;
+    let count1080 = 0;
+    let mp4Count = 0;
+    
+    // Count all selected values
+    document.querySelectorAll('.series-item-selected select').forEach(select => {
+        const value = select.value;
+        if (value.includes('SD')) {
+            sdCount++;
+        }
+        if (value.includes('1080')) {
+            count1080++;
+        }
+        if (value.includes('MP4')) {
+            mp4Count++;
+        }
+    });
+    
+    // Update counter displays
+    document.querySelector('#counter-sd .counter-value').textContent = sdCount;
+    document.querySelector('#counter-1080 .counter-value').textContent = count1080;
+    document.querySelector('#counter-mp4 .counter-value').textContent = mp4Count;
 };
 
 /**

@@ -31,6 +31,7 @@ body {
 
 .menu {
     max-width: 1200px;
+    min-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
     display: flex;
@@ -60,9 +61,11 @@ body {
 }
 
 .content {
-    max-width: 1200px;
+    max-width: 1300px;
+    min-width: 1300px;
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 0 0 0 90px;
+    position: relative;
 }
 
 .series-group {
@@ -192,8 +195,8 @@ body {
 
 .fixed-save-button {
     position: fixed;
-    right: 20px;
-    top: 50%;
+    left: max(20px, calc(50% - 650px - 20px)); /* Ensures button stays at least 20px from left edge */
+    top: 10%;
     transform: translateY(-50%);
     z-index: 1001;
     background-color: var(--secondary-color);
@@ -212,13 +215,62 @@ body {
 
 .fixed-save-button:hover {
     background-color: #2980b9;
-    transform: translateY(-50%) translateX(-2px);
+    transform: translateY(-50%) translateX(2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Selection counters styling */
+.selection-counters {
+    position: fixed;
+    left: max(20px, calc(50% - 650px - 20px));
+    top: calc(10% + 60px); /* Position below the save button */
+    z-index: 1000;
+    display: none; /* Hide by default, just like the save button */
+    flex-direction: column;
+    gap: 10px;
+}
+
+.counter-display {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px; /* Square with slightly rounded corners */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-size: 12px;
+    line-height: 1;
+    color: white;
+}
+
+/* Different colors for each counter */
+#counter-sd {
+    background-color: #e74c3c; /* Red */
+}
+
+#counter-1080 {
+    background-color: #2ecc71; /* Green */
+}
+
+#counter-mp4 {
+    background-color: #9b59b6; /* Purple */
+}
+
+.counter-display span {
+    display: block;
+    text-align: center;
+}
+
+.counter-value {
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 2px;
 }
 
 #rssItems > div > span {
     margin-right: 1rem;
-    color: var(---text-color);
+    color: var(--text-color);
 }
 
 @media (max-width: 768px) {
