@@ -273,38 +273,6 @@ body {
     color: var(--text-color);
 }
 
-@media (max-width: 768px) {
-    .menu {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .menu > a {
-        width: 100%;
-        text-align: left;
-    }
-    
-    .series-item {
-        width: calc(50% - 1rem);
-        height: 280px;
-    }
-    
-    .series-item img {
-        height: 260px;
-    }
-}
-
-@media (max-width: 480px) {
-    .series-item {
-        width: calc(100% - 1rem);
-        height: 320px;
-    }
-    
-    .series-item img {
-        height: 300px;
-    }
-}
-
 /* Signin page styles */
 .signin-container {
     max-width: 500px;
