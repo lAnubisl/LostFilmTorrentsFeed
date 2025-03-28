@@ -77,7 +77,6 @@ const loadItems = async () => {
         
         addClickEvents();
         getCurrentSelections();
-        updateSelectionCounters();
     } catch (error) {
         showError(`Failed to load items: ${error.message}`);
     }
@@ -224,6 +223,7 @@ const getCurrentSelections = async () => {
                 }
             }
         });
+        updateSelectionCounters();
     } catch (error) {
         showError(`Failed to get current selections: ${error.message}`);
     }
@@ -397,7 +397,7 @@ const showSaveSubscriptionsButton = () => {
     fixedButton.style.display = 'flex';
     
     // Also show the counters
-    document.querySelector('.selection-counters').style.display = 'flex';
+    showCounters();
 };
 
 /**
@@ -427,6 +427,25 @@ const updateSelectionCounters = () => {
     document.querySelector('#counter-sd .counter-value').textContent = sdCount;
     document.querySelector('#counter-1080 .counter-value').textContent = count1080;
     document.querySelector('#counter-mp4 .counter-value').textContent = mp4Count;
+    if (sdCount > 0 || count1080 > 0 || mp4Count > 0) {
+        showCounters();
+    } else {
+        hideCounters();
+    }
+};
+
+/**
+ * Hides the counters
+ */
+const hideCounters = () => {
+    document.querySelector('.selection-counters').style.display = 'none';
+};
+
+/**
+ * Shows the counters
+ */
+const showCounters = () => {
+    document.querySelector('.selection-counters').style.display = 'flex';
 };
 
 /**
