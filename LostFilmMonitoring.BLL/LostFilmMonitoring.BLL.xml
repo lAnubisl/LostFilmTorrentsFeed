@@ -592,28 +592,33 @@
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel"/> class.
             </summary>
-            <param name="userId"></param>
-            <param name="feedResponseItem"></param>
-            <param name="torrent"></param>
+            <param name="userId">User id.</param>
+            <param name="feedResponseItem">Feed response item.</param>
+            <param name="torrent">Torrent.</param>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.UserId">
             <summary>
-            Gets UserId.
+            Gets user id.
             </summary>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.FeedResponseItem">
             <summary>
-            Gets FeedItemResponse.
+            Gets feed response item.
             </summary>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.Torrent">
             <summary>
-            Gets Torrent.
+            Gets torrent.
+            </summary>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandResponseModel">
+            <summary>
+            Defines user selected subscriptions.
             </summary>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandResponseModel.Success">
             <summary>
-            Gets or sets Success.
+            Gets or sets a value indicating whether the command was executed successfully.
             </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Models.Request.EditSubscriptionRequestModel">
