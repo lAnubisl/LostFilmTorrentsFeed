@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pulumi" Version="3.76.1" />
-    <PackageReference Include="Pulumi.AzureNative" Version="2.89.1" />
+    <PackageReference Include="Pulumi" Version="3.77.0" />
+    <PackageReference Include="Pulumi.AzureNative" Version="3.0.0" />
     <PackageReference Include="Pulumi.Cloudflare" Version="5.49.1" />
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
   </ItemGroup>
