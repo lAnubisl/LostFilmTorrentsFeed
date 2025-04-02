@@ -79,7 +79,7 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
 
       - name: Unit Tests Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         with:
           name: DotNET Tests
           path: '**/test-results.trx'
