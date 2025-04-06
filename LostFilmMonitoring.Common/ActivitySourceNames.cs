@@ -31,22 +31,22 @@ public static class ActivitySourceNames
     /// <summary>
     /// Name of the activity source for Azure Blob Storage.
     /// </summary>
-    public const string BlobStorage = "BlobStorage";
+    public static readonly string BlobStorage = "BlobStorage";
 
     /// <summary>
     /// Name of the activity source for Azure Table Storage.
     /// </summary>
-    public const string TableStorage = "TableStorage";
+    public static readonly string TableStorage = "TableStorage";
 
     /// <summary>
     /// Command for updating feeds.
     /// </summary>
-    public const string UpdateFeedsCommand = "UpdateFeedsCommand";
+    public static readonly string UpdateFeedsCommand = "UpdateFeedsCommand";
 
     /// <summary>
     /// Name of the activity source for RSS feeds.
     /// </summary>
-    public const string RssFeed = "RssFeed";
+    public static readonly string RssFeed = "RssFeed";
 
     /// <summary>
     /// Gets an array of activity source names used for monitoring and logging purposes.
