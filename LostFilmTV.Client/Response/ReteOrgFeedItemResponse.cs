@@ -34,6 +34,10 @@ public sealed class ReteOrgFeedItemResponse : FeedItemResponse
     // Периферийные устройства (The Peripheral). А как же Боб?. (S01E05)
     private const string RegexPattern2 = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\)";
 
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
+
+    private static readonly RegexOptions RegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ReteOrgFeedItemResponse"/> class.
     /// This constructor is required for JSON deserializer.
@@ -67,10 +71,10 @@ public sealed class ReteOrgFeedItemResponse : FeedItemResponse
         this.Title = elements.First(i => i.Name.LocalName == "title").Value;
         this.Description = elements.FirstOrDefault(i => i.Name.LocalName == "description")?.Value ?? string.Empty;
 
-        var match = Regex.Match(this.Title, RegexPattern);
+        var match = Regex.Match(this.Title, RegexPattern, RegexOptions, RegexTimeout);
         if (!match.Success)
         {
-            match = Regex.Match(this.Title, RegexPattern2);
+            match = Regex.Match(this.Title, RegexPattern2, RegexOptions, RegexTimeout);
             if (!match.Success)
             {
                 return;
