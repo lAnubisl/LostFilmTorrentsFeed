@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-internal class Program
+namespace LostFilmMonitoring.AzureInfrastructure;
+
+internal static class Program
 {
     private static async Task<int> Main(string[] args)
     {

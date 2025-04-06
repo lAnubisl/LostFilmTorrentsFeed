@@ -4,6 +4,8 @@ using Pulumi;
 using Azure = Pulumi.AzureNative;
 using Cloudflare = Pulumi.Cloudflare;
 
+namespace LostFilmMonitoring.AzureInfrastructure;
+
 public class LostFilmMonitoringStack : Pulumi.Stack
 {
     private readonly Pulumi.Config config = new Pulumi.Config();
