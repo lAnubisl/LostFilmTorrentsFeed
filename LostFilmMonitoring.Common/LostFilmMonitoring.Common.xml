@@ -24,6 +24,11 @@
             Command for updating feeds.
             </summary>
         </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.RssFeed">
+            <summary>
+            Name of the activity source for RSS feeds.
+            </summary>
+        </member>
         <member name="P:LostFilmMonitoring.Common.ActivitySourceNames.ActivitySources">
             <summary>
             Gets an array of activity source names used for monitoring and logging purposes.

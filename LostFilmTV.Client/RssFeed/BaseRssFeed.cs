@@ -28,6 +28,7 @@ namespace LostFilmTV.Client.RssFeed;
 /// </summary>
 public abstract class BaseRssFeed
 {
+    private readonly ActivitySource activitySource = new ActivitySource(ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
     /// <summary>
@@ -67,8 +68,15 @@ public abstract class BaseRssFeed
 
         try
         {
-            var response = await client.SendAsync(message);
-            var rssText = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage? responseMessage = null;
+            using (Activity? activity = this.activitySource.StartActivity("DownloadRssTextAsync"))
+            {
+                activity?.SetTag("url", rssUri);
+                activity?.SetTag("method", message.Method.ToString());
+                responseMessage = await client.SendAsync(message).ConfigureAwait(false);
+            }
+
+            var rssText = await responseMessage.Content.ReadAsStringAsync();
             this.Logger.Debug(rssText);
             return rssText;
         }

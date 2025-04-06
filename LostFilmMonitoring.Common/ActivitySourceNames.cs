@@ -44,6 +44,11 @@ public static class ActivitySourceNames
     public const string UpdateFeedsCommand = "UpdateFeedsCommand";
 
     /// <summary>
+    /// Name of the activity source for RSS feeds.
+    /// </summary>
+    public const string RssFeed = "RssFeed";
+
+    /// <summary>
     /// Gets an array of activity source names used for monitoring and logging purposes.
     /// </summary>
     /// <value>
@@ -51,6 +56,6 @@ public static class ActivitySourceNames
     /// </value>
     public static string[] ActivitySources =>
     [
-        BlobStorage, TableStorage, UpdateFeedsCommand
+        BlobStorage, TableStorage, UpdateFeedsCommand, RssFeed
     ];
 }

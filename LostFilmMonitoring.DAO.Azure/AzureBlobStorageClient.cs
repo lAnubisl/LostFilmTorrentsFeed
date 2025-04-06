@@ -97,6 +97,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     public async Task<string?> DownloadStringAsync(string containerName, string fileName)
     {
         this.logger.Info($"Call: {nameof(this.DownloadStringAsync)}('{containerName}', '{fileName}')");
+        using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadStringAsync", ActivityKind.Client);
         using var stream = await this.DownloadAsync(containerName, fileName);
         if (stream == null)
         {
