@@ -1,4 +1,4 @@
-﻿// <copyright file="Usings.cs" company="Alexander Panfilenok">
+// <copyright file="ActivitySourceNames.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,22 +21,36 @@
 // SOFTWARE.
 // </copyright>
 
-#pragma warning disable SA1200 // Using directives should be placed correctly
-global using System;
-global using System.Collections.Generic;
-global using System.Diagnostics;
-global using System.IO;
-global using System.Linq;
-global using System.Runtime.Serialization;
-global using System.Threading.Tasks;
-global using LostFilmMonitoring.BLL.Interfaces;
-global using LostFilmMonitoring.BLL.Localization;
-global using LostFilmMonitoring.BLL.Models;
-global using LostFilmMonitoring.BLL.Models.CommandModels;
-global using LostFilmMonitoring.BLL.Models.Request;
-global using LostFilmMonitoring.BLL.Models.Response;
-global using LostFilmMonitoring.BLL.Models.ViewModel;
-global using LostFilmMonitoring.Common;
-global using LostFilmMonitoring.DAO.Interfaces;
-global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
-#pragma warning restore SA1200 // Using directives should be placed correctly
+namespace LostFilmMonitoring.Common;
+
+/// <summary>
+/// Contains all activity source names for an application.
+/// </summary>
+public static class ActivitySourceNames
+{
+    /// <summary>
+    /// Name of the activity source for Azure Blob Storage.
+    /// </summary>
+    public const string BlobStorage = "BlobStorage";
+
+    /// <summary>
+    /// Name of the activity source for Azure Table Storage.
+    /// </summary>
+    public const string TableStorage = "TableStorage";
+
+    /// <summary>
+    /// Command for updating feeds.
+    /// </summary>
+    public const string UpdateFeedsCommand = "UpdateFeedsCommand";
+
+    /// <summary>
+    /// Gets an array of activity source names used for monitoring and logging purposes.
+    /// </summary>
+    /// <value>
+    /// An array of strings representing the names of activity sources, such as BlobStorage, TableStorage, and UpdateFeedsCommand.
+    /// </value>
+    public static string[] ActivitySources =>
+    [
+        BlobStorage, TableStorage, UpdateFeedsCommand
+    ];
+}

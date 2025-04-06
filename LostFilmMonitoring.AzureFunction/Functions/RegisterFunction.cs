@@ -28,15 +28,15 @@ namespace LostFilmMonitoring.AzureFunction.Functions;
 /// </summary>
 public class RegisterFunction
 {
-    private readonly ILogger logger;
+    private readonly Common.ILogger logger;
     private readonly ICommand<EditUserRequestModel, EditUserResponseModel> command;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RegisterFunction"/> class.
     /// </summary>
-    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    /// <param name="logger">Instance of <see cref="Common.ILogger"/>.</param>
     /// <param name="command">Instance of <see cref="ICommand{EditUserRequestModel, EditUserResponseModel}"/>.</param>
-    public RegisterFunction(ILogger logger, ICommand<EditUserRequestModel, EditUserResponseModel> command)
+    public RegisterFunction(Common.ILogger logger, ICommand<EditUserRequestModel, EditUserResponseModel> command)
     {
         this.logger = logger?.CreateScope(nameof(RegisterFunction)) ?? throw new ArgumentNullException(nameof(logger));
         this.command = command ?? throw new ArgumentNullException(nameof(command));

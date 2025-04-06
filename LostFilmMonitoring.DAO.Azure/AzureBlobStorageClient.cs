@@ -28,6 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure;
 /// </summary>
 public class AzureBlobStorageClient : IAzureBlobStorageClient
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.BlobStorage);
     private readonly BlobServiceClient blobServiceClient;
     private readonly ILogger logger;
     private readonly CancellationToken cancellationToken = CancellationToken.None;
@@ -68,6 +69,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         await sw.WriteAsync(content);
         await sw.FlushAsync();
         ms.Position = 0;
+        using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
         await this.UploadAsync(containerName, fileName, ms, contentType, cacheControl);
     }
 
@@ -111,7 +113,9 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.DeleteAsync)}('{containerName}', '{fileName}')");
         try
         {
-            await this.GetBlobClient(containerName, fileName).DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
+            BlobClient blobClient = this.GetBlobClient(containerName, fileName);
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DeleteAsync", ActivityKind.Client);
+            await blobClient.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound")
         {
@@ -138,7 +142,9 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.ExistsAsync)}('{containerName}', '{fileName}')");
         try
         {
-            return await this.GetBlobClient(containerName, fileName).ExistsAsync(this.cancellationToken);
+            BlobClient blobClient = this.GetBlobClient(containerName, fileName);
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.ExistsAsync", ActivityKind.Client);
+            return await blobClient.ExistsAsync(this.cancellationToken);
         }
         catch (Exception ex)
         {
@@ -167,7 +173,12 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
 
     private async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
     {
-        var properties = await blobClient.GetPropertiesAsync();
+        Response<BlobProperties>? properties = null;
+        using (var activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client))
+        {
+            properties = await blobClient.GetPropertiesAsync();
+        }
+
         var httpHeaders = new BlobHttpHeaders
         {
             CacheControl = cacheControl,
@@ -177,13 +188,18 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
             ContentEncoding = properties.Value.ContentEncoding,
             ContentHash = properties.Value.ContentHash,
         };
-        await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
+
+        using (var activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.SetHttpHeadersAsync", ActivityKind.Client))
+        {
+            await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
+        }
     }
 
     private async Task CreateContainerAsync(string containerName)
     {
         try
         {
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client);
             await this.blobServiceClient.CreateBlobContainerAsync(containerName);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
@@ -203,18 +219,21 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
 
         try
         {
-            await blobClient.UploadAsync(
-                content,
-                new BlobUploadOptions
-                {
-                    AccessTier = AccessTier.Hot,
-                    HttpHeaders = new BlobHttpHeaders
+            using (Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client))
+            {
+                await blobClient.UploadAsync(
+                    content,
+                    new BlobUploadOptions
                     {
-                        CacheControl = cacheControl,
-                        ContentType = contentType,
-                    },
-                    Conditions = null,
-                });
+                        AccessTier = AccessTier.Hot,
+                        HttpHeaders = new BlobHttpHeaders
+                        {
+                            CacheControl = cacheControl,
+                            ContentType = contentType,
+                        },
+                        Conditions = null,
+                    });
+            }
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
         {
@@ -237,6 +256,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         try
         {
             MemoryStream ms = new MemoryStream();
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadToAsync", ActivityKind.Client);
             await blobClient.DownloadToAsync(ms, this.cancellationToken);
             ms.Position = 0;
             return ms;
