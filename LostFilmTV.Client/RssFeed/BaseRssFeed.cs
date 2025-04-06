@@ -28,6 +28,10 @@ namespace LostFilmTV.Client.RssFeed;
 /// </summary>
 public abstract class BaseRssFeed
 {
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
+
+    private static readonly RegexOptions RegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline;
+
     private readonly ActivitySource activitySource = new (ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
@@ -133,10 +137,12 @@ public abstract class BaseRssFeed
     private static XDocument Parse(string rssString)
     {
         string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
-        string result = Regex.Replace(rssString, pattern, m =>
-                    m.Groups["start"].Value +
-                    HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
-                    m.Groups["end"].Value);
+        string result = Regex.Replace(
+            rssString,
+            pattern,
+            m => m.Groups["start"].Value + HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) + m.Groups["end"].Value,
+            RegexOptions,
+            RegexTimeout);
         try
         {
             return XDocument.Parse(result);
