@@ -16,7 +16,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Pulumi.Output<Azure.Authorization.GetClientConfigResult> azureConfig = Azure.Authorization.GetClientConfig.Invoke();
         Azure.Resources.ResourceGroup rg = CreateResourceGroup();
         Azure.OperationalInsights.Workspace log = CreateLogAnalyticsWorkspace(rg);
-        Azure.Insights.Component appi = CreateApplicationInsights(rg, log);
+        Azure.ApplicationInsights.Component appi = CreateApplicationInsights(rg, log);
         Azure.Web.AppServicePlan plan = CreatePlan(rg);
         Cloudflare.Record data_record = CreateDataRecord();
         Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
@@ -148,15 +148,15 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return Pulumi.Output.Format($"/subscriptions/{SubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleId}");
     }
 
-    private Azure.Insights.Component CreateApplicationInsights(Azure.Resources.ResourceGroup rg, Azure.OperationalInsights.Workspace log)
+    private Azure.ApplicationInsights.Component CreateApplicationInsights(Azure.Resources.ResourceGroup rg, Azure.OperationalInsights.Workspace log)
     {
-        return new Azure.Insights.Component("appi", new()
+        return new Azure.ApplicationInsights.Component("appi", new()
         {
-            ApplicationType = Azure.Insights.ApplicationType.Other,
-            FlowType = Azure.Insights.FlowType.Bluefield,
+            ApplicationType = Azure.ApplicationInsights.ApplicationType.Other,
+            FlowType = Azure.ApplicationInsights.FlowType.Bluefield,
             Kind = "other",
             Location = rg.Location,
-            RequestSource = Azure.Insights.RequestSource.Rest,
+            RequestSource = Azure.ApplicationInsights.RequestSource.Rest,
             ResourceGroupName = rg.Name,
             ResourceName = Locals.ApplicationInsightsName,
             WorkspaceResourceId = log.Id,
@@ -346,7 +346,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Resources.ResourceGroup rg,
         Azure.Storage.StorageAccount st,
         Azure.Web.AppServicePlan plan,
-        Azure.Insights.Component appi,
+        Azure.ApplicationInsights.Component appi,
         Azure.Storage.StorageAccount metadata_st)
     {
         return new Azure.Web.WebApp("function", new Azure.Web.WebAppArgs
