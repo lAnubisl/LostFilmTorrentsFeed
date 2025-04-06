@@ -93,7 +93,7 @@ public static class Program
         host.Run();
     }
 
-    private static void ConfigureLoggingAndTelimetry(IServiceCollection services)
+    private static void ConfigureLoggingAndTelemetry(IServiceCollection services)
     {
         var resourceAttributes = new Dictionary<string, object>
         {
