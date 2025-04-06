@@ -38,7 +38,7 @@ public class GetUserFunction
     /// <param name="command">Instance of <see cref="ICommand{GetUserRequestModel, GetUserResponseModel}"/>.</param>
     public GetUserFunction(Common.ILogger logger, ICommand<GetUserRequestModel, GetUserResponseModel> command)
     {
-        this.logger = logger?.CreateScope(nameof(RegisterFunction)) ?? throw new ArgumentNullException(nameof(logger));
+        this.logger = logger?.CreateScope(nameof(GetUserFunction)) ?? throw new ArgumentNullException(nameof(logger));
         this.command = command ?? throw new ArgumentNullException(nameof(command));
     }
 

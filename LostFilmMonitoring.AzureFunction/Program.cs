@@ -29,7 +29,7 @@ public static class Program
 {
     private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
     {
-        ConfigureLoggingAndTelimetry(services);
+        ConfigureLoggingAndTelemetry(services);
         services.AddLogging();
         services.AddSingleton<Common.ILogger, Logger>();
         services.AddTransient(r => new BlobServiceClient(
@@ -93,7 +93,7 @@ public static class Program
         host.Run();
     }
 
-    private static void ConfigureLoggingAndTelimetry(IServiceCollection services)
+    private static void ConfigureLoggingAndTelemetry(IServiceCollection services)
     {
         var resourceAttributes = new Dictionary<string, object>
         {

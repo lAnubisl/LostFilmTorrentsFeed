@@ -28,17 +28,14 @@ namespace LostFilmMonitoring.AzureFunction.Functions;
 /// </summary>
 public class CheckImagesFunction
 {
-    private readonly Common.ILogger logger;
     private readonly DownloadCoverImagesCommand command;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CheckImagesFunction"/> class.
     /// </summary>
-    /// <param name="logger">Instance of <see cref="Common.ILogger"/>.</param>
     /// <param name="command">Instance of <see cref="UpdateFeedsCommand"/>.</param>
-    public CheckImagesFunction(Common.ILogger logger, DownloadCoverImagesCommand command)
+    public CheckImagesFunction(DownloadCoverImagesCommand command)
     {
-        this.logger = logger?.CreateScope(nameof(UpdateRssFeedFunction)) ?? throw new ArgumentNullException(nameof(logger));
         this.command = command ?? throw new ArgumentNullException(nameof(command));
     }
 
@@ -48,10 +45,8 @@ public class CheckImagesFunction
     /// <param name="myTimer">Timer object.</param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     [Function("CheckImagesFunction")]
-    public async Task RunAsync([TimerTrigger("0 0 0 * * *")] object myTimer)
+    public Task RunAsync([TimerTrigger("0 0 0 * * *")] object myTimer)
     {
-        this.logger.Info($"Start CheckImagesFunction {DateTime.Now}");
-        await this.command.ExecuteAsync();
-        this.logger.Info($"Finish: CheckImagesFunction {DateTime.Now}");
+        return this.command.ExecuteAsync();
     }
 }
