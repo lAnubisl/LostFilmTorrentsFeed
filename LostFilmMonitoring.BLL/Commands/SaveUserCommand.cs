@@ -70,7 +70,7 @@ public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseMo
         var user = new User(userId, request.TrackerId);
         await this.userDAO.SaveAsync(user);
         await this.persister.PersistAsync($"subscription_{user.Id}", Array.Empty<SubscriptionItem>());
-        await this.feedDAO.SaveUserFeedAsync(user.Id, Array.Empty<FeedItem>());
+        await this.feedDAO.SaveUserFeedAsync(user.Id, []);
         return new EditUserResponseModel(user.Id);
     }
 }

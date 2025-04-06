@@ -31,9 +31,9 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
     {
         tableClient!
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
-            .Returns(new TestAsyncPageable<UserTableEntity>(Array.Empty<UserTableEntity>()));
+            .Returns(new TestAsyncPageable<UserTableEntity>([]));
         var result = await GetDao().LoadAsync();
-        Assert.That(result, Is.EqualTo(Array.Empty<User>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -77,7 +77,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
 
         var result = await GetDao().LoadAsync("UserId");
-        Assert.That(result, Is.Null);
+        result.Should().BeNull();
     }
 
     [Test]
@@ -94,7 +94,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .ReturnsAsync(new TestResponse<UserTableEntity>(userTableEntity));
 
         var result = await GetDao().LoadAsync("UserId");
-        Assert.That(result?.Id == userTableEntity.RowKey && result?.TrackerId == userTableEntity.TrackerId);
+        (result?.Id == userTableEntity.RowKey && result?.TrackerId == userTableEntity.TrackerId).Should().BeTrue();
     }
 
     protected override AzureTableStorageUserDao GetDao()

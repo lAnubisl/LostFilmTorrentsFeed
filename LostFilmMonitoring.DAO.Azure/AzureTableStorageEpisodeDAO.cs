@@ -61,7 +61,7 @@ public class AzureTableStorageEpisodeDao : BaseAzureTableStorageDao, IEpisodeDao
         {
             var query = tc.QueryAsync<EpisodeTableEntity>();
             return IterateAsync(query, Mapper.Map);
-        }) ?? Array.Empty<Episode>();
+        }) ?? [];
     }
 
     /// <inheritdoc/>

@@ -44,14 +44,14 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{userId}')");
         if (string.IsNullOrEmpty(userId))
         {
-            return Array.Empty<Subscription>();
+            return [];
         }
 
         return await this.TryGetEntityAsync(tc =>
         {
             var query = tc.QueryAsync<SubscriptionTableEntity>(entity => entity.RowKey == userId);
             return IterateAsync(query, Mapper.Map);
-        }) ?? Array.Empty<Subscription>();
+        }) ?? [];
     }
 
     /// <inheritdoc/>
@@ -60,14 +60,14 @@ public class AzureTableStorageSubscriptionDao : BaseAzureTableStorageDao, ISubsc
         this.Logger.Info($"Call: {nameof(this.LoadUsersIdsAsync)}('{seriesName}', '{quality}')");
         if (string.IsNullOrEmpty(seriesName) || string.IsNullOrEmpty(quality))
         {
-            return Array.Empty<string>();
+            return [];
         }
 
         return await this.TryGetEntityAsync(tc =>
         {
             var query = tc.QueryAsync<SubscriptionTableEntity>(entity => entity.PartitionKey == seriesName && entity.Quality == quality);
             return IterateAsync(query, item => item.RowKey);
-        }) ?? Array.Empty<string>();
+        }) ?? [];
     }
 
     /// <inheritdoc/>

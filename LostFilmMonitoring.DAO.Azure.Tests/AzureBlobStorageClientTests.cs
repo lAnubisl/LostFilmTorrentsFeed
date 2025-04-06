@@ -100,7 +100,7 @@ public class AzureBlobStorageClientTests
         var azureBlobStorageClient = GetClient();
         var result = await azureBlobStorageClient.DownloadAsync(containerName, blobName);
         var resultData = Encoding.UTF8.GetString(ReadFully(result));
-        Assert.That(string.Equals(testData, resultData));
+        string.Equals(testData, resultData).Should().BeTrue();
     }
 
     [Test]
@@ -283,7 +283,7 @@ public class AzureBlobStorageClientTests
 
     private static byte[] ReadFully(Stream? input)
     {
-        if (input == null) return Array.Empty<byte>();
+        if (input == null) return [];
         byte[] buffer = new byte[16 * 1024];
         using MemoryStream ms = new MemoryStream();
         int read;

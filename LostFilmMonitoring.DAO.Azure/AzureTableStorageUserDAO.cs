@@ -57,7 +57,7 @@ public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
         {
             var query = tc.QueryAsync<UserTableEntity>();
             return IterateAsync(query, Mapper.Map);
-        }) ?? Array.Empty<User>();
+        }) ?? [];
     }
 
     /// <inheritdoc/>

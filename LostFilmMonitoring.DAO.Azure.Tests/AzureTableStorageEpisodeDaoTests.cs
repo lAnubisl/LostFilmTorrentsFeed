@@ -68,7 +68,7 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
                 entity.SeasonNumber == seasonNumber &&
                 entity.EpisodeNumber == episodeNumber;
 
-        tableClient!.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>(Array.Empty<EpisodeTableEntity>()));
+        tableClient!.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>([]));
         await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality);
         tableClient.Verify(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default), Times.Once);
     }

@@ -82,7 +82,7 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
             }
 
             return result.ToArray();
-        }) ?? Array.Empty<Series>();
+        }) ?? [];
     }
 
     /// <inheritdoc/>

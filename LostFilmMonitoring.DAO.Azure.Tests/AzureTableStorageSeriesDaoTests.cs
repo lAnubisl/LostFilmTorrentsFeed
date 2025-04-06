@@ -74,7 +74,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>("Name", "Name", null, default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var series = await GetDao().LoadAsync("Name");
-        Assert.That(series, Is.Null);
+        series.Should().BeNull();
     }
 
     [Test]
@@ -89,7 +89,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>(entity.Name, entity.Name, null, default))
             .ReturnsAsync(new TestResponse<SeriesTableEntity>(entity));
         var loadedSeries = await GetDao().LoadAsync(entity.Name);
-        Assert.That(loadedSeries?.Name, Is.EqualTo(entity.Name));
+        (loadedSeries?.Name).Should().Be(entity.Name);
     }
 
     [Test]
@@ -103,7 +103,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
                 default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var result = await GetDao().LoadAsync();
-        Assert.That(result, Is.EqualTo(Array.Empty<Series>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -125,11 +125,11 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Returns(expected);
         
         var result = await GetDao().LoadAsync();
-        Assert.That(
-            result != null &&
+        (result != null &&
             result.Length == 2 &&
             result.Any(x => x.Name == "A") && 
-            result.Any(x => x.Name == "B")
+            result.Any(x => x.Name == "B"))
+.Should().BeTrue(
         );
     }
 

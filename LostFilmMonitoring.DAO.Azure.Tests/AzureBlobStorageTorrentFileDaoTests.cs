@@ -67,7 +67,7 @@ public class AzureBlobStorageTorrentFileDaoTests
         var result = await dao.LoadBaseFileAsync(torrentId);
         this.azureBlobStorageClient.Verify(x => x.DownloadAsync("basetorrents", $"{torrentId}.torrent"), Times.Once);
         result.Should().NotBeNull();
-        Assert.That(string.Equals(result!.FileName, $"{torrentId}.torrent"));
+        string.Equals(result!.FileName, $"{torrentId}.torrent").Should().BeTrue();
     }
     
     [Test]

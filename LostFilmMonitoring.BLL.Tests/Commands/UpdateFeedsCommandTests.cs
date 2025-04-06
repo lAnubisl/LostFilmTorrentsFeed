@@ -277,7 +277,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
         var newSeriesId = Guid.NewGuid();
         var savedSeries = new List<Series>();
         this.seriesDAO!.Setup(x => x.SaveAsync(It.IsAny<Series>()))
@@ -469,7 +469,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
         
@@ -512,7 +512,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
         
@@ -648,7 +648,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 
@@ -712,7 +712,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 
@@ -776,7 +776,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 

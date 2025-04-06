@@ -71,7 +71,7 @@ public class ValidationResult
         => new (
             property,
             string.Format(message, new string[] { property }
-            .Union(objects ?? Array.Empty<string>()).ToArray()));
+            .Union(objects ?? []).ToArray()));
 
     /// <summary>
     /// Gets an instance of <see cref="ValidationResult"/> with predefined error message.
