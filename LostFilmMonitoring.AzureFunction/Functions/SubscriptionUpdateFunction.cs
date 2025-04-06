@@ -28,15 +28,15 @@ namespace LostFilmMonitoring.AzureFunction.Functions;
 /// </summary>
 public class SubscriptionUpdateFunction
 {
-    private readonly ILogger logger;
+    private readonly Common.ILogger logger;
     private readonly ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel> command;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubscriptionUpdateFunction"/> class.
     /// </summary>
-    /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
+    /// <param name="logger">Instance of <see cref="Common.ILogger"/>.</param>
     /// <param name="command">Instance of command to execute.</param>
-    public SubscriptionUpdateFunction(ILogger logger, ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel> command)
+    public SubscriptionUpdateFunction(Common.ILogger logger, ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel> command)
     {
         this.logger = logger?.CreateScope(nameof(SubscriptionUpdateFunction)) ?? throw new ArgumentNullException(nameof(logger));
         this.command = command ?? throw new ArgumentNullException(nameof(command));

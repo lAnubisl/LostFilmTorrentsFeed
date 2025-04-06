@@ -1,6 +1,6 @@
 public class Locals
 {
-    public const string Project = "lfmon";
+    public static readonly string Project = "lfmon";
     public static readonly string Environment = Pulumi.Deployment.Instance.StackName.ToLowerInvariant();
     public static string MetadataStorageAccountName => $"stmeta{Project}{Environment}";
     public static string AppServicePlanName => $"plan-{Project}-{Environment}";

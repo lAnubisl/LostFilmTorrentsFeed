@@ -31,50 +31,50 @@ public static class Constants
     /// <summary>
     /// Table Storage dictionary table name.
     /// </summary>
-    public const string MetadataStorageTableNameDictionary = "dictionary";
+    public static readonly string MetadataStorageTableNameDictionary = "dictionary";
 
     /// <summary>
     /// Table Storage episodes table name.
     /// </summary>
-    public const string MetadataStorageTableNameEpisodes = "episodes";
+    public static readonly string MetadataStorageTableNameEpisodes = "episodes";
 
     /// <summary>
     /// Table Storage series table name.
     /// </summary>
-    public const string MetadataStorageTableNameSeries = "series";
+    public static readonly string MetadataStorageTableNameSeries = "series";
 
     /// <summary>
     /// Table Storage subscriptions table name.
     /// </summary>
-    public const string MetadataStorageTableNameSubscriptions = "subscriptions";
+    public static readonly string MetadataStorageTableNameSubscriptions = "subscriptions";
 
     /// <summary>
     /// Table Storage users table name.
     /// </summary>
-    public const string MetadataStorageTableNameUsers = "users";
+    public static readonly string MetadataStorageTableNameUsers = "users";
 
     /// <summary>
     /// Blob Storage container name for images.
     /// </summary>
-    public const string MetadataStorageContainerImages = "images";
+    public static readonly string MetadataStorageContainerImages = "images";
 
     /// <summary>
     /// Blob Storage container name for base torrents.
     /// </summary>
-    public const string MetadataStorageContainerBaseTorrents = "basetorrents";
+    public static readonly string MetadataStorageContainerBaseTorrents = "basetorrents";
 
     /// <summary>
     /// Blob Storage container name for models.
     /// </summary>
-    public const string MetadataStorageContainerModels = "models";
+    public static readonly string MetadataStorageContainerModels = "models";
 
     /// <summary>
     /// Blob Storage container name for RSS feeds.
     /// </summary>
-    public const string MetadataStorageContainerRssFeeds = "rssfeeds";
+    public static readonly string MetadataStorageContainerRssFeeds = "rssfeeds";
 
     /// <summary>
     /// Blob Storage container name for user torrents.
     /// </summary>
-    public const string MetadataStorageContainerUserTorrents = "usertorrents";
+    public static readonly string MetadataStorageContainerUserTorrents = "usertorrents";
 }

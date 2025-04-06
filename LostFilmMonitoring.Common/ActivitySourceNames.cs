@@ -1,4 +1,4 @@
-﻿// <copyright file="CheckImagesFunction.cs" company="Alexander Panfilenok">
+// <copyright file="ActivitySourceNames.cs" company="Alexander Panfilenok">
 // MIT License
 // Copyright (c) 2023 Alexander Panfilenok
 //
@@ -21,32 +21,41 @@
 // SOFTWARE.
 // </copyright>
 
-namespace LostFilmMonitoring.AzureFunction.Functions;
+namespace LostFilmMonitoring.Common;
 
 /// <summary>
-/// Responsible for updating RSS feeds.
+/// Contains all activity source names for an application.
 /// </summary>
-public class CheckImagesFunction
+public static class ActivitySourceNames
 {
-    private readonly DownloadCoverImagesCommand command;
+    /// <summary>
+    /// Name of the activity source for Azure Blob Storage.
+    /// </summary>
+    public static readonly string BlobStorage = "BlobStorage";
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CheckImagesFunction"/> class.
+    /// Name of the activity source for Azure Table Storage.
     /// </summary>
-    /// <param name="command">Instance of <see cref="UpdateFeedsCommand"/>.</param>
-    public CheckImagesFunction(DownloadCoverImagesCommand command)
-    {
-        this.command = command ?? throw new ArgumentNullException(nameof(command));
-    }
+    public static readonly string TableStorage = "TableStorage";
 
     /// <summary>
-    /// Azure Function Entry Point.
+    /// Command for updating feeds.
     /// </summary>
-    /// <param name="myTimer">Timer object.</param>
-    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    [Function("CheckImagesFunction")]
-    public Task RunAsync([TimerTrigger("0 0 0 * * *")] object myTimer)
-    {
-        return this.command.ExecuteAsync();
-    }
+    public static readonly string UpdateFeedsCommand = "UpdateFeedsCommand";
+
+    /// <summary>
+    /// Name of the activity source for RSS feeds.
+    /// </summary>
+    public static readonly string RssFeed = "RssFeed";
+
+    /// <summary>
+    /// Gets an array of activity source names used for monitoring and logging purposes.
+    /// </summary>
+    /// <value>
+    /// An array of strings representing the names of activity sources, such as BlobStorage, TableStorage, and UpdateFeedsCommand.
+    /// </value>
+    public static string[] ActivitySources =>
+    [
+        BlobStorage, TableStorage, UpdateFeedsCommand, RssFeed
+    ];
 }

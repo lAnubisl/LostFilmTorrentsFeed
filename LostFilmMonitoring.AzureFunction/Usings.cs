@@ -23,13 +23,14 @@
 
 #pragma warning disable SA1200 // Using directives should be placed correctly
 global using System;
+global using System.Collections.Generic;
 global using System.IO;
-global using System.Linq;
 global using System.Net;
 global using System.Text.Json;
 global using System.Threading.Tasks;
 global using Azure.Data.Tables;
 global using Azure.Identity;
+global using Azure.Monitor.OpenTelemetry.Exporter;
 global using Azure.Storage.Blobs;
 global using LostFilmMonitoring.BLL;
 global using LostFilmMonitoring.BLL.Commands;
@@ -45,9 +46,15 @@ global using LostFilmTV.Client.RssFeed;
 global using Microsoft.Azure.Functions.Worker;
 global using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
 global using Microsoft.Azure.Functions.Worker.Http;
+global using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 global using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Enums;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;
+global using OpenTelemetry;
+global using OpenTelemetry.Metrics;
+global using OpenTelemetry.Resources;
+global using OpenTelemetry.Trace;
 global using Tmdb.Client;
 #pragma warning restore SA1200 // Using directives should be placed correctly

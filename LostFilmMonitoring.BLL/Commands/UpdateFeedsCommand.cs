@@ -29,6 +29,7 @@ namespace LostFilmMonitoring.BLL.Commands;
 public class UpdateFeedsCommand : ICommand
 {
     private static readonly object SeriesLocker = new ();
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.UpdateFeedsCommand);
     private readonly ILogger logger;
     private readonly IDal dal;
     private readonly IRssFeed rssFeed;
@@ -74,8 +75,7 @@ public class UpdateFeedsCommand : ICommand
     /// <inheritdoc/>
     public async Task ExecuteAsync()
     {
-        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
-
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         var loadFeedUpdatesTask = this.LoadFeedUpdatesAsync();
         var loadLastFeedUpdatesTask = this.LoadLastFeedUpdatesAsync();
         await Task.WhenAll(loadFeedUpdatesTask, loadLastFeedUpdatesTask);

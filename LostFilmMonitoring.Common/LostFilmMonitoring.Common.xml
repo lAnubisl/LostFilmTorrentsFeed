@@ -4,6 +4,39 @@
         <name>LostFilmMonitoring.Common</name>
     </assembly>
     <members>
+        <member name="T:LostFilmMonitoring.Common.ActivitySourceNames">
+            <summary>
+            Contains all activity source names for an application.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.BlobStorage">
+            <summary>
+            Name of the activity source for Azure Blob Storage.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.TableStorage">
+            <summary>
+            Name of the activity source for Azure Table Storage.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.UpdateFeedsCommand">
+            <summary>
+            Command for updating feeds.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.RssFeed">
+            <summary>
+            Name of the activity source for RSS feeds.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.Common.ActivitySourceNames.ActivitySources">
+            <summary>
+            Gets an array of activity source names used for monitoring and logging purposes.
+            </summary>
+            <value>
+            An array of strings representing the names of activity sources, such as BlobStorage, TableStorage, and UpdateFeedsCommand.
+            </value>
+        </member>
         <member name="T:LostFilmMonitoring.Common.CommonSerializationOptions">
             <summary>
             Common serialization options.

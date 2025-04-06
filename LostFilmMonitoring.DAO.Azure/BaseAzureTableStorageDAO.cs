@@ -28,6 +28,7 @@ namespace LostFilmMonitoring.DAO.Azure;
 /// </summary>
 public abstract class BaseAzureTableStorageDao
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.TableStorage);
     private readonly TableClient tableClient;
 
     /// <summary>
@@ -109,6 +110,7 @@ public abstract class BaseAzureTableStorageDao
     {
         try
         {
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryExecuteAsync", ActivityKind.Client);
             await func(this.tableClient);
         }
         catch (Exception ex)
@@ -130,6 +132,7 @@ public abstract class BaseAzureTableStorageDao
     {
         try
         {
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryGetEntityAsync", ActivityKind.Client);
             return await func(this.tableClient);
         }
         catch (RequestFailedException ex)
@@ -158,6 +161,7 @@ public abstract class BaseAzureTableStorageDao
     {
         try
         {
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryCountAsync", ActivityKind.Client);
             return await func(this.tableClient);
         }
         catch (Exception ex)
@@ -170,6 +174,7 @@ public abstract class BaseAzureTableStorageDao
     private static async Task<TResult[]> IterateInnerAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
         where TSource : class
     {
+        using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.IterateInnerAsync", ActivityKind.Client);
         var result = new List<TResult>();
         await foreach (var item in items)
         {
@@ -182,6 +187,7 @@ public abstract class BaseAzureTableStorageDao
     private static async Task<int> CountInnerAsync<TSource>(AsyncPageable<TSource> items)
         where TSource : class
     {
+        using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.CountInnerAsync", ActivityKind.Client);
         int result = 0;
         await foreach (var item in items)
         {
