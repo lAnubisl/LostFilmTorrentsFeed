@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
 
@@ -79,7 +79,7 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
 
       - name: Unit Tests Report
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         with:
           name: DotNET Tests
           path: '**/test-results.trx'
@@ -129,7 +129,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       
       - name: Upload to blob storage
-        uses: azure/CLI@v1
+        uses: azure/CLI@v2
         with:
           inlineScript: |
             az storage blob upload-batch --account-name ${{ needs.infrastructure.outputs.websiteStorageAccountName }} --auth-mode login -d '$web' -s ./LostFilmMonitoring.Web --overwrite true
