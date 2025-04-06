@@ -28,7 +28,7 @@ namespace LostFilmTV.Client.RssFeed;
 /// </summary>
 public abstract class BaseRssFeed
 {
-    private readonly ActivitySource activitySource = new ActivitySource(ActivitySourceNames.RssFeed);
+    private readonly ActivitySource activitySource = new (ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
     /// <summary>

@@ -175,7 +175,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     private async Task SetCacheControlAsync(BlobClient blobClient, string cacheControl)
     {
         Response<BlobProperties>? properties = null;
-        using (var activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client))
+        using (var getPropertiesActivity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client))
         {
             properties = await blobClient.GetPropertiesAsync();
         }
@@ -190,10 +190,8 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
             ContentHash = properties.Value.ContentHash,
         };
 
-        using (var activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.SetHttpHeadersAsync", ActivityKind.Client))
-        {
-            await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
-        }
+        using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.SetHttpHeadersAsync", ActivityKind.Client);
+        await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
     }
 
     private async Task CreateContainerAsync(string containerName)
@@ -220,21 +218,19 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
 
         try
         {
-            using (Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client))
-            {
-                await blobClient.UploadAsync(
-                    content,
-                    new BlobUploadOptions
+            using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
+            await blobClient.UploadAsync(
+                content,
+                new BlobUploadOptions
+                {
+                    AccessTier = AccessTier.Hot,
+                    HttpHeaders = new BlobHttpHeaders
                     {
-                        AccessTier = AccessTier.Hot,
-                        HttpHeaders = new BlobHttpHeaders
-                        {
-                            CacheControl = cacheControl,
-                            ContentType = contentType,
-                        },
-                        Conditions = null,
-                    });
-            }
+                        CacheControl = cacheControl,
+                        ContentType = contentType,
+                    },
+                    Conditions = null,
+                });
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
         {
