@@ -19,10 +19,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
- 
-      - name: 'Install dotnet-coverage'
-        run: |
-          dotnet tool install --global dotnet-coverage
 
       - name: 'Install DeepSource CLI'
         run: |
@@ -38,10 +34,13 @@ jobs:
 
       - name: 'Run Unit Tests'
         run: |
-          dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
+          dotnet test --collect:"XPlat Code Coverage" --logger:"console;verbosity=detailed" --results-directory 'test-results'
 
-      - name: 'Install dotnet-coverage'
+      - name: 'Send Coverage Report to DeepSource'
         env:
           DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
         run: |
-          ./bin/deepsource report --analyzer test-coverage --key csharp --value-file coverage.xml
+          for report in test-results/*/coverage.cobertura.xml; do
+            echo "Uploading $report"
+            ./bin/deepsource report --analyzer test-coverage --key csharp --value-file "$report"
+          done
