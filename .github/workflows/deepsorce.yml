@@ -19,10 +19,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: 'Install dotnet-sonarscanner'
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
  
       - name: 'Install dotnet-coverage'
         run: |
@@ -42,4 +38,10 @@ jobs:
 
       - name: 'Run Unit Tests'
         run: |
-          dotnet test --configuration Release --no-build --no-restore
+          dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
+
+      - name: 'Install dotnet-coverage'
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          ./bin/deepsource report --analyzer test-coverage --key csharp --value-file coverage.xml
