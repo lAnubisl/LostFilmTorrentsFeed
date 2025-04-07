@@ -30,8 +30,7 @@ public class ExtensionsTests
     public void FeedItemResponse_HasUpdates_should_return_false_for_identical_lists()
     {
         var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
@@ -53,10 +52,9 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
         var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
@@ -78,17 +76,16 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
 
-        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.False);
+        Extensions.HasUpdates(newItems, existingItems).Should().BeFalse();
     }
 
     [Test]
     public void FeedItemResponse_HasUpdates_should_return_true_for_lists_of_different_length()
     {
         var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
@@ -103,10 +100,9 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
         var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
@@ -128,17 +124,16 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
 
-        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.True);
+        Extensions.HasUpdates(newItems, existingItems).Should().BeTrue();
     }
 
     [Test]
     public void FeedItemResponse_HasUpdates_should_return_true_for_different_lists()
     {
         var existingItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E01) [MP4]",
@@ -160,10 +155,9 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
         var newItems = new SortedSet<FeedItemResponse>(
-            new[]
-            {
+            [
                 new FeedItemResponse()
                 {
                     Title = "RusSeriesTitle (EngSeriesTitle). RusEposideName (S01E02) [1080p]",
@@ -185,24 +179,26 @@ public class ExtensionsTests
                     PublishDate = "2022-05-09T16:00:54Z",
                     PublishDateParsed = new DateTime(2022, 5, 9, 16, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
 
-        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.True);
+        Extensions.HasUpdates(newItems, existingItems).Should().BeTrue();
     }
 
     [Test]
     public void FeedItemResponse_HasUpdates_should_throw_exception_if_newItems_null()
     {
-        SortedSet<FeedItemResponse> oldItems = new SortedSet<FeedItemResponse>();
+        SortedSet<FeedItemResponse> oldItems = [];
         SortedSet<FeedItemResponse> newItems = null!;
-        Assert.Throws<ArgumentNullException>(() => Extensions.HasUpdates(oldItems, newItems));
+        Action act = () => Extensions.HasUpdates(oldItems, newItems);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Test]
     public void FeedItemResponse_HasUpdates_should_throw_exception_if_oldItems_null()
     {
         SortedSet<FeedItemResponse> oldItems = null!;
-        SortedSet<FeedItemResponse> newItems = new SortedSet<FeedItemResponse>();
-        Assert.Throws<ArgumentNullException>(() => Extensions.HasUpdates(oldItems, newItems));
+        SortedSet<FeedItemResponse> newItems = [];
+        Action act = () => Extensions.HasUpdates(oldItems, newItems);
+        act.Should().Throw<ArgumentNullException>();
     }
 }   

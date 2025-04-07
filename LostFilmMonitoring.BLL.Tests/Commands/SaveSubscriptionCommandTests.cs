@@ -171,8 +171,8 @@ internal class SaveSubscriptionCommandTests
         var request = new EditSubscriptionRequestModel
         {
             UserId = "user#123",
-            Items = new []
-            {
+            Items =
+            [
                 new SubscriptionItem
                 {
                     SeriesName = "Series#1",
@@ -183,7 +183,7 @@ internal class SaveSubscriptionCommandTests
                     SeriesName = "Series#2",
                     Quality = Quality.H720,
                 }
-            }
+            ]
         };
 
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
@@ -215,14 +215,14 @@ internal class SaveSubscriptionCommandTests
         var request = new EditSubscriptionRequestModel
         {
             UserId = "user#123",
-            Items = new[]
-            {
+            Items =
+            [
                 new SubscriptionItem
                 {
                     SeriesName = "Series#2",
                     Quality = Quality.H1080,
                 }
-            }
+            ]
         };
 
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);

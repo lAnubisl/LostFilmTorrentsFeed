@@ -47,7 +47,7 @@ public class ConfigurationTests
         service.BaseUID.Should().BeEquivalentTo("BASELINKUID");
         service.BaseUSESS.Should().BeEquivalentTo("BASEFEEDCOOKIE");
         service.BaseUrl.Should().BeEquivalentTo("BASEURL");
-        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(new[] { "#1USERID", "#2USERID", "#3USERID" });
+        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(["#1USERID", "#2USERID", "#3USERID"]);
     }
 
     [Test]
@@ -60,7 +60,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(new[] { "#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID" });
+        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]);
     }
 
     [Test]

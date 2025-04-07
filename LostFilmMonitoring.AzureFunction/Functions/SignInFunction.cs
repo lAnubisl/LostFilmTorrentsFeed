@@ -48,7 +48,7 @@ public class SignInFunction
     /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
     /// <returns>A <see cref="Task{HttpResponseData}"/> representing the result of the asynchronous operation.</returns>
     [Function("SignInFunction")]
-    [OpenApiOperation(operationId: "SignInFunction", tags: new[] { "user" }, Visibility = OpenApiVisibilityType.Important)]
+    [OpenApiOperation(operationId: "SignInFunction", tags: ["user"], Visibility = OpenApiVisibilityType.Important)]
     [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(SignInRequestModel), Required = true)]
     [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(SignInResponseModel))]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)

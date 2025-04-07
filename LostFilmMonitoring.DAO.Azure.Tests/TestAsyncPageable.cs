@@ -35,6 +35,6 @@ public class TestAsyncPageable<T> : AsyncPageable<T> where T: notnull
 
     public override IAsyncEnumerable<Page<T>> AsPages(string? continuationToken = null, int? pageSizeHint = null)
     {
-        return new TestAsyncEnumerable<Page<T>>(new[] { new TestPage<T>(values) });
+        return new TestAsyncEnumerable<Page<T>>([new TestPage<T>(values)]);
     }
 }

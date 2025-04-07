@@ -372,7 +372,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is an old series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new Series[] {
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([
             new Series(
                 Guid.NewGuid(),
                 "Флэш (The Flash)",
@@ -381,7 +381,7 @@ public class UpdateFeedsCommandTests
                 "http://n.tracktor.site/rssdownloader.php?id=51436",
                 "http://n.tracktor.site/rssdownloader.php?id=51435",
                 "http://n.tracktor.site/rssdownloader.php?id=51434")
-        });
+        ]);
 
         SetupTorrentFile("51439");
         SetupTorrentFile("51438");
@@ -473,9 +473,9 @@ public class UpdateFeedsCommandTests
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(["User#1"]);
         this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
 
         await command.ExecuteAsync();
 
@@ -516,7 +516,7 @@ public class UpdateFeedsCommandTests
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(["User#1"]);
         this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
 
         await command.ExecuteAsync();
@@ -594,8 +594,8 @@ public class UpdateFeedsCommandTests
         this.episodeDao!.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
 
         // There is such series in the system already
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
-        {
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(
+        [
             new Series(
                 Guid.NewGuid(),
                 "Флэш (The Flash)",
@@ -606,7 +606,7 @@ public class UpdateFeedsCommandTests
                 null,
                 8, 8, 8,
                 14, 14, 14)
-        });
+        ]);
 
         SetupTorrentFile("51439");
         
@@ -652,9 +652,9 @@ public class UpdateFeedsCommandTests
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
@@ -716,9 +716,9 @@ public class UpdateFeedsCommandTests
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
@@ -780,9 +780,9 @@ public class UpdateFeedsCommandTests
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2

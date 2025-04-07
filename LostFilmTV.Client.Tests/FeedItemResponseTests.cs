@@ -146,8 +146,7 @@ public class FeedItemResponseTests
     public void FeedItemResponse_should_be_sortable()
     {
         var items = new SortedSet<ReteOrgFeedItemResponse>(
-            new[]
-            {
+            [
                 new ReteOrgFeedItemResponse()
                 {
                     Title = "Title1",
@@ -169,7 +168,7 @@ public class FeedItemResponseTests
                     PublishDate = "2022-05-10T00:00:00Z",
                     PublishDateParsed = new DateTime(2022, 5, 10, 00, 0, 0, DateTimeKind.Utc),
                 },
-            });
+            ]);
         var arr = items.ToArray();
         Assert.Multiple(() =>
         {

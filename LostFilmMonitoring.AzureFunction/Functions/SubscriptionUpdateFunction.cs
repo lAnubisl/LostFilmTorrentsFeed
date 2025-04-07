@@ -48,7 +48,7 @@ public class SubscriptionUpdateFunction
     /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
     /// <returns>A <see cref="Task{HttpResponseData}"/> representing the result of the asynchronous operation.</returns>
     [Function("SubscriptionUpdateFunction")]
-    [OpenApiOperation(operationId: "SubscriptionUpdateFunction", tags: new[] { "Subscription" }, Visibility = OpenApiVisibilityType.Important)]
+    [OpenApiOperation(operationId: "SubscriptionUpdateFunction", tags: ["Subscription"], Visibility = OpenApiVisibilityType.Important)]
     [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(EditSubscriptionRequestModel), Required = true)]
     [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(EditSubscriptionResponseModel))]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)

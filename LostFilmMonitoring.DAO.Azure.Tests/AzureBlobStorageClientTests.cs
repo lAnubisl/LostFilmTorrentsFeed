@@ -121,7 +121,7 @@ public class AzureBlobStorageClientTests
         var stream = new MemoryStream();
         var result = await azureBlobStorageClient.DownloadAsync(containerName, dirName, blobName);
         var resultData = Encoding.UTF8.GetString(ReadFully(result));
-        Assert.That(string.Equals(testData, resultData));
+        string.Equals(testData, resultData).Should().BeTrue();
     }
 
     [Test]

@@ -48,7 +48,7 @@ public class GetUserFunction
     /// <param name="req">Instance of <see cref="HttpRequestData"/>.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     [Function("GetUserFunction")]
-    [OpenApiOperation(operationId: "GetUserFunction", tags: new[] { "user" }, Visibility = OpenApiVisibilityType.Important)]
+    [OpenApiOperation(operationId: "GetUserFunction", tags: ["user"], Visibility = OpenApiVisibilityType.Important)]
     [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(GetUserRequestModel), Required = true)]
     [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(GetUserResponseModel))]
     public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
