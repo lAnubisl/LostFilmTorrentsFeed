@@ -39,7 +39,8 @@ jobs:
             /o:"lanubisl" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml \
+            /d:sonar.exclusions="LostFilmMonitoring.AzureInfrastructure/**,LostFilmMonitoring.Web/**"
 
       - name: 'Restore Solution Dependencies'
         run: |
