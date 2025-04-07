@@ -1,18 +1,12 @@
 version = 1
 
+test_patterns = ["**Tests.cs"]
+
 [[analyzers]]
 name = "csharp"
-enabled = true
 
 [[analyzers]]
 name = "javascript"
-enabled = true
-
-# Transformers are disabled because they are not good enough yet
-# [[transformers]]
-# name = "dotnet-format"
-# enabled = true
 
 [[analyzers]]
 name = "test-coverage"
-enabled = true

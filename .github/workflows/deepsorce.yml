@@ -1,0 +1,45 @@
+name: 'DeepSource'
+on:
+  schedule:
+    - cron: '0 0 * * 5'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+
+jobs:
+  analyze:
+    name: 'DeepSource'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 'Install dotnet-sonarscanner'
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+ 
+      - name: 'Install dotnet-coverage'
+        run: |
+          dotnet tool install --global dotnet-coverage
+
+      - name: 'Install DeepSource CLI'
+        run: |
+          curl https://deepsource.io/cli | sh
+
+      - name: 'Restore Solution Dependencies'
+        run: |
+          dotnet restore
+          
+      - name: 'Build Solution'
+        run: |
+          dotnet build --configuration Release --no-restore
+
+      - name: 'Run Unit Tests'
+        run: |
+          dotnet test --configuration Release --no-build --no-restore
