@@ -66,14 +66,14 @@ const loadUser = async (userId) => {
 const loadItems = async () => {
     try {
         const data = await fetchJSONAsync(`${baseDataUri}index.json`);
-        const imageMap = new Map(
-            data.Items.map(item => [item.Name, item.ImageFileName])
+        const itemsMap = new Map(
+            data.Items.map(item => [item.Name, item.Id])
         );
         
         // Add items to their respective containers
-        appendItemsToContainer("series-group-items-24-hours", data.Last24HoursItems, imageMap, createElement);
-        appendItemsToContainer("series-group-items-7-days", data.Last7DaysItems, imageMap, createElement);
-        appendItemsToContainer("series-group-items-older", data.OlderItems, imageMap, createElementOldItem);
+        appendItemsToContainer("series-group-items-24-hours", data.Last24HoursItems, itemsMap, createElement);
+        appendItemsToContainer("series-group-items-7-days", data.Last7DaysItems, itemsMap, createElement);
+        appendItemsToContainer("series-group-items-older", data.OlderItems, itemsMap, createElementOldItem);
         
         addClickEvents();
         getCurrentSelections();
@@ -89,10 +89,10 @@ const loadItems = async () => {
  * @param {Map} imageMap - Map of image names
  * @param {Function} createElementFunc - Function to create elements
  */
-const appendItemsToContainer = (containerId, items, imageMap, createElementFunc) => {
+const appendItemsToContainer = (containerId, items, itemsMap, createElementFunc) => {
     const container = document.getElementById(containerId);
     items.forEach(item => {
-        container.appendChild(createElementFunc(item, imageMap));
+        container.appendChild(createElementFunc(item, itemsMap));
     });
 };
 
@@ -116,7 +116,7 @@ const saveChanges = async () => {
     
     const selectedItems = Array.from(document.getElementsByClassName("series-item-selected"));
     const items = selectedItems.map(item => ({
-        SeriesName: escapeHtml(item.querySelector('input').value),
+        SeriesId: escapeHtml(item.querySelector('input').value),
         Quality: item.querySelector('select').value
     }));
 
@@ -246,38 +246,22 @@ const createRssItemElement = (title, date, link) => {
 };
 
 /**
- * Gets the image name for a series
- * @param {string} name - The series name
- * @param {Map} imagesMap - Map of image names
- * @returns {string} The image name
- */
-const getImageName = (name, imagesMap) => {
-    if (imagesMap.has(name)) {
-        const imageFileName = imagesMap.get(name);
-        if (imageFileName && imageFileName !== "") {
-            return imageFileName.substring(0, imageFileName.indexOf('.'));
-        }
-    }
-    return name.replace(/:/g, "_");
-};
-
-/**
  * Creates a series element
  * @param {string} name - The series name
- * @param {Map} imagesMap - Map of image names
+ * @param {Map} itemsMap - Map of items and Id's
  * @returns {HTMLElement} The created element
  */
-const createElement = (name, imagesMap) => {
+const createElement = (name, itemsMap) => {
     const displayName = getDisplayName(name);
-    const imageName = getImageName(name, imagesMap);
+    const id = itemsMap.get(name);
     const elementId = createElementId(name);
     const selectBoxId = createSelectBoxElementId(name);
     
     return createElementFromHTML(`
         <div class="series-item" id="${elementId}">
-            <input type="hidden" value="${name}">
+            <input type="hidden" value="${id}">
             <div class="series-title">${displayName}</div>
-            <img src="${imagesBaseUri}${imageName}.jpg" width="120" height="160">
+            <img src="${imagesBaseUri}${id}.jpg" width="120" height="160">
             <a onclick="window.event.stopPropagation();" target="_blank" href="https://www.google.by/search?q=Трейлер ${displayName}">Смотреть трейлер</a>
             <select id="${selectBoxId}" onclick="window.event.stopPropagation();">
                 <option>SD</option>
@@ -297,11 +281,12 @@ const createElement = (name, imagesMap) => {
 const createElementOldItem = (name, imagesMap) => {
     const displayName = getDisplayName(name);
     const elementId = createElementId(name);
+    const id = itemsMap.get(name);
     const selectBoxId = createSelectBoxElementId(name);
     
     return createElementFromHTML(`
         <div class="series-item" id="${elementId}">
-            <input type="hidden" value="${name}">
+            <input type="hidden" value="${id}">
             <div class="series-title">${displayName}</div>
             <select id="${selectBoxId}" onclick="window.event.stopPropagation();">
                 <option>SD</option>

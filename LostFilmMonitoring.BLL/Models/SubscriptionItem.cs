@@ -29,9 +29,9 @@ namespace LostFilmMonitoring.BLL.Models;
 public class SubscriptionItem
 {
     /// <summary>
-    /// Gets or sets Series Name.
+    /// Gets or sets Series Id.
     /// </summary>
-    public string? SeriesName { get; set; }
+    public Guid? SeriesId { get; set; }
 
     /// <summary>
     /// Gets or sets quality.
@@ -41,7 +41,7 @@ public class SubscriptionItem
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.SeriesName} [{this.Quality}]";
+        return $"{this.SeriesId} [{this.Quality}]";
     }
 
     /// <summary>
@@ -54,6 +54,6 @@ public class SubscriptionItem
 
     private static Subscription Map(SubscriptionItem s)
         => new (
-            s.SeriesName ?? throw new InvalidDataException(nameof(Subscription.SeriesName)),
+            s.SeriesId ?? throw new InvalidDataException(nameof(Subscription.SeriesId)),
             s.Quality ?? throw new InvalidDataException(nameof(Subscription.Quality)));
 }

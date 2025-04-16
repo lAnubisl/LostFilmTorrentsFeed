@@ -70,6 +70,17 @@ public class AzureTableStorageSeriesDao : BaseAzureTableStorageDao, ISeriesDao
     }
 
     /// <inheritdoc/>
+    public async Task<Series?> LoadAsync(Guid id)
+    {
+        this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{id}')");
+        return await this.TryGetEntityAsync(async (tc) =>
+        {
+            var query = tc.QueryAsync<SeriesTableEntity>(entity => entity.Id == id);
+            return (await IterateAsync(query, Mapper.Map)).FirstOrDefault();
+        });
+    }
+
+    /// <inheritdoc/>
     public async Task<Series[]> LoadAsync()
     {
         this.Logger.Info($"Call: {nameof(this.LoadAsync)}()");

@@ -36,6 +36,13 @@ public interface ISeriesDao
     Task<Series?> LoadAsync(string name);
 
     /// <summary>
+    /// Load series by Id.
+    /// </summary>
+    /// <param name="id">Series Id.</param>
+    /// <returns>Series.</returns>
+    Task<Series?> LoadAsync(Guid id);
+
+    /// <summary>
     /// Load series.
     /// </summary>
     /// <returns>All series.</returns>

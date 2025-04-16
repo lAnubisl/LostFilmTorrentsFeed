@@ -756,9 +756,9 @@
             Represents user selection.
             </summary>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Models.SubscriptionItem.SeriesName">
+        <member name="P:LostFilmMonitoring.BLL.Models.SubscriptionItem.SeriesId">
             <summary>
-            Gets or sets Series Name.
+            Gets or sets Series Id.
             </summary>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.SubscriptionItem.Quality">
@@ -847,9 +847,9 @@
             Gets or sets item name.
             </summary>
         </member>
-        <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel.ImageFileName">
+        <member name="P:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewItemModel.Id">
             <summary>
-            Gets or sets image file name.
+            Gets or sets item Id.
             </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Models.ViewModel.IndexViewModel">

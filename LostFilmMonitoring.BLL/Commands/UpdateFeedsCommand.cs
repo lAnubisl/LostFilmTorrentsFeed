@@ -90,11 +90,7 @@ public class UpdateFeedsCommand : ICommand
         }
 
         this.logger.Info("Found an Update.");
-        var success = await this.ProcessFeedItemsAsync(feedItemsResponse);
-        if (success)
-        {
-            await this.SaveFeedUpdatesAsync(feedItemsResponse);
-        }
+        await this.ProcessFeedItemsAsync(feedItemsResponse);
     }
 
     private static bool IsEpisodeCorrect(Episode? episode)
@@ -122,7 +118,7 @@ public class UpdateFeedsCommand : ICommand
         }
     }
 
-    private async Task<bool> ProcessFeedItemsAsync(SortedSet<FeedItemResponse> feedItems)
+    private async Task ProcessFeedItemsAsync(SortedSet<FeedItemResponse> feedItems)
     {
         var allSeries = await this.LoadSeriesAsync();
         var success = true;
@@ -132,7 +128,10 @@ public class UpdateFeedsCommand : ICommand
         }
 
         await this.UpdateIndexViewModelAsync(allSeries.Values);
-        return success;
+        if (success)
+        {
+            await this.SaveFeedUpdatesAsync(feedItems);
+        }
     }
 
     private Task<bool> EpisodeAlreadyExistAsync(Episode episode)

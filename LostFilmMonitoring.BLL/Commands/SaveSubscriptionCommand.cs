@@ -158,10 +158,10 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
 
     private async Task UpdateUserFeedItemsAsync(User user, SortedSet<FeedItem> userFeedItems, Subscription subscription)
     {
-        var series = await this.dal.Series.LoadAsync(subscription.SeriesName);
+        var series = await this.dal.Series.LoadByIdAsync(subscription.SeriesId);
         if (series == null)
         {
-            this.logger.Error($"Tried to update users feed with series '{subscription.SeriesName}' but haven't found this series in the storage. ");
+            this.logger.Error($"Tried to update users feed with series '{subscription.SeriesId}' but haven't found this series in the storage.");
             return;
         }
 

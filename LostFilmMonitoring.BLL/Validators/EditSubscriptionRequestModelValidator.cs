@@ -57,9 +57,9 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
 
         foreach (var item in model.Items)
         {
-            if (string.IsNullOrEmpty(item.SeriesName))
+            if (item.SeriesId == null || Guid.Empty.Equals(item.SeriesId))
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.FieldEmpty, nameof(item.SeriesName)));
+                result.SetError(nameof(item.SeriesId), string.Format(ErrorMessages.FieldEmpty, nameof(item.SeriesId)));
                 return result;
             }
 
@@ -69,10 +69,10 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
                 return result;
             }
 
-            var series = await this.seriesDAO.LoadAsync(item.SeriesName);
+            var series = await this.seriesDAO.LoadAsync(item.SeriesId.Value);
             if (series == null)
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesName));
+                result.SetError(nameof(item.SeriesId), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesId));
                 return result;
             }
         }

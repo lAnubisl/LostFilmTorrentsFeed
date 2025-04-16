@@ -31,18 +31,18 @@ public sealed class Subscription : IEquatable<Subscription>
     /// <summary>
     /// Initializes a new instance of the <see cref="Subscription"/> class.
     /// </summary>
-    /// <param name="seriesName">Name of the series.</param>
+    /// <param name="seriesId">Id of the series.</param>
     /// <param name="quality">Quality of the series.</param>
-    public Subscription(string seriesName, string quality)
+    public Subscription(Guid seriesId, string quality)
     {
-        this.SeriesName = seriesName;
+        this.SeriesId = seriesId;
         this.Quality = quality;
     }
 
     /// <summary>
     /// Gets SeriesName.
     /// </summary>
-    public string SeriesName { get; }
+    public Guid SeriesId { get; }
 
     /// <summary>
     /// Gets Quantity.
@@ -64,7 +64,7 @@ public sealed class Subscription : IEquatable<Subscription>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(this.SeriesName.GetHashCode(), this.Quality.GetHashCode());
+        return HashCode.Combine(this.SeriesId.GetHashCode(), this.Quality.GetHashCode());
     }
 
     /// <inheritdoc/>
@@ -81,7 +81,7 @@ public sealed class Subscription : IEquatable<Subscription>
             return false;
         }
 
-        return string.Equals(this.SeriesName, other.SeriesName, StringComparison.OrdinalIgnoreCase)
+        return Guid.Equals(this.SeriesId, other.SeriesId)
             && this.Quality == other.Quality;
     }
 }
