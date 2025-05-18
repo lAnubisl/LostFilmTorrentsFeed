@@ -21,6 +21,10 @@
 // SOFTWARE.
 // </copyright>
 
+using Azure.Data.Tables;
+using Azure.Storage.Blobs;
+using LostFilmMonitoring.DAO.Azure;
+
 namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
@@ -63,6 +67,21 @@ internal class SaveSubscriptionCommandTests
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         DefineDatabaseState();
         SetupStorage();
+    }
+
+    [Test] [Ignore("")]
+    public void Fix_User_Subscription_Model()
+    {
+        string userId = "";
+        string connectionString = "";
+        BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+        IAzureBlobStorageClient azureBlobStorageClient = new AzureBlobStorageClient(blobServiceClient, logger!.Object);
+        IModelPersister modelPersister = new AzureBlobStorageModelPersister(azureBlobStorageClient, logger.Object);
+        TableServiceClient tableServiceClient = new TableServiceClient(connectionString);
+        ISubscriptionDao subscriptionDao = new AzureTableStorageSubscriptionDao(tableServiceClient, logger.Object);
+        Subscription[] subscriptions = subscriptionDao.LoadAsync(userId).Result;
+        SubscriptionItem[] items = subscriptions.Select(s => new SubscriptionItem() { SeriesName = s.SeriesName, Quality = s.Quality} ).ToArray();
+        modelPersister.PersistAsync($"subscription_{userId}", items).Wait();
     }
 
     [Test]

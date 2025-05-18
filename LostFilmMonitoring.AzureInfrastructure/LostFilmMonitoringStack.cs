@@ -9,7 +9,7 @@ namespace LostFilmMonitoring.AzureInfrastructure;
 public class LostFilmMonitoringStack : Pulumi.Stack
 {
     private readonly Pulumi.Config config = new Pulumi.Config();
-    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(new Cloudflare.GetZoneInvokeArgs { Name = "byalex.dev" }).Apply(zone => zone.Id);
+    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(new Cloudflare.GetZoneInvokeArgs { Filter = new Cloudflare.Inputs.GetZoneFilterInputArgs { Name = "byalex.dev" } }).Apply(zone => zone.Id);
 
     // Storage Blob Data Contributor: https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage:~:text=ba92f5b4%2D2d11%2D453d%2Da403%2De96b0029c9fe
 
@@ -20,13 +20,13 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.OperationalInsights.Workspace log = CreateLogAnalyticsWorkspace(rg);
         Azure.ApplicationInsights.Component appi = CreateApplicationInsights(rg, log);
         Azure.Web.AppServicePlan plan = CreatePlan(rg);
-        Cloudflare.Record data_record = CreateDataRecord();
+        Cloudflare.DnsRecord data_record = CreateDataRecord();
         Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
         Azure.Storage.StorageAccount func_st = CreateFunctionStorageAccount(rg);
         Azure.Web.WebApp function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
-        Cloudflare.Record web_record = CreateWebRecord();
+        Cloudflare.DnsRecord web_record = CreateWebRecord();
         Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
-        Cloudflare.Record api_record = CreateApiRecord(function);
+        Cloudflare.DnsRecord api_record = CreateApiRecord(function);
         Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, function, api_record);
         SetPermissions(function, metadata_st);
         // Export the Azure Function name and CDN endpoints
@@ -36,7 +36,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         DataDomain = data_record.Name;
     }
 
-    private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.Record api_record)
+    private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.DnsRecord api_record)
     {
         var domainBinding = new Azure.Web.WebAppHostNameBinding("api_custom_domain_binding", new Azure.Web.WebAppHostNameBindingArgs
         {
@@ -54,9 +54,9 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return domainBinding;
     }
 
-    private Cloudflare.Record CreateWebRecord()
+    private Cloudflare.DnsRecord CreateWebRecord()
     {
-        var dataRecord = new Cloudflare.Record("web_cname_record", new Cloudflare.RecordArgs
+        var dataRecord = new Cloudflare.DnsRecord("web_cname_record", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = config.Require("webdomain"),
@@ -65,7 +65,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Proxied = true
         });
 
-        var asverifyDataRecord = new Cloudflare.Record("asverify_web_cname_record", new Cloudflare.RecordArgs
+        var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_web_cname_record", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = $"asverify.{config.Require("webdomain")}",
@@ -77,9 +77,9 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return dataRecord;
     }
 
-    private Cloudflare.Record CreateDataRecord()
+    private Cloudflare.DnsRecord CreateDataRecord()
     {
-        var dataRecord = new Cloudflare.Record("data_cname_record", new Cloudflare.RecordArgs
+        var dataRecord = new Cloudflare.DnsRecord("data_cname_record", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = config.Require("datadomain"),
@@ -88,7 +88,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Proxied = true
         });
 
-        var asverifyDataRecord = new Cloudflare.Record("asverify_data_cname_record", new Cloudflare.RecordArgs
+        var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_data_cname_record", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = $"asverify.{config.Require("datadomain")}",
@@ -100,9 +100,9 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return dataRecord;
     }
 
-    private Cloudflare.Record CreateApiRecord(Azure.Web.WebApp function)
+    private Cloudflare.DnsRecord CreateApiRecord(Azure.Web.WebApp function)
     {
-        var txt_record = new Cloudflare.Record("api_txt_record", new Cloudflare.RecordArgs
+        var txt_record = new Cloudflare.DnsRecord("api_txt_record", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = $"asuid.{config.Require("apidomain")}",
@@ -110,7 +110,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\"")
         });
         
-        return new Cloudflare.Record("api", new Cloudflare.RecordArgs
+        return new Cloudflare.DnsRecord("api", new Cloudflare.DnsRecordArgs
         {
             ZoneId = zoneId,
             Name = config.Require("apidomain"),
@@ -191,7 +191,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         });
     }
 
-    private Azure.Storage.StorageAccount CreateMetadataStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.Record data_record)
+    private Azure.Storage.StorageAccount CreateMetadataStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.DnsRecord data_record)
     {
         var storageAccount = new Azure.Storage.StorageAccount("sametadata", new Azure.Storage.StorageAccountArgs
         {
@@ -277,7 +277,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         return storageAccount;
     }
 
-    private Azure.Storage.StorageAccount CreateWebsiteStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.Record web_record)
+    private Azure.Storage.StorageAccount CreateWebsiteStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.DnsRecord web_record)
     {
         var storageAccount = new Azure.Storage.StorageAccount("saweb", new Azure.Storage.StorageAccountArgs
         {

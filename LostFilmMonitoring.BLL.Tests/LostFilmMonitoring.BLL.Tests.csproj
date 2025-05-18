@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LostFilmMonitoring.DAO.Azure\LostFilmMonitoring.DAO.Azure.csproj" />
     <ProjectReference Include="..\LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj" />
   </ItemGroup>
 
