@@ -93,7 +93,6 @@ public class AzureBlobStorageClientTests
             }
         );
 
-
         var azureBlobStorageClient = GetClient();
         var stream = new MemoryStream();
         var result = await azureBlobStorageClient.DownloadAsync(containerName, dirName, blobName);
@@ -165,7 +164,6 @@ public class AzureBlobStorageClientTests
         result.Should().BeEquivalentTo(testData);
     }
 
-
     [Test]
     public async Task DeleteAsync_should_delete_file()
     {
@@ -204,7 +202,6 @@ public class AzureBlobStorageClientTests
         await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
     }
 
-
     [Test]
     public async Task ExistsAsync_should_check_if_file_exists()
     {
@@ -227,7 +224,6 @@ public class AzureBlobStorageClientTests
         await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
     }
 
-
     [Test]
     public async Task SetCacheControlAsync_should_set_cache_control()
     {
@@ -246,7 +242,6 @@ public class AzureBlobStorageClientTests
         var action = () => GetClient().SetCacheControlAsync(containerName, blobName, "cacheControl");
         await action.Should().ThrowAsync<ExternalServiceUnavailableException>();
     }
-
 
     [Test]
     public async Task UploadAsync_should_throw_exception_when_stream_null()
