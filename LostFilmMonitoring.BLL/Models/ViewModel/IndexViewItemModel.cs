@@ -13,6 +13,7 @@ public class IndexViewItemModel
     {
         this.Name = series.Name;
         this.ImageFileName = series.Id + ".jpg";
+        this.Id = series.Id.ToString();
     }
 
     /// <summary>
@@ -24,4 +25,9 @@ public class IndexViewItemModel
     /// Gets or sets image file name.
     /// </summary>
     public string ImageFileName { get; set; }
+
+    /// <summary>
+    /// Gets or sets item id.
+    /// </summary>
+    public string Id { get; set; }
 }
