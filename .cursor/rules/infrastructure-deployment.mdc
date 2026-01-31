@@ -1,0 +1,607 @@
+---
+description: Infrastructure as Code (Pulumi) and deployment patterns
+globs: LostFilmMonitoring.AzureInfrastructure/**/*.cs,.github/workflows/**/*.yml
+alwaysApply: false
+---
+
+# Infrastructure and Deployment Patterns
+
+## Pulumi Infrastructure as Code
+
+### Stack Structure
+
+```csharp
+// ✅ CORRECT - Stack pattern
+public class LostFilmMonitoringStack : Pulumi.Stack
+{
+    private readonly Pulumi.Config config = new Pulumi.Config();
+    
+    public LostFilmMonitoringStack()
+    {
+        // Create resources in logical order
+        var rg = CreateResourceGroup();
+        var log = CreateLogAnalyticsWorkspace(rg);
+        var appi = CreateApplicationInsights(rg, log);
+        var metadata_st = CreateMetadataStorageAccount(rg, data_record);
+        var function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
+        
+        // Set RBAC permissions
+        SetPermissions(function, metadata_st);
+        
+        // Export outputs
+        FunctionName = function.Name;
+        ApiDomain = api_record.Name;
+    }
+    
+    [Output]
+    public Output<string> FunctionName { get; set; }
+}
+```
+
+### Resource Naming Convention
+
+Use `Locals` class for consistent naming:
+
+```csharp
+// ✅ CORRECT
+public static class Locals
+{
+    public static readonly string Environment = System.Environment.GetEnvironmentVariable("PULUMI_STACK") ?? "dev";
+    public static readonly string ResourceGroupName = $"rg-lostfilm-{Environment}";
+    public static readonly string FunctionAppName = $"func-lostfilm-{Environment}";
+    public static readonly string MetadataStorageAccountName = $"stmetadata{Environment}";
+}
+
+// Use in stack
+new Azure.Resources.ResourceGroup("rg", new Azure.Resources.ResourceGroupArgs
+{
+    ResourceGroupName = Locals.ResourceGroupName,
+    Location = config.Require("location")
+});
+
+// ❌ WRONG - Hardcoded names
+new Azure.Resources.ResourceGroup("rg", new Azure.Resources.ResourceGroupArgs
+{
+    ResourceGroupName = "my-resource-group",
+    Location = "westeurope"
+});
+```
+
+### Configuration Management
+
+```csharp
+// ✅ CORRECT - Use Pulumi config for environment-specific values
+private readonly Pulumi.Config config = new Pulumi.Config();
+
+// Required configuration
+var location = config.Require("location");
+
+// Secret configuration (encrypted)
+var apiKey = config.RequireSecret("tmdbapikey");
+var cookie = config.RequireSecret("basefeedcookie");
+
+// ❌ WRONG - Hardcoded secrets
+var apiKey = "my-secret-key";
+
+// ❌ WRONG - Environment variables for secrets (use Pulumi secrets instead)
+var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+```
+
+### Storage Account Pattern
+
+```csharp
+// ✅ CORRECT - Storage account with containers
+private Azure.Storage.StorageAccount CreateMetadataStorageAccount(Azure.Resources.ResourceGroup rg, Cloudflare.DnsRecord data_record)
+{
+    var storageAccount = new Azure.Storage.StorageAccount("sametadata", new Azure.Storage.StorageAccountArgs
+    {
+        ResourceGroupName = rg.Name,
+        AccountName = Locals.MetadataStorageAccountName,
+        Sku = new Azure.Storage.Inputs.SkuArgs
+        {
+            Name = Azure.Storage.SkuName.Standard_LRS,
+        },
+        Kind = Azure.Storage.Kind.StorageV2,
+        AllowBlobPublicAccess = true,
+        EnableHttpsTrafficOnly = false,
+        AllowSharedKeyAccess = true,
+        DefaultToOAuthAuthentication = true,
+        CustomDomain = new Azure.Storage.Inputs.CustomDomainArgs
+        {
+            Name = data_record.Name.Apply(name => name),
+            UseSubDomainName = true
+        } 
+    });
+    
+    // Create containers using constants
+    var images = new Azure.Storage.BlobContainer("images", new Azure.Storage.BlobContainerArgs
+    {
+        ResourceGroupName = rg.Name,
+        AccountName = storageAccount.Name,
+        ContainerName = Constants.MetadataStorageContainerImages,
+        PublicAccess = Azure.Storage.PublicAccess.Blob,
+    });
+    
+    return storageAccount;
+}
+```
+
+### CORS Configuration
+
+```csharp
+// ✅ CORRECT - CORS for Blob Storage
+var corsRule = new Azure.Storage.BlobServiceProperties("cors_stmetadata", new Azure.Storage.BlobServicePropertiesArgs
+{
+    AccountName = storageAccount.Name,
+    BlobServicesName = "default",
+    ResourceGroupName = rg.Name,
+    Cors = new Azure.Storage.Inputs.CorsRulesArgs
+    {
+        CorsRules = 
+        {
+            new Azure.Storage.Inputs.CorsRuleArgs
+            {
+                AllowedOrigins = MetadataAllowedOrigins(),
+                AllowedMethods = {"GET", "OPTIONS"},
+                AllowedHeaders = {"*"},
+                ExposedHeaders = {"*"},
+                MaxAgeInSeconds = 3600
+            }
+        }
+    }
+});
+
+// ✅ CORRECT - CORS for Azure Function
+SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
+{
+    Cors = new Azure.Web.Inputs.CorsSettingsArgs
+    {
+        AllowedOrigins = AzureFunctionAllowedOrigins(),
+        SupportCredentials = true
+    }
+}
+
+// Method to build allowed origins
+private string[] AllowedOrigins()
+{
+    var result = new List<string>
+    {
+        $"https://{config.Require("webdomain")}"
+    };
+    
+    if (Locals.Environment == "dev")
+    {
+        result.Add("https://localhost:11443");
+    }
+    
+    return [.. result];
+}
+```
+
+### RBAC Permissions
+
+```csharp
+// ✅ CORRECT - Managed identity with RBAC
+var function = new Azure.Web.WebApp("function", new Azure.Web.WebAppArgs
+{
+    Identity = new Azure.Web.Inputs.ManagedServiceIdentityArgs
+    {
+        Type = Azure.Web.ManagedServiceIdentityType.SystemAssigned
+    }
+});
+
+// Grant Storage Blob Data Contributor role
+var blobDataContributorRole = new Azure.Authorization.RoleAssignment("func_metadata_blob_data_contributor", new Azure.Authorization.RoleAssignmentArgs
+{
+    PrincipalId = function.Identity.Apply(identity => identity!.PrincipalId),
+    PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
+    RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageBlobDataContributor),
+    Scope = metadata_st.Id
+});
+
+// Helper to build role definition ID
+private Pulumi.Input<string> GetRoleDefinitionId(string roleId)
+{
+    if (SubscriptionId == null)
+    {
+        SubscriptionId = Azure.Authorization.GetClientConfig.Invoke().Apply(config => config.SubscriptionId);
+    }
+    
+    return Pulumi.Output.Format($"/subscriptions/{SubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleId}");
+}
+```
+
+### Hybrid Authentication: RBAC for Blob + Keys for Table
+
+```csharp
+// ✅ CORRECT - Use different authentication methods for different storage services
+// Blob Storage: RBAC with managed identity for security
+// Table Storage: Storage account keys for performance
+
+// 1. Infrastructure: Set up RBAC for Blob Storage access
+var blobDataContributorRole = new Azure.Authorization.RoleAssignment("func_metadata_blob_data_contributor", 
+    new Azure.Authorization.RoleAssignmentArgs
+{
+    PrincipalId = function.Identity.Apply(identity => identity!.PrincipalId),
+    PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
+    RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageBlobDataContributor),
+    Scope = metadata_st.Id
+});
+
+// 2. Infrastructure: Provide storage account key for Table Storage access
+SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
+{
+    AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
+    {
+        { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
+        { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
+    })
+}
+
+// Helper to retrieve storage account key
+private static Pulumi.Output<string> GetAccessKey(Pulumi.Input<string> resourceGroupName, Pulumi.Input<string> accountName)
+{
+    var storageAccountKeys = Azure.Storage.ListStorageAccountKeys.Invoke(new Azure.Storage.ListStorageAccountKeysInvokeArgs
+    {
+        ResourceGroupName = resourceGroupName,
+        AccountName = accountName
+    });
+    return storageAccountKeys.Apply(keys => keys.Keys[0].Value);
+}
+
+// 3. Application: Configure clients with appropriate authentication
+// Blob Storage uses DefaultAzureCredential (managed identity)
+services.AddTransient(r => new BlobServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
+    new DefaultAzureCredential()));
+
+// Table Storage uses TableSharedKeyCredential (storage account key)
+services.AddTransient(r => new TableServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.table.core.windows.net/"),
+    new TableSharedKeyCredential(
+        Env(EnvironmentVariables.MetadataStorageAccountName),
+        Env(EnvironmentVariables.MetadataStorageAccountKey))));
+
+// Rationale:
+// - Blob Storage: Uses RBAC for better security and audit trail
+// - Table Storage: Uses storage account keys for faster authentication and reduced latency
+//   in serverless functions where cold start and request response time are critical
+// - This hybrid approach balances security with performance requirements
+
+// ❌ WRONG - Using same authentication for both services without considering trade-offs
+services.AddTransient(r => new TableServiceClient(uri, new DefaultAzureCredential())); // Adds latency
+services.AddTransient(r => new BlobServiceClient(uri, new StorageSharedKeyCredential(name, key))); // Less secure
+```
+
+### Custom Domain Binding
+
+```csharp
+// ✅ CORRECT - DNS record first, then custom domain
+var api_record = new Cloudflare.DnsRecord("api", new Cloudflare.DnsRecordArgs
+{
+    ZoneId = zoneId,
+    Name = config.Require("apidomain"),
+    Type = "CNAME",
+    Content = function.DefaultHostName,
+    Proxied = true
+});
+
+// TXT record for verification
+var txt_record = new Cloudflare.DnsRecord("api_txt_record", new Cloudflare.DnsRecordArgs
+{
+    ZoneId = zoneId,
+    Name = $"asuid.{config.Require("apidomain")}",
+    Type = "TXT",
+    Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\"")
+});
+
+// Then bind custom domain
+var domainBinding = new Azure.Web.WebAppHostNameBinding("api_custom_domain_binding", new Azure.Web.WebAppHostNameBindingArgs
+{
+    ResourceGroupName = rg.Name,
+    Name = function.Name,
+    SiteName = function.Name,
+    HostName = config.Require("apidomain"),
+    CustomHostNameDnsRecordType = Azure.Web.CustomHostNameDnsRecordType.CName,        
+}, new CustomResourceOptions 
+{ 
+    DependsOn = { api_record },
+    IgnoreChanges = { "sslState", "thumbprint" }
+});
+```
+
+### Azure Function Configuration
+
+```csharp
+// ✅ CORRECT - Function app settings
+SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
+{
+    LinuxFxVersion = "DOTNET-ISOLATED|8.0",
+    AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
+    {
+        { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
+        { "AzureWebJobsStorage", GetConnectionString(rg.Name, st.Name) },
+        { "AzureWebJobsDisableHomepage", "true" },
+        { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
+        { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
+        { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
+        { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
+        { "FUNCTIONS_EXTENSION_VERSION", "~4" },
+        { "AzureWebJobsFeatureFlags", "EnableWorkerIndexing" },
+    })
+}
+
+// Helper to convert dictionary to Pulumi input list
+private static Pulumi.InputList<Azure.Web.Inputs.NameValuePairArgs> GetAppSettings(Dictionary<Pulumi.Input<string>, Pulumi.Input<string>> settings)
+{
+    var result = new Pulumi.InputList<Azure.Web.Inputs.NameValuePairArgs>();
+    foreach (var setting in settings)
+    {
+        result.Add(new Azure.Web.Inputs.NameValuePairArgs
+        {
+            Name = setting.Key,
+            Value = setting.Value
+        });
+    }
+    return result;
+}
+```
+
+### Ignore Changes for Managed Properties
+
+```csharp
+// ✅ CORRECT - Ignore properties managed by Azure
+new Azure.Web.WebApp("function", new Azure.Web.WebAppArgs
+{
+    // ... configuration
+}, new CustomResourceOptions { 
+    IgnoreChanges = { 
+        "hostNameSslStates",      // SSL certificates managed separately
+        "enabledHostNames"         // Updated by Azure
+    }
+});
+```
+
+## GitHub Actions Deployment
+
+### Workflow Structure
+
+```yaml
+# ✅ CORRECT - Sequential jobs with dependencies
+jobs:
+  infrastructure:
+    runs-on: ubuntu-latest
+    outputs:
+      functionAppName: ${{ steps.pulumi.outputs.FunctionName }}
+      apiDomain: ${{ steps.pulumi.outputs.ApiDomain }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: azure/login@v2.3.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - uses: pulumi/actions@v6
+        with:
+          command: up
+          stack-name: ${{inputs.environment}}
+          cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
+          refresh: true
+  
+  backend:
+    runs-on: ubuntu-latest
+    needs: infrastructure
+    steps:
+      - name: Dotnet Build
+        run: dotnet build --configuration Release
+      - name: Deploy Azure Function
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ needs.infrastructure.outputs.functionAppName }}
+  
+  frontend:
+    runs-on: ubuntu-latest
+    needs: infrastructure
+    steps:
+      - name: Update Configuration
+        run: node update-config.js
+        env:
+          BASE_API_URI: https://${{ needs.infrastructure.outputs.apiDomain }}/api/
+
+# ❌ WRONG - No dependency between jobs (could deploy before infrastructure is ready)
+jobs:
+  infrastructure:
+    runs-on: ubuntu-latest
+  backend:
+    runs-on: ubuntu-latest  # Missing: needs: infrastructure
+```
+
+### OIDC Authentication
+
+```yaml
+# ✅ CORRECT - OIDC without secrets
+permissions:
+  id-token: write
+  contents: read
+
+- uses: azure/login@v2.3.0
+  with:
+    client-id: ${{ vars.AZURE_CLIENT_ID }}
+    tenant-id: ${{ vars.AZURE_TENANT_ID }}
+    subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+# ❌ WRONG - Using service principal secrets
+- uses: azure/login@v2.3.0
+  with:
+    creds: ${{ secrets.AZURE_CREDENTIALS }}
+```
+
+### Unit Test Reporting
+
+```yaml
+# ✅ CORRECT - Run tests and publish results even on failure
+- name: Unit Tests
+  run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
+
+- name: Unit Tests Report
+  uses: dorny/test-reporter@v2
+  with:
+    name: DotNET Tests
+    path: '**/test-results.trx'
+    reporter: dotnet-trx
+    fail-on-error: true
+
+# ❌ WRONG - Not running test reporter on failure
+- name: Unit Tests
+  run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
+- name: Unit Tests Report  # This won't run if tests fail
+  uses: dorny/test-reporter@v2
+```
+
+### Frontend Configuration Update
+
+```yaml
+# ✅ CORRECT - Update config with infrastructure outputs
+- name: Update Configuration
+  working-directory: ./LostFilmMonitoring.Web
+  run: node update-config.js
+  env:
+    BASE_API_URI: https://${{ needs.infrastructure.outputs.apiDomain }}/api/
+    BASE_DATA_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/models/
+    IMAGES_BASE_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/images/
+    BASE_RSS_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/rssfeeds/
+
+# update-config.js content
+const fs = require('fs');
+const path = require('path');
+
+const config = {
+    baseApiUri: process.env.BASE_API_URI,
+    baseDataUri: process.env.BASE_DATA_URI,
+    imagesBaseUri: process.env.IMAGES_BASE_URI,
+    baseRssUri: process.env.BASE_RSS_URI
+};
+
+fs.writeFileSync(
+    path.join(__dirname, 'config.js'),
+    `const config = ${JSON.stringify(config, null, 4)};`
+);
+```
+
+### Blob Upload Pattern
+
+```yaml
+# ✅ CORRECT - Upload to static website with overwrite
+- name: Upload to blob storage
+  uses: azure/CLI@v2
+  with:
+    inlineScript: |
+      az storage blob upload-batch \
+        --account-name ${{ needs.infrastructure.outputs.websiteStorageAccountName }} \
+        --auth-mode login \
+        -d '$web' \
+        -s ./LostFilmMonitoring.Web \
+        --overwrite true
+
+# ❌ WRONG - Using storage account key (use managed identity instead)
+- name: Upload to blob storage
+  run: |
+    az storage blob upload-batch \
+      --account-name ${{ needs.infrastructure.outputs.websiteStorageAccountName }} \
+      --account-key ${{ secrets.STORAGE_KEY }} \
+      -d '$web' \
+      -s ./LostFilmMonitoring.Web
+```
+
+### Manual Workflow Dispatch
+
+```yaml
+# ✅ CORRECT - Manual trigger with environment selection
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy to'
+        required: true
+        type: choice
+        options:
+        - dev
+        - prod
+
+run-name: Deploy to ${{ inputs.environment }}
+
+jobs:
+  infrastructure:
+    steps:
+      - uses: pulumi/actions@v6
+        with:
+          stack-name: ${{inputs.environment}}
+
+# ❌ WRONG - Automatic deployment to production
+on:
+  push:
+    branches: [ main ]
+```
+
+## Pulumi Commands
+
+```bash
+# ✅ CORRECT - Preview changes before applying
+pulumi preview --stack dev
+pulumi up --stack dev
+
+# Export outputs
+pulumi stack output FunctionName --stack dev
+
+# View configuration
+pulumi config --stack dev
+
+# Set secret
+pulumi config set --secret tmdbapikey "your-api-key" --stack dev
+
+# ❌ WRONG - Running up without preview
+pulumi up --yes --stack prod  # Dangerous in production!
+
+# ❌ WRONG - Committing secrets
+pulumi config set tmdbapikey "your-api-key"  # Missing --secret flag
+```
+
+## Environment-Specific Configuration
+
+```yaml
+# ✅ CORRECT - Pulumi.dev.yaml
+config:
+  azure-native:location: westeurope
+  lostfilm:apidomain: apilostfilmfeeddev.byalex.dev
+  lostfilm:datadomain: datalostfilmfeeddev.byalex.dev
+  lostfilm:webdomain: lostfilmfeeddev.byalex.dev
+
+# Pulumi.prod.yaml
+config:
+  azure-native:location: westeurope
+  lostfilm:apidomain: apilostfilmfeed.byalex.dev
+  lostfilm:datadomain: datalostfilmfeed.byalex.dev
+  lostfilm:webdomain: lostfilmfeed.byalex.dev
+```
+
+## Static Website Hosting
+
+```csharp
+// ✅ CORRECT - Enable static website on storage account
+var staticWebsite = new Azure.Storage.StorageAccountStaticWebsite("staticWebsite", new Azure.Storage.StorageAccountStaticWebsiteArgs
+{
+    AccountName = storageAccount.Name,
+    ResourceGroupName = rg.Name,
+    IndexDocument = "index.html",
+    Error404Document = "404.html"
+});
+
+// Custom domain binding
+CustomDomain = new Azure.Storage.Inputs.CustomDomainArgs
+{
+    Name = web_record.Name.Apply(name => name),
+    UseSubDomainName = true
+}
+```
