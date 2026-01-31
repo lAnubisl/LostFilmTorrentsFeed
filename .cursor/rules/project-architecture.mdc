@@ -1,0 +1,633 @@
+---
+description: LostFilm RSS Feed - Complete Project Architecture and Development Guidelines
+alwaysApply: true
+---
+
+# LostFilm RSS Feed - Project Architecture
+
+This is a comprehensive guide for the LostFilm.tv RSS Feed generation service, a C# .NET 8 serverless application hosted on Azure.
+
+## Project Overview
+
+**Purpose**: Generate personalized RSS feeds for LostFilm.tv series, allowing users to subscribe to specific shows with quality preferences (SD, 1080p, MP4).
+
+**Website**: https://lostfilmfeed.byalex.dev
+
+**Tech Stack**:
+- Backend: C# .NET 8, Azure Functions (Isolated Worker)
+- Frontend: Vanilla JavaScript, HTML, CSS
+- Infrastructure: Azure (Blob Storage, Table Storage, Functions), managed via Pulumi
+- Testing: NUnit, Moq, FluentAssertions
+- CI/CD: GitHub Actions
+- Monitoring: Azure Application Insights, OpenTelemetry
+
+## Architecture Layers
+
+### 1. Solution Structure
+
+```
+LostFilmMonitoring.sln
+├── LostFilmMonitoring.AzureFunction          # Azure Functions HTTP triggers
+├── LostFilmMonitoring.AzureInfrastructure    # Pulumi IaC
+├── LostFilmMonitoring.BLL                    # Business Logic Layer (Commands)
+├── LostFilmMonitoring.BLL.Tests              # Business Logic tests
+├── LostFilmMonitoring.Common                 # Shared constants and utilities
+├── LostFilmMonitoring.DAO.Interfaces         # Data Access abstractions
+├── LostFilmMonitoring.DAO.Azure              # Azure Table/Blob implementations
+├── LostFilmMonitoring.DAO.Azure.Tests        # DAO tests
+├── LostFilmMonitoring.Web                    # Static website (frontend)
+├── LostFilmTV.Client                         # LostFilm.tv API client
+├── LostFilmTV.Client.Tests                   # Client tests
+└── TMDB.Client                               # TMDB API client for cover images
+```
+
+### 2. Business Logic Layer (Command Pattern)
+
+**Pattern**: All business logic is implemented as commands that are injected via DI.
+
+**Command Interfaces**:
+```csharp
+// Commands with return values
+public interface ICommand<TRequestModel, TResponseModel>
+{
+    Task<TResponseModel> ExecuteAsync(TRequestModel? request);
+}
+
+// Commands without return values
+public interface ICommand
+{
+    Task ExecuteAsync();
+}
+```
+
+**Key Commands**:
+- `UpdateFeedsCommand`: Polls LostFilm RSS feed, processes new episodes, updates subscriptions
+- `SaveUserCommand`: Registers/updates users (creates user, empty subscription, empty feed)
+- `SaveSubscriptionCommand`: Updates user's series subscriptions with quality preferences
+- `SignInCommand`: Authenticates users by checking if user exists
+- `GetUserCommand`: Retrieves user details for editing
+- `DownloadCoverImagesCommand`: Downloads TV series cover images from TMDB
+- `UpdateUserFeedCommand`: Updates individual user's RSS feed with new episodes
+
+**Command Registration** (in `Program.cs`):
+```csharp
+services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
+services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();
+```
+
+### 3. Data Access Layer (Repository Pattern)
+
+**Interface**: `IDal` - Aggregates all DAO interfaces:
+```csharp
+public interface IDal
+{
+    IFeedDao Feed { get; }
+    ISeriesDao Series { get; }
+    ISubscriptionDao Subscription { get; }
+    ITorrentFileDao TorrentFile { get; }
+    IUserDao User { get; }
+    IEpisodeDao Episode { get; }
+}
+```
+
+**Storage Strategy**:
+- **Azure Table Storage**: Structured data (users, series, episodes, subscriptions)
+- **Azure Blob Storage**: Files and models (RSS feeds, torrent files, JSON models, images)
+
+**Table Storage Tables**:
+- `users`: User records (userId, trackerId)
+- `series`: Series metadata (name, id, lastUpdate)
+- `episodes`: Episode records (seriesName, seasonNumber, episodeNumber, quality)
+- `subscriptions`: User subscription items (userId, seriesName, quality)
+- `dictionary`: General key-value storage
+
+**Blob Storage Containers**:
+- `rssfeeds`: User-specific RSS XML files (`{userId}.xml`)
+- `models`: JSON models for frontend (`index.json`, `subscription_{userId}.json`)
+- `images`: Series cover images (`{seriesId}.jpg`)
+- `basetorrents`: Base torrent files (private)
+- `usertorrents`: User-specific torrent files (public)
+
+**DAO Implementations** (Examples):
+```csharp
+// Azure Table Storage
+public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
+{
+    public Task<User?> LoadAsync(string userId) { ... }
+    public Task SaveAsync(User user) { ... }
+    public Task DeleteAsync(string userId) { ... }
+}
+
+// Azure Blob Storage
+public class AzureBlobStorageFeedDao : IFeedDao
+{
+    public Task SaveUserFeedAsync(string userId, FeedItem[] items) { ... }
+    public Task<SortedSet<FeedItem>> LoadUserFeedAsync(string userId) { ... }
+}
+```
+
+### 4. Validation Mechanisms
+
+**Pattern**: Validators implement `IValidator<T>` interface:
+```csharp
+public interface IValidator<T>
+{
+    Task<ValidationResult> ValidateAsync(T model);
+}
+```
+
+**Validation Result**:
+```csharp
+public class ValidationResult
+{
+    public bool IsValid { get; }
+    public Dictionary<string, string> Errors { get; }
+    
+    public static ValidationResult Fail(string field, string message) { ... }
+}
+```
+
+**Validators**:
+- `EditUserRequestModelValidator`: Validates user registration/update (TrackerId required)
+- `EditSubscriptionRequestModelValidator`: Validates subscriptions (user exists, series exists, valid quality)
+
+**Validation Rules**:
+- Check for null/empty required fields
+- Verify referenced entities exist (user, series)
+- Validate quality values are in allowed set: `SD`, `1080` (H1080), `MP4` (H720)
+- All validators use DI for DAOs to check database state
+
+**Usage in Commands**:
+```csharp
+var validationResult = await validator.ValidateAsync(request);
+if (!validationResult.IsValid)
+{
+    return new ResponseModel(validationResult);
+}
+```
+
+### 5. Azure Functions (HTTP Entry Points)
+
+**Pattern**: Each function is a class with a `RunAsync` method decorated with `[Function]` attribute.
+
+**Function Structure**:
+```csharp
+[Function("GetUserFunction")]
+[OpenApiOperation(operationId: "GetUserFunction", tags: ["user"])]
+[OpenApiRequestBody(contentType: "application/json", bodyType: typeof(GetUserRequestModel))]
+[OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, bodyType: typeof(GetUserResponseModel))]
+public async Task<HttpResponseData> RunAsync(
+    [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+{
+    var responseModel = await command.ExecuteAsync(ModelBinder.Bind<GetUserRequestModel>(req));
+    var response = req.CreateResponse(HttpStatusCode.OK);
+    await response.WriteStringAsync(JsonSerializer.Serialize(responseModel));
+    return response;
+}
+```
+
+**Available Functions**:
+- `GetUserFunction`: Retrieve user details (POST /api/GetUserFunction)
+- `RegisterFunction`: Register new user (POST /api/RegisterFunction)
+- `SignInFunction`: Sign in existing user (POST /api/SignInFunction)
+- `SubscriptionUpdateFunction`: Update user subscriptions (POST /api/SubscriptionUpdateFunction)
+- `UpdateRssFeedFunction`: Scheduled feed update (Timer trigger)
+- `CheckImagesFunction`: Scheduled image download (Timer trigger)
+
+**Dependency Injection** (in `Program.cs`):
+```csharp
+services.AddTransient<Common.ILogger, Logger>();
+services.AddTransient<IUserDao, AzureTableStorageUserDao>();
+services.AddTransient<ICommand<GetUserRequestModel, GetUserResponseModel>, GetUserCommand>();
+```
+
+**Model Binding**: `ModelBinder.Bind<T>(req)` deserializes JSON request body to model.
+
+**OpenAPI**: Functions are documented with OpenAPI attributes for automatic API documentation.
+
+### 6. Frontend-Backend Communication
+
+**Frontend Architecture**: Vanilla JavaScript (ES6+), no frameworks.
+
+**Configuration** (`config.js`):
+```javascript
+const config = {
+    baseApiUri: "https://apilostfilmfeeddev.byalex.dev/api/",
+    baseDataUri: "https://datalostfilmfeeddev.byalex.dev/models/",
+    imagesBaseUri: "https://datalostfilmfeeddev.byalex.dev/images/",
+    baseRssUri: "https://datalostfilmfeeddev.byalex.dev/rssfeeds/"
+};
+```
+
+**Config Update**: `update-config.js` script runs during deployment to inject environment-specific URLs.
+
+**API Communication Patterns**:
+
+```javascript
+// POST JSON to Azure Function
+const postJSONAsync = async (url, model) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.responseType = 'json';
+    const response = await xhr.send(JSON.stringify(model));
+    return response;
+};
+
+// GET JSON from blob storage
+const fetchJSONAsync = async (url) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    return await xhr.send();
+};
+```
+
+**Authentication**: 
+- Uses localStorage (not real cookies) to store `UserId`
+- No passwords - users authenticate via `TrackerId` (from LostFilm.tv tracker)
+- Functions use `getCookie("UserId")` to retrieve stored user ID
+
+**Key Frontend Flows**:
+
+1. **Registration**: 
+   - User enters `TrackerId` → POST to `RegisterFunction` → Receive `UserId` → Store in localStorage
+
+2. **Subscription Management**:
+   - Load series list from `models/index.json`
+   - Load user subscriptions from `models/subscription_{userId}.json`
+   - User selects series + quality → POST to `SubscriptionUpdateFunction`
+
+3. **RSS Feed Access**:
+   - User's feed available at `rssfeeds/{userId}.xml`
+   - Can be added to torrent clients for automatic downloads
+
+**CORS Configuration**: 
+- Frontend domains configured in both Azure Function and Blob Storage CORS settings
+- Managed through Pulumi infrastructure code
+
+### 7. Infrastructure as Code (Pulumi)
+
+**Stack**: `LostFilmMonitoring.AzureInfrastructure` - C# Pulumi project
+
+**Resources Managed**:
+- Resource Group
+- Log Analytics Workspace
+- Application Insights
+- App Service Plan (Consumption Y1)
+- Azure Function App
+- 3 Storage Accounts:
+  - Metadata storage (for data, images, feeds)
+  - Function storage (for function runtime)
+  - Website storage (static website hosting)
+- Cloudflare DNS records (via Cloudflare provider)
+- Custom domain bindings
+- RBAC role assignments
+
+**Key Infrastructure Patterns**:
+
+```csharp
+public class LostFilmMonitoringStack : Pulumi.Stack
+{
+    public LostFilmMonitoringStack()
+    {
+        var rg = CreateResourceGroup();
+        var appi = CreateApplicationInsights(rg, log);
+        var metadata_st = CreateMetadataStorageAccount(rg, data_record);
+        var function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
+        SetPermissions(function, metadata_st); // RBAC assignments
+    }
+}
+```
+
+**Environment Configuration**: Separate Pulumi stacks for `dev` and `prod`:
+- `Pulumi.dev.yaml`: Development environment settings
+- `Pulumi.prod.yaml`: Production environment settings
+
+**Secrets Management**: 
+- Sensitive values (API keys, cookies) stored as Pulumi secrets
+- Retrieved via `config.RequireSecret("keyname")`
+
+**Blob Container Creation**:
+```csharp
+new Azure.Storage.BlobContainer("images", new Azure.Storage.BlobContainerArgs
+{
+    ResourceGroupName = rg.Name,
+    AccountName = storageAccount.Name,
+    ContainerName = Constants.MetadataStorageContainerImages,
+    PublicAccess = Azure.Storage.PublicAccess.Blob,
+});
+```
+
+**RBAC Permissions**: Function App granted Storage Blob Data Contributor and Storage Table Data Contributor roles on metadata storage.
+
+### 8. Deployment Pipeline (GitHub Actions)
+
+**Workflow**: `.github/workflows/deploy.yml`
+
+**Jobs**:
+
+1. **Infrastructure** (runs first):
+   - Authenticate to Azure (OIDC)
+   - Run `pulumi up` to provision/update infrastructure
+   - Output: Function App name, storage account names, domain names
+
+2. **Backend** (depends on infrastructure):
+   - Build .NET solution (`dotnet build --configuration Release`)
+   - Run unit tests (`dotnet test --configuration Release`)
+   - Publish test results using `dorny/test-reporter`
+   - Build Azure Function artifact
+   - Deploy to Azure Function using `Azure/functions-action`
+
+3. **Frontend** (depends on infrastructure):
+   - Run `update-config.js` with environment URLs from infrastructure outputs
+   - Upload static files to website storage account (`az storage blob upload-batch`)
+
+**Trigger**: Manual workflow dispatch with environment selection (dev/prod)
+
+**Permissions**: Uses OIDC authentication (no secrets for Azure auth)
+
+**Environment Variables**:
+```yaml
+BASE_API_URI: https://${{ needs.infrastructure.outputs.apiDomain }}/api/
+BASE_DATA_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/models/
+IMAGES_BASE_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/images/
+BASE_RSS_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/rssfeeds/
+```
+
+**Other Workflows**:
+- `sonarcloud.yml`: Code quality analysis
+- `codeql.yml`: Security scanning
+- `deepsorce.yml`: Additional code quality checks
+- `dependabot-auto-merge.yml`: Auto-merge dependency updates
+
+### 9. Testing Strategy
+
+**Framework**: NUnit + Moq + FluentAssertions
+
+**Test Structure**: Tests mirror source structure with `.Tests` suffix
+
+**Test Patterns**:
+
+```csharp
+[ExcludeFromCodeCoverage]
+internal class SaveUserCommandTests
+{
+    private Mock<IUserDao> userDao;
+    private Mock<ILogger> logger;
+    
+    [SetUp]
+    public void Setup()
+    {
+        userDao = new Mock<IUserDao>();
+        logger = new Mock<ILogger>();
+        logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(logger.Object);
+    }
+    
+    [Test]
+    public async Task ExecuteAsync_should_generate_userId_for_new_user()
+    {
+        // Arrange
+        var command = CreateCommand();
+        
+        // Act
+        var response = await command.ExecuteAsync(
+            new EditUserRequestModel { UserId = null, TrackerId = "TrackerId" }
+        );
+        
+        // Assert
+        response.UserId.Should().NotBeNull();
+    }
+}
+```
+
+**Testing Conventions**:
+1. All tests in separate `*.Tests` projects
+2. Test class names end with `Tests`
+3. Test methods follow pattern: `MethodName_should_expectedBehavior_when_condition`
+4. Constructor null checks tested for all classes
+5. Mock setup for logger scope creation: `logger.Setup(l => l.CreateScope(...)).Returns(logger.Object)`
+6. Verify DAOs are called correctly with `Verify(x => x.Method(...), Times.Once)`
+7. Use FluentAssertions for readable assertions
+
+**Coverage**: Tests run in CI/CD, results reported to SonarCloud and DeepSource
+
+## Coding Standards
+
+### General Principles
+
+1. **Null Safety**: Treat CS8604 and CS8601 as errors (configured in `.editorconfig`)
+2. **Constructor Validation**: All dependencies validated with `?? throw new ArgumentNullException(nameof(param))`
+3. **Logging**: Use scoped loggers via `logger.CreateScope(nameof(ClassName))`
+4. **XML Documentation**: All public APIs documented with `<summary>`, `<param>`, `<returns>`
+5. **StyleCop**: Enforced via `stylecop.json` (SA1633 disabled to save AI context)
+
+### Code Style (.editorconfig)
+
+```
+- Indent: 4 spaces
+- Charset: UTF-8 with BOM for C# files
+- New line before all braces (Allman style)
+- var usage: Preferred for built-in types and when type is apparent
+- Using directives: Outside namespace, sorted with System first
+- Modifier order: public, private, protected, internal, static, ...
+- Pattern matching: Preferred over is/as with null checks
+```
+
+### Naming Conventions
+
+- PascalCase for constants
+- PascalCase for public members
+- camelCase for private fields
+- Async methods end with `Async`
+- Interfaces start with `I`
+- DAOs end with `Dao` (not `DAO`)
+
+### Async/Await Patterns
+
+```csharp
+// Configure await false not used - running in Azure Functions
+var result = await someAsyncOperation();
+
+// Parallel operations
+await Task.WhenAll(operation1(), operation2());
+
+// Sequential with dependencies
+var data1 = await LoadDataAsync();
+var data2 = await ProcessDataAsync(data1);
+```
+
+### Dependency Injection
+
+All services registered in `Program.cs` using `services.AddTransient<TInterface, TImplementation>()`.
+
+**Constructor Pattern**:
+```csharp
+public MyService(IDependency dependency, ILogger logger)
+{
+    this.dependency = dependency ?? throw new ArgumentNullException(nameof(dependency));
+    this.logger = logger?.CreateScope(nameof(MyService)) ?? throw new ArgumentNullException(nameof(logger));
+}
+```
+
+## Domain Models
+
+### Core Entities
+
+- **User**: `(Id: string, TrackerId: string)` - LostFilm.tv tracker ID for authentication
+- **Series**: `(Id: Guid, Name: string, LastUpdateDate: DateTimeOffset)` - TV series metadata
+- **Episode**: `(SeriesName: string, SeasonNumber: int, EpisodeNumber: int, Quality: string)` - Episode records
+- **Subscription**: `(UserId: string, SeriesName: string, Quality: string)` - User's series subscriptions
+- **FeedItem**: RSS feed item with title, link, date, torrent info
+- **TorrentFile**: `(FileName: string, Content: byte[])` - Torrent file data
+
+### Quality Constants
+
+```csharp
+public static class Quality
+{
+    public const string SD = "SD";
+    public const string H1080 = "1080";
+    public const string H720 = "MP4";
+}
+```
+
+## Common Patterns
+
+### Logger Scoping
+```csharp
+this.logger = logger?.CreateScope(nameof(MyClass)) ?? throw new ArgumentNullException(nameof(logger));
+this.logger.Info($"Call: {nameof(MyMethod)}(parameters)");
+```
+
+### Error Handling
+- DAOs throw `ExternalServiceUnavailableException` for Azure service failures
+- Commands return validation results for business rule violations
+- Unhandled exceptions bubble up to Azure Functions runtime (logged to App Insights)
+
+### Serialization
+- Use `CommonSerializationOptions.Default` for consistent JSON serialization
+- All request/response models use System.Text.Json
+
+### Telemetry
+- OpenTelemetry configured with Azure Monitor exporters
+- ActivitySource used for distributed tracing: `ActivitySource.StartActivity(name, kind)`
+- Metrics and logs exported to Application Insights
+
+## Key Business Flows
+
+### 1. Feed Update Process (UpdateFeedsCommand)
+
+1. Load latest RSS feed from LostFilm.tv (`IRssFeed.LoadFeedItemsAsync()`)
+2. Load last persisted feed state (`IModelPersister.LoadAsync<SortedSet<FeedItemResponse>>()`)
+3. Compare for updates using custom equality comparer
+4. For each new feed item:
+   - Parse series and episode information
+   - Check if episode already exists
+   - Download torrent file via `ILostFilmClient`
+   - Save episode to database
+   - Update all subscribed users' feeds
+   - Download series cover image from TMDB (if new series)
+5. Update index view model for frontend
+6. Persist new feed state
+
+### 2. User Subscription Update
+
+1. Validate request (user exists, series exist, valid qualities)
+2. Delete existing subscriptions for user
+3. Save new subscription items
+4. Rebuild user's RSS feed from base feed + subscriptions
+5. Persist updated subscription model (JSON for frontend)
+
+### 3. New Episode Notification
+
+When new episode detected:
+1. Find all users subscribed to that series + quality
+2. For each user:
+   - Load user's existing feed
+   - Generate personalized torrent file (with user's tracker credentials)
+   - Add episode to user's feed
+   - Save updated XML feed to blob storage
+
+## Environment Variables
+
+```
+MetadataStorageAccountName: Storage account for data/feeds
+MetadataStorageAccountKey: Access key for table storage
+BaseURL: LostFilm.tv base URL
+BaseFeedCookie: Authentication cookie for feed access
+BaseLinkUID: User ID for torrent downloads
+BaseUSESS: Session key for torrent downloads
+TorrentTrackers: Comma-separated tracker URLs
+TmdbApiKey: The Movie Database API key
+APPLICATIONINSIGHTS_CONNECTION_STRING: App Insights connection
+```
+
+## Development Guidelines
+
+### Adding New Features
+
+1. **New Command**: Create in `LostFilmMonitoring.BLL/Commands/`
+   - Implement `ICommand<TRequest, TResponse>` or `ICommand`
+   - Add constructor validation
+   - Add XML documentation
+   - Register in `Program.cs` DI
+   - Create tests in `LostFilmMonitoring.BLL.Tests/Commands/`
+
+2. **New DAO**: Create interface in `DAO.Interfaces`, implementation in `DAO.Azure`
+   - Add to `IDal` interface
+   - Implement in `Dal` class
+   - Register in `Program.cs`
+   - Create tests in `DAO.Azure.Tests`
+
+3. **New Azure Function**: Create in `AzureFunction/Functions/`
+   - Add `[Function]` attribute
+   - Add OpenAPI documentation attributes
+   - Inject command via constructor
+   - Use `ModelBinder.Bind<T>()` for request
+   - Serialize response with `JsonSerializer`
+
+4. **New Frontend Feature**: Update in `LostFilmMonitoring.Web/`
+   - Add function to `script.js`
+   - Update HTML as needed
+   - Follow existing async/await patterns
+   - Update config if new endpoints needed
+
+### Testing Checklist
+
+- [ ] Constructor null checks for all parameters
+- [ ] Validation logic covers all edge cases
+- [ ] DAO methods called with correct parameters
+- [ ] Async operations awaited correctly
+- [ ] Error handling tested
+- [ ] FluentAssertions used for readability
+
+### Deployment Checklist
+
+- [ ] All tests passing locally
+- [ ] Code follows StyleCop rules
+- [ ] XML documentation complete
+- [ ] Pulumi stack validated (`pulumi preview`)
+- [ ] Frontend config URLs correct for environment
+- [ ] GitHub Actions workflow triggered for correct environment
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Validation Failures**: Check that series exists in database before creating subscription
+2. **Feed Not Updating**: Verify base feed cookies are valid and not expired
+3. **Torrent Download Fails**: Check UID/USESS credentials are valid
+4. **Image Download Fails**: Verify TMDB API key and series name parsing (needs original English name)
+5. **Deployment Fails**: Check Pulumi stack state, Azure RBAC permissions, storage account keys
+
+### Monitoring
+
+- **Application Insights**: All telemetry, exceptions, traces
+- **SonarCloud**: Code quality, coverage, code smells
+- **DeepSource**: Additional quality metrics
+- **Dependabot**: Automated dependency updates
+
+---
+
+This guide provides complete context for developing, testing, deploying, and maintaining the LostFilm RSS Feed service.

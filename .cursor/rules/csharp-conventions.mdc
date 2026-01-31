@@ -1,0 +1,449 @@
+---
+description: C# coding conventions and patterns for LostFilm RSS Feed project
+globs: **/*.cs
+alwaysApply: false
+---
+
+# C# Coding Conventions
+
+## Constructor Pattern
+
+Always validate dependencies and create scoped loggers:
+
+```csharp
+// ✅ CORRECT
+public class MyService
+{
+    private readonly IDependency dependency;
+    private readonly ILogger logger;
+    
+    public MyService(IDependency dependency, ILogger logger)
+    {
+        this.dependency = dependency ?? throw new ArgumentNullException(nameof(dependency));
+        this.logger = logger?.CreateScope(nameof(MyService)) ?? throw new ArgumentNullException(nameof(logger));
+    }
+}
+
+// ❌ WRONG - No null checks
+public MyService(IDependency dependency, ILogger logger)
+{
+    this.dependency = dependency;
+    this.logger = logger;
+}
+
+// ❌ WRONG - No logger scoping
+this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+```
+
+## Command Pattern
+
+All business logic must be implemented as commands:
+
+```csharp
+// ✅ CORRECT - Command with return value
+public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseModel>
+{
+    public async Task<EditUserResponseModel> ExecuteAsync(EditUserRequestModel? request)
+    {
+        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(EditUserRequestModel model)");
+        
+        if (request == null)
+        {
+            return new EditUserResponseModel(ValidationResult.Fail(ErrorMessages.RequestNull));
+        }
+        
+        // Business logic here
+        return new EditUserResponseModel(result);
+    }
+}
+
+// ✅ CORRECT - Command without return value
+public class UpdateFeedsCommand : ICommand
+{
+    public async Task ExecuteAsync()
+    {
+        // Business logic here
+    }
+}
+```
+
+## Logging Pattern
+
+Log method entry with parameters, use structured logging:
+
+```csharp
+// ✅ CORRECT
+this.logger.Info($"Call: {nameof(this.SaveAsync)}('{userId}')");
+this.logger.Info($"Call: {nameof(this.SaveAsync)}(User user)");
+this.logger.Error($"Could not get torrent id for {feedResponseItem.Title}");
+
+// ❌ WRONG - Missing method entry logging
+public async Task SaveAsync(string userId)
+{
+    // No log statement
+    await this.client.SaveAsync(userId);
+}
+```
+
+## DAO Pattern
+
+DAOs must inherit from base class and follow naming conventions:
+
+```csharp
+// ✅ CORRECT - Table Storage DAO
+public class AzureTableStorageUserDao : BaseAzureTableStorageDao, IUserDao
+{
+    public AzureTableStorageUserDao(TableServiceClient tableServiceClient, ILogger logger)
+        : base(tableServiceClient, Constants.MetadataStorageTableNameUsers, logger?.CreateScope(nameof(AzureTableStorageUserDao)))
+    {
+    }
+    
+    public Task<User?> LoadAsync(string userId)
+    {
+        this.Logger.Info($"Call: {nameof(this.LoadAsync)}('{userId}')");
+        return this.TryGetEntityAsync(async (tc) =>
+        {
+            var response = await tc.GetEntityAsync<UserTableEntity>(userId, userId);
+            return Mapper.Map(response.Value);
+        });
+    }
+}
+
+// ✅ CORRECT - Blob Storage DAO
+public class AzureBlobStorageFeedDao : IFeedDao
+{
+    private static readonly string ConteinerName = Constants.MetadataStorageContainerRssFeeds;
+    private readonly IAzureBlobStorageClient azureBlobStorageClient;
+    private readonly ILogger logger;
+    
+    public Task SaveUserFeedAsync(string userId, FeedItem[] items)
+    {
+        this.logger.Info($"Call: {nameof(this.SaveUserFeedAsync)}('{userId}', FeedItem[])");
+        return this.azureBlobStorageClient.UploadAsync(ConteinerName, GetUserFeedFileName(userId), items.GenerateXml(), "public, max-age=300");
+    }
+}
+
+// ❌ WRONG - Name doesn't end with Dao
+public class AzureTableStorageUserDAO : IUserDao { }
+
+// ❌ WRONG - Not using base class for Table Storage
+public class AzureTableStorageUserDao : IUserDao
+{
+    // Reimplementing common table storage logic
+}
+```
+
+## Validation Pattern
+
+Validators must return ValidationResult with proper error messages:
+
+```csharp
+// ✅ CORRECT
+public class EditSubscriptionRequestModelValidator : IValidator<EditSubscriptionRequestModel>
+{
+    public async Task<ValidationResult> ValidateAsync(EditSubscriptionRequestModel model)
+    {
+        var result = new ValidationResult();
+        
+        if (model == null || string.IsNullOrEmpty(model.UserId))
+        {
+            return ValidationResult.Fail(nameof(model.UserId), 
+                string.Format(ErrorMessages.FieldEmpty, nameof(model.UserId)));
+        }
+        
+        // Check if series exists
+        var series = await this.seriesDAO.LoadAsync(item.SeriesName);
+        if (series == null)
+        {
+            result.SetError(nameof(item.SeriesName), 
+                string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesName));
+            return result;
+        }
+        
+        return result;
+    }
+}
+
+// ❌ WRONG - Throwing exceptions instead of returning validation result
+if (model == null)
+{
+    throw new ValidationException("Model is null");
+}
+
+// ❌ WRONG - Not using localized error messages
+result.SetError("UserId", "UserId is required");
+```
+
+## Azure Function Pattern
+
+Functions must follow this structure:
+
+```csharp
+// ✅ CORRECT
+public class GetUserFunction
+{
+    private readonly Common.ILogger logger;
+    private readonly ICommand<GetUserRequestModel, GetUserResponseModel> command;
+    
+    public GetUserFunction(Common.ILogger logger, ICommand<GetUserRequestModel, GetUserResponseModel> command)
+    {
+        this.logger = logger?.CreateScope(nameof(GetUserFunction)) ?? throw new ArgumentNullException(nameof(logger));
+        this.command = command ?? throw new ArgumentNullException(nameof(command));
+    }
+    
+    [Function("GetUserFunction")]
+    [OpenApiOperation(operationId: "GetUserFunction", tags: ["user"], Visibility = OpenApiVisibilityType.Important)]
+    [OpenApiRequestBody(contentType: "application/json", bodyType: typeof(GetUserRequestModel), Required = true)]
+    [OpenApiResponseWithBody(statusCode: HttpStatusCode.OK, contentType: "application/json", bodyType: typeof(GetUserResponseModel))]
+    public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+    {
+        this.logger.Info($"Call: {nameof(this.RunAsync)}(HttpRequestData)");
+        var responseModel = await this.command.ExecuteAsync(ModelBinder.Bind<GetUserRequestModel>(req));
+        var response = req.CreateResponse(HttpStatusCode.OK);
+        response.Headers.Add("Content-Type", "application/json");
+        await response.WriteStringAsync(JsonSerializer.Serialize(responseModel, CommonSerializationOptions.Default));
+        return response;
+    }
+}
+
+// ❌ WRONG - Missing OpenAPI documentation
+[Function("GetUserFunction")]
+public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req)
+
+// ❌ WRONG - Not using ModelBinder
+var json = await req.ReadAsStringAsync();
+var model = JsonSerializer.Deserialize<GetUserRequestModel>(json);
+
+// ❌ WRONG - Not using CommonSerializationOptions
+await response.WriteStringAsync(JsonSerializer.Serialize(responseModel));
+```
+
+## Async/Await Patterns
+
+```csharp
+// ✅ CORRECT - Parallel operations
+var loadFeedUpdatesTask = this.LoadFeedUpdatesAsync();
+var loadLastFeedUpdatesTask = this.LoadLastFeedUpdatesAsync();
+await Task.WhenAll(loadFeedUpdatesTask, loadLastFeedUpdatesTask);
+var feedItemsResponse = await loadFeedUpdatesTask;
+var persistedItemsRespone = await loadLastFeedUpdatesTask;
+
+// ✅ CORRECT - Sequential operations with dependency
+var data = await LoadDataAsync();
+var processed = await ProcessAsync(data);
+
+// ✅ CORRECT - Parallel update of multiple users
+await Task.WhenAll(userIds.Select(x => this.updateUserFeedCommand.ExecuteAsync(x)));
+
+// ❌ WRONG - Sequential when could be parallel
+var feed1 = await LoadFeed1Async();
+var feed2 = await LoadFeed2Async(); // These could run in parallel!
+
+// ❌ WRONG - Using ConfigureAwait(false) - not needed in Azure Functions
+var result = await SomeMethodAsync().ConfigureAwait(false);
+```
+
+## XML Documentation
+
+All public APIs must have complete XML documentation:
+
+```csharp
+// ✅ CORRECT
+/// <summary>
+/// Saves user to database.
+/// </summary>
+/// <param name="user">Instance of User to save.</param>
+/// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+public Task SaveAsync(User user)
+{
+    // Implementation
+}
+
+// ✅ CORRECT - Inheriting documentation
+/// <inheritdoc/>
+public Task SaveAsync(User user)
+{
+    // Implementation
+}
+
+// ❌ WRONG - Missing documentation
+public Task SaveAsync(User user)
+{
+    // Implementation
+}
+
+// ❌ WRONG - Incomplete documentation (missing param/returns)
+/// <summary>
+/// Saves user.
+/// </summary>
+public Task SaveAsync(User user)
+```
+
+## Constants Usage
+
+Use constants from `LostFilmMonitoring.Common.Constants`:
+
+```csharp
+// ✅ CORRECT
+await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", imageStream);
+private static readonly string ConteinerName = Constants.MetadataStorageContainerRssFeeds;
+
+// ❌ WRONG - Hardcoded strings
+await this.fileSystem.SaveAsync("images", $"{series.Id}.jpg", "image/jpeg", imageStream);
+```
+
+## Telemetry Pattern
+
+Use ActivitySource for distributed tracing:
+
+```csharp
+// ✅ CORRECT
+private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.UpdateFeedsCommand);
+
+public async Task ExecuteAsync()
+{
+    using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
+    // Business logic
+}
+
+// Register in Program.cs
+services.AddSingleton<TracerProvider>(r =>
+    Sdk.CreateTracerProviderBuilder()
+        .AddSource(ActivitySourceNames.ActivitySources)
+        .AddAzureMonitorTraceExporter()
+        .Build());
+```
+
+## Error Handling
+
+```csharp
+// ✅ CORRECT - DAO error handling
+public async Task SaveAsync(User user)
+{
+    try
+    {
+        await this.TryExecuteAsync(c => c.UpsertEntityAsync(Mapper.Map(user)));
+    }
+    catch (ExternalServiceUnavailableException)
+    {
+        this.Logger.Fatal($"Error while saving user: '{JsonSerializer.Serialize(user, CommonSerializationOptions.Default)}'");
+        throw;
+    }
+}
+
+// ✅ CORRECT - Client error handling
+try
+{
+    response = await client.SendAsync(request);
+}
+catch (Exception ex)
+{
+    this.logger.Log(ex);
+    return null;
+}
+
+// ❌ WRONG - Swallowing exceptions
+catch (Exception)
+{
+    // Silent failure
+}
+
+// ❌ WRONG - Not logging error details
+catch (Exception ex)
+{
+    this.logger.Error("Error occurred");
+    throw;
+}
+```
+
+## Testing Conventions
+
+```csharp
+// ✅ CORRECT - Test class structure
+[ExcludeFromCodeCoverage]
+internal class SaveUserCommandTests
+{
+    private Mock<IUserDao>? userDao;
+    private Mock<ILogger>? logger;
+    
+    [SetUp]
+    public void Setup()
+    {
+        this.userDao = new Mock<IUserDao>();
+        this.logger = new Mock<ILogger>();
+        this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+    }
+    
+    [Test]
+    public void Constructor_should_throw_exception_when_userDao_null()
+    {
+        var action = () => new SaveUserCommand(null!, this.logger!.Object, this.persister!.Object, this.feedDao!.Object);
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDao");
+    }
+    
+    [Test]
+    public async Task ExecuteAsync_should_generate_userId_for_new_user()
+    {
+        // Arrange
+        var command = CreateCommand();
+        
+        // Act
+        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = null, TrackerId = "TrackerId" });
+        
+        // Assert
+        response.UserId.Should().NotBeNull();
+    }
+    
+    [Test]
+    public async Task ExecuteAsync_should_trigger_userDao_saveAsync()
+    {
+        // Arrange & Act
+        var command = CreateCommand();
+        await command.ExecuteAsync(new EditUserRequestModel() { UserId = "UserId", TrackerId = "TrackerId" });
+        
+        // Assert
+        this.userDao!.Verify(x => x.SaveAsync(It.Is<User>(u => u.Id == "UserId" && u.TrackerId == "TrackerId")), Times.Once);
+    }
+    
+    private SaveUserCommand CreateCommand() => 
+        new SaveUserCommand(this.userDao!.Object, this.logger!.Object, this.persister!.Object, this.feedDao!.Object);
+}
+
+// ❌ WRONG - Missing constructor null tests
+[Test]
+public async Task ExecuteAsync_should_work()
+{
+    // Only testing happy path
+}
+
+// ❌ WRONG - Not setting up logger CreateScope
+[SetUp]
+public void Setup()
+{
+    this.logger = new Mock<ILogger>();
+    // Missing: this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+}
+```
+
+## Model Properties
+
+Use init-only properties for immutable models:
+
+```csharp
+// ✅ CORRECT
+public class EditUserRequestModel
+{
+    public string? UserId { get; init; }
+    public string? TrackerId { get; init; }
+}
+
+// ✅ CORRECT - Record types for simple models
+public record User(string Id, string TrackerId);
+
+// ❌ WRONG - Mutable models that should be immutable
+public class EditUserRequestModel
+{
+    public string? UserId { get; set; }
+    public string? TrackerId { get; set; }
+}
+```
