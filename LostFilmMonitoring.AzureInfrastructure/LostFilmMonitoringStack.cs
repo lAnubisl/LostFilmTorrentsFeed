@@ -62,7 +62,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = config.Require("webdomain"),
             Type = "CNAME",
             Content = $"{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
-            Proxied = true
+            Proxied = true,
+            Ttl = 14400
         });
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_web_cname_record", new Cloudflare.DnsRecordArgs
@@ -71,7 +72,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = $"asverify.{config.Require("webdomain")}",
             Type = "CNAME",
             Content = $"asverify.{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
-            Proxied = false
+            Proxied = false,
+            Ttl = 14400
         });
 
         return dataRecord;
@@ -85,7 +87,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = config.Require("datadomain"),
             Type = "CNAME",
             Content = $"{Locals.MetadataStorageAccountName}.blob.core.windows.net",
-            Proxied = true
+            Proxied = true,
+            Ttl = 14400
         });
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_data_cname_record", new Cloudflare.DnsRecordArgs
@@ -94,7 +97,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = $"asverify.{config.Require("datadomain")}",
             Type = "CNAME",
             Content = $"asverify.{Locals.MetadataStorageAccountName}.blob.core.windows.net",
-            Proxied = false
+            Proxied = false,
+            Ttl = 14400
         });
 
         return dataRecord;
@@ -107,7 +111,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             ZoneId = zoneId,
             Name = $"asuid.{config.Require("apidomain")}",
             Type = "TXT",
-            Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\"")
+            Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\""),
+            Ttl = 3600
         });
         
         return new Cloudflare.DnsRecord("api", new Cloudflare.DnsRecordArgs
@@ -116,7 +121,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = config.Require("apidomain"),
             Type = "CNAME",
             Content = function.DefaultHostName,
-            Proxied = true
+            Proxied = true,
+            Ttl = 3600
         });
     }
 
