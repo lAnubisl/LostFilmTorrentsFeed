@@ -15,4 +15,6 @@ config:
     secure: v1:qojYbu0yP3pGShfS:pZz4wFEaWOSc3PImEnNm1lDV90ifvZpV0MmxkNHMWuxGVdCJNAN5M0yZSlaGgQ4L
   LostFilmMonitoring.AzureInfrastructure:baselinkuid:
     secure: v1:blqt/4C1yZ+SITkW:y4mpTR7Ki8Fx6NhN+FmQMRxZhXgfR4Y=
+  LostFilmMonitoring.AzureInfrastructure:cloudflareZoneId:
+    secure: v1:qHPE3/hkfAcdl0l2:RCwnzL6i4i9H8cGrcsZdzrjO6ZkhRYhPeYvRej9INZMhwuQ63GTUns0PPjlb844G
 encryptionsalt: v1:5e1UjhWHPd0=:v1:YQXzzDqusKpJhrh6:cKoXFq7AzhD1VypqS1q7YN1ptthCZg==
