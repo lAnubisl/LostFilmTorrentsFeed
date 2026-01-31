@@ -15,7 +15,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Filter = new Cloudflare.Inputs.GetZoneFilterInputArgs
             { 
                 Name = "byalex.dev",
-                Match = "all"
+                Match = "any"
             } 
         }).Apply(zone => zone.Id);
 
