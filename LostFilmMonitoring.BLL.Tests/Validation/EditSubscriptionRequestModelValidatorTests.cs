@@ -41,7 +41,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(null!);
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("UserId");
         result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
     }
@@ -51,7 +51,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel());
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("UserId");
         result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
     }
@@ -61,7 +61,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId"});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("Items");
         result.Errors.First().Value.Should().Be("Field 'Items' is empty.");
     }
@@ -71,7 +71,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem()] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("SeriesName");
         result.Errors.First().Value.Should().Be("Field 'SeriesName' is empty.");
     }
@@ -81,7 +81,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("Quality");
         result.Errors.First().Value.Should().Be("Field 'Quality' should be in [SD, 1080, MP4].");
     }
@@ -92,7 +92,7 @@ public class EditSubscriptionRequestModelValidatorTests
         this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("SeriesName");
         result.Errors.First().Value.Should().Be("Series 'Series1' does not exist.");
     }
@@ -102,7 +102,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = []});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
+        result.Errors.Should().ContainSingle();
         result.Errors.First().Key.Should().Be("UserId");
         result.Errors.First().Value.Should().Be("User with Id 'userId' does not exist.");
     }
@@ -115,7 +115,7 @@ public class EditSubscriptionRequestModelValidatorTests
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
         result.IsValid.Should().BeTrue();
-        result.Errors.Should().HaveCount(0);
+        result.Errors.Should().BeEmpty();
     }
 
     private EditSubscriptionRequestModelValidator GetService() => new(

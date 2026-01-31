@@ -110,13 +110,13 @@ public class FeedItemResponseTests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
         var item = new ReteOrgFeedItemResponse(element);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
             Assert.That(item.Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236"));
             Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
             Assert.That(item.PublishDateParsed, Is.EqualTo(new DateTime(2022, 05, 09, 20, 27, 53, DateTimeKind.Utc)));
-        });
+        }
     }
 
     [Test]
@@ -146,12 +146,12 @@ public class FeedItemResponseTests
                     PublishDateParsed = new DateTime(2022, 5, 10, 00, 0, 0, DateTimeKind.Utc),
                 },
             ]);
-        var arr = items.ToArray();
-        Assert.Multiple(() =>
+        var arr = items.ToArray();  
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(arr[0].Title, Is.EqualTo("Title3"));
             Assert.That(arr[1].Title, Is.EqualTo("Title1"));
             Assert.That(arr[2].Title, Is.EqualTo("Title2"));
-        });
+        }
     }
 }

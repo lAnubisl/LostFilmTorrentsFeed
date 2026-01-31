@@ -16,14 +16,13 @@ public abstract class BaseAzureTableStorageDao
     /// <param name="logger">Instance of Logger.</param>
     protected BaseAzureTableStorageDao(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
     {
-        if (tableServiceClient == null)
-        {
-            throw new ArgumentNullException(nameof(tableServiceClient));
-        }
+        ArgumentNullException.ThrowIfNull(tableServiceClient);
+        ArgumentNullException.ThrowIfNull(tableName);
+        ArgumentNullException.ThrowIfNull(logger);
 
         tableServiceClient.CreateTableIfNotExists(tableName);
         this.tableClient = tableServiceClient.GetTableClient(tableName);
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.Logger = logger;
     }
 
     /// <summary>
@@ -51,11 +50,7 @@ public abstract class BaseAzureTableStorageDao
     protected static Task<TResult[]> IterateAsync<TResult, TSource>(AsyncPageable<TSource> items, Func<TSource, TResult> func)
         where TSource : class
     {
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-
+        ArgumentNullException.ThrowIfNull(items);
         return IterateInnerAsync(items, func);
     }
 
@@ -69,11 +64,7 @@ public abstract class BaseAzureTableStorageDao
     protected static Task<int> CountAsync<TSource>(AsyncPageable<TSource> items)
         where TSource : class
     {
-        if (items == null)
-        {
-            throw new ArgumentNullException(nameof(items));
-        }
-
+        ArgumentNullException.ThrowIfNull(items);
         return CountInnerAsync(items);
     }
 

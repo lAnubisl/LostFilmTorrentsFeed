@@ -140,15 +140,8 @@ public static class Extensions
     /// <exception cref="ArgumentNullException"><paramref name="newItems"/> must not be null, <paramref name="oldItems"/> must not be null.</exception>
     internal static bool HasUpdates(SortedSet<FeedItemResponse>? newItems, SortedSet<FeedItemResponse>? oldItems)
     {
-        if (newItems == null)
-        {
-            throw new ArgumentNullException(nameof(newItems));
-        }
-
-        if (oldItems == null)
-        {
-            throw new ArgumentNullException(nameof(oldItems));
-        }
+        ArgumentNullException.ThrowIfNull(newItems);
+        ArgumentNullException.ThrowIfNull(oldItems);
 
         if (newItems.Count != oldItems.Count)
         {
