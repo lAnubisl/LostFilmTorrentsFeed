@@ -9,7 +9,15 @@ namespace LostFilmMonitoring.AzureInfrastructure;
 public class LostFilmMonitoringStack : Pulumi.Stack
 {
     private readonly Pulumi.Config config = new Pulumi.Config();
-    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(new Cloudflare.GetZoneInvokeArgs { Filter = new Cloudflare.Inputs.GetZoneFilterInputArgs { Name = "byalex.dev" } }).Apply(zone => zone.Id);
+    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(
+        new Cloudflare.GetZoneInvokeArgs 
+        { 
+            Filter = new Cloudflare.Inputs.GetZoneFilterInputArgs
+            { 
+                Name = "byalex.dev",
+                Match = "all"
+            } 
+        }).Apply(zone => zone.Id);
 
     // Storage Blob Data Contributor: https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage:~:text=ba92f5b4%2D2d11%2D453d%2Da403%2De96b0029c9fe
 
