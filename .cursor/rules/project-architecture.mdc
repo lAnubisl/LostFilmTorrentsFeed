@@ -225,21 +225,40 @@ const config = {
 
 ```javascript
 // POST JSON to Azure Function
-const postJSONAsync = async (url, model) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.responseType = 'json';
-    const response = await xhr.send(JSON.stringify(model));
-    return response;
+const postJSONAsync = (url, model) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(`Status: ${xhr.status}`));
+            }
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send(JSON.stringify(model));
+    });
 };
 
 // GET JSON from blob storage
-const fetchJSONAsync = async (url) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
-    return await xhr.send();
+const fetchJSONAsync = (url) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response);
+            } else {
+                reject(new Error(`Status: ${xhr.status}`));
+            }
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send();
+    });
 };
 ```
 
@@ -461,6 +480,29 @@ var data2 = await ProcessDataAsync(data1);
 
 All services registered in `Program.cs` using `services.AddTransient<TInterface, TImplementation>()`.
 
+**Storage Client Authentication**:
+
+The application uses different authentication methods for different Azure Storage services:
+
+```csharp
+// Blob Storage - Uses managed identity (RBAC) via DefaultAzureCredential
+services.AddTransient(r => new BlobServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
+    new DefaultAzureCredential()));
+
+// Table Storage - Uses storage account keys via TableSharedKeyCredential
+// Keys are used for performance optimization to reduce latency in HTTP request handling
+services.AddTransient(r => new TableServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.table.core.windows.net/"),
+    new TableSharedKeyCredential(
+        Env(EnvironmentVariables.MetadataStorageAccountName),
+        Env(EnvironmentVariables.MetadataStorageAccountKey))));
+```
+
+**Rationale**:
+- **Blob Storage with RBAC**: Better security, audit trail, and aligns with cloud best practices
+- **Table Storage with Keys**: Faster authentication with lower latency, critical for serverless cold starts and HTTP response times
+
 **Constructor Pattern**:
 ```csharp
 public MyService(IDependency dependency, ILogger logger)
@@ -552,8 +594,8 @@ When new episode detected:
 ## Environment Variables
 
 ```
-MetadataStorageAccountName: Storage account for data/feeds
-MetadataStorageAccountKey: Access key for table storage
+MetadataStorageAccountName: Storage account name for data/feeds/tables
+MetadataStorageAccountKey: Access key for Table Storage authentication (performance optimization)
 BaseURL: LostFilm.tv base URL
 BaseFeedCookie: Authentication cookie for feed access
 BaseLinkUID: User ID for torrent downloads
@@ -562,6 +604,10 @@ TorrentTrackers: Comma-separated tracker URLs
 TmdbApiKey: The Movie Database API key
 APPLICATIONINSIGHTS_CONNECTION_STRING: App Insights connection
 ```
+
+**Authentication Strategy**:
+- **Blob Storage**: Uses managed identity (RBAC) configured via infrastructure - no key required in environment variables
+- **Table Storage**: Uses storage account key (configured via `MetadataStorageAccountKey`) for faster authentication and reduced latency in serverless HTTP request handling
 
 ## Development Guidelines
 

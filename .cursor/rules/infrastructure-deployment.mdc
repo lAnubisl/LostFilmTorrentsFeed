@@ -209,9 +209,68 @@ private Pulumi.Input<string> GetRoleDefinitionId(string roleId)
     
     return Pulumi.Output.Format($"/subscriptions/{SubscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleId}");
 }
+```
 
-// ❌ WRONG - Using storage account keys instead of managed identity
-// Don't grant access via keys when RBAC is available
+### Hybrid Authentication: RBAC for Blob + Keys for Table
+
+```csharp
+// ✅ CORRECT - Use different authentication methods for different storage services
+// Blob Storage: RBAC with managed identity for security
+// Table Storage: Storage account keys for performance
+
+// 1. Infrastructure: Set up RBAC for Blob Storage access
+var blobDataContributorRole = new Azure.Authorization.RoleAssignment("func_metadata_blob_data_contributor", 
+    new Azure.Authorization.RoleAssignmentArgs
+{
+    PrincipalId = function.Identity.Apply(identity => identity!.PrincipalId),
+    PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
+    RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageBlobDataContributor),
+    Scope = metadata_st.Id
+});
+
+// 2. Infrastructure: Provide storage account key for Table Storage access
+SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
+{
+    AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
+    {
+        { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
+        { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
+    })
+}
+
+// Helper to retrieve storage account key
+private static Pulumi.Output<string> GetAccessKey(Pulumi.Input<string> resourceGroupName, Pulumi.Input<string> accountName)
+{
+    var storageAccountKeys = Azure.Storage.ListStorageAccountKeys.Invoke(new Azure.Storage.ListStorageAccountKeysInvokeArgs
+    {
+        ResourceGroupName = resourceGroupName,
+        AccountName = accountName
+    });
+    return storageAccountKeys.Apply(keys => keys.Keys[0].Value);
+}
+
+// 3. Application: Configure clients with appropriate authentication
+// Blob Storage uses DefaultAzureCredential (managed identity)
+services.AddTransient(r => new BlobServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
+    new DefaultAzureCredential()));
+
+// Table Storage uses TableSharedKeyCredential (storage account key)
+services.AddTransient(r => new TableServiceClient(
+    new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.table.core.windows.net/"),
+    new TableSharedKeyCredential(
+        Env(EnvironmentVariables.MetadataStorageAccountName),
+        Env(EnvironmentVariables.MetadataStorageAccountKey))));
+
+// Rationale:
+// - Blob Storage: Uses RBAC for better security and audit trail
+// - Table Storage: Uses storage account keys for faster authentication and reduced latency
+//   in serverless functions where cold start and request response time are critical
+// - This hybrid approach balances security with performance requirements
+
+// ❌ WRONG - Using same authentication for both services without considering trade-offs
+services.AddTransient(r => new TableServiceClient(uri, new DefaultAzureCredential())); // Adds latency
+services.AddTransient(r => new BlobServiceClient(uri, new StorageSharedKeyCredential(name, key))); // Less secure
 ```
 
 ### Custom Domain Binding
