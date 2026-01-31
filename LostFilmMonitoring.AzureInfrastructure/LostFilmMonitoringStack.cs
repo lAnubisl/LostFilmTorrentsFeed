@@ -9,15 +9,6 @@ namespace LostFilmMonitoring.AzureInfrastructure;
 public class LostFilmMonitoringStack : Pulumi.Stack
 {
     private readonly Pulumi.Config config = new Pulumi.Config();
-    private readonly Output<string> zoneId = Cloudflare.GetZone.Invoke(
-        new Cloudflare.GetZoneInvokeArgs 
-        { 
-            Filter = new Cloudflare.Inputs.GetZoneFilterInputArgs
-            { 
-                Name = "byalex.dev",
-                Match = "any"
-            } 
-        }).Apply(zone => zone.Id);
 
     // Storage Blob Data Contributor: https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage:~:text=ba92f5b4%2D2d11%2D453d%2Da403%2De96b0029c9fe
 
@@ -66,7 +57,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
     {
         var dataRecord = new Cloudflare.DnsRecord("web_cname_record", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = config.Require("webdomain"),
             Type = "CNAME",
             Content = $"{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
@@ -76,7 +67,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_web_cname_record", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = $"asverify.{config.Require("webdomain")}",
             Type = "CNAME",
             Content = $"asverify.{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
@@ -91,7 +82,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
     {
         var dataRecord = new Cloudflare.DnsRecord("data_cname_record", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = config.Require("datadomain"),
             Type = "CNAME",
             Content = $"{Locals.MetadataStorageAccountName}.blob.core.windows.net",
@@ -101,7 +92,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_data_cname_record", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = $"asverify.{config.Require("datadomain")}",
             Type = "CNAME",
             Content = $"asverify.{Locals.MetadataStorageAccountName}.blob.core.windows.net",
@@ -116,7 +107,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
     {
         var txt_record = new Cloudflare.DnsRecord("api_txt_record", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = $"asuid.{config.Require("apidomain")}",
             Type = "TXT",
             Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\""),
@@ -125,7 +116,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         
         return new Cloudflare.DnsRecord("api", new Cloudflare.DnsRecordArgs
         {
-            ZoneId = zoneId,
+            ZoneId = config.Require("cloudflareZoneId"),
             Name = config.Require("apidomain"),
             Type = "CNAME",
             Content = function.DefaultHostName,
