@@ -21,6 +21,7 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
     public async Task<ValidationResult> ValidateAsync(EditSubscriptionRequestModel model)
     {
         var result = new ValidationResult();
+        var allSeries = await this.seriesDAO.LoadAsync();
 
         if (model == null || string.IsNullOrEmpty(model.UserId))
         {
@@ -34,9 +35,9 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
 
         foreach (var item in model.Items)
         {
-            if (string.IsNullOrEmpty(item.SeriesName))
+            if (string.IsNullOrEmpty(item.SeriesId))
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.FieldEmpty, nameof(item.SeriesName)));
+                result.SetError(nameof(item.SeriesId), string.Format(ErrorMessages.FieldEmpty, nameof(item.SeriesId)));
                 return result;
             }
 
@@ -46,10 +47,16 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
                 return result;
             }
 
-            var series = await this.seriesDAO.LoadAsync(item.SeriesName);
+            if (!Guid.TryParse(item.SeriesId, out var seriesId))
+            {
+                result.SetError(nameof(item.SeriesId), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesId));
+                return result;
+            }
+
+            var series = allSeries?.FirstOrDefault(s => s.Id == seriesId);
             if (series == null)
             {
-                result.SetError(nameof(item.SeriesName), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesName));
+                result.SetError(nameof(item.SeriesId), string.Format(ErrorMessages.SeriesDoesNotExist, item.SeriesId));
                 return result;
             }
         }
