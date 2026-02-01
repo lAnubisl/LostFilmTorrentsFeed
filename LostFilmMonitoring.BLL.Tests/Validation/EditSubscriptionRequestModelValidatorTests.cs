@@ -72,14 +72,14 @@ public class EditSubscriptionRequestModelValidatorTests
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem()] });
         result.IsValid.Should().BeFalse();
         result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("SeriesName");
-        result.Errors.First().Value.Should().Be("Field 'SeriesName' is empty.");
+        result.Errors.First().Key.Should().Be("SeriesId");
+        result.Errors.First().Value.Should().Be("Field 'SeriesId' is empty.");
     }
 
     [Test]
     public async Task ValidateAsync_should_return_fail_when_item_quality_is_null()
     {
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1" }] });
         result.IsValid.Should().BeFalse();
         result.Errors.Should().HaveCount(1);
         result.Errors.First().Key.Should().Be("Quality");
@@ -90,10 +90,10 @@ public class EditSubscriptionRequestModelValidatorTests
     public async Task ValidateAsync_should_return_fail_when_item_seriesName_is_invalid()
     {
         this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1", Quality = "SD" }] });
         result.IsValid.Should().BeFalse();
         result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("SeriesName");
+        result.Errors.First().Key.Should().Be("SeriesId");
         result.Errors.First().Value.Should().Be("Series 'Series1' does not exist.");
     }
 
@@ -110,10 +110,10 @@ public class EditSubscriptionRequestModelValidatorTests
     [Test]
     public async Task ValidateAsync_should_return_success()
     {
-        var testSeries = new Series(Guid.NewGuid(), string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
-        this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(testSeries);
+        var testSeries = new Series(Guid.Parse("11111111-1111-1111-1111-111111111111"), string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
+        this.seriesDao!.Setup(x => x.LoadAsync()).ReturnsAsync([testSeries]);
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "11111111-1111-1111-1111-111111111111", Quality = "SD" }] });
         result.IsValid.Should().BeTrue();
         result.Errors.Should().HaveCount(0);
     }

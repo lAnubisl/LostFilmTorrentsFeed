@@ -59,7 +59,8 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
             return new EditSubscriptionResponseModel(validationResult);
         }
 
-        var newUserSubscriptions = SubscriptionItem.ToSubscriptions(model.Items);
+        var seriesIdToName = await this.LoadSeriesIdToNameAsync();
+        var newUserSubscriptions = SubscriptionItem.ToSubscriptions(model.Items, seriesIdToName);
         await this.UpdateUserFeedItemsAsync(model.UserId, newUserSubscriptions);
         await this.dal.Subscription.SaveAsync(model.UserId, newUserSubscriptions);
         await this.UpdatePresentationModelAsync(model.UserId, model.Items);
@@ -108,6 +109,27 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
         }
 
         return reteOrgUrl[(index + marker.Length) ..];
+    }
+
+    private async Task<IDictionary<Guid, string>> LoadSeriesIdToNameAsync()
+    {
+        var allSeries = await this.dal.Series.LoadAsync();
+        var result = new Dictionary<Guid, string>();
+        if (allSeries == null)
+        {
+            this.logger.Error("No series found. Cannot load series ID to name dictionary.");
+            return result;
+        }
+
+        foreach (var series in allSeries)
+        {
+            if (!result.TryAdd(series.Id, series.Name))
+            {
+                this.logger.Error($"Series ID '{series.Id}' already exists in the dictionary. Cannot load series ID to name dictionary.");
+            }
+        }
+
+        return result;
     }
 
     private Task UpdatePresentationModelAsync(string userId, SubscriptionItem[] selectedSubscriptions)
