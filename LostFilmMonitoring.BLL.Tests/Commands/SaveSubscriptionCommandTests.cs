@@ -1,8 +1,4 @@
-﻿using Azure.Data.Tables;
-using Azure.Storage.Blobs;
-using LostFilmMonitoring.DAO.Azure;
-
-namespace LostFilmMonitoring.BLL.Tests.Commands;
+﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 internal class SaveSubscriptionCommandTests
@@ -44,21 +40,6 @@ internal class SaveSubscriptionCommandTests
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         DefineDatabaseState();
         SetupStorage();
-    }
-
-    [Test] [Ignore("")]
-    public void Fix_User_Subscription_Model()
-    {
-        string userId = "";
-        string connectionString = "";
-        BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-        IAzureBlobStorageClient azureBlobStorageClient = new AzureBlobStorageClient(blobServiceClient, logger!.Object);
-        IModelPersister modelPersister = new AzureBlobStorageModelPersister(azureBlobStorageClient, logger.Object);
-        TableServiceClient tableServiceClient = new TableServiceClient(connectionString);
-        ISubscriptionDao subscriptionDao = new AzureTableStorageSubscriptionDao(tableServiceClient, logger.Object);
-        Subscription[] subscriptions = subscriptionDao.LoadAsync(userId).Result;
-        SubscriptionItem[] items = subscriptions.Select(s => new SubscriptionItem() { SeriesName = s.SeriesName, Quality = s.Quality} ).ToArray();
-        modelPersister.PersistAsync($"subscription_{userId}", items).Wait();
     }
 
     [Test]
@@ -171,12 +152,12 @@ internal class SaveSubscriptionCommandTests
             [
                 new SubscriptionItem
                 {
-                    SeriesName = "Series#1",
+                    SeriesId = "11111111-1111-1111-1111-111111111111",
                     Quality = Quality.H720,
                 },
                new SubscriptionItem
                 {
-                    SeriesName = "Series#2",
+                    SeriesId = "22222222-2222-2222-2222-222222222222",
                     Quality = Quality.H720,
                 }
             ]
@@ -191,8 +172,6 @@ internal class SaveSubscriptionCommandTests
         this.feedDAO!.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
         // load subscription
         this.subscriptionDAO!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
-        // load details for new series
-        this.seriesDAO!.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
         // load torrent file
         this.torrentFileDAO!.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
         // load list of trackers
@@ -215,7 +194,7 @@ internal class SaveSubscriptionCommandTests
             [
                 new SubscriptionItem
                 {
-                    SeriesName = "Series#2",
+                    SeriesId = "22222222-2222-2222-2222-222222222222",
                     Quality = Quality.H1080,
                 }
             ]
@@ -230,8 +209,6 @@ internal class SaveSubscriptionCommandTests
         this.feedDAO!.Verify(x => x.LoadUserFeedAsync(request.UserId), Times.Once);
         // load subscription
         this.subscriptionDAO!.Verify(x => x.LoadAsync(request.UserId), Times.Once);
-        // load details for new series
-        this.seriesDAO!.Verify(x => x.LoadAsync(request.Items[0].SeriesName!), Times.Once);
         // load torrent file
         this.torrentFileDAO!.Verify(x => x.LoadBaseFileAsync("51439"), Times.Once);
         // load list of trackers
@@ -271,7 +248,7 @@ internal class SaveSubscriptionCommandTests
             {
                 "Series#1",
                 new Series(
-                    Guid.NewGuid(),
+                    Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     "Series#1",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#1_Title",
@@ -282,7 +259,7 @@ internal class SaveSubscriptionCommandTests
             {
                 "Series#2",
                 new Series(
-                    Guid.NewGuid(),
+                    Guid.Parse("22222222-2222-2222-2222-222222222222"),
                     "Series#2",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#2_Title",
@@ -309,6 +286,8 @@ internal class SaveSubscriptionCommandTests
         {
             this.subscriptionDAO!.Setup(x => x.LoadAsync(kvp.Key)).ReturnsAsync(kvp.Value);
         }
+
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(seriesCollection!.Values.ToArray());
 
         foreach(var kvp in seriesCollection!)
         {

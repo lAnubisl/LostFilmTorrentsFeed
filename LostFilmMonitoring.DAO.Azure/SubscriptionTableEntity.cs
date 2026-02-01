@@ -5,10 +5,16 @@
 /// </summary>
 public class SubscriptionTableEntity : ITableEntity
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets or sets the series name.
+    /// example: "The Walking Dead".
+    /// </summary>
     public string PartitionKey { get; set; } = null!;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets or sets the user id.
+    /// example: "df1410d2-d23a-4217-a326-c8877e0555c1".
+    /// </summary>
     public string RowKey { get; set; } = null!;
 
     /// <inheritdoc/>
