@@ -1,27 +1,4 @@
-﻿// <copyright file="AzureTableStorageSeriesDaoTests.cs" company="Alexander Panfilenok">
-// MIT License
-// Copyright (c) 2023 Alexander Panfilenok
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the 'Software'), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// </copyright>
-
-namespace LostFilmMonitoring.DAO.Azure.Tests;
+﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageSubscriptionDao>
@@ -31,7 +8,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
     {
         var result = await GetDao().LoadAsync(string.Empty);
         tableClient!.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Never);
-        Assert.That(result, Is.EqualTo(Array.Empty<Subscription>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -39,7 +16,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
     {
         var result = await GetDao().LoadAsync(null!);
         tableClient!.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Never);
-        Assert.That(result, Is.EqualTo(Array.Empty<Subscription>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -47,10 +24,10 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
     {
         tableClient!
             .Setup(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default))
-            .Returns(new TestAsyncPageable<SubscriptionTableEntity>(Array.Empty<SubscriptionTableEntity>()));
+            .Returns(new TestAsyncPageable<SubscriptionTableEntity>([]));
         var result = await GetDao().LoadAsync(Guid.NewGuid().ToString());
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EqualTo(Array.Empty<Subscription>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -65,10 +42,10 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
         };
         tableClient!
             .Setup(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default))
-            .Returns(new TestAsyncPageable<SubscriptionTableEntity>(new[] { entity }));
+            .Returns(new TestAsyncPageable<SubscriptionTableEntity>([entity]));
         var result = await GetDao().LoadAsync(userId);
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EquivalentTo(new[] { new Subscription(entity.PartitionKey, entity.Quality) }));
+        Assert.That(result, Is.EquivalentTo([new Subscription(entity.PartitionKey, entity.Quality)]));
     }
 
     [Test]
@@ -79,7 +56,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var result = await GetDao().LoadAsync(Guid.NewGuid().ToString());
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EqualTo(Array.Empty<Subscription>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -87,7 +64,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
     {
         var result = await GetDao().LoadUsersIdsAsync("A", string.Empty);
         tableClient!.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Never);
-        Assert.That(result, Is.EqualTo(Array.Empty<string>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -95,7 +72,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
     {
         var result = await GetDao().LoadUsersIdsAsync(string.Empty, "User123");
         tableClient!.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Never);
-        Assert.That(result, Is.EqualTo(Array.Empty<string>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -111,10 +88,10 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
         };
         tableClient!
             .Setup(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default))
-            .Returns(new TestAsyncPageable<SubscriptionTableEntity>(new[] { entity }));
+            .Returns(new TestAsyncPageable<SubscriptionTableEntity>([entity]));
         var result = await GetDao().LoadUsersIdsAsync(seriesName, userId);
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EquivalentTo(new[] { userId }));
+        Assert.That(result, Is.EquivalentTo([userId]));
     }
 
     [Test]
@@ -125,7 +102,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var result = await GetDao().LoadUsersIdsAsync("SeriesName", "User123");
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EqualTo(Array.Empty<string>()));
+        result.Should().Equal([]);
     }
 
     [Test]
@@ -139,9 +116,9 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
         };
         tableClient!
             .Setup(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default))
-            .Returns(new TestAsyncPageable<SubscriptionTableEntity>(new[] { existingEntity }));
+            .Returns(new TestAsyncPageable<SubscriptionTableEntity>([existingEntity]));
 
-        await GetDao().SaveAsync("User123", new[] { new Subscription("seriesName 2", "HD") });
+        await GetDao().SaveAsync("User123", [new Subscription("seriesName 2", "HD")]);
 
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
         tableClient.Verify(x => x.DeleteEntityAsync(existingEntity.PartitionKey, existingEntity.RowKey, default, default), Times.Once);

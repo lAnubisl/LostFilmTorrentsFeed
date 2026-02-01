@@ -1,33 +1,14 @@
-﻿// <copyright file="BaseRssFeed.cs" company="Alexander Panfilenok">
-// MIT License
-// Copyright (c) 2023 Alexander Panfilenok
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the 'Software'), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// </copyright>
-
-namespace LostFilmTV.Client.RssFeed;
+﻿namespace LostFilmTV.Client.RssFeed;
 
 /// <summary>
 /// Represents base rss feed.
 /// </summary>
 public abstract class BaseRssFeed
 {
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
+
+    private static readonly RegexOptions RegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline;
+
     private readonly ActivitySource activitySource = new (ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
@@ -133,10 +114,12 @@ public abstract class BaseRssFeed
     private static XDocument Parse(string rssString)
     {
         string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
-        string result = Regex.Replace(rssString, pattern, m =>
-                    m.Groups["start"].Value +
-                    HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) +
-                    m.Groups["end"].Value);
+        string result = Regex.Replace(
+            rssString,
+            pattern,
+            m => m.Groups["start"].Value + HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) + m.Groups["end"].Value,
+            RegexOptions,
+            RegexTimeout);
         try
         {
             return XDocument.Parse(result);

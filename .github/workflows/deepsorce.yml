@@ -1,0 +1,46 @@
+name: 'DeepSource'
+on:
+  schedule:
+    - cron: '0 0 * * 5'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+
+jobs:
+  analyze:
+    name: 'DeepSource'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v6
+
+      - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 'Install DeepSource CLI'
+        run: |
+          curl https://deepsource.io/cli | sh
+
+      - name: 'Restore Solution Dependencies'
+        run: |
+          dotnet restore
+          
+      - name: 'Build Solution'
+        run: |
+          dotnet build --configuration Release --no-restore
+
+      - name: 'Run Unit Tests'
+        run: |
+          dotnet test --collect:"XPlat Code Coverage" --logger:"console;verbosity=detailed" --results-directory 'test-results'
+
+      - name: 'Send Coverage Report to DeepSource'
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
+        run: |
+          for report in test-results/*/coverage.cobertura.xml; do
+            echo "Uploading $report"
+            ./bin/deepsource report --analyzer test-coverage --key csharp --value-file "$report"
+          done

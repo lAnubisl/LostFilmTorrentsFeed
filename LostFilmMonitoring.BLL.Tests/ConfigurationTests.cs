@@ -1,27 +1,4 @@
-﻿// <copyright file="ConfigurationTests.cs" company="Alexander Panfilenok">
-// MIT License
-// Copyright (c) 2023 Alexander Panfilenok
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the 'Software'), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// </copyright>
-
-namespace LostFilmMonitoring.BLL.Tests;
+﻿namespace LostFilmMonitoring.BLL.Tests;
 
 [ExcludeFromCodeCoverage]
 public class ConfigurationTests
@@ -47,7 +24,7 @@ public class ConfigurationTests
         service.BaseUID.Should().BeEquivalentTo("BASELINKUID");
         service.BaseUSESS.Should().BeEquivalentTo("BASEFEEDCOOKIE");
         service.BaseUrl.Should().BeEquivalentTo("BASEURL");
-        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(new[] { "#1USERID", "#2USERID", "#3USERID" });
+        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(["#1USERID", "#2USERID", "#3USERID"]);
     }
 
     [Test]
@@ -60,7 +37,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(new[] { "#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID" });
+        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]);
     }
 
     [Test]

@@ -1,27 +1,4 @@
-﻿// <copyright file="UpdateFeedsCommandTests.cs" company="Alexander Panfilenok">
-// MIT License
-// Copyright (c) 2023 Alexander Panfilenok
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the 'Software'), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// </copyright>
-
-namespace LostFilmMonitoring.BLL.Tests.Commands;
+﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 public class UpdateFeedsCommandTests
@@ -277,7 +254,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
         var newSeriesId = Guid.NewGuid();
         var savedSeries = new List<Series>();
         this.seriesDAO!.Setup(x => x.SaveAsync(It.IsAny<Series>()))
@@ -372,7 +349,7 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is an old series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new Series[] {
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([
             new Series(
                 Guid.NewGuid(),
                 "Флэш (The Flash)",
@@ -381,7 +358,7 @@ public class UpdateFeedsCommandTests
                 "http://n.tracktor.site/rssdownloader.php?id=51436",
                 "http://n.tracktor.site/rssdownloader.php?id=51435",
                 "http://n.tracktor.site/rssdownloader.php?id=51434")
-        });
+        ]);
 
         SetupTorrentFile("51439");
         SetupTorrentFile("51438");
@@ -469,13 +446,13 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(["User#1"]);
         this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(new User("User#1", "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
 
         await command.ExecuteAsync();
 
@@ -512,11 +489,11 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
         
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { "User#1" });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(["User#1"]);
         this.userDao!.Setup(x => x.LoadAsync("User#1")).ReturnsAsync(null as User);
 
         await command.ExecuteAsync();
@@ -594,8 +571,8 @@ public class UpdateFeedsCommandTests
         this.episodeDao!.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
 
         // There is such series in the system already
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new[]
-        {
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(
+        [
             new Series(
                 Guid.NewGuid(),
                 "Флэш (The Flash)",
@@ -606,7 +583,7 @@ public class UpdateFeedsCommandTests
                 null,
                 8, 8, 8,
                 14, 14, 14)
-        });
+        ]);
 
         SetupTorrentFile("51439");
         
@@ -648,13 +625,13 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
@@ -712,13 +689,13 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2
@@ -776,13 +753,13 @@ public class UpdateFeedsCommandTests
         this.rssFeed!.Setup(x => x.LoadFeedItemsAsync()).ReturnsAsync(rssItems);
 
         // There is no such series in the system
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(Array.Empty<Series>());
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync([]);
 
         SetupTorrentFile("51439");
 
-        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync(new[] { userId });
+        this.subscriptionDAO!.Setup(x => x.LoadUsersIdsAsync("Флэш (The Flash)", Quality.H720)).ReturnsAsync([userId]);
         this.userDao!.Setup(x => x.LoadAsync(userId)).ReturnsAsync(new User(userId, "Tracker#1"));
-        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(new string[] { "Announce#1" });
+        this.configuration!.Setup(x => x.GetTorrentAnnounceList("Tracker#1")).Returns(["Announce#1"]);
         this.feedDAO!.Setup(x => x.LoadUserFeedAsync(userId)).ReturnsAsync(new SortedSet<FeedItem> {
             new FeedItem() { PublishDateParsed = new DateTime(2022, 04, 01) }, // #1
             new FeedItem() { PublishDateParsed = new DateTime(2022, 03, 01) }, // #2

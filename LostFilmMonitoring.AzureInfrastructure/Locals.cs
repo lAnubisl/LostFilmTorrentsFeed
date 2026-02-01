@@ -1,3 +1,5 @@
+namespace LostFilmMonitoring.AzureInfrastructure;
+
 public class Locals
 {
     public static readonly string Project = "lfmon";

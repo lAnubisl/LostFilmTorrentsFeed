@@ -1,4 +1,4 @@
-name: 'Analyze'
+name: 'SonarQube Cloud'
 on:
   schedule:
     - cron: '0 0 * * 5'
@@ -8,15 +8,15 @@ env:
   DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
 
 jobs:
-  analyze:
-    name: 'Analyze'
+  sonarqube:
+    name: 'SonarQube Cloud'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 'Setup DotNet ${{ env.DOTNET_VERSION }} Environment'
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -27,10 +27,6 @@ jobs:
       - name: 'Install dotnet-coverage'
         run: |
           dotnet tool install --global dotnet-coverage
-
-      - name: 'Install DeepSource CLI'
-        run: |
-          curl https://deepsource.io/cli | sh
       
       - name: 'SonarCloud Begin'
         run: |
@@ -39,12 +35,8 @@ jobs:
             /o:"lanubisl" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
-
-      - name: 'CodeQL Begin'
-        uses: github/codeql-action/init@v3
-        with:
-          languages: 'csharp'
+            /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml \
+            /d:sonar.exclusions="LostFilmMonitoring.AzureInfrastructure/**,LostFilmMonitoring.Web/**,LostFilmMonitoring.AzureFunction/**,devcontainer/**"
 
       - name: 'Restore Solution Dependencies'
         run: |
@@ -57,9 +49,6 @@ jobs:
       - name: 'Run Unit Tests'
         run: |
           dotnet-coverage collect 'dotnet test --configuration Release --no-build --no-restore' -f xml -o 'coverage.xml'
-
-      - name: 'CodeQL End'
-        uses: github/codeql-action/analyze@v3
 
       - name: 'SonarCloud End'
         run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
