@@ -3,7 +3,7 @@
 /// <summary>
 /// Update all feeds.
 /// </summary>
-public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel, UpdateUserFeedCommandResponseModel>
+public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
 {
     private static readonly object TorrentFileLocker = new object();
     private readonly ILogger logger;
@@ -24,7 +24,7 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
     }
 
     /// <inheritdoc/>
-    public async Task<UpdateUserFeedCommandResponseModel> ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
+    public async Task ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
     {
         ArgumentNullException.ThrowIfNull(model);
 
@@ -44,10 +44,7 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
         }
 
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.Torrent}, {model.UserId})");
-        return new UpdateUserFeedCommandResponseModel
-        {
-            Success = await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!),
-        };
+        await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!);
     }
 
     private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)

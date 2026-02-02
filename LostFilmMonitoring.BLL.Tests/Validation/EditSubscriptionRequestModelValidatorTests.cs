@@ -101,7 +101,7 @@ public class EditSubscriptionRequestModelValidatorTests
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "11111111-1111-1111-1111-111111111111", Quality = "SD" }] });
         result.IsValid.Should().BeTrue();
-        result.Errors.Should().HaveCount(0);
+        result.Errors.Should().BeEmpty();
     }
 
     private EditSubscriptionRequestModelValidator GetService() => new(
