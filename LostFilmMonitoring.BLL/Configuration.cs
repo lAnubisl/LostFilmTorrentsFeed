@@ -11,6 +11,7 @@ public class Configuration : IConfiguration
     /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
     public Configuration(IConfigurationValuesProvider provider)
     {
+        ArgumentNullException.ThrowIfNull(provider, nameof(provider));
         this.BaseUrl = provider.GetValue(EnvironmentVariables.BaseUrl) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseUrl}' is not defined.");
         this.BaseUSESS = provider.GetValue(EnvironmentVariables.BaseFeedCookie) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseFeedCookie}' is not defined.");
         this.BaseUID = provider.GetValue(EnvironmentVariables.BaseLinkUID) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseLinkUID}' is not defined.");
