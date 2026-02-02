@@ -26,10 +26,7 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
     /// <inheritdoc/>
     public async Task<UpdateUserFeedCommandResponseModel> ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
     {
-        if (model == null)
-        {
-            throw new ArgumentNullException(nameof(model));
-        }
+        ArgumentNullException.ThrowIfNull(model);
 
         if (model.FeedResponseItem == null)
         {

@@ -24,11 +24,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     /// <inheritdoc/>
     public Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl = "no-cache")
     {
-        if (content == null)
-        {
-            throw new ArgumentNullException(nameof(content));
-        }
-
+        ArgumentNullException.ThrowIfNull(content);
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', Stream, '{contentType}', '{cacheControl}')");
         return this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl);
     }
