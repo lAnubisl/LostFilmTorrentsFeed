@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
+namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 internal class GetUserCommandTests
@@ -44,9 +44,7 @@ internal class GetUserCommandTests
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Count.Should().Be(1);
-        response.ValidationResult.Errors.First().Key.Should().Be("model");
-        response.ValidationResult.Errors.First().Value.Should().Be(ErrorMessages.RequestNull);
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "model", Value = ErrorMessages.RequestNull });
     }
 
     [Test]
@@ -57,9 +55,7 @@ internal class GetUserCommandTests
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Count.Should().Be(1);
-        response.ValidationResult.Errors.First().Key.Should().Be(nameof(GetUserRequestModel.UserId));
-        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)));
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(GetUserRequestModel.UserId), Value = string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)) });
     }
 
     [Test]
@@ -72,9 +68,7 @@ internal class GetUserCommandTests
         response.TrackerId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Count.Should().Be(1);
-        response.ValidationResult.Errors.First().Key.Should().Be(nameof(GetUserRequestModel.UserId));
-        response.ValidationResult.Errors.First().Value.Should().Be(string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(GetUserRequestModel.UserId), Value = string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue) });
     }
 
     [Test]

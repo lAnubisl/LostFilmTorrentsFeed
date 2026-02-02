@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Validation;
+namespace LostFilmMonitoring.BLL.Tests.Validation;
 
 [ExcludeFromCodeCoverage]
 public class EditSubscriptionRequestModelValidatorTests
@@ -41,9 +41,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(null!);
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "Field 'UserId' is empty." });
     }
 
     [Test]
@@ -51,9 +49,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel());
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "Field 'UserId' is empty." });
     }
 
     [Test]
@@ -61,9 +57,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId"});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("Items");
-        result.Errors.First().Value.Should().Be("Field 'Items' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "Items", Value = "Field 'Items' is empty." });
     }
 
     [Test]
@@ -71,9 +65,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem()] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("SeriesId");
-        result.Errors.First().Value.Should().Be("Field 'SeriesId' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "SeriesId", Value = "Field 'SeriesId' is empty." });
     }
 
     [Test]
@@ -81,9 +73,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("Quality");
-        result.Errors.First().Value.Should().Be("Field 'Quality' should be in [SD, 1080, MP4].");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "Quality", Value = "Field 'Quality' should be in [SD, 1080, MP4]." });
     }
 
     [Test]
@@ -92,9 +82,7 @@ public class EditSubscriptionRequestModelValidatorTests
         this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1", Quality = "SD" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("SeriesId");
-        result.Errors.First().Value.Should().Be("Series 'Series1' does not exist.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "SeriesId", Value = "Series 'Series1' does not exist." });
     }
 
     [Test]
@@ -102,9 +90,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = []});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().HaveCount(1);
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("User with Id 'userId' does not exist.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "User with Id 'userId' does not exist." });
     }
 
     [Test]
