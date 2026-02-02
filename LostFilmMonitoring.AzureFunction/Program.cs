@@ -36,6 +36,7 @@ public static class Program
         services.AddTransient<ILostFilmClient, LostFilmClient>();
         services.AddTransient<ITmdbClient>(r => new TmdbClient(Env(EnvironmentVariables.TmdbApiKey), r.GetService<Common.ILogger>()!));
         services.AddHttpClient();
+        services.AddTransient<ICommand<DAO.Interfaces.DomainModels.Series>>(sp => new DownloadCoverImageCommand(sp.GetService<Common.ILogger>()!, sp.GetService<IFileSystem>()!, sp.GetService<ITmdbClient>()!));
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
                 sp.GetService<Common.ILogger>() !,
@@ -44,14 +45,12 @@ public static class Program
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,
                 sp.GetService<ILostFilmClient>() !,
-                sp.GetService<ITmdbClient>() !,
-                sp.GetService<IFileSystem>() !));
+                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!));
         services.AddTransient(sp =>
             new DownloadCoverImagesCommand(
                 sp.GetService<Common.ILogger>() !,
-                sp.GetService<IFileSystem>() !,
                 sp.GetService<ISeriesDao>() !,
-                sp.GetService<ITmdbClient>() !));
+                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>() !));
         services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
         services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
         services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();

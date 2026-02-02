@@ -18,9 +18,9 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
     /// <param name="configuration">Configuration.</param>
     public UpdateUserFeedCommand(ILogger logger, IDal dal, IConfiguration configuration)
     {
-        this.logger = logger.CreateScope(nameof(UpdateUserFeedCommand));
-        this.dal = dal;
-        this.configuration = configuration;
+        this.logger = logger?.CreateScope(nameof(UpdateUserFeedCommand)) ?? throw new ArgumentNullException(nameof(logger));
+        this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     /// <inheritdoc/>

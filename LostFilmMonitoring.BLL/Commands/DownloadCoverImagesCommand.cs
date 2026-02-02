@@ -6,27 +6,23 @@
 public class DownloadCoverImagesCommand : ICommand
 {
     private readonly ILogger logger;
-    private readonly IFileSystem fileSystem;
     private readonly ISeriesDao seriesDao;
-    private readonly ITmdbClient tmdbClient;
+    private readonly ICommand<Series> downloadCoverImageCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DownloadCoverImagesCommand"/> class.
     /// </summary>
     /// <param name="logger">Instance of <see cref="ILogger"/>.</param>
-    /// <param name="fileSystem">Instance of <see cref="IFileSystem"/>.</param>
     /// <param name="seriesDao">Instance of <see cref="ISeriesDao"/>.</param>
-    /// <param name="tmdbClient">Instance of <see cref="ITmdbClient"/>.</param>
+    /// <param name="downloadCoverImageCommand">Instance of <see cref="ICommand{Series}"/>.</param>
     public DownloadCoverImagesCommand(
         ILogger logger,
-        IFileSystem fileSystem,
         ISeriesDao seriesDao,
-        ITmdbClient tmdbClient)
+        ICommand<Series> downloadCoverImageCommand)
     {
         this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
-        this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         this.seriesDao = seriesDao ?? throw new ArgumentNullException(nameof(seriesDao));
-        this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
+        this.downloadCoverImageCommand = downloadCoverImageCommand ?? throw new ArgumentNullException(nameof(downloadCoverImageCommand));
     }
 
     /// <inheritdoc/>
@@ -36,33 +32,7 @@ public class DownloadCoverImagesCommand : ICommand
         var series = await this.seriesDao.LoadAsync();
         foreach (var seriesItem in series)
         {
-            if (!await this.PosterExistsAsync(seriesItem.Id))
-            {
-                await this.DownloadImageAsync(seriesItem);
-            }
+            await this.downloadCoverImageCommand.ExecuteAsync(seriesItem);
         }
     }
-
-    private async Task DownloadImageAsync(Series series)
-    {
-        var openBraceIndex = series.Name.IndexOf('(');
-        var closeBraceIndex = series.Name.IndexOf(')');
-        if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
-        {
-            // cannot parse the series original name
-            return;
-        }
-
-        var originalName = series.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
-        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
-        if (imageStream == null)
-        {
-            return;
-        }
-
-        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", imageStream);
-    }
-
-    private Task<bool> PosterExistsAsync(Guid seriesId) =>
-        this.fileSystem.ExistsAsync(Constants.MetadataStorageContainerImages, $"{seriesId}.jpg");
 }

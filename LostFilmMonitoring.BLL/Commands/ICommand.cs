@@ -12,7 +12,7 @@ public interface ICommand<TRequestModel, TResponseModel>
     /// Execute command that accepts request model and returns response model.
     /// </summary>
     /// <param name="request">Instance of TRequestModel.</param>
-    /// <returns>A <see cref="Task{TResponseModel}"/> representing the result of the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     Task<TResponseModel> ExecuteAsync(TRequestModel? request);
 }
 
@@ -27,7 +27,7 @@ public interface ICommand<in TRequestModel>
     /// Execute command that accepts request model and returns response model.
     /// </summary>
     /// <param name="request">Instance of TRequestModel.</param>
-    /// <returns>A <see cref="Task{TResponseModel}"/> representing the result of the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     Task ExecuteAsync(TRequestModel? request);
 }
 

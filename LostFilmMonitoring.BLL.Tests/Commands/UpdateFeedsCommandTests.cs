@@ -17,8 +17,7 @@ public class UpdateFeedsCommandTests
     private Mock<ISubscriptionDao>? subscriptionDAO;
     private Mock<IUserDao>? userDao;
     private Mock<IEpisodeDao>? episodeDao;
-    private Mock<ITmdbClient>? tmdbClient;
-    private Mock<IFileSystem>? fileSystem;
+    private Mock<ICommand<Series>>? downloadCoverImagesCommand;
 
     private UpdateFeedsCommand CreateCommand()
     {
@@ -29,8 +28,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
     }
 
     [SetUp]
@@ -57,8 +55,7 @@ public class UpdateFeedsCommandTests
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.configuration.Setup(x => x.BaseUID).Returns(BaseUid);
         this.configuration.Setup(x => x.BaseUSESS).Returns(BaseUsess);
-        this.tmdbClient = new();
-        this.fileSystem = new();
+        this.downloadCoverImagesCommand = new();
     }
 
     [Test]
@@ -71,8 +68,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
 
@@ -86,8 +82,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("rssFeed");
     }
 
@@ -101,8 +96,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
 
@@ -116,8 +110,7 @@ public class UpdateFeedsCommandTests
             null!,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
 
@@ -131,8 +124,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             null!,
             this.lostFilmClient!.Object,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("modelPersister");
     }
 
@@ -146,8 +138,7 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             null!,
-            this.tmdbClient!.Object,
-            this.fileSystem!.Object);
+            this.downloadCoverImagesCommand!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("client");
     }
 
