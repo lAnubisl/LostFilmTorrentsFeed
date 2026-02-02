@@ -33,17 +33,17 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
 
         if (model.FeedResponseItem == null)
         {
-            throw new ArgumentNullException(nameof(model.FeedResponseItem));
+            throw new InvalidDataException($"Field '{nameof(model.FeedResponseItem)}' is null.");
         }
 
         if (model.Torrent == null)
         {
-            throw new ArgumentNullException(nameof(model.Torrent));
+            throw new InvalidDataException($"Field '{nameof(model.Torrent)}' is null.");
         }
 
         if (string.IsNullOrWhiteSpace(model.UserId))
         {
-            throw new ArgumentNullException(nameof(model.UserId));
+            throw new InvalidDataException($"Field '{nameof(model.UserId)}' is empty.");
         }
 
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.Torrent}, {model.UserId})");

@@ -11,9 +11,9 @@ public class Configuration : IConfiguration
     /// <param name="provider">Instance of <see cref="IConfigurationValuesProvider"/>.</param>
     public Configuration(IConfigurationValuesProvider provider)
     {
-        this.BaseUrl = provider.GetValue(EnvironmentVariables.BaseUrl) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseUrl}' is not defined.");
-        this.BaseUSESS = provider.GetValue(EnvironmentVariables.BaseFeedCookie) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseFeedCookie}' is not defined.");
-        this.BaseUID = provider.GetValue(EnvironmentVariables.BaseLinkUID) ?? throw new Exception($"Environment variable '{EnvironmentVariables.BaseLinkUID}' is not defined.");
+        this.BaseUrl = provider.GetValue(EnvironmentVariables.BaseUrl) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseUrl}' is not defined.");
+        this.BaseUSESS = provider.GetValue(EnvironmentVariables.BaseFeedCookie) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseFeedCookie}' is not defined.");
+        this.BaseUID = provider.GetValue(EnvironmentVariables.BaseLinkUID) ?? throw new InvalidOperationException($"Environment variable '{EnvironmentVariables.BaseLinkUID}' is not defined.");
         this.torrentAnnounceListPatterns = provider.GetValue(EnvironmentVariables.TorrentTrackers)?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? throw new Exception($"Environment variable '{EnvironmentVariables.TorrentTrackers}' is not defined.");
     }
 
