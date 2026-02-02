@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Validation;
+namespace LostFilmMonitoring.BLL.Tests.Validation;
 
 [ExcludeFromCodeCoverage]
 public class EditSubscriptionRequestModelValidatorTests
@@ -41,9 +41,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(null!);
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "Field 'UserId' is empty." });
     }
 
     [Test]
@@ -51,9 +49,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel());
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("Field 'UserId' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "Field 'UserId' is empty." });
     }
 
     [Test]
@@ -61,9 +57,7 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId"});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("Items");
-        result.Errors.First().Value.Should().Be("Field 'Items' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "Items", Value = "Field 'Items' is empty." });
     }
 
     [Test]
@@ -71,30 +65,24 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem()] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("SeriesName");
-        result.Errors.First().Value.Should().Be("Field 'SeriesName' is empty.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "SeriesId", Value = "Field 'SeriesId' is empty." });
     }
 
     [Test]
     public async Task ValidateAsync_should_return_fail_when_item_quality_is_null()
     {
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("Quality");
-        result.Errors.First().Value.Should().Be("Field 'Quality' should be in [SD, 1080, MP4].");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "Quality", Value = "Field 'Quality' should be in [SD, 1080, MP4]." });
     }
 
     [Test]
     public async Task ValidateAsync_should_return_fail_when_item_seriesName_is_invalid()
     {
         this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(null as Series);
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "Series1", Quality = "SD" }] });
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("SeriesName");
-        result.Errors.First().Value.Should().Be("Series 'Series1' does not exist.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "SeriesId", Value = "Series 'Series1' does not exist." });
     }
 
     [Test]
@@ -102,18 +90,16 @@ public class EditSubscriptionRequestModelValidatorTests
     {
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = []});
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().ContainSingle();
-        result.Errors.First().Key.Should().Be("UserId");
-        result.Errors.First().Value.Should().Be("User with Id 'userId' does not exist.");
+        result.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "UserId", Value = "User with Id 'userId' does not exist." });
     }
 
     [Test]
     public async Task ValidateAsync_should_return_success()
     {
-        var testSeries = new Series(Guid.NewGuid(), string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
-        this.seriesDao!.Setup(x => x.LoadAsync("Series1")).ReturnsAsync(testSeries);
+        var testSeries = new Series(Guid.Parse("11111111-1111-1111-1111-111111111111"), string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
+        this.seriesDao!.Setup(x => x.LoadAsync()).ReturnsAsync([testSeries]);
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
-        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesName = "Series1", Quality = "SD" }] });
+        var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "11111111-1111-1111-1111-111111111111", Quality = "SD" }] });
         result.IsValid.Should().BeTrue();
         result.Errors.Should().BeEmpty();
     }

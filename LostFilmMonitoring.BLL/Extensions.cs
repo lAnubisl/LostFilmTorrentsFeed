@@ -168,7 +168,7 @@ public static class Extensions
             ? null
             : new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
 
-    private static Stream ToStream(this BencodeNET.Torrents.Torrent torrent)
+    private static MemoryStream ToStream(this BencodeNET.Torrents.Torrent torrent)
     {
         var ms = new MemoryStream();
         torrent.EncodeTo(ms);

@@ -36,7 +36,7 @@ jobs:
         with:
           dotnet-version: 8.x
 
-      - uses: azure/login@bbcc074a232a35d7283353c18aabf0de1d557775 # v2.3.0
+      - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -92,7 +92,7 @@ jobs:
         run: |
           dotnet build LostFilmMonitoring.AzureFunction/LostFilmMonitoring.AzureFunction.csproj --configuration Release --output publish
 
-      - uses: azure/login@bbcc074a232a35d7283353c18aabf0de1d557775 # v2.3.0
+      - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -127,7 +127,7 @@ jobs:
           IMAGES_BASE_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/images/
           BASE_RSS_URI: https://${{ needs.infrastructure.outputs.dataDomain }}/rssfeeds/
 
-      - uses: azure/login@bbcc074a232a35d7283353c18aabf0de1d557775 # v2.3.0
+      - uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}

@@ -3,7 +3,7 @@
 /// <summary>
 /// Update all feeds.
 /// </summary>
-public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel, UpdateUserFeedCommandResponseModel>
+public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
 {
     private static readonly object TorrentFileLocker = new object();
     private readonly ILogger logger;
@@ -24,33 +24,27 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel,
     }
 
     /// <inheritdoc/>
-    public async Task<UpdateUserFeedCommandResponseModel> ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
+    public async Task ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
     {
-        if (model == null)
-        {
-            throw new ArgumentNullException(nameof(model));
-        }
+        ArgumentNullException.ThrowIfNull(model);
 
         if (model.FeedResponseItem == null)
         {
-            throw new ArgumentNullException(nameof(model.FeedResponseItem));
+            throw new InvalidDataException($"Field '{nameof(model.FeedResponseItem)}' is null.");
         }
 
         if (model.Torrent == null)
         {
-            throw new ArgumentNullException(nameof(model.Torrent));
+            throw new InvalidDataException($"Field '{nameof(model.Torrent)}' is null.");
         }
 
         if (string.IsNullOrWhiteSpace(model.UserId))
         {
-            throw new ArgumentNullException(nameof(model.UserId));
+            throw new InvalidDataException($"Field '{nameof(model.UserId)}' is empty.");
         }
 
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.Torrent}, {model.UserId})");
-        return new UpdateUserFeedCommandResponseModel
-        {
-            Success = await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!),
-        };
+        await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!);
     }
 
     private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)

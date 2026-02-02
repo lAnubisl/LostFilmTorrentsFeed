@@ -19,7 +19,6 @@ public abstract class BaseAzureTableStorageDao
         ArgumentNullException.ThrowIfNull(tableServiceClient);
         ArgumentNullException.ThrowIfNull(tableName);
         ArgumentNullException.ThrowIfNull(logger);
-
         tableServiceClient.CreateTableIfNotExists(tableName);
         this.tableClient = tableServiceClient.GetTableClient(tableName);
         this.Logger = logger;

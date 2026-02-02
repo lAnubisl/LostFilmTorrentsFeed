@@ -35,7 +35,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(users));
         var result = await GetDao().LoadAsync();
-        Assert.That(result, Is.EquivalentTo(expected));
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Test]

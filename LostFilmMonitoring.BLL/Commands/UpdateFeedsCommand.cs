@@ -87,15 +87,14 @@ public class UpdateFeedsCommand : ICommand
                 return null;
             }
 
-            if (!existingSeries.ContainsKey(series.Name))
+            if (existingSeries.TryGetValue(series.Name, out var existing))
             {
-                existingSeries.Add(series.Name, series);
-                return existingSeries[series.Name];
+                existing.MergeFrom(series);
+                return existing;
             }
 
-            var existing = existingSeries[series.Name];
-            existing.MergeFrom(series);
-            return existing;
+            existingSeries.Add(series.Name, series);
+            return existingSeries[series.Name];
         }
     }
 

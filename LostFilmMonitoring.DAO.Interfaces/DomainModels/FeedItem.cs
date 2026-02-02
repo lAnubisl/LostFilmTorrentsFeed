@@ -68,7 +68,7 @@ public class FeedItem : IComparable<FeedItem>
     /// <returns>File name.</returns>
     public string? GetUserFileName(string userId)
     {
-        if (string.IsNullOrEmpty(this?.Link))
+        if (string.IsNullOrEmpty(this.Link))
         {
             return null;
         }
