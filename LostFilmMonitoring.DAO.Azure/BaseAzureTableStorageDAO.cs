@@ -17,9 +17,11 @@ public abstract class BaseAzureTableStorageDao
     protected BaseAzureTableStorageDao(TableServiceClient tableServiceClient, string tableName, ILogger? logger)
     {
         ArgumentNullException.ThrowIfNull(tableServiceClient);
+        ArgumentNullException.ThrowIfNull(tableName);
+        ArgumentNullException.ThrowIfNull(logger);
         tableServiceClient.CreateTableIfNotExists(tableName);
         this.tableClient = tableServiceClient.GetTableClient(tableName);
-        this.Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.Logger = logger;
     }
 
     /// <summary>
