@@ -25,7 +25,7 @@ updates:
      interval: "monthly"
    labels:
      - "dependencies"
-     - "python"
+     - "dotnet"
    open-pull-requests-limit: 1
      groups:
        all-dependencies:
