@@ -790,16 +790,10 @@ public class UpdateFeedsCommandTests
     private void SetupTorrentFile(string torrentId)
     {
         var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-        if (torrentFileStream == null)
-        {
-            Assert.Fail("Torrent file not found");
-            return;
-        }
-
+        torrentFileStream.Should().NotBeNull();
         var torrentFileResponse = new Mock<ITorrentFileResponse>(); 
         torrentFileResponse.Setup(x => x.FileName).Returns("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent");
         torrentFileResponse.Setup(x => x.Content).Returns(torrentFileStream);
-
         this.lostFilmClient!.Setup(x => x.DownloadTorrentFileAsync(BaseUid, BaseUsess, torrentId)).ReturnsAsync(torrentFileResponse.Object);
     }
 

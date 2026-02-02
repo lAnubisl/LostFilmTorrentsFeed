@@ -45,7 +45,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
             .Returns(new TestAsyncPageable<SubscriptionTableEntity>([entity]));
         var result = await GetDao().LoadAsync(userId);
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EquivalentTo([new Subscription(entity.PartitionKey, entity.Quality)]));
+        result.Should().BeEquivalentTo([new Subscription(entity.PartitionKey, entity.Quality)]);
     }
 
     [Test]
@@ -91,7 +91,7 @@ public class AzureTableStorageSubscriptionDaoTests : AzureTableStorageDaoTestsBa
             .Returns(new TestAsyncPageable<SubscriptionTableEntity>([entity]));
         var result = await GetDao().LoadUsersIdsAsync(seriesName, userId);
         tableClient.Verify(x => x.QueryAsync<SubscriptionTableEntity>(It.IsAny<Expression<Func<SubscriptionTableEntity, bool>>>(), null, null, default), Times.Once);
-        Assert.That(result, Is.EquivalentTo([userId]));
+        result.Should().BeEquivalentTo([userId]);
     }
 
     [Test]
