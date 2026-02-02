@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
+namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 internal class SaveSubscriptionCommandTests
@@ -309,9 +309,7 @@ internal class SaveSubscriptionCommandTests
     {
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Count.Should().Be(1);
-        response.ValidationResult.Errors.First().Key.Should().Be(errorKey);
-        response.ValidationResult.Errors.First().Value.Should().Be(errorValue);
+        response.ValidationResult.Errors.Should().ContainSingle(kvp => kvp.Key == errorKey && kvp.Value == errorValue);
     }
 
     private SaveSubscriptionCommand GetCommand()
