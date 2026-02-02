@@ -62,7 +62,7 @@ internal class SaveUserCommandTests
         response.UserId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle(kvp => kvp.Key == "model" && kvp.Value == ErrorMessages.RequestNull);
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "model", Value = ErrorMessages.RequestNull });
     }
 
     [Test]
@@ -73,7 +73,7 @@ internal class SaveUserCommandTests
         response.UserId.Should().BeNull();
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle(kvp => kvp.Key == nameof(EditUserRequestModel.TrackerId) && kvp.Value == string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)));
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(EditUserRequestModel.TrackerId), Value = string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)) });
     }
 
     [Test]

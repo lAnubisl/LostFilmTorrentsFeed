@@ -309,7 +309,7 @@ internal class SaveSubscriptionCommandTests
     {
         response.ValidationResult.Should().NotBeNull();
         response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle(kvp => kvp.Key == errorKey && kvp.Value == errorValue);
+        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = errorKey, Value = errorValue });
     }
 
     private SaveSubscriptionCommand GetCommand()
