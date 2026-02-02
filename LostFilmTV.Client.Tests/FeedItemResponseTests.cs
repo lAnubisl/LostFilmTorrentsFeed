@@ -146,7 +146,7 @@ public class FeedItemResponseTests
                     PublishDateParsed = new DateTime(2022, 5, 10, 00, 0, 0, DateTimeKind.Utc),
                 },
             ]);
-        var arr = items.ToArray();
+        var arr = items.ToArray();  
         using (Assert.EnterMultipleScope())
         {
             Assert.That(arr[0].Title, Is.EqualTo("Title3"));
