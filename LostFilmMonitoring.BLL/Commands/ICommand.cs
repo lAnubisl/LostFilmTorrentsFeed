@@ -20,7 +20,7 @@ public interface ICommand<TRequestModel, TResponseModel>
 /// Command definition that returns no value.
 /// </summary>
 /// <typeparam name="TRequestModel">Type of RequestModel.</typeparam>
-public interface ICommand<TRequestModel>
+public interface ICommand<in TRequestModel>
     where TRequestModel : class
 {
     /// <summary>
