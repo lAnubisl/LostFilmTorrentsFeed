@@ -102,7 +102,7 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
         }
 
         string marker = "rssdownloader.php?id=";
-        int index = reteOrgUrl.IndexOf(marker);
+        int index = reteOrgUrl.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
         if (index < 0)
         {
             return null;
