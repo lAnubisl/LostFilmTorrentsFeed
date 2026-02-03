@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure;
+﻿namespace LostFilmMonitoring.DAO.Azure.TableStorageEntity;
 
 /// <summary>
 /// Describes Episode in Azure Table Storage.

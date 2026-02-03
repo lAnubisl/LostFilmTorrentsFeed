@@ -10,6 +10,7 @@ global using Azure.Storage.Blobs.Models;
 global using LostFilmMonitoring.BLL.Exceptions;
 global using LostFilmMonitoring.BLL.Interfaces;
 global using LostFilmMonitoring.Common;
+global using LostFilmMonitoring.DAO.Azure.TableStorageEntity;
 global using LostFilmMonitoring.DAO.Interfaces;
 global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
 #pragma warning restore SA1200 // Using directives should be placed correctly
