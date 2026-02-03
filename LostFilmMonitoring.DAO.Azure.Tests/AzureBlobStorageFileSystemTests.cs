@@ -26,7 +26,7 @@ public class AzureBlobStorageFileSystemTests
     {
         var ms = new MemoryStream();
         await GetServide().SaveAsync("directory", "fileName", "contentType", ms);
-        azureBlobStorageClientMock!.Verify(x => x.UploadAsync("directory", "fileName", ms, "contentType", "no-cache"), Times.Once);
+        azureBlobStorageClientMock!.Verify(x => x.UploadAsync("directory", "fileName", ms, "contentType"), Times.Once);
     }
 
     protected AzureBlobStorageFileSystem GetServide()
