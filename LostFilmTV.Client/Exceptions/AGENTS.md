@@ -41,5 +41,5 @@ catch (HttpRequestException ex)
 ## Notes
 
 - Exception propagates to Azure Functions runtime
-- Logged to Application Insights automatically
+- Logged to Application Insights
 - Commands should catch and return error response instead of throwing

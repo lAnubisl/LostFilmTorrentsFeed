@@ -6,7 +6,15 @@ Vanilla JavaScript (ES6+), no frameworks. Static files hosted on Azure Blob Stor
 
 ## Configuration
 
-`config.js` contains all API endpoints:
+The `config.js` file contains a `config` object with environment-specific endpoints that are injected at deployment time by the `update-config.js` script. The `config.js` file in the repository should contain placeholder values, not hardcoded environment URLs.
+
+The `update-config.js` script replaces the following config object keys with environment-specific values during deployment:
+- `baseApiUri`: Azure Function API endpoint
+- `baseDataUri`: Blob storage models container endpoint
+- `imagesBaseUri`: Blob storage images container endpoint
+- `baseRssUri`: Blob storage RSS feeds container endpoint
+
+Example structure after deployment:
 
 ```javascript
 const config = {
@@ -40,9 +48,9 @@ const fetchJSONAsync = (url) => {
 
 ## Authentication
 
-- Uses `localStorage` (not real cookies) to store `UserId`
+- Stores user's `TrackerId` under `localStorage` key `"UserId"`
 - No passwords - users authenticate via `TrackerId` from LostFilm.tv
-- Helper: `getCookie("UserId")` retrieves stored user ID
+- Helper: Read from `localStorage.getItem("UserId")` to retrieve stored user ID
 
 ## Key Files
 

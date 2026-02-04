@@ -20,7 +20,7 @@ public class DownloadCoverImageCommand : ICommand<Series>
         IFileSystem fileSystem,
         ITmdbClient tmdbClient)
     {
-        this.logger = logger?.CreateScope(nameof(DownloadCoverImagesCommand)) ?? throw new ArgumentNullException(nameof(logger));
+        this.logger = logger?.CreateScope(nameof(DownloadCoverImageCommand)) ?? throw new ArgumentNullException(nameof(logger));
         this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
     }

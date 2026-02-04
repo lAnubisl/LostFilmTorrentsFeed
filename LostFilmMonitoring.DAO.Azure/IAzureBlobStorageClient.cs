@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure;
+namespace LostFilmMonitoring.DAO.Azure;
 
 /// <summary>
 /// Manages access to Azure Blob Storage.
@@ -77,7 +77,7 @@ public interface IAzureBlobStorageClient
     /// <param name="contentType">Content-Type property of the file.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Content is null.</exception>
-    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Blob Storage.</exception>
     Task UploadAsync(string containerName, string fileName, Stream? content, string contentType);
 
     /// <summary>
@@ -90,7 +90,7 @@ public interface IAzureBlobStorageClient
     /// <param name="cacheControl">Cache-Control property of the file.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Content is null.</exception>
-    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
+    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Blob Storage.</exception>
     Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl);
 
     /// <summary>

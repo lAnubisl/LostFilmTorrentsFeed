@@ -25,21 +25,76 @@ Each file implements a specific business operation following command pattern.
 
 ## Command Flow Pattern
 
+The project uses three command interface patterns:
+
+**1. ICommand<TRequestModel, TResponseModel> - Command with request and response**
+
+Example: `SaveUserCommand`, `GetUserCommand`, `SignInCommand`
+
 ```csharp
-public async Task<TResponse> ExecuteAsync(TRequest? request)
+public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseModel>
 {
-    this.logger.Info($"Call: {nameof(ExecuteAsync)}({request})");
-    
-    // 1. Validate request
-    var validation = await validator.ValidateAsync(request);
-    if (!validation.IsValid)
-        return new TResponse(validation);
-    
-    // 2. Execute business logic
-    var result = await this.dal.Method(...);
-    
-    // 3. Return response
-    return new TResponse { Success = true, Data = result };
+    public async Task<EditUserResponseModel> ExecuteAsync(EditUserRequestModel? request)
+    {
+        this.logger.Info($"Call: {nameof(ExecuteAsync)}(EditUserRequestModel)");
+        
+        // 1. Validate request
+        var validation = await validator.ValidateAsync(request);
+        if (!validation.IsValid)
+            return new EditUserResponseModel(validation);
+        
+        // 2. Execute business logic
+        var result = await this.dal.User.SaveAsync(user);
+        
+        // 3. Return response
+        return new EditUserResponseModel { UserId = user.Id };
+    }
+}
+```
+
+**2. ICommand<in TRequestModel> - Command with request, no response**
+
+Example: `DownloadCoverImageCommand` (processes single Series)
+
+```csharp
+public class DownloadCoverImageCommand : ICommand<Series>
+{
+    public async Task ExecuteAsync(Series? series)
+    {
+        ArgumentNullException.ThrowIfNull(series);
+        this.logger.Info($"Call: {nameof(ExecuteAsync)}()");
+        
+        // Check if already exists
+        if (await this.PosterExistsAsync(series.Id))
+            return;
+        
+        // Download and save image
+        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
+        await this.fileSystem.SaveAsync(containerName, fileName, contentType, imageStream);
+    }
+}
+```
+
+**3. ICommand - Command with no parameters or response**
+
+Example: `DownloadCoverImagesCommand` (batch operation), `UpdateFeedsCommand`
+
+```csharp
+public class DownloadCoverImagesCommand : ICommand
+{
+    public async Task ExecuteAsync()
+    {
+        this.logger.Info($"Call: {nameof(ExecuteAsync)}()");
+        
+        // Load all series
+        var series = await this.seriesDao.LoadAsync();
+        
+        // Process each series using single-item command
+        foreach (var seriesItem in series)
+        {
+            await this.downloadCoverImageCommand.ExecuteAsync(seriesItem);
+        }
+    }
 }
 ```
 
