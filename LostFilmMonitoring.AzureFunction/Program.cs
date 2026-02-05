@@ -7,8 +7,7 @@ public static class Program
 {
     private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
     {
-        ConfigureLoggingAndTelemetry(services);
-        services.AddLogging();
+        services.AddOpenTelemetry().UseFunctionsWorkerDefaults().UseAzureMonitorExporter();
         services.AddSingleton<Common.ILogger, Logger>();
         services.AddTransient(r => new BlobServiceClient(
             new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
@@ -68,42 +67,6 @@ public static class Program
         builder = builder.ConfigureServices(RegisterDependencyInjection);
         IHost host = builder.Build();
         host.Run();
-    }
-
-    private static void ConfigureLoggingAndTelemetry(IServiceCollection services)
-    {
-        var resourceAttributes = new Dictionary<string, object>
-        {
-            { "service.instance.id", Environment.MachineName },
-            { "service.version", "1.0.0" },
-        };
-
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault()
-            .AddAttributes(resourceAttributes);
-
-        services.AddSingleton<TracerProvider>(r =>
-            Sdk.CreateTracerProviderBuilder()
-                .SetResourceBuilder(resourceBuilder)
-                .SetSampler(new AlwaysOnSampler())
-                .AddSource(ActivitySourceNames.ActivitySources)
-                .AddAzureMonitorTraceExporter()
-                .Build());
-
-        services.AddSingleton<MeterProvider>(r =>
-            Sdk.CreateMeterProviderBuilder()
-                .SetResourceBuilder(resourceBuilder)
-                .AddAzureMonitorMetricExporter()
-                .Build());
-
-        services.AddOpenTelemetry().UseFunctionsWorkerDefaults();
-        services.AddSingleton<ILoggerFactory>(r =>
-            LoggerFactory.Create(builder =>
-                builder.AddOpenTelemetry(logging =>
-                    {
-                        logging.SetResourceBuilder(resourceBuilder);
-                        logging.AddAzureMonitorLogExporter();
-                    })));
     }
 
     private static string Env(string key) => Environment.GetEnvironmentVariable(key!)!;
