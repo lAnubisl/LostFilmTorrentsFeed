@@ -5,6 +5,7 @@
 /// </summary>
 public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.UpdateUserFeedCommand);
     private static readonly object TorrentFileLocker = new object();
     private readonly ILogger logger;
     private readonly IDal dal;
@@ -26,6 +27,7 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
     /// <inheritdoc/>
     public async Task ExecuteAsync(UpdateUserFeedCommandRequestModel? model)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         ArgumentNullException.ThrowIfNull(model);
 
         if (model.FeedResponseItem == null)

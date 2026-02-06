@@ -5,6 +5,7 @@
 /// </summary>
 public class DownloadCoverImagesCommand : ICommand
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.DownloadCoverImagesCommand);
     private readonly ILogger logger;
     private readonly ISeriesDao seriesDao;
     private readonly ICommand<Series> downloadCoverImageCommand;
@@ -28,6 +29,7 @@ public class DownloadCoverImagesCommand : ICommand
     /// <inheritdoc/>
     public async Task ExecuteAsync()
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
         var series = await this.seriesDao.LoadAsync();
         foreach (var seriesItem in series)

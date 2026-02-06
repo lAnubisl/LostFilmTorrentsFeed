@@ -23,6 +23,7 @@ public interface ICommand
 ```csharp
 public class MyCommand : ICommand<TRequest, TResponse>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.MyCommand);
     private readonly IDal dal;
     private readonly ILogger logger;
 
@@ -34,6 +35,7 @@ public class MyCommand : ICommand<TRequest, TResponse>
 
     public async Task<TResponse> ExecuteAsync(TRequest? request)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(ExecuteAsync)}({request})");
         
         // Validation if validator exists
@@ -68,3 +70,30 @@ public class MyCommand : ICommand<TRequest, TResponse>
 
 - Always use scoped logger: `logger.CreateScope(nameof(ClassName))`
 - All commands registered as transient in DI
+
+## Distributed Tracing with ActivitySource (Required)
+
+All commands MUST implement distributed tracing with ActivitySource:
+
+1. **Declare static ActivitySource field** in the command class:
+   ```csharp
+   private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.MyCommand);
+   ```
+
+2. **Register ActivitySourceName** in `ActivitySourceNames.cs`:
+   ```csharp
+   public static readonly string MyCommand = "MyCommand";
+   ```
+
+3. **Add to ActivitySources array** in `ActivitySourceNames.cs`
+
+4. **Wrap ExecuteAsync body** with activity tracking:
+   ```csharp
+   public async Task<TResponse> ExecuteAsync(TRequest? request)
+   {
+       using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
+       // Command implementation...
+   }
+   ```
+
+This ensures consistent observability and distributed tracing across all BLL commands.

@@ -5,6 +5,7 @@ namespace LostFilmMonitoring.BLL.Commands;
 /// </summary>
 public class DownloadCoverImageCommand : ICommand<Series>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.DownloadCoverImageCommand);
     private readonly ILogger logger;
     private readonly IFileSystem fileSystem;
     private readonly ITmdbClient tmdbClient;
@@ -28,6 +29,7 @@ public class DownloadCoverImageCommand : ICommand<Series>
     /// <inheritdoc/>
     public async Task ExecuteAsync(Series? series)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         ArgumentNullException.ThrowIfNull(series);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
         if (await this.PosterExistsAsync(series.Id))

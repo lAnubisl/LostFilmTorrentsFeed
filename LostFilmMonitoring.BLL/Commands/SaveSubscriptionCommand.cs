@@ -5,6 +5,7 @@
 /// </summary>
 public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.SaveSubscriptionCommand);
     private readonly IValidator<EditSubscriptionRequestModel> validator;
     private readonly IConfiguration configuration;
     private readonly IModelPersister persister;
@@ -37,6 +38,7 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     /// <inheritdoc/>
     public async Task<EditSubscriptionResponseModel> ExecuteAsync(EditSubscriptionRequestModel? model)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(EditSubscriptionRequestModel model)");
         if (model == null)
         {

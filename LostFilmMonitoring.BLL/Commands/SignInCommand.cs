@@ -5,6 +5,7 @@
 /// </summary>
 public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.SignInCommand);
     private readonly ILogger logger;
     private readonly IUserDao userDao;
 
@@ -22,6 +23,7 @@ public class SignInCommand : ICommand<SignInRequestModel, SignInResponseModel>
     /// <inheritdoc/>
     public async Task<SignInResponseModel> ExecuteAsync(SignInRequestModel? request)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(SingInRequestModel request);");
         if (request == null)
         {
