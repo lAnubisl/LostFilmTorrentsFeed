@@ -111,7 +111,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
         this.persister!.Verify(x => x.PersistAsync($"subscription_{userIdValue}", Array.Empty<SubscriptionItem>()), Times.Once);
     }
 

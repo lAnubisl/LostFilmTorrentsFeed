@@ -39,13 +39,7 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
         var episodeNumber = 1;
         var quality = "SD";
 
-        Expression<Func<EpisodeTableEntity, bool>> expression = entity =>
-                entity.PartitionKey == seriesName &&
-                entity.Quality == quality &&
-                entity.SeasonNumber == seasonNumber &&
-                entity.EpisodeNumber == episodeNumber;
-
-        tableClient!.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>([]));
+        tableClient!.Setup(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default)).Returns(new TestAsyncPageable<EpisodeTableEntity>([]));    
         await GetDao().ExistsAsync(seriesName, seasonNumber, episodeNumber, quality);
         tableClient.Verify(x => x.QueryAsync(It.IsAny<Expression<Func<EpisodeTableEntity, bool>>>(), null, null, default), Times.Once);
     }

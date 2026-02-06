@@ -54,7 +54,7 @@ public class DownloadCoverImagesCommandTests
     [Test]
     public void Constructor_should_create_logger_scope()
     {
-        var command = GetService();
+        GetService();
         this.logger!.Verify(l => l.CreateScope(nameof(DownloadCoverImagesCommand)), Times.Once);
     }
 

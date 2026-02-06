@@ -47,7 +47,6 @@ public class AzureBlobStorageClientTests
     public async Task UploadAsync_should_upload_2()
     {
         var azureBlobStorageClient = GetClient();
-        var stream = new MemoryStream();
         await azureBlobStorageClient.UploadAsync(containerName, blobName, "content", "contentType");
         blobClient!.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
     }
