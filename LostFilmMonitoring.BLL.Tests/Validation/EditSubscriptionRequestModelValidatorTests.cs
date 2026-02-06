@@ -5,15 +5,12 @@ public class EditSubscriptionRequestModelValidatorTests
 {
     private Mock<IUserDao>? userDao;
     private Mock<ISeriesDao>? seriesDao;
-    private Mock<Common.ILogger>? logger;
 
     [SetUp]
     public void Setup()
     {
         this.userDao = new();
         this.seriesDao = new();
-        this.logger = new();
-        this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
     }
 
     [Test]

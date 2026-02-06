@@ -32,9 +32,19 @@ public abstract class BaseRssFeed
     /// Downloads content by URL.
     /// </summary>
     /// <param name="rssUri">URL.</param>
+    /// <returns>Content.</returns>
+    protected async Task<string> DownloadRssTextAsync(string rssUri)
+    {
+        return await this.DownloadRssTextAsync(rssUri, null);
+    }
+
+    /// <summary>
+    /// Downloads content by URL.
+    /// </summary>
+    /// <param name="rssUri">URL.</param>
     /// <param name="requestHeaders">Additional headers to add for the request to external service.</param>
     /// <returns>Content.</returns>
-    protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders = null)
+    protected async Task<string> DownloadRssTextAsync(string rssUri, Dictionary<string, string>? requestHeaders)
     {
         this.Logger.Info($"Call: {nameof(this.DownloadRssTextAsync)}({rssUri})");
         using var client = this.httpClientFactory.CreateClient();

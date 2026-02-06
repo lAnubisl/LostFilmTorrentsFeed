@@ -3,6 +3,10 @@
 [ExcludeFromCodeCoverage]
 internal class Helper
 {
+    protected Helper()
+    {
+    }
+
     internal static string GetEmbeddedResource(string name)
     {
         using var resource = typeof(Helper).GetTypeInfo().Assembly.GetManifestResourceStream(name);

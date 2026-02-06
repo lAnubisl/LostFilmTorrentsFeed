@@ -5,7 +5,7 @@ namespace LostFilmMonitoring.AzureFunction;
 /// </summary>
 public static class Program
 {
-    private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
+    private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (_, services) =>
     {
         services.AddOpenTelemetry().UseFunctionsWorkerDefaults().UseAzureMonitorExporter();
         services.AddSingleton<Common.ILogger, Logger>();

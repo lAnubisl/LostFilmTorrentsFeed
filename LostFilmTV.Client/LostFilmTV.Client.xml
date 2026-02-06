@@ -96,6 +96,13 @@
             Gets Logger.
             </summary>
         </member>
+        <member name="M:LostFilmTV.Client.RssFeed.BaseRssFeed.DownloadRssTextAsync(System.String)">
+            <summary>
+            Downloads content by URL.
+            </summary>
+            <param name="rssUri">URL.</param>
+            <returns>Content.</returns>
+        </member>
         <member name="M:LostFilmTV.Client.RssFeed.BaseRssFeed.DownloadRssTextAsync(System.String,System.Collections.Generic.Dictionary{System.String,System.String})">
             <summary>
             Downloads content by URL.

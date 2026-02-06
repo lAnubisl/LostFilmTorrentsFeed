@@ -30,7 +30,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Debug,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                It.IsAny<Exception>(),
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
@@ -45,7 +45,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Error,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                It.IsAny<Exception>(),
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
@@ -60,7 +60,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+                It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                It.IsAny<Exception>(),
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
@@ -76,7 +76,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Information,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                It.IsAny<Exception>(),
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
@@ -91,7 +91,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Warning,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                It.IsAny<Exception>(),
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
@@ -107,7 +107,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: Exception occurred."),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: Exception occurred."),
                ex,
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);
