@@ -3,8 +3,8 @@
 [ExcludeFromCodeCoverage]
 public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 {
-    private IEnumerable<T> values;
-    private IEnumerator<T> enumerator;
+    private readonly IEnumerable<T> values;
+    private readonly IEnumerator<T> enumerator;
     
     public TestAsyncEnumerator(T[] values)
     {
