@@ -201,7 +201,7 @@ internal class SaveSubscriptionCommandTests
         };
 
         validator!.Setup(x => x.ValidateAsync(It.IsAny<EditSubscriptionRequestModel>())).ReturnsAsync(ValidationResult.Ok);
-        var response = await GetCommand().ExecuteAsync(request);
+        await GetCommand().ExecuteAsync(request);
 
         // load user
         this.userDao!.Verify(x => x.LoadAsync(request.UserId), Times.Once);

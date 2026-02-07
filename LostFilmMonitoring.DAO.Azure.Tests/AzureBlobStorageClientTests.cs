@@ -64,7 +64,7 @@ public class AzureBlobStorageClientTests
     {
         var testData = "TEST DATA";
         blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
-            (s, ct) =>
+            (s, _) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
                 s.Write(bytes, 0, bytes.Length);
@@ -92,7 +92,6 @@ public class AzureBlobStorageClientTests
         );
 
         var azureBlobStorageClient = GetClient();
-        var stream = new MemoryStream();
         var result = await azureBlobStorageClient.DownloadAsync(containerName, dirName, blobName);
         var resultData = Encoding.UTF8.GetString(ReadFully(result));
         string.Equals(testData, resultData).Should().BeTrue();

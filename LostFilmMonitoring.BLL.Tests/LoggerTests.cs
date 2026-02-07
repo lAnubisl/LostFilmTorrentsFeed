@@ -124,7 +124,7 @@ public class LoggerTests
            x => x.Log(
                LogLevel.Critical,
                It.IsAny<EventId>(),
-               It.Is<It.IsAnyType>((o, t) => o.ToString() == "testingScope: message"),
+               It.Is<It.IsAnyType>((o, _) => o.ToString() == "testingScope: message"),
                ex,
                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
            Times.Once);

@@ -47,8 +47,7 @@ public class ValidationResult
     internal static ValidationResult Fail(string property, string message, params string[] objects)
         => new (
             property,
-            string.Format(message, new string[] { property }
-            .Union(objects ?? []).ToArray()));
+            string.Format(message, new[] { property }.Union(objects ?? []).ToArray()));
 
     /// <summary>
     /// Gets an instance of <see cref="ValidationResult"/> with predefined error message.

@@ -6,20 +6,20 @@ Each file implements a specific business operation following command pattern.
 
 ## Key Commands
 
-**User Management:**
+### User Management:
 - `SaveUserCommand`: Register new user or update existing (creates user + empty subscription + empty feed)
 - `GetUserCommand`: Retrieve user details for editing
 - `SignInCommand`: Authenticate user by checking existence
 
-**Subscription Management:**
+### Subscription Management:
 - `SaveSubscriptionCommand`: Update user's series subscriptions with quality preferences
 - Validates user exists, series exist, and quality values are valid
 
-**Feed Updates:**
+### Feed Updates:
 - `UpdateFeedsCommand`: Main feed processor - polls LostFilm RSS, processes new episodes, updates all user feeds
 - `UpdateUserFeedCommand`: Updates single user's feed with new episode
 
-**Images:**
+### Images:
 - `DownloadCoverImageCommand`: Downloads single series cover from TMDB
 - `DownloadCoverImagesCommand`: Batch downloads covers for all series
 
@@ -27,7 +27,7 @@ Each file implements a specific business operation following command pattern.
 
 The project uses three command interface patterns:
 
-**1. ICommand<TRequestModel, TResponseModel> - Command with request and response**
+### 1. ICommand<TRequestModel, TResponseModel> - Command with request and response
 
 Example: `SaveUserCommand`, `GetUserCommand`, `SignInCommand`
 
@@ -52,7 +52,7 @@ public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseMo
 }
 ```
 
-**2. ICommand<in TRequestModel> - Command with request, no response**
+### 2. ICommand<in TRequestModel> - Command with request, no response
 
 Example: `DownloadCoverImageCommand` (processes single Series)
 
@@ -75,7 +75,7 @@ public class DownloadCoverImageCommand : ICommand<Series>
 }
 ```
 
-**3. ICommand - Command with no parameters or response**
+### 3. ICommand - Command with no parameters or response
 
 Example: `DownloadCoverImagesCommand` (batch operation), `UpdateFeedsCommand`
 
