@@ -24,6 +24,41 @@
             Command for updating feeds.
             </summary>
         </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.DownloadCoverImageCommand">
+            <summary>
+            Command for downloading cover images.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.DownloadCoverImagesCommand">
+            <summary>
+            Command for downloading cover images for multiple series.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.GetUserCommand">
+            <summary>
+            Command for getting user information.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.SaveSubscriptionCommand">
+            <summary>
+            Command for saving subscription.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.SaveUserCommand">
+            <summary>
+            Command for saving user.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.SignInCommand">
+            <summary>
+            Command for signing in user.
+            </summary>
+        </member>
+        <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.UpdateUserFeedCommand">
+            <summary>
+            Command for updating user feed.
+            </summary>
+        </member>
         <member name="F:LostFilmMonitoring.Common.ActivitySourceNames.RssFeed">
             <summary>
             Name of the activity source for RSS feeds.

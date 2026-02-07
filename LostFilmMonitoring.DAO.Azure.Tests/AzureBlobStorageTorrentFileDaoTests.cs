@@ -53,7 +53,7 @@ public class AzureBlobStorageTorrentFileDaoTests
         var torrentId = "torrentId";
         var dao = new AzureBlobStorageTorrentFileDao(this.azureBlobStorageClient!.Object, this.logger!.Object);
         await dao.SaveBaseFileAsync(torrentId, new TorrentFile(torrentId, new MemoryStream()));
-        this.azureBlobStorageClient.Verify(x => x.UploadAsync("basetorrents", $"{torrentId}.torrent", It.IsAny<Stream>(), "applications/x-bittorrent", "no-cache"), Times.Once);
+        this.azureBlobStorageClient.Verify(x => x.UploadAsync("basetorrents", $"{torrentId}.torrent", It.IsAny<Stream>(), "applications/x-bittorrent"), Times.Once);
     }
 
     [Test]

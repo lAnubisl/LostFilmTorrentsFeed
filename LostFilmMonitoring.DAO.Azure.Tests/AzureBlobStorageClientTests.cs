@@ -4,7 +4,6 @@
 public class AzureBlobStorageClientTests
 {
     Mock<BlobClient>? blobClient;
-    Mock<BlobContainerClient>? blobContainerClient;
     Mock<BlobServiceClient>? blobServiceClient;
     private Mock<Common.ILogger>? logger;
 
@@ -16,17 +15,17 @@ public class AzureBlobStorageClientTests
     public void Setup()
     {
         this.blobClient = new Mock<BlobClient>();
-        this.blobContainerClient = new Mock<BlobContainerClient>();
+        var blobContainerClient = new Mock<BlobContainerClient>();
         this.blobServiceClient = new Mock<BlobServiceClient>();
         this.logger = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
         this.blobServiceClient
             .Setup(x => x.GetBlobContainerClient(containerName))
             .Returns(blobContainerClient.Object);
-        this.blobContainerClient
+        blobContainerClient
             .Setup(x => x.GetBlobClient(blobName))
             .Returns(blobClient.Object);
-        this.blobContainerClient
+        blobContainerClient
             .Setup(x => x.GetBlobClient($"{dirName}/{blobName}"))
             .Returns(blobClient.Object);
         this.blobClient
@@ -47,7 +46,6 @@ public class AzureBlobStorageClientTests
     public async Task UploadAsync_should_upload_2()
     {
         var azureBlobStorageClient = GetClient();
-        var stream = new MemoryStream();
         await azureBlobStorageClient.UploadAsync(containerName, blobName, "content", "contentType");
         blobClient!.Verify(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), default), Times.Once);
     }
@@ -66,7 +64,7 @@ public class AzureBlobStorageClientTests
     {
         var testData = "TEST DATA";
         blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
-            (s, ct) =>
+            (s, _) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
                 s.Write(bytes, 0, bytes.Length);
@@ -85,7 +83,7 @@ public class AzureBlobStorageClientTests
     {
         var testData = "TEST DATA";
         blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
-            (s, ct) =>
+            (s, _) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
                 s.Write(bytes, 0, bytes.Length);
@@ -94,7 +92,6 @@ public class AzureBlobStorageClientTests
         );
 
         var azureBlobStorageClient = GetClient();
-        var stream = new MemoryStream();
         var result = await azureBlobStorageClient.DownloadAsync(containerName, dirName, blobName);
         var resultData = Encoding.UTF8.GetString(ReadFully(result));
         string.Equals(testData, resultData).Should().BeTrue();
@@ -151,7 +148,7 @@ public class AzureBlobStorageClientTests
     {
         var testData = "TEST DATA";
         blobClient!.Setup(x => x.DownloadToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>())).Callback<Stream, CancellationToken>(
-            (s, ct) =>
+            (s, _) =>
             {
                 var bytes = Encoding.UTF8.GetBytes(testData);
                 s.Write(bytes, 0, bytes.Length);
@@ -255,7 +252,11 @@ public class AzureBlobStorageClientTests
 
     private static byte[] ReadFully(Stream? input)
     {
-        if (input == null) return [];
+        if (input == null)
+        {
+            return [];
+        }
+
         byte[] buffer = new byte[16 * 1024];
         using MemoryStream ms = new MemoryStream();
         int read;

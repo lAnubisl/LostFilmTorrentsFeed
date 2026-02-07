@@ -73,7 +73,7 @@ public class FeedItem : IComparable<FeedItem>
             return null;
         }
 
-        var index = this.Link.IndexOf(userId);
+        var index = this.Link.IndexOf(userId, StringComparison.OrdinalIgnoreCase);
         if (index < 0)
         {
             return null;
@@ -117,7 +117,7 @@ public class FeedItem : IComparable<FeedItem>
             return 1;
         }
 
-        return this.Title.CompareTo(other.Title);
+        return string.CompareOrdinal(this.Title, other.Title);
     }
 
     /// <inheritdoc/>

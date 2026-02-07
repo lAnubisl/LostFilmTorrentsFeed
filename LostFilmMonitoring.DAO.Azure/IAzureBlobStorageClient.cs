@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure;
+namespace LostFilmMonitoring.DAO.Azure;
 
 /// <summary>
 /// Manages access to Azure Blob Storage.
@@ -75,11 +75,34 @@ public interface IAzureBlobStorageClient
     /// <param name="fileName">Name of the file.</param>
     /// <param name="content">Stream with content of the file.</param>
     /// <param name="contentType">Content-Type property of the file.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">Content is null.</exception>
+    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Blob Storage.</exception>
+    Task UploadAsync(string containerName, string fileName, Stream? content, string contentType);
+
+    /// <summary>
+    /// Upload file content to Azure Blob Storage.
+    /// </summary>
+    /// <param name="containerName">Name of the container.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="content">Stream with content of the file.</param>
+    /// <param name="contentType">Content-Type property of the file.</param>
     /// <param name="cacheControl">Cache-Control property of the file.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Content is null.</exception>
+    /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Blob Storage.</exception>
+    Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl);
+
+    /// <summary>
+    /// Upload file content to Azure Blob Storage.
+    /// </summary>
+    /// <param name="containerName">Name of the container.</param>
+    /// <param name="fileName">Name of the file.</param>
+    /// <param name="content">Text content of the file.</param>
+    /// <param name="contentType">Content-Type property of the file.</param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
-    Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl = "no-cache");
+    Task UploadAsync(string containerName, string fileName, string content, string contentType);
 
     /// <summary>
     /// Upload file content to Azure Blob Storage.
@@ -91,7 +114,7 @@ public interface IAzureBlobStorageClient
     /// <param name="cacheControl">Cache-Control property of the file.</param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     /// <exception cref="ExternalServiceUnavailableException">Error accessing Azure Table Storage.</exception>
-    Task UploadAsync(string containerName, string fileName, string content, string contentType, string cacheControl = "no-cache");
+    Task UploadAsync(string containerName, string fileName, string content, string contentType, string cacheControl);
 
     /// <summary>
     /// Upload file content to Azure Blob Storage.

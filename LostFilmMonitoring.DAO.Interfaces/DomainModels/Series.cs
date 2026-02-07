@@ -15,6 +15,41 @@ public class Series
     /// <param name="linkSD">Link to torrent file SD.</param>
     /// <param name="linkMP4">Link to torrent file MP4.</param>
     /// <param name="link1080">Link to torrent file 1080.</param>
+    public Series(
+        Guid id,
+        string name,
+        DateTime lastEposide,
+        string lastEpisodeName,
+        string? linkSD,
+        string? linkMP4,
+        string? link1080)
+        : this(
+            id,
+            name,
+            lastEposide,
+            lastEpisodeName,
+            linkSD,
+            linkMP4,
+            link1080,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Series"/> class.
+    /// </summary>
+    /// <param name="id">Series id.</param>
+    /// <param name="name">Series name.</param>
+    /// <param name="lastEposide">Last episode date.</param>
+    /// <param name="lastEpisodeName">Last episode name.</param>
+    /// <param name="linkSD">Link to torrent file SD.</param>
+    /// <param name="linkMP4">Link to torrent file MP4.</param>
+    /// <param name="link1080">Link to torrent file 1080.</param>
     /// <param name="q1080SeasonNumber">Season number for last episode of quality 1080p.</param>
     /// <param name="qMP4SeasonNumber">Season number for last episode of quality 720p.</param>
     /// <param name="qSDSeasonNumber">Season number for last episode of quality SD.</param>
@@ -29,12 +64,12 @@ public class Series
         string? linkSD,
         string? linkMP4,
         string? link1080,
-        int? q1080SeasonNumber = null,
-        int? qMP4SeasonNumber = null,
-        int? qSDSeasonNumber = null,
-        int? q1080EpisodeNumber = null,
-        int? qMP4EpisodeNumber = null,
-        int? qSDEpisodeNumber = null)
+        int? q1080SeasonNumber,
+        int? qMP4SeasonNumber,
+        int? qSDSeasonNumber,
+        int? q1080EpisodeNumber,
+        int? qMP4EpisodeNumber,
+        int? qSDEpisodeNumber)
     {
         this.Id = id;
         this.Name = name;

@@ -101,7 +101,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
         this.userDao!.Verify(x => x.SaveAsync(It.Is<User>(x => x.Id == userIdValue && x.TrackerId == trackerIdValue)), Times.Once);
     }
 
@@ -111,7 +111,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
         this.persister!.Verify(x => x.PersistAsync($"subscription_{userIdValue}", Array.Empty<SubscriptionItem>()), Times.Once);
     }
 
@@ -121,7 +121,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var userIdValue = "UserId";
         var command = CreateCommand();
-        var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
+        await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
         this.feedDao!.Verify(x => x.SaveUserFeedAsync(userIdValue, Array.Empty<FeedItem>()), Times.Once);
     }
 

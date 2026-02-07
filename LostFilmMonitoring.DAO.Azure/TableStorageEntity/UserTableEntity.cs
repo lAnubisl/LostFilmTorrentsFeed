@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure;
+﻿namespace LostFilmMonitoring.DAO.Azure.TableStorageEntity;
 
 /// <summary>
 /// Describes user in Azure Table Storage.

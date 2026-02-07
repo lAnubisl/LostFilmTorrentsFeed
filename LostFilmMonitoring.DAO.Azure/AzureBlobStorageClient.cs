@@ -22,7 +22,13 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     }
 
     /// <inheritdoc/>
-    public Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl = "no-cache")
+    public Task UploadAsync(string containerName, string fileName, Stream? content, string contentType)
+    {
+        return this.UploadAsync(containerName, fileName, content, contentType, "no-cache");
+    }
+
+    /// <inheritdoc/>
+    public Task UploadAsync(string containerName, string fileName, Stream? content, string contentType, string cacheControl)
     {
         ArgumentNullException.ThrowIfNull(content);
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', Stream, '{contentType}', '{cacheControl}')");
@@ -34,7 +40,13 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         => this.UploadAsync(containerName, $"{directoryName}/{fileName}", content, contentType);
 
     /// <inheritdoc/>
-    public async Task UploadAsync(string containerName, string fileName, string content, string contentType, string cacheControl = "no-cache")
+    public Task UploadAsync(string containerName, string fileName, string content, string contentType)
+    {
+        return this.UploadAsync(containerName, fileName, content, contentType, "no-cache");
+    }
+
+    /// <inheritdoc/>
+    public async Task UploadAsync(string containerName, string fileName, string content, string contentType, string cacheControl)
     {
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
         using Stream ms = new MemoryStream();

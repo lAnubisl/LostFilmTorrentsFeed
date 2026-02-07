@@ -4,19 +4,34 @@
         <name>LostFilmMonitoring.BLL</name>
     </assembly>
     <members>
+        <member name="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImageCommand">
+            <summary>
+            Checks series cover image.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImageCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.BLL.Interfaces.ITmdbClient)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImageCommand"/> class.
+            </summary>
+            <param name="logger">Instance of <see cref="T:LostFilmMonitoring.Common.ILogger"/>.</param>
+            <param name="fileSystem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem"/>.</param>
+            <param name="tmdbClient">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.ITmdbClient"/>.</param>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImageCommand.ExecuteAsync(LostFilmMonitoring.DAO.Interfaces.DomainModels.Series)">
+            <inheritdoc/>
+        </member>
         <member name="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand">
             <summary>
             Checks series cover images.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IFileSystem,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmMonitoring.BLL.Interfaces.ITmdbClient)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.DAO.Interfaces.ISeriesDao,LostFilmMonitoring.BLL.Commands.ICommand{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series})">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand"/> class.
             </summary>
             <param name="logger">Instance of <see cref="T:LostFilmMonitoring.Common.ILogger"/>.</param>
-            <param name="fileSystem">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.IFileSystem"/>.</param>
             <param name="seriesDao">Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.ISeriesDao"/>.</param>
-            <param name="tmdbClient">Instance of <see cref="T:LostFilmMonitoring.BLL.Interfaces.ITmdbClient"/>.</param>
+            <param name="downloadCoverImageCommand">Instance of <see cref="T:LostFilmMonitoring.BLL.Commands.ICommand`1"/>.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.DownloadCoverImagesCommand.ExecuteAsync">
             <inheritdoc/>
@@ -48,7 +63,7 @@
             Execute command that accepts request model and returns response model.
             </summary>
             <param name="request">Instance of TRequestModel.</param>
-            <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> representing the result of the asynchronous operation.</returns>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the result of the asynchronous operation.</returns>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Commands.ICommand`1">
             <summary>
@@ -61,7 +76,7 @@
             Execute command that accepts request model and returns response model.
             </summary>
             <param name="request">Instance of TRequestModel.</param>
-            <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> representing the result of the asynchronous operation.</returns>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> representing the result of the asynchronous operation.</returns>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Commands.ICommand">
             <summary>
@@ -133,7 +148,7 @@
             Update all feeds.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Interfaces.ITmdbClient,LostFilmMonitoring.BLL.Interfaces.IFileSystem)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Commands.ICommand{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series})">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand"/> class.
             </summary>
@@ -143,8 +158,7 @@
             <param name="configuration">IConfiguration.</param>
             <param name="modelPersister">modelPersister.</param>
             <param name="client">client.</param>
-            <param name="tmdbClient">tmdbClient.</param>
-            <param name="fileSystem">fileSystem.</param>
+            <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>

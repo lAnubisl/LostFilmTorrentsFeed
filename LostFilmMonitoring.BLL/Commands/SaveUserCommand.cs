@@ -5,6 +5,7 @@
 /// </summary>
 public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseModel>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.SaveUserCommand);
     private readonly IUserDao userDAO;
     private readonly IFeedDao feedDAO;
     private readonly ILogger logger;
@@ -32,6 +33,7 @@ public class SaveUserCommand : ICommand<EditUserRequestModel, EditUserResponseMo
     /// <returns>Awaitable task.</returns>
     public async Task<EditUserResponseModel> ExecuteAsync(EditUserRequestModel? request)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(EditUserRequestModel model)");
         if (request == null)
         {

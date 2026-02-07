@@ -3,13 +3,11 @@
 [ExcludeFromCodeCoverage]
 public class AzureBlobStorageModelPersisterTests
 {
-    private Mock<Common.ILogger>? logger;
-
     [SetUp]
     public void Setup()
     {
-        this.logger = new();
-        this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+        var logger = new Mock<Common.ILogger>();
+        logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(logger.Object);
     }
     
     private static string GetFile(string fileName)

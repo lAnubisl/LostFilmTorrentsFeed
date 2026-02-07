@@ -5,10 +5,13 @@ namespace LostFilmMonitoring.AzureFunction;
 /// </summary>
 public static class Program
 {
-    private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (hostContext, services) =>
+    private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (_, services) =>
     {
-        ConfigureLoggingAndTelemetry(services);
-        services.AddLogging();
+        services
+            .AddOpenTelemetry()
+            .UseFunctionsWorkerDefaults()
+            .WithTracing(b => b.AddSource(ActivitySourceNames.ActivitySources))
+            .UseAzureMonitorExporter();
         services.AddSingleton<Common.ILogger, Logger>();
         services.AddTransient(r => new BlobServiceClient(
             new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),
@@ -36,6 +39,7 @@ public static class Program
         services.AddTransient<ILostFilmClient, LostFilmClient>();
         services.AddTransient<ITmdbClient>(r => new TmdbClient(Env(EnvironmentVariables.TmdbApiKey), r.GetService<Common.ILogger>()!));
         services.AddHttpClient();
+        services.AddTransient<ICommand<DAO.Interfaces.DomainModels.Series>>(sp => new DownloadCoverImageCommand(sp.GetService<Common.ILogger>()!, sp.GetService<IFileSystem>()!, sp.GetService<ITmdbClient>()!));
         services.AddTransient(sp =>
             new UpdateFeedsCommand(
                 sp.GetService<Common.ILogger>() !,
@@ -44,14 +48,12 @@ public static class Program
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,
                 sp.GetService<ILostFilmClient>() !,
-                sp.GetService<ITmdbClient>() !,
-                sp.GetService<IFileSystem>() !));
+                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!));
         services.AddTransient(sp =>
             new DownloadCoverImagesCommand(
                 sp.GetService<Common.ILogger>() !,
-                sp.GetService<IFileSystem>() !,
                 sp.GetService<ISeriesDao>() !,
-                sp.GetService<ITmdbClient>() !));
+                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>() !));
         services.AddTransient<ICommand<EditUserRequestModel, EditUserResponseModel>, SaveUserCommand>();
         services.AddTransient<ICommand<EditSubscriptionRequestModel, EditSubscriptionResponseModel>, SaveSubscriptionCommand>();
         services.AddTransient<ICommand<SignInRequestModel, SignInResponseModel>, SignInCommand>();
@@ -69,42 +71,6 @@ public static class Program
         builder = builder.ConfigureServices(RegisterDependencyInjection);
         IHost host = builder.Build();
         host.Run();
-    }
-
-    private static void ConfigureLoggingAndTelemetry(IServiceCollection services)
-    {
-        var resourceAttributes = new Dictionary<string, object>
-        {
-            { "service.instance.id", Environment.MachineName },
-            { "service.version", "1.0.0" },
-        };
-
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault()
-            .AddAttributes(resourceAttributes);
-
-        services.AddSingleton<TracerProvider>(r =>
-            Sdk.CreateTracerProviderBuilder()
-                .SetResourceBuilder(resourceBuilder)
-                .SetSampler(new AlwaysOnSampler())
-                .AddSource(ActivitySourceNames.ActivitySources)
-                .AddAzureMonitorTraceExporter()
-                .Build());
-
-        services.AddSingleton<MeterProvider>(r =>
-            Sdk.CreateMeterProviderBuilder()
-                .SetResourceBuilder(resourceBuilder)
-                .AddAzureMonitorMetricExporter()
-                .Build());
-
-        services.AddOpenTelemetry().UseFunctionsWorkerDefaults();
-        services.AddSingleton<ILoggerFactory>(r =>
-            LoggerFactory.Create(builder =>
-                builder.AddOpenTelemetry(logging =>
-                    {
-                        logging.SetResourceBuilder(resourceBuilder);
-                        logging.AddAzureMonitorLogExporter();
-                    })));
     }
 
     private static string Env(string key) => Environment.GetEnvironmentVariable(key!)!;

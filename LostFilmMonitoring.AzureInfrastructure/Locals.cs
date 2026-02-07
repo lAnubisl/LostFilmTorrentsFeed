@@ -2,6 +2,10 @@ namespace LostFilmMonitoring.AzureInfrastructure;
 
 public class Locals
 {
+    protected Locals()
+    {
+    }
+
     public static readonly string Project = "lfmon";
     public static readonly string Environment = Pulumi.Deployment.Instance.StackName.ToLowerInvariant();
     public static string MetadataStorageAccountName => $"stmeta{Project}{Environment}";

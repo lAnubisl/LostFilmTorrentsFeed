@@ -13,9 +13,8 @@ public class UpdateFeedsCommand : ICommand
     private readonly IConfiguration configuration;
     private readonly IModelPersister modelPersister;
     private readonly ILostFilmClient client;
-    private readonly ITmdbClient tmdbClient;
-    private readonly IFileSystem fileSystem;
     private readonly UpdateUserFeedCommand updateUserFeedCommand;
+    private readonly ICommand<Series> downloadCoverImagesCommand;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateFeedsCommand"/> class.
@@ -26,8 +25,7 @@ public class UpdateFeedsCommand : ICommand
     /// <param name="configuration">IConfiguration.</param>
     /// <param name="modelPersister">modelPersister.</param>
     /// <param name="client">client.</param>
-    /// <param name="tmdbClient">tmdbClient.</param>
-    /// <param name="fileSystem">fileSystem.</param>
+    /// <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
     public UpdateFeedsCommand(
         ILogger logger,
         IRssFeed rssFeed,
@@ -35,8 +33,7 @@ public class UpdateFeedsCommand : ICommand
         IConfiguration configuration,
         IModelPersister modelPersister,
         ILostFilmClient client,
-        ITmdbClient tmdbClient,
-        IFileSystem fileSystem)
+        ICommand<Series> downloadCoverImagesCommand)
     {
         this.logger = logger != null ? logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(logger));
         this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
@@ -44,9 +41,8 @@ public class UpdateFeedsCommand : ICommand
         this.rssFeed = rssFeed ?? throw new ArgumentNullException(nameof(rssFeed));
         this.modelPersister = modelPersister ?? throw new ArgumentNullException(nameof(modelPersister));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
-        this.tmdbClient = tmdbClient ?? throw new ArgumentNullException(nameof(tmdbClient));
-        this.fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
         this.updateUserFeedCommand = new UpdateUserFeedCommand(logger, dal, configuration);
+        this.downloadCoverImagesCommand = downloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(downloadCoverImagesCommand));
     }
 
     /// <inheritdoc/>
@@ -144,9 +140,9 @@ public class UpdateFeedsCommand : ICommand
         var newSeriesDetected = seriesToUpdate.Id == Guid.Empty;
 
         seriesToUpdate.Id = await this.dal.Series.SaveAsync(seriesToUpdate);
-        if (newSeriesDetected && !await this.PosterExistsAsync(seriesToUpdate.Id))
+        if (newSeriesDetected)
         {
-            await this.DownloadImageAsync(seriesToUpdate);
+            await this.downloadCoverImagesCommand.ExecuteAsync(seriesToUpdate);
         }
 
         return true;
@@ -212,27 +208,4 @@ public class UpdateFeedsCommand : ICommand
 
     private Task UpdateAllSubscribedUsersAsync(string[] userIds, FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
         => Task.WhenAll(userIds.Select(x => this.updateUserFeedCommand.ExecuteAsync(new UpdateUserFeedCommandRequestModel(x, feedResponseItem, torrent))));
-
-    private async Task DownloadImageAsync(Series series)
-    {
-        var openBraceIndex = series.Name.IndexOf('(');
-        var closeBraceIndex = series.Name.IndexOf(')');
-        if (openBraceIndex == -1 || closeBraceIndex == -1 || openBraceIndex > closeBraceIndex)
-        {
-            // cannot parse the series original name
-            return;
-        }
-
-        var originalName = series.Name.Substring(openBraceIndex + 1, closeBraceIndex - openBraceIndex - 1);
-        using var imageStream = await this.tmdbClient.DownloadImageAsync(originalName);
-        if (imageStream == null)
-        {
-            return;
-        }
-
-        await this.fileSystem.SaveAsync(Constants.MetadataStorageContainerImages, $"{series.Id}.jpg", "image/jpeg", imageStream);
-    }
-
-    private Task<bool> PosterExistsAsync(Guid seriesId) =>
-        this.fileSystem.ExistsAsync(Constants.MetadataStorageContainerImages, $"{seriesId}.jpg");
 }

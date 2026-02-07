@@ -10,6 +10,7 @@ global using Azure.Core;
 global using Azure.Data.Tables;
 global using LostFilmMonitoring.DAO.Interfaces;
 global using LostFilmMonitoring.DAO.Interfaces.DomainModels;
+global using LostFilmMonitoring.DAO.Azure.TableStorageEntity;
 global using System.Linq.Expressions;
 global using LostFilmMonitoring.BLL.Exceptions;
 global using System.Text;

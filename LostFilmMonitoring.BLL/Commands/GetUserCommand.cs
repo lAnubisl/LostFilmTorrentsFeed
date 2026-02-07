@@ -5,6 +5,7 @@
 /// </summary>
 public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel>
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.GetUserCommand);
     private readonly IUserDao userDao;
     private readonly ILogger logger;
 
@@ -22,6 +23,7 @@ public class GetUserCommand : ICommand<GetUserRequestModel, GetUserResponseModel
     /// <inheritdoc/>
     public async Task<GetUserResponseModel> ExecuteAsync(GetUserRequestModel? request)
     {
+        using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}(GetUserRequestModel request)");
         if (request == null)
         {
