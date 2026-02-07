@@ -3,6 +3,7 @@
 ## Core Entities
 
 **User:**
+
 ```csharp
 public class User
 {
@@ -12,6 +13,7 @@ public class User
 ```
 
 **Series:**
+
 ```csharp
 public class Series
 {

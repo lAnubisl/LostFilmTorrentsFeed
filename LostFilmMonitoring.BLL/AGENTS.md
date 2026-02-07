@@ -76,11 +76,13 @@ public class MyCommand : ICommand<TRequest, TResponse>
 All commands MUST implement distributed tracing with ActivitySource:
 
 1. **Declare static ActivitySource field** in the command class:
+
    ```csharp
    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.MyCommand);
    ```
 
 2. **Register ActivitySourceName** in `ActivitySourceNames.cs`:
+
    ```csharp
    public static readonly string MyCommand = "MyCommand";
    ```

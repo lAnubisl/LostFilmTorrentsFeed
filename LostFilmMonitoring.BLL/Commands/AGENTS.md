@@ -6,20 +6,20 @@ Each file implements a specific business operation following command pattern.
 
 ## Key Commands
 
-### User Management:
+### User Management
 - `SaveUserCommand`: Register new user or update existing (creates user + empty subscription + empty feed)
 - `GetUserCommand`: Retrieve user details for editing
 - `SignInCommand`: Authenticate user by checking existence
 
-### Subscription Management:
+### Subscription Management
 - `SaveSubscriptionCommand`: Update user's series subscriptions with quality preferences
 - Validates user exists, series exist, and quality values are valid
 
-### Feed Updates:
+### Feed Updates
 - `UpdateFeedsCommand`: Main feed processor - polls LostFilm RSS, processes new episodes, updates all user feeds
 - `UpdateUserFeedCommand`: Updates single user's feed with new episode
 
-### Images:
+### Images
 - `DownloadCoverImageCommand`: Downloads single series cover from TMDB
 - `DownloadCoverImagesCommand`: Batch downloads covers for all series
 
