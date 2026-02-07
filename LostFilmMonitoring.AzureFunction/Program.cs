@@ -7,7 +7,11 @@ public static class Program
 {
     private static readonly Action<HostBuilderContext, IServiceCollection> RegisterDependencyInjection = (_, services) =>
     {
-        services.AddOpenTelemetry().UseFunctionsWorkerDefaults().UseAzureMonitorExporter();
+        services
+            .AddOpenTelemetry()
+            .UseFunctionsWorkerDefaults()
+            .WithTracing(b => b.AddSource(ActivitySourceNames.ActivitySources))
+            .UseAzureMonitorExporter();
         services.AddSingleton<Common.ILogger, Logger>();
         services.AddTransient(r => new BlobServiceClient(
             new Uri($"https://{Env(EnvironmentVariables.MetadataStorageAccountName)}.blob.core.windows.net/"),

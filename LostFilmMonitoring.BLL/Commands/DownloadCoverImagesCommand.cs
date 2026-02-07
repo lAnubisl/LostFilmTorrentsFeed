@@ -32,6 +32,12 @@ public class DownloadCoverImagesCommand : ICommand
         using var activity = ActivitySource.StartActivity(nameof(this.ExecuteAsync), ActivityKind.Internal);
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}()");
         var series = await this.seriesDao.LoadAsync();
+        if (series == null)
+        {
+            this.logger.Error("No series found.");
+            return;
+        }
+
         foreach (var seriesItem in series)
         {
             await this.downloadCoverImageCommand.ExecuteAsync(seriesItem);
