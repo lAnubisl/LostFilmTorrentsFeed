@@ -43,7 +43,7 @@ public class ReteOrgRssFeedTests
     {
         mockHttp
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
-            .Respond("application/xml", Helper.GetEmbeddedResource($"LostFilmTV.Client.Tests.TestData.BaseFeed1.xml"));
+            .Respond("application/xml", Helper.GetEmbeddedResource("LostFilmTV.Client.Tests.TestData.BaseFeed1.xml"));
         var result = await GetService().LoadFeedItemsAsync();
         result.Should().NotBeNull();
         result.Should().NotBeEmpty();

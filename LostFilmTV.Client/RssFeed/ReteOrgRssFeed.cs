@@ -31,7 +31,7 @@ public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
         }
         catch (RemoteServiceUnavailableException)
         {
-            return new SortedSet<FeedItemResponse>();
+            return [];
         }
 
         return this.GetItems(rss);
