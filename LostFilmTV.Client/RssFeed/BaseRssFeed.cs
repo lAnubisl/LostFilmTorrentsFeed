@@ -6,9 +6,7 @@
 public abstract class BaseRssFeed
 {
     private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
-
     private static readonly RegexOptions RegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline;
-
     private readonly ActivitySource activitySource = new (ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
@@ -64,6 +62,7 @@ public abstract class BaseRssFeed
             {
                 activity?.SetTag("url", rssUri);
                 activity?.SetTag("method", message.Method.ToString());
+                activity?.SetTag("Type", "Lostfilm");
                 responseMessage = await client.SendAsync(message).ConfigureAwait(false);
             }
 
@@ -99,7 +98,7 @@ public abstract class BaseRssFeed
         if (string.IsNullOrWhiteSpace(rssText))
         {
             this.Logger.Error("RSS content is empty.");
-            return new SortedSet<FeedItemResponse>();
+            return [];
         }
 
         XDocument document;
@@ -110,7 +109,7 @@ public abstract class BaseRssFeed
         catch (Exception ex)
         {
             this.Logger.Log($"Error parsing RSS data: {Environment.NewLine}'{rssText}'", ex);
-            return new SortedSet<FeedItemResponse>();
+            return [];
         }
 
         return GetItems(document);

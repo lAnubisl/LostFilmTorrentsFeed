@@ -61,6 +61,11 @@ public static class ActivitySourceNames
     public static readonly string RssFeed = "RssFeed";
 
     /// <summary>
+    /// Name of the activity source for Downloading Torrent File.
+    /// </summary>
+    public static readonly string DownloadTorrent = "DownloadTorrent";
+
+    /// <summary>
     /// Gets an array of activity source names used for monitoring and logging purposes.
     /// </summary>
     /// <value>
