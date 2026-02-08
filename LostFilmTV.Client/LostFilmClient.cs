@@ -6,6 +6,7 @@
 /// </summary>
 public class LostFilmClient : ILostFilmClient
 {
+    private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.DownloadTorrent);
     private readonly ILogger logger;
     private readonly IHttpClientFactory httpClientFactory;
 
@@ -31,6 +32,8 @@ public class LostFilmClient : ILostFilmClient
     {
         var client = this.httpClientFactory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Get, $"https://n.tracktor.site/rssdownloader.php?id={torrentFileId}");
+        using var activity = ActivitySource.StartActivity(nameof(this.DownloadTorrentFileAsync), ActivityKind.Client);
+        activity?.SetTag("Type", "Lostfilm");
         request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
         HttpResponseMessage response;
 

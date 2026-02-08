@@ -78,6 +78,7 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryExecuteAsync", ActivityKind.Client);
+            activity?.SetTag("Type", "Azure Table Storage");
             await func(this.tableClient);
         }
         catch (Exception ex)
@@ -100,6 +101,7 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryGetEntityAsync", ActivityKind.Client);
+            activity?.SetTag("Type", "Azure Table Storage");
             return await func(this.tableClient);
         }
         catch (RequestFailedException ex)
@@ -129,6 +131,7 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryCountAsync", ActivityKind.Client);
+            activity?.SetTag("Type", "Azure Table Storage");
             return await func(this.tableClient);
         }
         catch (Exception ex)
@@ -142,6 +145,7 @@ public abstract class BaseAzureTableStorageDao
         where TSource : class
     {
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.IterateInnerAsync", ActivityKind.Client);
+        activity?.SetTag("Type", "Azure Table Storage");
         var result = new List<TResult>();
         await foreach (var item in items)
         {
@@ -155,6 +159,7 @@ public abstract class BaseAzureTableStorageDao
         where TSource : class
     {
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.CountInnerAsync", ActivityKind.Client);
+        activity?.SetTag("Type", "Azure Table Storage");
         int result = 0;
         await foreach (var item in items)
         {
