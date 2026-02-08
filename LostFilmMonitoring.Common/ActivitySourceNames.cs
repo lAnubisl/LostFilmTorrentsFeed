@@ -83,6 +83,7 @@ public static class ActivitySourceNames
         SaveUserCommand,
         SignInCommand,
         UpdateUserFeedCommand,
-        RssFeed
+        RssFeed,
+        DownloadTorrent,
     ];
 }
