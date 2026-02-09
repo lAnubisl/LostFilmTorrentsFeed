@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
+namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureBlobStorageModelPersisterTests
@@ -12,7 +12,7 @@ public class AzureBlobStorageModelPersisterTests
     
     private static string GetFile(string fileName)
     {
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = typeof(AzureBlobStorageModelPersisterTests).Assembly;
         var resourceName = $"{assembly.GetName().Name}.Resources.{fileName}";
         using var stream = assembly.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream!);

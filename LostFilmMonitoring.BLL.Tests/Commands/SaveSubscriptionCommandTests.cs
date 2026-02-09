@@ -222,7 +222,7 @@ internal class SaveSubscriptionCommandTests
     }
     
     private static Stream GetTorrent(string torrentId)
-        => Assembly.GetExecutingAssembly().GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent")!;
+        => typeof(SaveSubscriptionCommandTests).Assembly.GetManifestResourceStream($"LostFilmMonitoring.BLL.Tests.{torrentId}.torrent")!;
 
     private void DefineDatabaseState()
     {
