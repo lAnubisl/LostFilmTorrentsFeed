@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
+namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 public class UpdateFeedsCommandTests
@@ -780,7 +780,7 @@ public class UpdateFeedsCommandTests
 
     private void SetupTorrentFile(string torrentId)
     {
-        var torrentFileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
+        var torrentFileStream = typeof(UpdateFeedsCommandTests).Assembly.GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
         torrentFileStream.Should().NotBeNull();
         var torrentFileResponse = new Mock<ITorrentFileResponse>(); 
         torrentFileResponse.Setup(x => x.FileName).Returns("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent");
