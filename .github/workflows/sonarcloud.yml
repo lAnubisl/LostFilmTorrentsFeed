@@ -4,6 +4,9 @@ on:
     - cron: '0 0 * * 5'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
 
