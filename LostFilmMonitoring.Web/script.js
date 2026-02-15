@@ -121,18 +121,6 @@ const postJSONAsync = (url, model) => {
 };
 
 /**
- * Legacy postJSON function for backward compatibility
- * @param {string} url - The URL to post to
- * @param {Object} model - The data to post
- * @param {Function} callback - The callback function
- */
-const postJSON = (url, model, callback) => {
-    postJSONAsync(url, model)
-        .then(data => callback(null, data))
-        .catch(error => callback(error.message, null));
-};
-
-/**
  * Resets button style to default
  * @param {HTMLElement} button - The button element
  */
