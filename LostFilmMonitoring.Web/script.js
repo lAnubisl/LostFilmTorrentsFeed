@@ -526,6 +526,15 @@ const initMySubscriptionPage = () => {
     const userId = getCookie("UserId");
     const linkElement = document.getElementById("rssLink");
     const spanElement = document.getElementById("userIdSpan");
+    
+    // Guard: check if user is signed in
+    if (!userId) {
+        linkElement.textContent = "Not signed in";
+        linkElement.removeAttribute('href');
+        spanElement.textContent = "N/A";
+        return;
+    }
+    
     const link = `${baseRssUri}${userId}.xml`;
     
     linkElement.textContent = link;
