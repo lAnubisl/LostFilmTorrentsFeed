@@ -97,17 +97,6 @@ const fetchJSONAsync = (url) => {
 };
 
 /**
- * Legacy getJSON function for backward compatibility
- * @param {string} url - The URL to fetch from
- * @param {Function} callback - The callback function
- */
-const getJSON = (url, callback) => {
-    fetchJSONAsync(url)
-        .then(data => callback(null, data))
-        .catch(error => callback(error.message, null));
-};
-
-/**
  * Posts JSON data to a URL
  * @param {string} url - The URL to post to
  * @param {Object} model - The data to post
