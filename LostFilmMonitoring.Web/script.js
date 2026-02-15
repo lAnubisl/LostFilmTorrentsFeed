@@ -327,6 +327,15 @@ const addClickEvents = () => {
         }
     });
     
+    // Add click event to save changes button
+    const saveButton = document.getElementById("fixed-save-changes-link");
+    if (saveButton) {
+        saveButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            saveChanges();
+        });
+    }
+    
     // Global click handler for save button
     document.addEventListener('click', (event) => {
         const saveButton = document.getElementById("fixed-save-changes-link");
