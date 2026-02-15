@@ -368,16 +368,22 @@ const loadFeedItems = async (link) => {
         const data = await fetchXML(link);
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(data, "text/xml");
-        const items = xmlDoc.children[0].children[0].children;
+        const items = xmlDoc.getElementsByTagName('item');
         const rssItemsContainer = document.getElementById("rssItems");
         
         Array.from(items).forEach(item => {
-            const title = item.children[0].textContent;
-            const link = item.children[1].textContent;
-            const date = item.children[2].textContent;
-            rssItemsContainer.appendChild(
-                createRssItemElement(title, new Date(date).toLocaleString(), link)
-            );
+            const titleElement = item.querySelector('title');
+            const linkElement = item.querySelector('link');
+            const pubDateElement = item.querySelector('pubDate');
+            
+            if (titleElement && linkElement && pubDateElement) {
+                const title = titleElement.textContent;
+                const link = linkElement.textContent;
+                const date = pubDateElement.textContent;
+                rssItemsContainer.appendChild(
+                    createRssItemElement(title, new Date(date).toLocaleString(), link)
+                );
+            }
         });
     } catch (error) {
         showError(`Failed to load feed items: ${error.message}`);
