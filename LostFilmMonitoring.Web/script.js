@@ -38,7 +38,7 @@ const setCookie = (key, value) => {
  */
 const getDisplayName = (name) => {
     const parenIndex = name.indexOf(" (");
-    return parenIndex > -1 ? name.substr(0, parenIndex) : name;
+    return parenIndex > -1 ? name.substring(0, parenIndex) : name;
 };
 
 /**
@@ -364,10 +364,10 @@ const loadFeedItems = async (link) => {
             
             if (titleElement && linkElement && pubDateElement) {
                 const title = titleElement.textContent;
-                const link = linkElement.textContent;
+                const itemLink = linkElement.textContent;
                 const date = pubDateElement.textContent;
                 rssItemsContainer.appendChild(
-                    createRssItemElement(title, new Date(date).toLocaleString(), link)
+                    createRssItemElement(title, new Date(date).toLocaleString(), itemLink)
                 );
             }
         });
@@ -403,7 +403,7 @@ const getCurrentSelections = async () => {
         // [
         //     {
         //         "SeriesName": "Series Name",
-        //         "Quality": "Quality".
+        //         "Quality": "Quality",
         //         "SeriesId": "Series Id"
         //     },...
         // ]
