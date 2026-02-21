@@ -12,6 +12,7 @@ public class Locals
     public static string AppServicePlanName => $"plan-{Project}-{Environment}";
     public static string FlexConsumptionPlanName => $"plan-flex-{Project}-{Environment}";
     public static string FunctionAppName => $"func-{Project}-{Environment}";
+    public static string FlexFunctionName => $"func-flex-{Project}-{Environment}";
     public static string FunctionAppStorageAccountName => $"stfunc{Project}{Environment}";
     public static string WebsiteStorageAccountName => $"stweb{Project}{Environment}";
     public static string LogAnalyticsWorkspaceName => $"log-{Project}-{Environment}";

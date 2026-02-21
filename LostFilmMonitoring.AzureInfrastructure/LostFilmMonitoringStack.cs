@@ -396,7 +396,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         {
             ResourceGroupName = rg.Name,
             Kind = "functionapp,linux",
-            Name = Locals.FunctionAppName,
+            Name = Locals.FlexFunctionName,
             Location = rg.Location,
             ServerFarmId = plan.Id,
             Identity = new Azure.Web.Inputs.ManagedServiceIdentityArgs
