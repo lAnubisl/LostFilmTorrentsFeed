@@ -346,7 +346,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     private Azure.Web.AppServicePlan CreateFlexConsumptionPlan(Azure.Resources.ResourceGroup rg)
     {
-        return new Azure.Web.AppServicePlan("plan", new Azure.Web.AppServicePlanArgs
+        return new Azure.Web.AppServicePlan("flex_plan", new Azure.Web.AppServicePlanArgs
         {
             ResourceGroupName = rg.Name,
             Name = Locals.FlexConsumptionPlanName,
@@ -392,7 +392,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.ApplicationInsights.Component appi,
         Azure.Storage.StorageAccount metadata_st)
     {
-        return new Azure.Web.WebApp("function", new Azure.Web.WebAppArgs
+        return new Azure.Web.WebApp("flex_function", new Azure.Web.WebAppArgs
         {
             ResourceGroupName = rg.Name,
             Kind = "functionapp,linux",
