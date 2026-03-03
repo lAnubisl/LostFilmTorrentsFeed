@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Commands;
+namespace LostFilmMonitoring.BLL.Commands;
 
 /// <summary>
 /// Responsible for saving user Subscription.
@@ -11,6 +11,7 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     private readonly IModelPersister persister;
     private readonly ILogger logger;
     private readonly IDal dal;
+    private readonly ITorrentFileHelper torrentFileHelper;
     private readonly object locker = new ();
 
     /// <summary>
@@ -21,18 +22,21 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     /// <param name="dal">dal.</param>
     /// <param name="configuration">configuration.</param>
     /// <param name="persister">Persister.</param>
+    /// <param name="torrentFileHelper">torrentFileHelper.</param>
     public SaveSubscriptionCommand(
         ILogger logger,
         IValidator<EditSubscriptionRequestModel> validator,
         IDal dal,
         IConfiguration configuration,
-        IModelPersister persister)
+        IModelPersister persister,
+        ITorrentFileHelper torrentFileHelper)
     {
         this.validator = validator ?? throw new ArgumentNullException(nameof(validator));
         this.logger = logger?.CreateScope(nameof(SaveSubscriptionCommand)) ?? throw new ArgumentNullException(nameof(logger));
         this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
         this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         this.persister = persister ?? throw new ArgumentNullException(nameof(persister));
+        this.torrentFileHelper = torrentFileHelper ?? throw new ArgumentNullException(nameof(torrentFileHelper));
     }
 
     /// <inheritdoc/>
@@ -68,9 +72,6 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
         await this.UpdatePresentationModelAsync(model.UserId, model.Items);
         return new EditSubscriptionResponseModel(ValidationResult.Ok);
     }
-
-    private static BencodeNET.Torrents.Torrent ToTorrentDataStructure(TorrentFile torrentFile)
-        => torrentFile.Stream.ToTorrentDataStructure();
 
     private static FeedItem? AddFeedItem(SortedSet<FeedItem> set, string title, string link)
     {
@@ -178,12 +179,11 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
             return;
         }
 
-        var torrent = ToTorrentDataStructure(torrentFile);
-        torrent.FixTrackers(this.configuration.GetTorrentAnnounceList(user.TrackerId));
-        var userTorrentFile = torrent.ToTorrentFile();
+        var parsedTorrent = this.torrentFileHelper.Parse(torrentFile.Stream);
+        var userTorrentFile = parsedTorrent.ToTorrentFile(this.configuration.GetTorrentAnnounceList(user.TrackerId));
         if (userTorrentFile.FileName == null)
         {
-            this.logger.Error($"File name for torrent id '{torrent}' is null.");
+            this.logger.Error($"File name for torrent id '{torrentId}' is null.");
             return;
         }
 

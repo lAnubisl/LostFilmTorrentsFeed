@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Commands;
+namespace LostFilmMonitoring.BLL.Commands;
 
 /// <summary>
 /// Update all feeds.
@@ -13,6 +13,7 @@ public class UpdateFeedsCommand : ICommand
     private readonly IConfiguration configuration;
     private readonly IModelPersister modelPersister;
     private readonly ILostFilmClient client;
+    private readonly ITorrentFileHelper torrentFileHelper;
     private readonly UpdateUserFeedCommand updateUserFeedCommand;
     private readonly ICommand<Series> downloadCoverImagesCommand;
 
@@ -26,6 +27,7 @@ public class UpdateFeedsCommand : ICommand
     /// <param name="modelPersister">modelPersister.</param>
     /// <param name="client">client.</param>
     /// <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
+    /// <param name="torrentFileHelper">torrentFileHelper.</param>
     public UpdateFeedsCommand(
         ILogger logger,
         IRssFeed rssFeed,
@@ -33,7 +35,8 @@ public class UpdateFeedsCommand : ICommand
         IConfiguration configuration,
         IModelPersister modelPersister,
         ILostFilmClient client,
-        ICommand<Series> downloadCoverImagesCommand)
+        ICommand<Series> downloadCoverImagesCommand,
+        ITorrentFileHelper torrentFileHelper)
     {
         this.logger = logger != null ? logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(logger));
         this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
@@ -41,6 +44,7 @@ public class UpdateFeedsCommand : ICommand
         this.rssFeed = rssFeed ?? throw new ArgumentNullException(nameof(rssFeed));
         this.modelPersister = modelPersister ?? throw new ArgumentNullException(nameof(modelPersister));
         this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.torrentFileHelper = torrentFileHelper ?? throw new ArgumentNullException(nameof(torrentFileHelper));
         this.updateUserFeedCommand = new UpdateUserFeedCommand(logger, dal, configuration);
         this.downloadCoverImagesCommand = downloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(downloadCoverImagesCommand));
     }
@@ -129,7 +133,7 @@ public class UpdateFeedsCommand : ICommand
             return true;
         }
 
-        BencodeNET.Torrents.Torrent? torrent = await this.GetTorrentAsync(feedItem).ConfigureAwait(false);
+        IParsedTorrent? torrent = await this.GetTorrentAsync(feedItem).ConfigureAwait(false);
         if (torrent == null)
         {
             return false;
@@ -174,7 +178,7 @@ public class UpdateFeedsCommand : ICommand
     private Task UpdateIndexViewModelAsync(ICollection<Series> existingSeries)
         => this.modelPersister.PersistAsync("index", new IndexViewModel(existingSeries));
 
-    private async Task<BencodeNET.Torrents.Torrent?> GetTorrentAsync(FeedItemResponse feedResponseItem)
+    private async Task<IParsedTorrent?> GetTorrentAsync(FeedItemResponse feedResponseItem)
     {
         string? torrentId = feedResponseItem.TorrentId;
         if (torrentId == null)
@@ -189,12 +193,12 @@ public class UpdateFeedsCommand : ICommand
             return null;
         }
 
-        BencodeNET.Torrents.Torrent torrent = torrentFileResponse.Content.ToTorrentDataStructure();
+        IParsedTorrent parsedTorrent = this.torrentFileHelper.Parse(torrentFileResponse.Content);
         await this.dal.TorrentFile.SaveBaseFileAsync(torrentId, new TorrentFile(torrentFileResponse.FileName, torrentFileResponse.Content));
-        return torrent;
+        return parsedTorrent;
     }
 
-    private async Task UpdateAllSubscribedUsersAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
+    private async Task UpdateAllSubscribedUsersAsync(FeedItemResponse feedResponseItem, IParsedTorrent torrent)
     {
         if (string.IsNullOrEmpty(feedResponseItem.SeriesName) || string.IsNullOrEmpty(feedResponseItem.Quality))
         {
@@ -206,6 +210,6 @@ public class UpdateFeedsCommand : ICommand
         await this.UpdateAllSubscribedUsersAsync(userIds, feedResponseItem, torrent);
     }
 
-    private Task UpdateAllSubscribedUsersAsync(string[] userIds, FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent)
+    private Task UpdateAllSubscribedUsersAsync(string[] userIds, FeedItemResponse feedResponseItem, IParsedTorrent torrent)
         => Task.WhenAll(userIds.Select(x => this.updateUserFeedCommand.ExecuteAsync(new UpdateUserFeedCommandRequestModel(x, feedResponseItem, torrent))));
 }

@@ -94,7 +94,7 @@
             Responsible for saving user Subscription.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.SaveSubscriptionCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IValidator{LostFilmMonitoring.BLL.Models.Request.EditSubscriptionRequestModel},LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.SaveSubscriptionCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IValidator{LostFilmMonitoring.BLL.Models.Request.EditSubscriptionRequestModel},LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ITorrentFileHelper)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.SaveSubscriptionCommand"/> class.
             </summary>
@@ -103,6 +103,7 @@
             <param name="dal">dal.</param>
             <param name="configuration">configuration.</param>
             <param name="persister">Persister.</param>
+            <param name="torrentFileHelper">torrentFileHelper.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.SaveSubscriptionCommand.ExecuteAsync(LostFilmMonitoring.BLL.Models.Request.EditSubscriptionRequestModel)">
             <inheritdoc/>
@@ -148,7 +149,7 @@
             Update all feeds.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Commands.ICommand{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series})">
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Commands.ICommand{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series},LostFilmMonitoring.BLL.Interfaces.ITorrentFileHelper)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand"/> class.
             </summary>
@@ -159,6 +160,7 @@
             <param name="modelPersister">modelPersister.</param>
             <param name="client">client.</param>
             <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
+            <param name="torrentFileHelper">torrentFileHelper.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>
@@ -234,20 +236,6 @@
             <param name="torrentFileName">Torrent Id.</param>
             <returns>Torrent link.</returns>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.FixTrackers(BencodeNET.Torrents.Torrent,System.String[])">
-            <summary>
-            Replaces trackers for an instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.
-            </summary>
-            <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
-            <param name="announces">Array of trackers.</param>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentFile(BencodeNET.Torrents.Torrent)">
-            <summary>
-            Map instance of <see cref="T:BencodeNET.Torrents.Torrent"/> to <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.
-            </summary>
-            <param name="torrent">Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</param>
-            <returns>Instance of <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/>.</returns>
-        </member>
         <member name="M:LostFilmMonitoring.BLL.Extensions.CleanForbiddenCharacters(System.Collections.Generic.IEnumerable{LostFilmMonitoring.BLL.FeedItemResponse})">
             <summary>
             Clean forbidden characters in a collection of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.
@@ -259,13 +247,6 @@
             Clean forbidden characters in an instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.
             </summary>
             <param name="feedItemResponse">Instance of <see cref="T:LostFilmMonitoring.BLL.FeedItemResponse"/>.</param>
-        </member>
-        <member name="M:LostFilmMonitoring.BLL.Extensions.ToTorrentDataStructure(System.IO.Stream)">
-            <summary>
-            Generate instance of <see cref="T:BencodeNET.Torrents.Torrent"/> from a <see cref="T:System.IO.Stream"/>.
-            </summary>
-            <param name="stream">An instance of <see cref="T:System.IO.Stream"/> to torrent file.</param>
-            <returns>Instance of <see cref="T:BencodeNET.Torrents.Torrent"/>.</returns>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Extensions.ToEpisode(LostFilmMonitoring.BLL.FeedItemResponse)">
             <summary>
@@ -471,6 +452,23 @@
             <param name="modelName">Name of the ViewModel.</param>
             <returns>A <see cref="T:System.Threading.Tasks.Task`1"/> representing the result of the asynchronous operation.</returns>
         </member>
+        <member name="T:LostFilmMonitoring.BLL.Interfaces.IParsedTorrent">
+            <summary>
+            Represents a parsed torrent file.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Interfaces.IParsedTorrent.DisplayName">
+            <summary>
+            Gets the display name of the torrent.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.IParsedTorrent.ToTorrentFile(System.String[])">
+            <summary>
+            Converts the torrent to a <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/> with the specified tracker announce URLs.
+            </summary>
+            <param name="announces">Array of tracker announce URLs.</param>
+            <returns>A <see cref="T:LostFilmMonitoring.DAO.Interfaces.DomainModels.TorrentFile"/> instance.</returns>
+        </member>
         <member name="T:LostFilmMonitoring.BLL.Interfaces.IRssFeed">
             <summary>
             Interface that provides access to RSS feed.
@@ -505,6 +503,18 @@
             </summary>
             <param name="originalName">Name of the series to download the image for.</param>
             <returns>A <see cref="T:System.IO.Stream"/> representing the image.</returns>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Interfaces.ITorrentFileHelper">
+            <summary>
+            Helper for working with torrent files.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.BLL.Interfaces.ITorrentFileHelper.Parse(System.IO.Stream)">
+            <summary>
+            Parses a torrent file from a stream.
+            </summary>
+            <param name="stream">Stream containing torrent file data.</param>
+            <returns>A parsed torrent representation.</returns>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Interfaces.ITorrentFileResponse">
             <summary>
@@ -615,13 +625,13 @@
             UpdateUserFeedCommandRequestModel.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.#ctor(System.String,LostFilmMonitoring.BLL.FeedItemResponse,BencodeNET.Torrents.Torrent)">
+        <member name="M:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.#ctor(System.String,LostFilmMonitoring.BLL.FeedItemResponse,LostFilmMonitoring.BLL.Interfaces.IParsedTorrent)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel"/> class.
             </summary>
             <param name="userId">User id.</param>
             <param name="feedResponseItem">Feed response item.</param>
-            <param name="torrent">Torrent.</param>
+            <param name="torrent">Parsed torrent.</param>
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.UserId">
             <summary>
@@ -635,7 +645,7 @@
         </member>
         <member name="P:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandRequestModel.Torrent">
             <summary>
-            Gets torrent.
+            Gets parsed torrent.
             </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Models.CommandModels.UpdateUserFeedCommandResponseModel">

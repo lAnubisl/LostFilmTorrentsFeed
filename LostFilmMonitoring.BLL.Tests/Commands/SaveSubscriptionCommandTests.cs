@@ -13,6 +13,8 @@ internal class SaveSubscriptionCommandTests
     private Mock<IFeedDao>? feedDAO;
     private Mock<ISeriesDao>? seriesDAO;
     private Mock<ITorrentFileDao>? torrentFileDAO;
+    private Mock<ITorrentFileHelper>? torrentFileHelper;
+    private Mock<IParsedTorrent>? parsedTorrent;
     private Dictionary<string, User>? usersCollection;
     private Dictionary<string, Subscription[]>? subscriptionsCollection;
     private Dictionary<string, Series>? seriesCollection;
@@ -32,6 +34,10 @@ internal class SaveSubscriptionCommandTests
         this.seriesDAO = new();
         this.torrentFileDAO = new();
         this.subscriptionDAO = new();
+        this.parsedTorrent = new();
+        this.parsedTorrent.Setup(x => x.ToTorrentFile(It.IsAny<string[]>())).Returns(new TorrentFile("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4", new System.IO.MemoryStream()));
+        this.torrentFileHelper = new();
+        this.torrentFileHelper.Setup(x => x.Parse(It.IsAny<Stream>())).Returns(this.parsedTorrent.Object);
         this.dal.Setup(x => x.Subscription).Returns(this.subscriptionDAO.Object);
         this.dal.Setup(x => x.Feed).Returns(this.feedDAO.Object);
         this.dal.Setup(x => x.User).Returns(this.userDao.Object);
@@ -50,7 +56,8 @@ internal class SaveSubscriptionCommandTests
             this.validator!.Object,
             this.dal!.Object,
             this.configuration!.Object,
-            this.persister!.Object
+            this.persister!.Object,
+            this.torrentFileHelper!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
@@ -63,7 +70,8 @@ internal class SaveSubscriptionCommandTests
             null!,
             this.dal!.Object,
             this.configuration!.Object,
-            this.persister!.Object
+            this.persister!.Object,
+            this.torrentFileHelper!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("validator");
     }
@@ -76,7 +84,8 @@ internal class SaveSubscriptionCommandTests
             this.validator!.Object,
             null!,
             this.configuration!.Object,
-            this.persister!.Object
+            this.persister!.Object,
+            this.torrentFileHelper!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
@@ -89,7 +98,8 @@ internal class SaveSubscriptionCommandTests
             this.validator!.Object,
             this.dal!.Object,
             null!,
-            this.persister!.Object
+            this.persister!.Object,
+            this.torrentFileHelper!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
@@ -102,9 +112,24 @@ internal class SaveSubscriptionCommandTests
             this.validator!.Object,
             this.dal!.Object,
             this.configuration!.Object,
-            null!
+            null!,
+            this.torrentFileHelper!.Object
         );
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("persister");
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_torrentFileHelper_null()
+    {
+        var action = () => new SaveSubscriptionCommand(
+            this.logger!.Object,
+            this.validator!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
+            null!
+        );
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("torrentFileHelper");
     }
 
     [Test]
@@ -313,5 +338,5 @@ internal class SaveSubscriptionCommandTests
     }
 
     private SaveSubscriptionCommand GetCommand()
-        => new (this.logger!.Object, this.validator!.Object, this.dal!.Object, this.configuration!.Object, this.persister!.Object);
+        => new (this.logger!.Object, this.validator!.Object, this.dal!.Object, this.configuration!.Object, this.persister!.Object, this.torrentFileHelper!.Object);
 }
