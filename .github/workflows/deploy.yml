@@ -134,7 +134,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       
       - name: Upload to blob storage
-        uses: azure/CLI@9f7ce6f37c31b777ec6c6b6d1dfe7db79f497956 # v2.2.0
+        uses: azure/CLI@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
         with:
           inlineScript: |
             az storage blob upload-batch --account-name ${{ needs.infrastructure.outputs.websiteStorageAccountName }} --auth-mode login -d '$web' -s ./LostFilmMonitoring.Web --overwrite true
