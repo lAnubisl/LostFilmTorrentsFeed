@@ -14,10 +14,10 @@ updates:
      - "dependencies"
      - "devcontainers"
    open-pull-requests-limit: 1
-     groups:
-       all-dependencies:
-         patterns:
-           - "*"
+   groups:
+     all-dependencies:
+       patterns:
+         - "*"
     
  - package-ecosystem: "nuget"
    directory: "/" # Location of package manifests
@@ -27,10 +27,10 @@ updates:
      - "dependencies"
      - "dotnet"
    open-pull-requests-limit: 1
-     groups:
-       all-dependencies:
-         patterns:
-           - "*"
+   groups:
+     all-dependencies:
+       patterns:
+         - "*"
 
  - package-ecosystem: "github-actions"
    directory: "/"
@@ -40,7 +40,7 @@ updates:
      - "dependencies"
      - "github-actions"
    open-pull-requests-limit: 1
-     groups:
-       all-dependencies:
-         patterns:
-           - "*"
+   groups:
+     all-dependencies:
+       patterns:
+         - "*"
