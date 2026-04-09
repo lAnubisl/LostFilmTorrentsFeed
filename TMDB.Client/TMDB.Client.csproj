@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TMDbLib" Version="2.2.0" />
+    <PackageReference Include="TMDbLib" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
       <ProjectReference Include="..\LostFilmMonitoring.BLL\LostFilmMonitoring.BLL.csproj" />
       <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
   </ItemGroup>
