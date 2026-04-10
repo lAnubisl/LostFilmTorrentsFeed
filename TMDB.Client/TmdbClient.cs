@@ -21,7 +21,7 @@ public class TmdbClient : ITmdbClient
         try
         {
             var searchResult = await this.client.SearchTvShowAsync(originalName);
-            if (searchResult.Results.Count == 0)
+            if (searchResult == null || searchResult.Results == null || searchResult.Results.Count == 0)
             {
                 this.logger.Error($"Series not found: {originalName}");
                 return null;
@@ -43,8 +43,14 @@ public class TmdbClient : ITmdbClient
             }
 
             var image = await this.client.GetTvShowImagesAsync(series.Id);
+            if (image?.Posters == null)
+            {
+                this.logger.Error($"Posters not found: {originalName}");
+                return null;
+            }
+
             var poster = image.Posters.Where(x => x.Iso_639_1 == "en").OrderByDescending(x => x.VoteCount).FirstOrDefault();
-            if (poster == null)
+            if (poster == null || poster.FilePath == null)
             {
                 this.logger.Error($"Poster not found: {originalName}");
                 return null;
