@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using LostFilmMonitoring.Common;
 using Pulumi;
-using Pulumi.AzureNative.Maps;
 using Azure = Pulumi.AzureNative;
 using Cloudflare = Pulumi.Cloudflare;
 
@@ -420,7 +419,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 Runtime = new Azure.Web.Inputs.FunctionsRuntimeArgs
                 {
                     Name = "dotnet-isolated",
-                    Version = "8.0"
+                    Version = "10.0"
                 },
                 ScaleAndConcurrency = new Azure.Web.Inputs.FunctionsScaleAndConcurrencyArgs
                 {
