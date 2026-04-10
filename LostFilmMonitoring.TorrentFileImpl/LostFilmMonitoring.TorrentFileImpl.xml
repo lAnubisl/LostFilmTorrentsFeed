@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LostFilmMonitoring.TorrentFileImpl</name>
+    </assembly>
+    <members>
+        <member name="T:LostFilmMonitoring.TorrentFileImpl.ParsedTorrent">
+            <summary>
+            Represents a parsed torrent file backed by BencodeNET.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.TorrentFileImpl.ParsedTorrent.#ctor(BencodeNET.Torrents.Torrent)">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmMonitoring.TorrentFileImpl.ParsedTorrent"/> class.
+            </summary>
+            <param name="torrent">The parsed BencodeNET torrent instance.</param>
+        </member>
+        <member name="P:LostFilmMonitoring.TorrentFileImpl.ParsedTorrent.DisplayName">
+            <inheritdoc/>
+        </member>
+        <member name="M:LostFilmMonitoring.TorrentFileImpl.ParsedTorrent.ToTorrentFile(System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:LostFilmMonitoring.TorrentFileImpl.TorrentFileHelper">
+            <summary>
+            Helper for working with torrent files using BencodeNET.
+            </summary>
+        </member>
+        <member name="M:LostFilmMonitoring.TorrentFileImpl.TorrentFileHelper.Parse(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

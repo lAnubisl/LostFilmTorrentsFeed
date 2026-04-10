@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Models.CommandModels;
+namespace LostFilmMonitoring.BLL.Models.CommandModels;
 
 /// <summary>
 /// UpdateUserFeedCommandRequestModel.
@@ -10,8 +10,8 @@ public class UpdateUserFeedCommandRequestModel
     /// </summary>
     /// <param name="userId">User id.</param>
     /// <param name="feedResponseItem">Feed response item.</param>
-    /// <param name="torrent">Torrent.</param>
-    public UpdateUserFeedCommandRequestModel(string? userId, FeedItemResponse? feedResponseItem, BencodeNET.Torrents.Torrent? torrent)
+    /// <param name="torrent">Parsed torrent.</param>
+    public UpdateUserFeedCommandRequestModel(string? userId, FeedItemResponse? feedResponseItem, IParsedTorrent? torrent)
     {
         this.UserId = userId;
         this.FeedResponseItem = feedResponseItem;
@@ -29,7 +29,7 @@ public class UpdateUserFeedCommandRequestModel
     public FeedItemResponse? FeedResponseItem { get; }
 
     /// <summary>
-    /// Gets torrent.
+    /// Gets parsed torrent.
     /// </summary>
-    public BencodeNET.Torrents.Torrent? Torrent { get; }
+    public IParsedTorrent? Torrent { get; }
 }

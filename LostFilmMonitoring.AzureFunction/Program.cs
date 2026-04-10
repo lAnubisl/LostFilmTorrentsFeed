@@ -38,6 +38,7 @@ public static class Program
         services.AddTransient<IValidator<EditSubscriptionRequestModel>, EditSubscriptionRequestModelValidator>();
         services.AddTransient<ILostFilmClient, LostFilmClient>();
         services.AddTransient<ITmdbClient>(r => new TmdbClient(Env(EnvironmentVariables.TmdbApiKey), r.GetService<Common.ILogger>()!));
+        services.AddTransient<ITorrentFileHelper, LostFilmMonitoring.TorrentFileImpl.TorrentFileHelper>();
         services.AddHttpClient();
         services.AddTransient<ICommand<DAO.Interfaces.DomainModels.Series>>(sp => new DownloadCoverImageCommand(sp.GetService<Common.ILogger>()!, sp.GetService<IFileSystem>()!, sp.GetService<ITmdbClient>()!));
         services.AddTransient(sp =>
@@ -48,7 +49,8 @@ public static class Program
                 sp.GetService<IConfiguration>() !,
                 sp.GetService<IModelPersister>() !,
                 sp.GetService<ILostFilmClient>() !,
-                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!));
+                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!,
+                sp.GetService<ITorrentFileHelper>()!));
         services.AddTransient(sp =>
             new DownloadCoverImagesCommand(
                 sp.GetService<Common.ILogger>() !,

@@ -18,6 +18,8 @@ public class UpdateFeedsCommandTests
     private Mock<IUserDao>? userDao;
     private Mock<IEpisodeDao>? episodeDao;
     private Mock<ICommand<Series>>? downloadCoverImagesCommand;
+    private Mock<ITorrentFileHelper>? torrentFileHelper;
+    private Mock<IParsedTorrent>? parsedTorrent;
 
     private UpdateFeedsCommand CreateCommand()
     {
@@ -28,7 +30,8 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
     }
 
     [SetUp]
@@ -56,6 +59,11 @@ public class UpdateFeedsCommandTests
         this.configuration.Setup(x => x.BaseUID).Returns(BaseUid);
         this.configuration.Setup(x => x.BaseUSESS).Returns(BaseUsess);
         this.downloadCoverImagesCommand = new();
+        this.parsedTorrent = new();
+        this.parsedTorrent.Setup(x => x.DisplayName).Returns("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4");
+        this.parsedTorrent.Setup(x => x.ToTorrentFile(It.IsAny<string[]>())).Returns(new TorrentFile("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4", new System.IO.MemoryStream()));
+        this.torrentFileHelper = new();
+        this.torrentFileHelper.Setup(x => x.Parse(It.IsAny<Stream>())).Returns(this.parsedTorrent.Object);
     }
 
     [Test]
@@ -68,7 +76,8 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
     }
 
@@ -82,7 +91,8 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("rssFeed");
     }
 
@@ -96,7 +106,8 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
     }
 
@@ -110,7 +121,8 @@ public class UpdateFeedsCommandTests
             null!,
             this.persister!.Object,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
     }
 
@@ -124,7 +136,8 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             null!,
             this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("modelPersister");
     }
 
@@ -138,8 +151,24 @@ public class UpdateFeedsCommandTests
             this.configuration!.Object,
             this.persister!.Object,
             null!,
-            this.downloadCoverImagesCommand!.Object);
+            this.downloadCoverImagesCommand!.Object,
+            this.torrentFileHelper!.Object);
         action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("client");
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_torrentFileHelper_null()
+    {
+        var action = () => new UpdateFeedsCommand(
+            this.logger!.Object,
+            this.rssFeed!.Object,
+            this.dal!.Object,
+            this.configuration!.Object,
+            this.persister!.Object,
+            this.lostFilmClient!.Object,
+            this.downloadCoverImagesCommand!.Object,
+            null!);
+        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("torrentFileHelper");
     }
 
     [Test]

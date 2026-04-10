@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using LostFilmMonitoring.Common;
 using Pulumi;
+using Pulumi.AzureNative.Maps;
 using Azure = Pulumi.AzureNative;
 using Cloudflare = Pulumi.Cloudflare;
 
@@ -19,10 +20,13 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.OperationalInsights.Workspace log = CreateLogAnalyticsWorkspace(rg);
         Azure.ApplicationInsights.Component appi = CreateApplicationInsights(rg, log);
         Azure.Web.AppServicePlan plan = CreatePlan(rg);
+        Azure.Web.AppServicePlan flex_plan = CreateFlexConsumptionPlan(rg);
         Cloudflare.DnsRecord data_record = CreateDataRecord();
         Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
         Azure.Storage.StorageAccount func_st = CreateFunctionStorageAccount(rg);
+        Azure.Storage.BlobContainer func_st_container = CreateFunctionStorageContainer(rg, func_st);
         Azure.Web.WebApp function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
+        Azure.Web.WebApp flex_function = CreateFlexConsumptionAzureFunction(rg, func_st, func_st_container, flex_plan, appi, metadata_st);
         Cloudflare.DnsRecord web_record = CreateWebRecord();
         Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
         Cloudflare.DnsRecord api_record = CreateApiRecord(function);
@@ -33,6 +37,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         WebsiteStorageAccountName = web_st.Name;
         ApiDomain = api_record.Name;
         DataDomain = data_record.Name;
+        FlexFunctionName = flex_function.Name;
     }
 
     private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.DnsRecord api_record)
@@ -329,6 +334,36 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         });
     }
 
+    private Azure.Storage.BlobContainer CreateFunctionStorageContainer(Azure.Resources.ResourceGroup rg, Azure.Storage.StorageAccount st)
+    {
+        return new Azure.Storage.BlobContainer("function", new Azure.Storage.BlobContainerArgs
+        {
+            ResourceGroupName = rg.Name,
+            AccountName = st.Name,
+            ContainerName = "deploymentpackage",
+        });
+    }
+
+    private Azure.Web.AppServicePlan CreateFlexConsumptionPlan(Azure.Resources.ResourceGroup rg)
+    {
+        return new Azure.Web.AppServicePlan("flex_plan", new Azure.Web.AppServicePlanArgs
+        {
+            ResourceGroupName = rg.Name,
+            Name = Locals.FlexConsumptionPlanName,
+            Location = rg.Location,
+            Sku = new Azure.Web.Inputs.SkuDescriptionArgs
+            {
+                Name = "FC1",
+                Tier = "FlexConsumption",
+                Size = "FC1",
+                Family = "FC",
+                Capacity = 0
+            },
+            Kind = "functionapp",
+            Reserved = true // linux
+        });
+    }
+
     private Azure.Web.AppServicePlan CreatePlan(Azure.Resources.ResourceGroup rg)
     {
         return new Azure.Web.AppServicePlan("plan", new Azure.Web.AppServicePlanArgs
@@ -347,6 +382,83 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Kind = "functionapp",
             Reserved = true // linux
         });
+    }
+
+    private Azure.Web.WebApp CreateFlexConsumptionAzureFunction(
+        Azure.Resources.ResourceGroup rg,
+        Azure.Storage.StorageAccount st,
+        Azure.Storage.BlobContainer sc,
+        Azure.Web.AppServicePlan plan,
+        Azure.ApplicationInsights.Component appi,
+        Azure.Storage.StorageAccount metadata_st)
+    {
+        return new Azure.Web.WebApp("flex_function", new Azure.Web.WebAppArgs
+        {
+            ResourceGroupName = rg.Name,
+            Kind = "functionapp,linux",
+            Name = Locals.FlexFunctionName,
+            Location = rg.Location,
+            ServerFarmId = plan.Id,
+            Identity = new Azure.Web.Inputs.ManagedServiceIdentityArgs
+            {
+                Type = Azure.Web.ManagedServiceIdentityType.SystemAssigned
+            },
+            FunctionAppConfig = new Azure.Web.Inputs.FunctionAppConfigArgs
+            {
+                Deployment = new Azure.Web.Inputs.FunctionsDeploymentArgs
+                {
+                    Storage = new Azure.Web.Inputs.FunctionsDeploymentStorageArgs
+                    {
+                        Type = "blobcontainer",
+                        Value = sc.Name,
+                        Authentication = new Azure.Web.Inputs.FunctionsDeploymentAuthenticationArgs
+                        {
+                            Type = "SystemAssignedIdentity",
+                        }
+                    }
+                },
+                Runtime = new Azure.Web.Inputs.FunctionsRuntimeArgs
+                {
+                    Name = "dotnet-isolated",
+                    Version = "8.0"
+                },
+                ScaleAndConcurrency = new Azure.Web.Inputs.FunctionsScaleAndConcurrencyArgs
+                {
+                    MaximumInstanceCount = 50,
+                    InstanceMemoryMB = 512
+                }
+
+            },
+            SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
+            {
+                AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
+                {
+                    { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
+                    { "AzureWebJobsStorage", GetConnectionString(rg.Name, st.Name) },
+                    { "AzureWebJobsStorage__accountName", st.Name },
+                    { "AzureWebJobsDisableHomepage", "true" },
+                    { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
+                    { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
+                    { EnvironmentVariables.BaseUrl, config.Require("baseurl") },
+                    { EnvironmentVariables.BaseFeedCookie, config.RequireSecret("basefeedcookie") },
+                    { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
+                    { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
+                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
+                    { "WEBSITE_ENABLE_SYNC_UPDATE_SITE", "true" },
+                    { "SCM_DO_BUILD_DURING_DEPLOYMENT", "false" },
+                }),
+                Cors = new Azure.Web.Inputs.CorsSettingsArgs
+                {
+                    AllowedOrigins = AzureFunctionAllowedOrigins(),
+                    SupportCredentials = true
+                }
+            }
+        }, new CustomResourceOptions { 
+            IgnoreChanges = { 
+                "hostNameSslStates",
+                "enabledHostNames"
+            }
+         });
     }
 
     private Azure.Web.WebApp CreateAzureFunction(
@@ -468,6 +580,9 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     [Output]
     public Output<string> FunctionName { get; set; }
+
+    [Output]
+    public Output<string> FlexFunctionName { get; set; }
 
     [Output]
     public Output<string> WebsiteStorageAccountName { get; set; }

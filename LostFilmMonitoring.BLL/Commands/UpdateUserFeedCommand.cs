@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Commands;
+namespace LostFilmMonitoring.BLL.Commands;
 
 /// <summary>
 /// Update all feeds.
@@ -6,7 +6,6 @@
 public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
 {
     private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.UpdateUserFeedCommand);
-    private static readonly object TorrentFileLocker = new object();
     private readonly ILogger logger;
     private readonly IDal dal;
     private readonly IConfiguration configuration;
@@ -45,39 +44,34 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
             throw new InvalidDataException($"Field '{nameof(model.UserId)}' is empty.");
         }
 
-        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.Torrent}, {model.UserId})");
+        this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.UserId})");
         await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!);
     }
 
-    private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, BencodeNET.Torrents.Torrent torrent, string userId)
+    private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, IParsedTorrent torrent, string userId)
     {
-        if (!await this.SaveTorrentFileForUserAsync(userId, torrent))
+        var torrentFile = await this.SaveTorrentFileForUserAsync(userId, torrent);
+        if (torrentFile == null)
         {
             this.logger.Error($"Cannot save torrent file for user '{userId}'.");
             return false;
         }
 
-        return await this.UpdateUserFeedAsync(userId, feedResponseItem, torrent.DisplayNameUtf8 ?? torrent.DisplayName);
+        return await this.UpdateUserFeedAsync(userId, feedResponseItem, torrentFile.FileName);
     }
 
-    private async Task<bool> SaveTorrentFileForUserAsync(string userId, BencodeNET.Torrents.Torrent torrent)
+    private async Task<TorrentFile?> SaveTorrentFileForUserAsync(string userId, IParsedTorrent torrent)
     {
         var user = await this.dal.User.LoadAsync(userId);
         if (user == null)
         {
             this.logger.Error($"User '{userId}' not found.");
-            return false;
+            return null;
         }
 
-        TorrentFile? torrentFile = null;
-        lock (TorrentFileLocker)
-        {
-            torrent.FixTrackers(this.configuration.GetTorrentAnnounceList(user.TrackerId));
-            torrentFile = torrent.ToTorrentFile();
-        }
-
-        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile!);
-        return true;
+        var torrentFile = torrent.ToTorrentFile(this.configuration.GetTorrentAnnounceList(user.TrackerId));
+        await this.dal.TorrentFile.SaveUserFileAsync(userId, torrentFile);
+        return torrentFile;
     }
 
     private async Task<bool> UpdateUserFeedAsync(string userId, FeedItemResponse item, string torrentFileName)

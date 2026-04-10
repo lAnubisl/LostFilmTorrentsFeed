@@ -20,24 +20,6 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Replaces trackers for an instance of <see cref="BencodeNET.Torrents.Torrent"/>.
-    /// </summary>
-    /// <param name="torrent">Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</param>
-    /// <param name="announces">Array of trackers.</param>
-    internal static void FixTrackers(this BencodeNET.Torrents.Torrent torrent, string[] announces)
-    {
-        torrent.Trackers = announces.Select(a => new List<string>() { a } as IList<string>).ToList();
-    }
-
-    /// <summary>
-    /// Map instance of <see cref="BencodeNET.Torrents.Torrent"/> to <see cref="TorrentFile"/>.
-    /// </summary>
-    /// <param name="torrent">Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</param>
-    /// <returns>Instance of <see cref="TorrentFile"/>.</returns>
-    internal static TorrentFile ToTorrentFile(this BencodeNET.Torrents.Torrent torrent)
-        => new (torrent.DisplayNameUtf8 ?? torrent.DisplayName, torrent.ToStream());
-
-    /// <summary>
     /// Clean forbidden characters in a collection of <see cref="FeedItemResponse"/>.
     /// </summary>
     /// <param name="feedItemResponses">Collection of <see cref="FeedItemResponse"/>.</param>
@@ -60,20 +42,6 @@ public static class Extensions
         feedItemResponse.SeriesName = ReplaceForbiddenCharacters(feedItemResponse.SeriesName);
         feedItemResponse.SeriesNameEn = ReplaceForbiddenCharacters(feedItemResponse.SeriesNameEn);
         feedItemResponse.SeriesNameRu = ReplaceForbiddenCharacters(feedItemResponse.SeriesNameRu);
-    }
-
-    /// <summary>
-    /// Generate instance of <see cref="BencodeNET.Torrents.Torrent"/> from a <see cref="Stream"/>.
-    /// </summary>
-    /// <param name="stream">An instance of <see cref="Stream"/> to torrent file.</param>
-    /// <returns>Instance of <see cref="BencodeNET.Torrents.Torrent"/>.</returns>
-    internal static BencodeNET.Torrents.Torrent ToTorrentDataStructure(this Stream stream)
-    {
-        var parser = new BencodeNET.Torrents.TorrentParser(BencodeNET.Torrents.TorrentParserMode.Tolerant);
-        var torrent = parser.Parse(new BencodeNET.IO.BencodeReader(stream));
-        torrent.IsPrivate = false;
-        stream.Position = 0;
-        return torrent;
     }
 
     /// <summary>
@@ -167,14 +135,6 @@ public static class Extensions
         => str == null
             ? null
             : new (str.ToCharArray().Where(c => !ForbiddenPrimaryKeyCharacters.Contains(c)).ToArray());
-
-    private static MemoryStream ToStream(this BencodeNET.Torrents.Torrent torrent)
-    {
-        var ms = new MemoryStream();
-        torrent.EncodeTo(ms);
-        ms.Position = 0;
-        return ms;
-    }
 
     private static string? ParseLink(FeedItemResponse feedItem, string quality)
         => feedItem.Quality == quality ? feedItem.Link : null;
