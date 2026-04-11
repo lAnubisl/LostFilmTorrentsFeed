@@ -46,9 +46,12 @@ jobs:
         with:
           command: preview
           stack-name: ${{inputs.environment}}
+          work-dir: LostFilmMonitoring.AzureInfrastructure
           diff: true
+          cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
+          refresh: true
           comment-on-pr: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          secrets-provider: passphrase
         env:
           ARM_USE_OIDC: "true"
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
