@@ -439,6 +439,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 {
                     { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
                     { "AzureWebJobsDisableHomepage", "true" },
+                    { "AzureWebJobsStorage__accountName", st.Name },
                     { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
                     { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
                     { EnvironmentVariables.BaseUrl, config.Require("baseurl") },
