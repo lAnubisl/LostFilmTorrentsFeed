@@ -24,19 +24,17 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
         Azure.Storage.StorageAccount func_st = CreateFunctionStorageAccount(rg);
         Azure.Storage.BlobContainer func_st_container = CreateFunctionStorageContainer(rg, func_st);
-        Azure.Web.WebApp function = CreateAzureFunction(rg, func_st, plan, appi, metadata_st);
         Azure.Web.WebApp flex_function = CreateFlexConsumptionAzureFunction(rg, func_st, func_st_container, flex_plan, appi, metadata_st);
         Cloudflare.DnsRecord web_record = CreateWebRecord();
         Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
-        Cloudflare.DnsRecord api_record = CreateApiRecord(function);
-        Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, function, api_record);
-        SetPermissions(function, metadata_st);
+        Cloudflare.DnsRecord api_record = CreateApiRecord(flex_function);
+        Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, flex_function, api_record);
+        SetPermissions(flex_function, metadata_st);
         // Export the Azure Function name and CDN endpoints
-        FunctionName = function.Name;
+        FunctionName = flex_function.Name;
         WebsiteStorageAccountName = web_st.Name;
         ApiDomain = api_record.Name;
         DataDomain = data_record.Name;
-        FlexFunctionName = flex_function.Name;
     }
 
     private Azure.Web.WebAppHostNameBinding CreateApiCustomDomainBinding( Azure.Resources.ResourceGroup rg, Azure.Web.WebApp function, Cloudflare.DnsRecord api_record)
@@ -460,59 +458,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
          });
     }
 
-    private Azure.Web.WebApp CreateAzureFunction(
-        Azure.Resources.ResourceGroup rg,
-        Azure.Storage.StorageAccount st,
-        Azure.Web.AppServicePlan plan,
-        Azure.ApplicationInsights.Component appi,
-        Azure.Storage.StorageAccount metadata_st)
-    {
-        return new Azure.Web.WebApp("function", new Azure.Web.WebAppArgs
-        {
-            ResourceGroupName = rg.Name,
-            Kind = "FunctionApp",
-            Name = Locals.FunctionAppName,
-            Location = rg.Location,
-            ServerFarmId = plan.Id,
-            Identity = new Azure.Web.Inputs.ManagedServiceIdentityArgs
-            {
-                Type = Azure.Web.ManagedServiceIdentityType.SystemAssigned
-            },
-            SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
-            {
-                LinuxFxVersion = "DOTNET-ISOLATED|10.0",
-                AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
-                {
-                    { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
-                    { "AzureWebJobsStorage", GetConnectionString(rg.Name, st.Name) },
-                    { "AzureWebJobsDisableHomepage", "true" },
-                    { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
-                    { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
-                    { EnvironmentVariables.BaseUrl, config.Require("baseurl") },
-                    { EnvironmentVariables.BaseFeedCookie, config.RequireSecret("basefeedcookie") },
-                    { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
-                    { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
-                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
-                    { "FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated" },
-                    { "FUNCTIONS_EXTENSION_VERSION", "~4" },
-                    { "AzureWebJobsFeatureFlags", "EnableWorkerIndexing" },
-                    { "WEBSITE_ENABLE_SYNC_UPDATE_SITE", "true" },
-                    { "SCM_DO_BUILD_DURING_DEPLOYMENT", "false" },
-                }),
-                Cors = new Azure.Web.Inputs.CorsSettingsArgs
-                {
-                    AllowedOrigins = AzureFunctionAllowedOrigins(),
-                    SupportCredentials = true
-                }
-            }
-        }, new CustomResourceOptions { 
-            IgnoreChanges = { 
-                "hostNameSslStates",
-                "enabledHostNames"
-            }
-         });
-    }
-
     private string[] AllowedOrigins()
     {
         var result = new List<string>
@@ -579,9 +524,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
 
     [Output]
     public Output<string> FunctionName { get; set; }
-
-    [Output]
-    public Output<string> FlexFunctionName { get; set; }
 
     [Output]
     public Output<string> WebsiteStorageAccountName { get; set; }
