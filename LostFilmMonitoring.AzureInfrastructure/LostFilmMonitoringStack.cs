@@ -28,7 +28,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
         Cloudflare.DnsRecord api_record = CreateApiRecord(flex_function);
         Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, flex_function, api_record);
-        SetPermissions(flex_function, metadata_st, func_st_container);
+        SetPermissions(flex_function, metadata_st, func_st);
 
         FunctionName = flex_function.Name;
         WebsiteStorageAccountName = web_st.Name;
@@ -126,7 +126,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         });
     }
 
-    private void SetPermissions(Azure.Web.WebApp function, Azure.Storage.StorageAccount metadata_st, Azure.Storage.BlobContainer deployment_package_container)
+    private void SetPermissions(Azure.Web.WebApp function, Azure.Storage.StorageAccount metadata_st, Azure.Storage.StorageAccount function_st)
     {
         var blobDataContributorRole = new Azure.Authorization.RoleAssignment("func_metadata_blob_data_contributor", new Azure.Authorization.RoleAssignmentArgs
         {
@@ -149,7 +149,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             PrincipalId = function.Identity.Apply(identity => identity!.PrincipalId),
             PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
             RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageBlobDataContributor),
-            Scope = deployment_package_container.Id
+            Scope = function_st.Id
         });
     }
 
@@ -446,7 +446,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     { EnvironmentVariables.BaseFeedCookie, config.RequireSecret("basefeedcookie") },
                     { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
                     { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
-                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") }
+                    { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
                 }),
                 Cors = new Azure.Web.Inputs.CorsSettingsArgs
                 {
@@ -508,21 +508,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         {
             var primaryStorageKey = keys.Keys[0].Value;
             return Pulumi.Output.Format($"{primaryStorageKey}");    
-        });
-    }
-
-    private static Pulumi.Output<string> GetConnectionString(Pulumi.Input<string> resourceGroupName, Pulumi.Input<string> accountName)
-    {
-        var storageAccountKeys = Azure.Storage.ListStorageAccountKeys.Invoke(new Azure.Storage.ListStorageAccountKeysInvokeArgs
-        {
-            ResourceGroupName = resourceGroupName,
-            AccountName = accountName
-        });
-
-        return storageAccountKeys.Apply(keys =>
-        {
-            var primaryStorageKey = keys.Keys[0].Value;
-            return Pulumi.Output.Format($"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={primaryStorageKey};EndpointSuffix=core.windows.net");
         });
     }
 
