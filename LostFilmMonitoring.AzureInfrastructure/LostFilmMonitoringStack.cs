@@ -480,7 +480,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             },
             SiteConfig = new Azure.Web.Inputs.SiteConfigArgs
             {
-                LinuxFxVersion = "DOTNET-ISOLATED|8.0",
+                LinuxFxVersion = "DOTNET-ISOLATED|10.0",
                 AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
                 {
                     { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
