@@ -18,7 +18,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Resources.ResourceGroup rg = CreateResourceGroup();
         Azure.OperationalInsights.Workspace log = CreateLogAnalyticsWorkspace(rg);
         Azure.ApplicationInsights.Component appi = CreateApplicationInsights(rg, log);
-        Azure.Web.AppServicePlan plan = CreatePlan(rg);
         Azure.Web.AppServicePlan flex_plan = CreateFlexConsumptionPlan(rg);
         Cloudflare.DnsRecord data_record = CreateDataRecord();
         Azure.Storage.StorageAccount metadata_st = CreateMetadataStorageAccount(rg, data_record);
@@ -29,8 +28,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         Azure.Storage.StorageAccount web_st = CreateWebsiteStorageAccount(rg, web_record);
         Cloudflare.DnsRecord api_record = CreateApiRecord(flex_function);
         Azure.Web.WebAppHostNameBinding api_custom_domain_binding = CreateApiCustomDomainBinding(rg, flex_function, api_record);
-        SetPermissions(flex_function, metadata_st);
-        // Export the Azure Function name and CDN endpoints
+        SetPermissions(flex_function, metadata_st, func_st_container);
+
         FunctionName = flex_function.Name;
         WebsiteStorageAccountName = web_st.Name;
         ApiDomain = api_record.Name;
@@ -127,7 +126,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         });
     }
 
-    private void SetPermissions(Azure.Web.WebApp function, Azure.Storage.StorageAccount metadata_st)
+    private void SetPermissions(Azure.Web.WebApp function, Azure.Storage.StorageAccount metadata_st, Azure.Storage.BlobContainer deployment_package_container)
     {
         var blobDataContributorRole = new Azure.Authorization.RoleAssignment("func_metadata_blob_data_contributor", new Azure.Authorization.RoleAssignmentArgs
         {
@@ -143,6 +142,14 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
             RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageTableDataContributor),
             Scope = metadata_st.Id
+        });
+
+        var deploymentPackageContributorRole = new Azure.Authorization.RoleAssignment("func_deployment_package_contributor", new Azure.Authorization.RoleAssignmentArgs
+        {
+            PrincipalId = function.Identity.Apply(identity => identity!.PrincipalId),
+            PrincipalType = Azure.Authorization.PrincipalType.ServicePrincipal,
+            RoleDefinitionId = GetRoleDefinitionId(RbacRoles.StorageBlobDataContributor),
+            Scope = deployment_package_container.Id
         });
     }
 
@@ -431,8 +438,6 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                 AppSettings = GetAppSettings(new Dictionary<Pulumi.Input<string>, Pulumi.Input<string>>
                 {
                     { "APPLICATIONINSIGHTS_CONNECTION_STRING", appi.ConnectionString },
-                    { "AzureWebJobsStorage", GetConnectionString(rg.Name, st.Name) },
-                    { "AzureWebJobsStorage__accountName", st.Name },
                     { "AzureWebJobsDisableHomepage", "true" },
                     { EnvironmentVariables.MetadataStorageAccountName, metadata_st.Name },
                     { EnvironmentVariables.MetadataStorageAccountKey, GetAccessKey(rg.Name, metadata_st.Name) },
