@@ -29,18 +29,38 @@ jobs:
         working-directory: ./LostFilmMonitoring.AzureInfrastructure
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.x
+          dotnet-version: 10.x
 
-      - uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
+      - name: Login to Azure
+        uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Pulumi Preview
+        uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6.6.1
+        with:
+          command: preview
+          stack-name: ${{inputs.environment}}
+          work-dir: LostFilmMonitoring.AzureInfrastructure
+          diff: true
+          cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
+          refresh: true
+          comment-on-pr: true
+          secrets-provider: passphrase
+        env:
+          ARM_USE_OIDC: "true"
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}"
 
       - uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6.6.1
         name: Pulumi Up
@@ -51,6 +71,7 @@ jobs:
           work-dir: LostFilmMonitoring.AzureInfrastructure
           cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
           refresh: true
+          comment-on-summary: true
           secrets-provider: passphrase
         env:
           ARM_USE_OIDC: "true"
@@ -72,7 +93,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 8.x
+          dotnet-version: 10.x
 
       - name: Dotnet Build
         run: dotnet build --configuration Release

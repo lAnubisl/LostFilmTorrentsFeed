@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  DOTNET_VERSION: '8.0.x' # set this to the dotnet version to use
+  DOTNET_VERSION: '10.0.x' # set this to the dotnet version to use
 
 jobs:
   analyze:
