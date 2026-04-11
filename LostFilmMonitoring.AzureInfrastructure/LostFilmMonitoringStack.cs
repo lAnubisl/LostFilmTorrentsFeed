@@ -414,7 +414,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     Storage = new Azure.Web.Inputs.FunctionsDeploymentStorageArgs
                     {
                         Type = "blobcontainer",
-                        Value = $"https://{st.Name}.blob.core.windows.net/{sc.Name}",
+                        Value = $"https://{st.Name.Apply(name => name)}.blob.core.windows.net/{sc.Name.Apply(name => name)}",
                         Authentication = new Azure.Web.Inputs.FunctionsDeploymentAuthenticationArgs
                         {
                             Type = "SystemAssignedIdentity",
