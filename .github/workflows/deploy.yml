@@ -44,24 +44,6 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Pulumi Preview
-        uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6.6.1
-        with:
-          command: preview
-          stack-name: ${{inputs.environment}}
-          work-dir: LostFilmMonitoring.AzureInfrastructure
-          diff: true
-          cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
-          refresh: true
-          comment-on-pr: true
-          secrets-provider: passphrase
-        env:
-          ARM_USE_OIDC: "true"
-          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}"
-
       - uses: pulumi/actions@8582a9e8cc630786854029b4e09281acd6794b58 # v6.6.1
         name: Pulumi Up
         id: pulumi
@@ -71,6 +53,8 @@ jobs:
           work-dir: LostFilmMonitoring.AzureInfrastructure
           cloud-url: ${{ vars.PULUMI_BACKEND_URL }}
           refresh: true
+          diff: true
+          suppress-progress: true
           comment-on-summary: true
           secrets-provider: passphrase
         env:
