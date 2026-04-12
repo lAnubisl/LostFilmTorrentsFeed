@@ -21,7 +21,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>{link}</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new (el);
         Assert.That(feedItemResponse.TorrentId, Is.EqualTo(expected));
     }
 
@@ -39,7 +39,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new (el);
         Assert.That(feedItemResponse.SeriesName, Is.EqualTo(expected));
     }
 
@@ -57,7 +57,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new (el);
         Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expected));
     }
 
@@ -80,7 +80,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new (el);
         Assert.That(feedItemResponse.Quality, Is.EqualTo(expected));
     }
 
@@ -95,7 +95,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse feedItemResponse = new (el);
         Assert.That(feedItemResponse.ToString(), Is.EqualTo(title));
     }
 
