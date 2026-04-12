@@ -63,7 +63,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Type = "CNAME",
             Content = $"{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
             Proxied = true,
-            Ttl = 14400
+            Ttl = 1 // auto
         });
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_web_cname_record", new Cloudflare.DnsRecordArgs
@@ -73,7 +73,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Type = "CNAME",
             Content = $"asverify.{Locals.WebsiteStorageAccountName}.z6.web.core.windows.net",
             Proxied = false,
-            Ttl = 14400
+            Ttl = 1 // auto
         });
 
         return dataRecord;
@@ -88,7 +88,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Type = "CNAME",
             Content = $"{Locals.MetadataStorageAccountName}.blob.core.windows.net",
             Proxied = true,
-            Ttl = 14400
+            Ttl = 1 // auto
         });
 
         var asverifyDataRecord = new Cloudflare.DnsRecord("asverify_data_cname_record", new Cloudflare.DnsRecordArgs
@@ -98,7 +98,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Type = "CNAME",
             Content = $"asverify.{Locals.MetadataStorageAccountName}.blob.core.windows.net",
             Proxied = false,
-            Ttl = 14400
+            Ttl = 1 // auto
         });
 
         return dataRecord;
@@ -112,7 +112,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Name = $"asuid.{config.Require("apidomain")}",
             Type = "TXT",
             Content = function.CustomDomainVerificationId.Apply(id => $"\"{id}\""),
-            Ttl = 3600
+            Ttl = 1 // auto
         });
         
         return new Cloudflare.DnsRecord("api", new Cloudflare.DnsRecordArgs
@@ -122,7 +122,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
             Type = "CNAME",
             Content = function.DefaultHostName,
             Proxied = true,
-            Ttl = 3600
+            Ttl = 1 // auto
         });
     }
 
@@ -457,7 +457,8 @@ public class LostFilmMonitoringStack : Pulumi.Stack
         }, new CustomResourceOptions { 
             IgnoreChanges = { 
                 "hostNameSslStates",
-                "enabledHostNames"
+                "enabledHostNames",
+                "tags.hidden-link"
             }
          });
     }
