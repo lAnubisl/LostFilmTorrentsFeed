@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pulumi" Version="3.102.1" />
-    <PackageReference Include="Pulumi.AzureNative" Version="3.16.0" />
+    <PackageReference Include="Pulumi" Version="3.104.0" />
+    <PackageReference Include="Pulumi.AzureNative" Version="3.17.0" />
     <PackageReference Include="Pulumi.Cloudflare" Version="6.14.0" />
     <ProjectReference Include="..\LostFilmMonitoring.Common\LostFilmMonitoring.Common.csproj" />
   </ItemGroup>
