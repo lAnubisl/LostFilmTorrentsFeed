@@ -6,10 +6,12 @@
 public sealed class ReteOrgFeedItemResponse : FeedItemResponse
 {
     // Уокер (Walker). То, чего раньше не было (S03E06) [1080p]
-    private const string RegexPattern = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\) \[(?<Quality>MP4|1080p|SD)\]";
+    // Optimized: Use non-greedy quantifiers (.+?) to prevent catastrophic backtracking
+    private const string RegexPattern = @"(?<SeriesNameRu>.+?)\s+\((?<SeriesNameEng>.+?)\)\.\s+(?<EpisodeNameRu>.+?)\s+\(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\)\s+\[(?<Quality>MP4|1080p|SD)\]";
 
     // Периферийные устройства (The Peripheral). А как же Боб?. (S01E05)
-    private const string RegexPattern2 = @"(?<SeriesNameRu>.+) \((?<SeriesNameEng>.+)\)\. (?<EpisodeNameRu>.+) \(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\)";
+    // Optimized: Use non-greedy quantifiers (.+?) to prevent catastrophic backtracking
+    private const string RegexPattern2 = @"(?<SeriesNameRu>.+?)\s+\((?<SeriesNameEng>.+?)\)\.\s+(?<EpisodeNameRu>.+?)\s+\(S(?<SeasonNumber>[0-9]+)E(?<EpisodeNumber>[0-9]+)\)";
 
     private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
 
