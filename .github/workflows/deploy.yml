@@ -55,6 +55,7 @@ jobs:
           refresh: true
           diff: true
           suppress-progress: true
+          suppress-outputs: true
           comment-on-summary: true
           secrets-provider: passphrase
         env:

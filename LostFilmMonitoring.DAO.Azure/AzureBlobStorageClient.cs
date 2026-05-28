@@ -50,7 +50,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     {
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
         using Stream ms = new MemoryStream();
-        using StreamWriter sw = new StreamWriter(ms, Encoding.UTF8);
+        using StreamWriter sw = new (ms, Encoding.UTF8);
         await sw.WriteAsync(content);
         await sw.FlushAsync();
         ms.Position = 0;
@@ -91,7 +91,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
             return null;
         }
 
-        using StreamReader streamReader = new StreamReader(stream, Encoding.UTF8);
+        using StreamReader streamReader = new (stream, Encoding.UTF8);
         return await streamReader.ReadToEndAsync();
     }
 
@@ -244,7 +244,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     {
         try
         {
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new ();
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadToAsync", ActivityKind.Client);
             activity?.SetTag("Type", "Azure Blob Storage");
             await blobClient.DownloadToAsync(ms, this.cancellationToken);
