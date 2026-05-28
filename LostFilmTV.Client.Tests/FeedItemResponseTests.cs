@@ -154,4 +154,116 @@ public class FeedItemResponseTests
             Assert.That(arr[2].Title, Is.EqualTo("Title2"));
         }
     }
+
+    [Test]
+    [TestCase("Бороуз (The Boroughs).  Запретный плод (S01E04) [1080p]", "Бороуз", "The Boroughs", "Запретный плод", "1080", TestName = "FeedItemResponse_GetQuality_should_handle_double_space")]
+    [TestCase("Маршалы (Marshals).   Волки на пороге (S01E13) [MP4]", "Маршалы", "Marshals", "Волки на пороге", "MP4", TestName = "FeedItemResponse_GetQuality_should_handle_triple_space")]
+    public void FeedItemResponse_regex_should_handle_variable_whitespace(string title, string expectedSeriesNameRu, string expectedSeriesNameEng, string expectedEpisodeName, string expectedQuality)
+    {
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{title}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
+            Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo(expectedSeriesNameEng));
+            Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expectedEpisodeName));
+            Assert.That(feedItemResponse.Quality, Is.EqualTo(expectedQuality));
+        }
+    }
+
+    [Test]
+    [TestCase("Бороуз (The Boroughs). Запретный плод (S01E04) [1080p]", "Бороуз", "The Boroughs", "Запретный плод", 1, 4, "1080", TestName = "FeedItemResponse_optimized_regex_should_parse_valid_title")]
+    [TestCase("Дерзость (The Audacity). Гранфаллон (S01E08) [MP4]", "Дерзость", "The Audacity", "Гранфаллон", 1, 8, "MP4", TestName = "FeedItemResponse_optimized_regex_should_handle_MP4_quality")]
+    [TestCase("Эйфория (Euphoria). И в дождь, и в зной (S03E07) [SD]", "Эйфория", "Euphoria", "И в дождь, и в зной", 3, 7, "SD", TestName = "FeedItemResponse_optimized_regex_should_handle_SD_quality")]
+    public void FeedItemResponse_optimized_regex_should_extract_all_fields(string title, string expectedSeriesNameRu, string expectedSeriesNameEng, string expectedEpisodeName, int expectedSeason, int expectedEpisode, string expectedQuality)
+    {
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{title}</title>
+                    <category>{expectedQuality}</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
+            Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo(expectedSeriesNameEng));
+            Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expectedEpisodeName));
+            Assert.That(feedItemResponse.SeasonNumber, Is.EqualTo(expectedSeason));
+            Assert.That(feedItemResponse.EpisodeNumber, Is.EqualTo(expectedEpisode));
+            Assert.That(feedItemResponse.Quality, Is.EqualTo(expectedQuality));
+            Assert.That(feedItemResponse.SeriesName, Is.EqualTo($"{expectedSeriesNameRu} ({expectedSeriesNameEng})"));
+        }
+    }
+
+    [Test]
+    [TestCase("Периферийные устройства (The Peripheral). А как же Боб?. (S01E05)", "Периферийные устройства", "The Peripheral", "А как же Боб?.", 1, 5, null, TestName = "FeedItemResponse_optimized_regex_pattern2_should_parse_without_quality")]
+    [TestCase("Внешние сферы (Outer Range). Неведомое (S01E07)", "Внешние сферы", "Outer Range", "Неведомое", 1, 7, null, TestName = "FeedItemResponse_optimized_regex_pattern2_should_work_for_various_titles")]
+    public void FeedItemResponse_optimized_regex_pattern2_should_extract_fields_without_quality(string title, string expectedSeriesNameRu, string expectedSeriesNameEng, string expectedEpisodeName, int expectedSeason, int expectedEpisode, string expectedQuality)
+    {
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{title}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
+            Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo(expectedSeriesNameEng));
+            Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expectedEpisodeName));
+            Assert.That(feedItemResponse.SeasonNumber, Is.EqualTo(expectedSeason));
+            Assert.That(feedItemResponse.EpisodeNumber, Is.EqualTo(expectedEpisode));
+            Assert.That(feedItemResponse.Quality, Is.EqualTo(expectedQuality));
+        }
+    }
+
+    [Test]
+    [TestCase("Бороуз The Boroughs. Запретный плод (S01E04) [1080p]", null, TestName = "FeedItemResponse_malformed_should_fail_gracefully_missing_parens_1")]
+    [TestCase("Бороуз (The Boroughs) Запретный плод (S01E04) [1080p]", null, TestName = "FeedItemResponse_malformed_should_fail_gracefully_missing_dot")]
+    [TestCase("Бороуз (The Boroughs). (S01E04) [1080p]", null, TestName = "FeedItemResponse_malformed_should_fail_gracefully_missing_episode_name")]
+    [TestCase("Бороуз (The Boroughs). Запретный плод S01E04 [1080p]", null, TestName = "FeedItemResponse_malformed_should_fail_gracefully_missing_season_format")]
+    public void FeedItemResponse_malformed_input_should_fail_gracefully(string title, string expected)
+    {
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{title}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void FeedItemResponse_should_handle_very_long_malformed_input_without_timeout()
+    {
+        // Test that very long malformed input completes quickly without timeout
+        var longTitle = "Very long title that might cause backtracking " + new string('A', 100);
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{longTitle}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+        
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        watch.Stop();
+
+        // Should complete quickly (well under the 100ms timeout)
+        Assert.That(watch.ElapsedMilliseconds, Is.LessThan(50), "Regex should complete quickly on malformed input");
+        Assert.That(feedItemResponse.SeriesNameRu, Is.Null, "Malformed input should result in null SeriesNameRu");
+    }
 }
