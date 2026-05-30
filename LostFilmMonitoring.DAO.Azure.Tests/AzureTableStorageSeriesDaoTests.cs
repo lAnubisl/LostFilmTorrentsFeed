@@ -102,8 +102,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Returns(expected);
         
         var result = await GetDao().LoadAsync();
-        (result != null &&
-            result.Length == 2 &&
+        (result is { Length: 2 } &&
             result.Any(x => x.Name == "A") && 
             result.Any(x => x.Name == "B"))
 .Should().BeTrue(

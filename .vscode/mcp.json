@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"Deepsource": {
+			"url": "https://mcp.deepsource.com/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

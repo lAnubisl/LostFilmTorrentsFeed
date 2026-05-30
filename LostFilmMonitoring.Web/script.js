@@ -10,7 +10,6 @@ const baseRssUri = config.baseRssUri;
  */
 const showError = (message) => {
     console.error(message);
-    alert(message);
 };
 
 /**
@@ -338,8 +337,8 @@ const addClickEvents = () => {
     
     // Global click handler for save button
     document.addEventListener('click', (event) => {
-        const saveButton = document.getElementById("fixed-save-changes-link");
-        if (saveButton.style.display === 'none' && !event.target.closest('#fixed-save-changes-link')) {
+        const saveButtonElement = document.getElementById("fixed-save-changes-link");
+        if (saveButtonElement?.style.display === 'none' && !event.target.closest('#fixed-save-changes-link')) {
             showSaveSubscriptionsButton();
         }
     });
@@ -450,7 +449,7 @@ const saveChanges = async () => {
     try {
         const data = await postJSONAsync(`${baseApiUri}SubscriptionUpdateFunction`, model);
         
-        if (data && data.ValidationResult && data.ValidationResult.IsValid === false) {
+        if (data?.ValidationResult?.IsValid === false) {
             throw new Error("Validation failed");
         }
         
@@ -595,3 +594,9 @@ const initMenu = () => {
         document.getElementById("sign-up-link").style.display = 'inline-block';
     }
 };
+
+window.loadItems = loadItems;
+window.initMySubscriptionPage = initMySubscriptionPage;
+window.register = register;
+window.signIn = signIn;
+window.initMenu = initMenu;

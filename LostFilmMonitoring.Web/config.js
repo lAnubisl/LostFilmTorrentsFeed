@@ -1,4 +1,4 @@
-const config = {
+window.config = {
     baseApiUri: "https://apilostfilmfeeddev.byalex.dev/api/",
     baseDataUri: "https://datalostfilmfeeddev.byalex.dev/models/",
     imagesBaseUri: "https://datalostfilmfeeddev.byalex.dev/images/",

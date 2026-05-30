@@ -101,7 +101,7 @@ public abstract class BaseRssFeed
             return [];
         }
 
-        XDocument document;
+        XDocument document = null!;
         try
         {
             document = Parse(rssText);
@@ -119,12 +119,9 @@ public abstract class BaseRssFeed
             var items = channel.Elements().Where(i => i.Name.LocalName == "item");
             foreach (var item in items)
             {
-                if (ReteOrgFeedItemResponse.TryParseFromXElement(item, out var parsed, this.Logger.Error))
+                if (ReteOrgFeedItemResponse.TryParseFromXElement(item, out var parsed, this.Logger.Error) && parsed != null)
                 {
-                    if (parsed != null)
-                    {
-                        list.Add(parsed);
-                    }
+                    list.Add(parsed);
                 }
             }
         }

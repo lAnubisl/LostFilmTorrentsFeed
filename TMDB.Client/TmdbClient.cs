@@ -50,7 +50,7 @@ public class TmdbClient : ITmdbClient
             }
 
             var poster = image.Posters.Where(x => x.Iso_639_1 == "en").OrderByDescending(x => x.VoteCount).FirstOrDefault();
-            if (poster == null || poster.FilePath == null)
+            if (poster?.FilePath == null)
             {
                 this.logger.Error($"Poster not found: {originalName}");
                 return null;

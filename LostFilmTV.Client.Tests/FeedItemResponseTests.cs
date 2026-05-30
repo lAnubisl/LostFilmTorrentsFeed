@@ -21,7 +21,7 @@ public class FeedItemResponseTests
                 <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                 <link>{link}</link>
             </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.True);
         Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
@@ -41,7 +41,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
@@ -69,7 +69,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
@@ -102,7 +102,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
@@ -127,7 +127,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.True);
         Assert.That(feedItemResponse!.ToString(), Is.EqualTo(title));
@@ -202,7 +202,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
@@ -227,7 +227,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
@@ -254,7 +254,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
@@ -282,7 +282,7 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         Assert.That(ok, Is.False);
         Assert.That(feedItemResponse, Is.Null);
@@ -302,7 +302,7 @@ public class FeedItemResponseTests
                 </item>");
         
         var watch = System.Diagnostics.Stopwatch.StartNew();
-        ReteOrgFeedItemResponse? feedItemResponse;
+        ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         watch.Stop();
 

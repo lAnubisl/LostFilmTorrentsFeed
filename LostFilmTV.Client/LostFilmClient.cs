@@ -35,7 +35,7 @@ public class LostFilmClient : ILostFilmClient
         using var activity = ActivitySource.StartActivity(nameof(this.DownloadTorrentFileAsync), ActivityKind.Client);
         activity?.SetTag("Type", "Lostfilm");
         request.Headers.Add("Cookie", $"uid={uid};usess={usess};");
-        HttpResponseMessage response;
+        HttpResponseMessage? response = null;
 
         try
         {
@@ -73,7 +73,7 @@ public class LostFilmClient : ILostFilmClient
             return null;
         }
 
-        fileName = fileName[0..^1];
+        fileName = fileName[..^1];
         var stream = await response.Content.ReadAsStreamAsync();
         return new TorrentFileResponse(fileName, stream);
     }
