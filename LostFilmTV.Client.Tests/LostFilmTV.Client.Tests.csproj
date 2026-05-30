@@ -24,6 +24,7 @@
   <ItemGroup>
     <EmbeddedResource Include="TestData\BaseFeed1.xml" />
     <EmbeddedResource Include="TestData\LostFilmFeed1.xml" />
+    <EmbeddedResource Include="TestData\ReteOrgFeed.xml" />
   </ItemGroup>
 
   <ItemGroup>

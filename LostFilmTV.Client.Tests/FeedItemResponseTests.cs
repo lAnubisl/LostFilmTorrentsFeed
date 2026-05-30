@@ -16,13 +16,15 @@ public class FeedItemResponseTests
     {
         var el = XElement.Parse(
            @$"<item>
-                    <title>Title</title>
-                    <category>[MP4]</category>
-                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
-                    <link>{link}</link>
-                </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new (el);
-        Assert.That(feedItemResponse.TorrentId, Is.EqualTo(expected));
+                <title>Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]</title>
+                <category>[1080p]</category>
+                <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                <link>{link}</link>
+            </item>");
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.True);
+        Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
     }
 
     [Test]
@@ -39,8 +41,18 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new (el);
-        Assert.That(feedItemResponse.SeriesName, Is.EqualTo(expected));
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        if (expected == null)
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(feedItemResponse, Is.Null);
+        }
+        else
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.SeriesName, Is.EqualTo(expected));
+        }
     }
 
     [Test]
@@ -57,8 +69,18 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new (el);
-        Assert.That(feedItemResponse.EpisodeName, Is.EqualTo(expected));
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        if (expected == null)
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(feedItemResponse, Is.Null);
+        }
+        else
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.EpisodeName, Is.EqualTo(expected));
+        }
     }
 
     [Test]
@@ -80,14 +102,24 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new (el);
-        Assert.That(feedItemResponse.Quality, Is.EqualTo(expected));
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        if (expected == null)
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(feedItemResponse, Is.Null);
+        }
+        else
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.Quality, Is.EqualTo(expected));
+        }
     }
 
     [Test]
     public void FeedItemResponse_ToString_should_return_string()
     {
-        var title ="Внешние сферы (Outer Range). Неведомое (S01E07) (MP4)";
+        var title ="Внешние сферы (Outer Range). Неведомое (S01E07) [MP4]";
         var el = XElement.Parse(
            @$"<item>
                     <title>{title}</title>
@@ -95,8 +127,10 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new (el);
-        Assert.That(feedItemResponse.ToString(), Is.EqualTo(title));
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.True);
+        Assert.That(feedItemResponse!.ToString(), Is.EqualTo(title));
     }
 
     [Test]
@@ -109,7 +143,8 @@ public class FeedItemResponseTests
                     <pubDate>Mon, 09 May 2022 20:27:53 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
-        var item = new ReteOrgFeedItemResponse(element);
+        ReteOrgFeedItemResponse item;
+        ReteOrgFeedItemResponse.TryParseFromXElement(element, out item);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
@@ -167,7 +202,9 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
@@ -190,7 +227,9 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
@@ -215,7 +254,9 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.True);
         using (Assert.EnterMultipleScope())
         {
             Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expectedSeriesNameRu));
@@ -241,8 +282,10 @@ public class FeedItemResponseTests
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
                     <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
                 </item>");
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
-        Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo(expected));
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
+        Assert.That(ok, Is.False);
+        Assert.That(feedItemResponse, Is.Null);
     }
 
     [Test]
@@ -259,11 +302,63 @@ public class FeedItemResponseTests
                 </item>");
         
         var watch = System.Diagnostics.Stopwatch.StartNew();
-        ReteOrgFeedItemResponse feedItemResponse = new ReteOrgFeedItemResponse(el);
+        ReteOrgFeedItemResponse? feedItemResponse;
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         watch.Stop();
 
         // Should complete quickly (well under the 100ms timeout)
         Assert.That(watch.ElapsedMilliseconds, Is.LessThan(50), "Regex should complete quickly on malformed input");
-        Assert.That(feedItemResponse.SeriesNameRu, Is.Null, "Malformed input should result in null SeriesNameRu");
+        Assert.That(ok, Is.False);
+        Assert.That(feedItemResponse, Is.Null, "Malformed input should result in null feedItemResponse");
+    }
+
+    [Test]
+    public void FeedItemResponse_should_parse_valid_title_without_regex()
+    {
+        var el = XElement.Parse(@"
+                <item>
+                    <title>Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]</title>
+                    <category>[1080p]</category>
+                    <pubDate>Mon, 09 May 2022 20:27:53 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
+                </item>");
+
+        ReteOrgFeedItemResponse feedItemResponse = null;
+        Assert.DoesNotThrow(() => ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse));
+        Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo("Братья Харди"));
+        Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo("The Hardy Boys"));
+        Assert.That(feedItemResponse.EpisodeName, Is.EqualTo("Неожиданное возвращение"));
+        Assert.That(feedItemResponse.Quality, Is.EqualTo("1080"));
+    }
+
+    [Test]
+    public void FeedItemResponse_should_not_throw_on_long_pathological_title()
+    {
+        var longTitle = "Проблемный сериал (Problem Series). " + new string('A', 5000) + " (S01E01) [BAD]";
+        var el = XElement.Parse(
+           @$"<item>
+                    <title>{longTitle}</title>
+                    <category>[MP4]</category>
+                    <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
+                    <link>http://n.tracktor.site/rssdownloader.php?id=51439</link>
+                </item>");
+
+        Assert.DoesNotThrow(() => ReteOrgFeedItemResponse.TryParseFromXElement(el, out _));
+    }
+
+    [Test]
+    public void FeedItemResponse_should_parse_real_rss_feed_items_without_timeout()
+    {
+        var feedXml = Helper.GetEmbeddedResource("LostFilmTV.Client.Tests.TestData.ReteOrgFeed.xml");
+        var document = XDocument.Parse(feedXml);
+        var itemElements = document.Descendants("item").ToArray();
+
+        Assert.That(itemElements, Is.Not.Empty, "Test data feed should contain items");
+        foreach (var element in itemElements)
+        {
+            Assert.DoesNotThrow(
+                () => ReteOrgFeedItemResponse.TryParseFromXElement(element, out _),
+                $"Item title caused a timeout: {element.Element("title")?.Value}");
+        }
     }
 }

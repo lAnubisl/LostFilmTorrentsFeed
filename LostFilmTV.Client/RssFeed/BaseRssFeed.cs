@@ -112,7 +112,24 @@ public abstract class BaseRssFeed
             return [];
         }
 
-        return GetItems(document);
+        var list = new List<FeedItemResponse>();
+        var channel = document.Root?.Descendants().First(i => i.Name.LocalName == "channel");
+        if (channel != null)
+        {
+            var items = channel.Elements().Where(i => i.Name.LocalName == "item");
+            foreach (var item in items)
+            {
+                if (ReteOrgFeedItemResponse.TryParseFromXElement(item, out var parsed, this.Logger.Error))
+                {
+                    if (parsed != null)
+                    {
+                        list.Add(parsed);
+                    }
+                }
+            }
+        }
+
+        return new SortedSet<FeedItemResponse>(list);
     }
 
     /// <summary>
@@ -139,18 +156,5 @@ public abstract class BaseRssFeed
         }
     }
 
-    /// <summary>
-    /// Read feed items from XDocument.
-    /// </summary>
-    /// <param name="doc">XDocument.</param>
-    /// <returns>Set of FeedItemResponse.</returns>
-    private static SortedSet<FeedItemResponse> GetItems(XDocument doc)
-    {
-        var entries = from item in doc.Root?.Descendants()
-                      .First(i => i.Name.LocalName == "channel")
-                      .Elements()
-                      .Where(i => i.Name.LocalName == "item")
-                      select new ReteOrgFeedItemResponse(item);
-        return new SortedSet<FeedItemResponse>(entries);
-    }
+    // Item parsing moved to TryParseFromXElement and handled in GetItems(string) for logging purposes.
 }
