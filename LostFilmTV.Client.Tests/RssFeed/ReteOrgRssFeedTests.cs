@@ -1,4 +1,6 @@
-﻿namespace LostFilmTV.Client.Tests.RssFeed;
+﻿using System.Linq;
+
+namespace LostFilmTV.Client.Tests.RssFeed;
 
 [ExcludeFromCodeCoverage]
 public class ReteOrgRssFeedTests
@@ -102,6 +104,33 @@ public class ReteOrgRssFeedTests
         var result = await GetService().LoadFeedItemsAsync();
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task LoadFeedItemsAsync_should_parse_rss_with_unescaped_ampersand_in_text_content()
+    {
+        const string rssText =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+            "<rss version=\"2.0\" source=\"feed&test\">" +
+            "<channel>" +
+            "<title>Broken & Feed</title>" +
+            "<item>" +
+            "<title>Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]</title>" +
+            "<link>http://n.tracktor.site/rssdownloader.php?id=51236&source=test</link>" +
+            "<pubDate>Mon, 09 May 2022 20:27:53 +0000</pubDate>" +
+            "</item>" +
+            "</channel>" +
+            "</rss>";
+
+        mockHttp
+            .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
+            .Respond("application/xml", rssText);
+
+        var result = await GetService().LoadFeedItemsAsync();
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result!.First().Link.Should().Be("http://n.tracktor.site/rssdownloader.php?id=51236&source=test");
     }
 
     private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object);

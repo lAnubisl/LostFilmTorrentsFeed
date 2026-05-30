@@ -5,8 +5,6 @@
 /// </summary>
 public abstract class BaseRssFeed
 {
-    private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(100);
-    private static readonly RegexOptions RegexOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.Singleline;
     private readonly ActivitySource activitySource = new (ActivitySourceNames.RssFeed);
     private readonly IHttpClientFactory httpClientFactory;
 
@@ -136,16 +134,10 @@ public abstract class BaseRssFeed
     /// <returns>XDocument.</returns>
     private static XDocument Parse(string rssString)
     {
-        string pattern = "(?<start>>)(?<content>.+?(?<!>))(?<end><)|(?<start>\")(?<content>.+?)(?<end>\")";
-        string result = Regex.Replace(
-            rssString,
-            pattern,
-            m => m.Groups["start"].Value + HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(m.Groups["content"].Value)) + m.Groups["end"].Value,
-            RegexOptions,
-            RegexTimeout);
+        string normalizedRssText = NormalizeXmlContent(rssString);
         try
         {
-            return XDocument.Parse(result);
+            return XDocument.Parse(normalizedRssText);
         }
         catch
         {
@@ -153,5 +145,81 @@ public abstract class BaseRssFeed
         }
     }
 
-    // Item parsing moved to TryParseFromXElement and handled in GetItems(string) for logging purposes.
+    private static string NormalizeXmlContent(string rssString)
+    {
+        if (string.IsNullOrEmpty(rssString))
+        {
+            return rssString;
+        }
+
+        // Walk the RSS string manually and normalize text content in two places:
+        // 1) quoted attribute values, and 2) element text nodes.
+        //
+        // This preserves the original XML structure while ensuring any raw text
+        // content is HTML-encoded before parsing, which helps the parser recover
+        // from malformed entity usage in real RSS feeds.
+        var builder = new System.Text.StringBuilder(rssString.Length);
+        int index = 0;
+
+        while (index < rssString.Length)
+        {
+            char current = rssString[index];
+            if (current == '"')
+            {
+                index = ProcessQuotedAttribute(rssString, index, builder);
+            }
+            else if (current == '>')
+            {
+                index = ProcessTextNodeContent(rssString, index, builder);
+            }
+            else
+            {
+                builder.Append(current);
+                index++;
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    private static int ProcessQuotedAttribute(string rssString, int quoteIndex, System.Text.StringBuilder builder)
+    {
+        // Preserve the opening quote then normalize the attribute's raw value.
+        builder.Append('"');
+        int start = quoteIndex + 1;
+        int end = rssString.IndexOf('"', start);
+        if (end < 0)
+        {
+            AppendNormalizedContent(builder, rssString[start..]);
+            return rssString.Length;
+        }
+
+        AppendNormalizedContent(builder, rssString[start..end]);
+        builder.Append('"');
+        return end + 1;
+    }
+
+    private static int ProcessTextNodeContent(string rssString, int startBracketIndex, System.Text.StringBuilder builder)
+    {
+        // Preserve the closing bracket before normalizing the element text.
+        builder.Append('>');
+        int start = startBracketIndex + 1;
+        int end = rssString.IndexOf('<', start);
+        if (end < 0)
+        {
+            AppendNormalizedContent(builder, rssString[start..]);
+            return rssString.Length;
+        }
+
+        AppendNormalizedContent(builder, rssString[start..end]);
+        builder.Append('<');
+        return end + 1;
+    }
+
+    private static void AppendNormalizedContent(System.Text.StringBuilder builder, string content)
+    {
+        // Decode any encoded entities first, then re-encode to valid XML.
+        // This is the key recovery step for broken or raw entity text.
+        builder.Append(HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(content)));
+    }
 }
