@@ -7,5 +7,5 @@ const config = {
     baseRssUri: process.env.BASE_RSS_URI || "https://datalostfilmfeeddev.byalex.dev/rssfeeds/"
 };
 
-const configContent = `const config = ${JSON.stringify(config, null, 2)};`;
+const configContent = `window.config = ${JSON.stringify(config, null, 2)};`;
 fs.writeFileSync('config.js', configContent); 
