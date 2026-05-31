@@ -42,6 +42,25 @@
             FeedItemResponse.
             </summary>
         </member>
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.ReteOrgFeedItemResponse"/> class.
+            This constructor is required for JSON deserializer.
+            </summary>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.TryParseFromXElement(System.Xml.Linq.XElement,LostFilmTV.Client.Response.ReteOrgFeedItemResponse@,System.Action{System.String})">
+            <summary>
+            Try to parse an RSS item XElement into a strongly-typed feed item.
+            Returns true on success and sets <paramref name="result"/>; returns false and logs when parsing fails.
+            </summary>
+            <returns>True if parsing succeeded; false if parsing failed and the item should be skipped.</returns>
+            <param name="xElement">XML element representing an <c>item</c>.</param>
+            <param name="result">Parsed result if successful; otherwise null.</param>
+            <param name="log">Optional logger action to receive diagnostics when parsing fails.</param>
+        </member>
+        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.ToString">
+            <inheritdoc/>
+        </member>
         <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.TryParseSeriesNames(System.String,System.String@,System.String@,System.Int32@)">
             <summary>
             Extracts the Russian and English series names and returns the index
@@ -50,7 +69,7 @@
             <example>
             Input: "Внешние сферы (Outer Range). Неведомое (S01E07) [MP4]"
             Output: seriesNameRu="Внешние сферы", seriesNameEn="Outer Range",
-            episodeStartIndex points to the first non-whitespace character after "."
+            episodeStartIndex points to the first non-whitespace character after ".".
             </example>
         </member>
         <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.TryParseEpisodeDetails(System.String,System.Int32,System.String@,System.Int32@,System.Int32@,System.Int32@)">
@@ -71,26 +90,8 @@
             </summary>
             <example>
             Input fragment: "[MP4]" => quality = "MP4"
-            Input fragment: "[1080p]" => quality = "1080"
+            Input fragment: "[1080p]" => quality = "1080".
             </example>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:LostFilmTV.Client.Response.ReteOrgFeedItemResponse"/> class.
-            This constructor is required for JSON deserializer.
-            </summary>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.TryParseFromXElement(System.Xml.Linq.XElement,LostFilmTV.Client.Response.ReteOrgFeedItemResponse@,System.Action{System.String})">
-            <summary>
-            Try to parse an RSS item XElement into a strongly-typed feed item.
-            Returns true on success and sets <paramref name="result"/>; returns false and logs when parsing fails.
-            </summary>
-            <param name="xElement">XML element representing an <c>item</c>.</param>
-            <param name="result">Parsed result if successful; otherwise null.</param>
-            <param name="log">Optional logger action to receive diagnostics when parsing fails.</param>
-        </member>
-        <member name="M:LostFilmTV.Client.Response.ReteOrgFeedItemResponse.ToString">
-            <inheritdoc/>
         </member>
         <member name="T:LostFilmTV.Client.Response.TorrentFileResponse">
             <summary>

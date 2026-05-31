@@ -3,31 +3,32 @@
 [ExcludeFromCodeCoverage]
 public class TestResponseOk : Response
 {
-    public override int Status => throw new NotImplementedException();
+    public override int Status => 200;
 
-    public override string ReasonPhrase => throw new NotImplementedException();
+    public override string ReasonPhrase => string.Empty;
 
-    public override Stream? ContentStream { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public override string ClientRequestId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override Stream? ContentStream { get; set; }
+    public override string ClientRequestId { get; set; } = string.Empty;
 
     public override void Dispose()
     {
-        throw new NotImplementedException();
+        // No unmanaged resources to dispose in this test stub.
     }
 
     protected override bool ContainsHeader(string name)
     {
-        throw new NotImplementedException();
+        return false;
     }
 
     protected override IEnumerable<HttpHeader> EnumerateHeaders()
     {
-        throw new NotImplementedException();
+        return Enumerable.Empty<HttpHeader>();
     }
 
     protected override bool TryGetHeader(string name, [NotNullWhen(true)] out string? value)
     {
-        throw new NotImplementedException();
+        value = null;
+        return false;
     }
 
     protected override bool TryGetHeaderValues(string name, [NotNullWhen(true)] out IEnumerable<string>? values)

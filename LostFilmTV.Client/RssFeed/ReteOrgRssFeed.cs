@@ -24,7 +24,7 @@ public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
     public async Task<SortedSet<FeedItemResponse>?> LoadFeedItemsAsync()
     {
         this.Logger.Info($"Call: {nameof(this.LoadFeedItemsAsync)}()");
-        string rss;
+        string rss = string.Empty;
         try
         {
             rss = await this.DownloadRssTextAsync(RssUrl);

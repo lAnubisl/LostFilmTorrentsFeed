@@ -81,8 +81,7 @@ public class UpdateFeedsCommand : ICommand
     {
         lock (SeriesLocker)
         {
-            var series = feedItem.ToSeries();
-            if (series == null)
+            if (feedItem.ToSeries() is not { } series)
             {
                 return null;
             }

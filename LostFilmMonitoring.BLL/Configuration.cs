@@ -32,7 +32,6 @@ public class Configuration : IConfiguration
     {
         return this.torrentAnnounceListPatterns
             .Select(p => string.Format(p, link_uid ?? this.BaseUID))
-            .Select(s => s)
             .ToArray();
     }
 }

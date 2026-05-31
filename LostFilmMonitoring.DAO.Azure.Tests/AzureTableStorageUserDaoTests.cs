@@ -71,7 +71,9 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .ReturnsAsync(new TestResponse<UserTableEntity>(userTableEntity));
 
         var result = await GetDao().LoadAsync("UserId");
-        (result?.Id == userTableEntity.RowKey && result?.TrackerId == userTableEntity.TrackerId).Should().BeTrue();
+        (result is { Id: var id, TrackerId: var trackerId } &&
+            id == userTableEntity.RowKey &&
+            trackerId == userTableEntity.TrackerId).Should().BeTrue();
     }
 
     protected override AzureTableStorageUserDao GetDao()

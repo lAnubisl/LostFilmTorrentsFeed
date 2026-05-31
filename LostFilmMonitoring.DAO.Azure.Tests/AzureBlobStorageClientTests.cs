@@ -259,7 +259,7 @@ public class AzureBlobStorageClientTests
 
         byte[] buffer = new byte[16 * 1024];
         using MemoryStream ms = new ();
-        int read;
+        int read = 0;
         while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
         {
             ms.Write(buffer, 0, read);
