@@ -51,6 +51,37 @@ public class AzureBlobStorageClientTests
     }
 
     [Test]
+    public async Task UploadAsync_string_should_not_write_bom()
+    {
+        Stream captured = null!;
+        blobClient!
+            .Setup(x => x.UploadAsync(It.IsAny<Stream>(), It.IsAny<BlobUploadOptions>(), It.IsAny<CancellationToken>()))
+            .Callback<Stream, BlobUploadOptions, CancellationToken>((s, _, _) =>
+            {
+                // copy stream content for inspection
+                var ms = new MemoryStream();
+                s.CopyTo(ms);
+                ms.Position = 0;
+                captured = ms;
+            })
+            .ReturnsAsync(Mock.Of<global::Azure.Response<global::Azure.Storage.Blobs.Models.BlobContentInfo>>());
+
+        var azureBlobStorageClient = GetClient();
+        var content = "<?xml version=\"1.0\" encoding=\"utf-8\"?><rss></rss>";
+        await azureBlobStorageClient.UploadAsync(containerName, blobName, content, "contentType");
+
+        captured.Should().NotBeNull();
+        var bytes = ReadFully(captured);
+        // Ensure there is no UTF-8 BOM at the start
+        if (bytes.Length >= 3)
+        {
+            bytes[0].Should().NotBe((byte)0xEF);
+            bytes[1].Should().NotBe((byte)0xBB);
+            bytes[2].Should().NotBe((byte)0xBF);
+        }
+    }
+
+    [Test]
     public async Task UploadAsync_should_upload_3()
     {
         var azureBlobStorageClient = GetClient();

@@ -50,7 +50,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     {
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
         using Stream ms = new MemoryStream();
-        using StreamWriter sw = new (ms, Encoding.UTF8);
+        using StreamWriter sw = new (ms, new System.Text.UTF8Encoding(false));
         await sw.WriteAsync(content);
         await sw.FlushAsync();
         ms.Position = 0;
