@@ -48,3 +48,4 @@ jobs:
           key: csharp
           coverage-file: coverage.cobertura.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
+          fail-ci-on-error: true
