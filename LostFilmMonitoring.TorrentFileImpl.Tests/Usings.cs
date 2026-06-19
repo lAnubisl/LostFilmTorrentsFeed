@@ -1,5 +1,4 @@
 global using NUnit.Framework;
-global using FluentAssertions;
 global using System.Diagnostics.CodeAnalysis;
 global using System.IO;
 global using LostFilmMonitoring.TorrentFileImpl;

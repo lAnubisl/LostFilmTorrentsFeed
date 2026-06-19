@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
+namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageSeriesDao>
@@ -51,7 +51,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>("Name", "Name", null, default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var series = await GetDao().LoadAsync("Name");
-        series.Should().BeNull();
+        Assert.That(series, Is.Null);
     }
 
     [Test]
@@ -66,7 +66,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Setup(x => x.GetEntityAsync<SeriesTableEntity>(entity.Name, entity.Name, null, default))
             .ReturnsAsync(new TestResponse<SeriesTableEntity>(entity));
         var loadedSeries = await GetDao().LoadAsync(entity.Name);
-        (loadedSeries?.Name).Should().Be(entity.Name);
+        Assert.That(loadedSeries?.Name, Is.EqualTo(entity.Name));
     }
 
     [Test]
@@ -80,7 +80,7 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
                 default))
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
         var result = await GetDao().LoadAsync();
-        result.Should().Equal([]);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -102,11 +102,9 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             .Returns(expected);
         
         var result = await GetDao().LoadAsync();
-        (result is { Length: 2 } &&
+        Assert.That(result is { Length: 2 } &&
             result.Any(x => x.Name == "A") && 
-            result.Any(x => x.Name == "B"))
-.Should().BeTrue(
-        );
+            result.Any(x => x.Name == "B"), Is.True);
     }
 
     [Test]

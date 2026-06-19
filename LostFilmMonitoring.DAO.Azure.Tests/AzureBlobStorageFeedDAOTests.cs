@@ -32,7 +32,7 @@ public class AzureBlobStorageFeedDAOTests
         var result = await GetDao().LoadBaseFeedAsync();
         azureBlobStorageClient!.Verify(x => x.DownloadStringAsync("rssfeeds", "baseFeed.xml"));
         var newXml = result.ToArray().GenerateXml();
-        newXml.Should().Be(this.baseFeed);
+        Assert.That(newXml, Is.EqualTo(this.baseFeed));
     }
 
     private AzureBlobStorageFeedDao GetDao()

@@ -1,4 +1,4 @@
-﻿namespace LostFilmTV.Client.Tests;
+namespace LostFilmTV.Client.Tests;
 
 [TestFixture]
 [ExcludeFromCodeCoverage]
@@ -22,21 +22,21 @@ public class LostFilmClientTests
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new LostFilmClient(null!, this.httpClientFactory.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_createScope_null()
     {
         var action = () => new LostFilmClient(new Mock<ILogger>().Object, this.httpClientFactory.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_httpClientFactory_null()
     {
         var action = () => new LostFilmClient(this.logger.Object, null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("httpClientFactory");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("httpClientFactory"));
     }
 
     [Test]
@@ -50,7 +50,7 @@ public class LostFilmClientTests
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
         var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class LostFilmClientTests
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
         var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -78,7 +78,7 @@ public class LostFilmClientTests
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
         var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -91,7 +91,7 @@ public class LostFilmClientTests
 
         var client = new LostFilmClient(logger.Object, httpClientFactory.Object);
         var result = await client.DownloadTorrentFileAsync("uid", "usess", torrentFileId);
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     private static byte[] ReadFully(Stream input)

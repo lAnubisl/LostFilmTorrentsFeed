@@ -59,7 +59,7 @@ internal class SaveSubscriptionCommandTests
             this.persister!.Object,
             this.torrentFileHelper!.Object
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -73,7 +73,7 @@ internal class SaveSubscriptionCommandTests
             this.persister!.Object,
             this.torrentFileHelper!.Object
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("validator");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("validator"));
     }
 
     [Test]
@@ -87,7 +87,7 @@ internal class SaveSubscriptionCommandTests
             this.persister!.Object,
             this.torrentFileHelper!.Object
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("dal"));
     }
 
     [Test]
@@ -101,7 +101,7 @@ internal class SaveSubscriptionCommandTests
             this.persister!.Object,
             this.torrentFileHelper!.Object
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("configuration"));
     }
 
     [Test]
@@ -115,7 +115,7 @@ internal class SaveSubscriptionCommandTests
             null!,
             this.torrentFileHelper!.Object
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("persister");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("persister"));
     }
 
     [Test]
@@ -129,7 +129,7 @@ internal class SaveSubscriptionCommandTests
             this.persister!.Object,
             null!
         );
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("torrentFileHelper");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("torrentFileHelper"));
     }
 
     [Test]
@@ -164,7 +164,7 @@ internal class SaveSubscriptionCommandTests
 
         var command = GetCommand();
         var response = await command.ExecuteAsync(new EditSubscriptionRequestModel() { UserId = "123", Items = [ new SubscriptionItem() ] });
-        response.ValidationResult.Should().Be(validationError);
+        Assert.That(response.ValidationResult, Is.EqualTo(validationError));
     }
 
     [Test]
@@ -332,9 +332,9 @@ internal class SaveSubscriptionCommandTests
 
     private static void Verify(EditSubscriptionResponseModel response, string errorKey, string errorValue)
     {
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = errorKey, Value = errorValue });
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, errorKey, errorValue);
     }
 
     private SaveSubscriptionCommand GetCommand()

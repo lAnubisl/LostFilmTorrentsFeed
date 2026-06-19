@@ -24,9 +24,9 @@ public void ReteOrgRssFeed_should_parse_valid_feed()
     var items = feed.LoadFeedItems(xml);
     
     // Assert
-    items.Should().HaveCount(expected);
-    items[0].Title.Should().Contain("Series Name");
-    items[0].Quality.Should().Be("1080");
+    Assert.That(items, Has.Count.EqualTo(expected));
+    Assert.That(items[0].Title, Does.Contain("Series Name"));
+    Assert.That(items[0].Quality, Is.EqualTo("1080"));
 }
 ```
 

@@ -18,14 +18,14 @@ internal class GetUserCommandTests
     public void Constructor_should_throw_exception_when_userDao_null()
     {
         var action = () => new GetUserCommand(null!, this.logger!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDao");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("userDao"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new GetUserCommand(this.userDao!.Object, null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -33,7 +33,7 @@ internal class GetUserCommandTests
     {
         this.logger!.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as Common.ILogger)!);
         var action = () => new GetUserCommand(this.userDao!.Object, this.logger.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -41,10 +41,10 @@ internal class GetUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(null);
-        response.TrackerId.Should().BeNull();
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "model", Value = ErrorMessages.RequestNull });
+        Assert.That(response.TrackerId, Is.Null);
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, "model", ErrorMessages.RequestNull);
     }
 
     [Test]
@@ -52,10 +52,10 @@ internal class GetUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel());
-        response.TrackerId.Should().BeNull();
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(GetUserRequestModel.UserId), Value = string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)) });
+        Assert.That(response.TrackerId, Is.Null);
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)));
     }
 
     [Test]
@@ -65,10 +65,10 @@ internal class GetUserCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(null as User);
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = testUserIdValue });
-        response.TrackerId.Should().BeNull();
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(GetUserRequestModel.UserId), Value = string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue) });
+        Assert.That(response.TrackerId, Is.Null);
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
     }
 
     [Test]
@@ -78,10 +78,10 @@ internal class GetUserCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, testTrackerIdValue));
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = "123" });
-        response.TrackerId.Should().Be(testTrackerIdValue);
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeTrue();
-        response.ValidationResult.Errors.Count.Should().Be(0);
+        Assert.That(response.TrackerId, Is.EqualTo(testTrackerIdValue));
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.True);
+        Assert.That(response.ValidationResult.Errors.Count, Is.EqualTo(0));
     }
 
     private GetUserCommand CreateCommand() => new(this.userDao!.Object, this.logger!.Object);

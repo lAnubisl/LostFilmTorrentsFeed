@@ -1,4 +1,4 @@
-﻿global using System;
+global using System;
 global using System.Collections.Generic;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Xml.Linq;
@@ -10,7 +10,6 @@ global using LostFilmTV.Client.RssFeed;
 global using Moq;
 global using System.IO;
 global using System.Reflection;
-global using FluentAssertions;
 global using System.Threading.Tasks;
 global using RichardSzalay.MockHttp;
 global using System.Text;

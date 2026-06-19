@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
+namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 internal class SignInCommandTests
@@ -19,7 +19,7 @@ internal class SignInCommandTests
     {
         var command = CreateSignInCommand();
         var response = await command.ExecuteAsync(null);
-        response.Success.Should().BeFalse();
+        Assert.That(response.Success, Is.False);
     }
 
     [Test]
@@ -27,7 +27,7 @@ internal class SignInCommandTests
     {
         var command = CreateSignInCommand();
         var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel());
-        response.Success.Should().BeFalse();
+        Assert.That(response.Success, Is.False);
     }
 
     [Test]
@@ -36,7 +36,7 @@ internal class SignInCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(null as User);
         var command = CreateSignInCommand();
         var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" });
-        response.Success.Should().BeFalse();
+        Assert.That(response.Success, Is.False);
     }
 
     [Test]
@@ -45,21 +45,21 @@ internal class SignInCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, string.Empty));
         var command = CreateSignInCommand();
         var response = await command.ExecuteAsync(new Models.Request.SignInRequestModel { UserId = "123" });
-        response.Success.Should().BeTrue();
+        Assert.That(response.Success, Is.True);
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_userDao_null()
     {
         var action = () => new SignInCommand(null!, this.logger!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDao");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("userDao"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new SignInCommand(this.userDao!.Object, null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -67,7 +67,7 @@ internal class SignInCommandTests
     {
         this.logger!.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as Common.ILogger)!);
         var action = () => CreateSignInCommand();
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     private SignInCommand CreateSignInCommand() => new(this.userDao!.Object, this.logger!.Object);

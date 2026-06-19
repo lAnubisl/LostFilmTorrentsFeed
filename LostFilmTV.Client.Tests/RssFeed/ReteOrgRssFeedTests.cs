@@ -23,21 +23,21 @@ public class ReteOrgRssFeedTests
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new ReteOrgRssFeed(null!, this.httpClientFactory.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_createScope_null()
     {
         var action = () => new ReteOrgRssFeed(new Mock<ILogger>().Object, this.httpClientFactory.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_httpClientFactory_null()
     {
         var action = () => new ReteOrgRssFeed(this.logger.Object, null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("httpClientFactory");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("httpClientFactory"));
     }
 
     [Test]
@@ -47,8 +47,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", Helper.GetEmbeddedResource("LostFilmTV.Client.Tests.TestData.BaseFeed1.xml"));
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().NotBeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Not.Empty);
     }
 
     [Test]
@@ -58,8 +58,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", string.Empty);
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -69,8 +69,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Throw(new TaskCanceledException());
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -80,8 +80,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Throw(new IOException());
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -91,8 +91,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Throw(new Exception());
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -102,8 +102,8 @@ public class ReteOrgRssFeedTests
             .When(HttpMethod.Get, "https://insearch.site/rssdd.xml")
             .Respond("application/xml", "BROKEN RSS DATA");
         var result = await GetService().LoadFeedItemsAsync();
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -128,9 +128,9 @@ public class ReteOrgRssFeedTests
 
         var result = await GetService().LoadFeedItemsAsync();
 
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
-        result!.First().Link.Should().Be("http://n.tracktor.site/rssdownloader.php?id=51236&source=test");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.That(result!.First().Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236&source=test"));
     }
 
     private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object);

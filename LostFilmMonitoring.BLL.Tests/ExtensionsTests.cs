@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests;
+namespace LostFilmMonitoring.BLL.Tests;
 
 [ExcludeFromCodeCoverage]
 public class ExtensionsTests
@@ -55,7 +55,7 @@ public class ExtensionsTests
                 },
             ]);
 
-        Extensions.HasUpdates(newItems, existingItems).Should().BeFalse();
+        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.False);
     }
 
     [Test]
@@ -103,7 +103,7 @@ public class ExtensionsTests
                 },
             ]);
 
-        Extensions.HasUpdates(newItems, existingItems).Should().BeTrue();
+        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.True);
     }
 
     [Test]
@@ -158,7 +158,7 @@ public class ExtensionsTests
                 },
             ]);
 
-        Extensions.HasUpdates(newItems, existingItems).Should().BeTrue();
+        Assert.That(Extensions.HasUpdates(newItems, existingItems), Is.True);
     }
 
     [Test]
@@ -167,7 +167,7 @@ public class ExtensionsTests
         SortedSet<FeedItemResponse> oldItems = [];
         SortedSet<FeedItemResponse> newItems = null!;
         Action act = () => Extensions.HasUpdates(oldItems, newItems);
-        act.Should().Throw<ArgumentNullException>();
+        Assert.Throws<ArgumentNullException>(() => act());
     }
 
     [Test]
@@ -176,6 +176,6 @@ public class ExtensionsTests
         SortedSet<FeedItemResponse> oldItems = null!;
         SortedSet<FeedItemResponse> newItems = [];
         Action act = () => Extensions.HasUpdates(oldItems, newItems);
-        act.Should().Throw<ArgumentNullException>();
+        Assert.Throws<ArgumentNullException>(() => act());
     }
 }   

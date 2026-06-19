@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
+namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageEpisodeDao>
@@ -28,7 +28,9 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
         tableClient!.Setup(x => x.UpsertEntityAsync(It.IsAny<EpisodeTableEntity>(), TableUpdateMode.Merge, default))
             .ThrowsAsync(new RequestFailedException(500, "Internal Server Error"));
         var action = async () => await GetDao().SaveAsync(episode);
-        await action.Should().ThrowAsync<ExternalServiceUnavailableException>().WithMessage("Azure Table Storage is not accessible");
+        Assert.That(
+            Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action())!.Message,
+            Is.EqualTo("Azure Table Storage is not accessible"));
     }
 
     [Test]
