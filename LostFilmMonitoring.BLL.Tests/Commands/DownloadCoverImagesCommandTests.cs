@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests.Commands;
+namespace LostFilmMonitoring.BLL.Tests.Commands;
 
 [ExcludeFromCodeCoverage]
 public class DownloadCoverImagesCommandTests
@@ -28,7 +28,7 @@ public class DownloadCoverImagesCommandTests
             null!,
             this.seriesDao!.Object,
             this.downloadCoverImageCommand!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class DownloadCoverImagesCommandTests
             this.logger!.Object,
             null!,
             this.downloadCoverImageCommand!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("seriesDao");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("seriesDao"));
     }
 
     [Test]
@@ -48,7 +48,7 @@ public class DownloadCoverImagesCommandTests
             this.logger!.Object,
             this.seriesDao!.Object,
             null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("downloadCoverImageCommand");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("downloadCoverImageCommand"));
     }
 
     [Test]
@@ -122,9 +122,9 @@ public class DownloadCoverImagesCommandTests
 
         await command.ExecuteAsync();
 
-        callOrder.Should().HaveCount(2);
-        callOrder[0].Should().Be(series1);
-        callOrder[1].Should().Be(series2);
+        Assert.That(callOrder, Has.Count.EqualTo(2));
+        Assert.That(callOrder[0], Is.EqualTo(series1));
+        Assert.That(callOrder[1], Is.EqualTo(series2));
     }
 
     [Test]
@@ -168,7 +168,7 @@ public class DownloadCoverImagesCommandTests
             .ThrowsAsync(new InvalidOperationException("Download failed"));
 
         var action = async () => await command.ExecuteAsync();
-        await action.Should().ThrowAsync<InvalidOperationException>();
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await action());
     }
 
     [Test]

@@ -28,7 +28,7 @@ public class DownloadCoverImageCommandTests
             null!,
             this.fileSystem!.Object,
             this.tmdbClient!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class DownloadCoverImageCommandTests
             this.logger!.Object,
             null!,
             this.tmdbClient!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("fileSystem");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("fileSystem"));
     }
 
     [Test]
@@ -48,7 +48,7 @@ public class DownloadCoverImageCommandTests
             this.logger!.Object,
             this.fileSystem!.Object,
             null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("tmdbClient");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("tmdbClient"));
     }
 
     [Test]
@@ -67,7 +67,7 @@ public class DownloadCoverImageCommandTests
     {
         var command = GetService();
         var action = async () => await command.ExecuteAsync(null!);
-        await action.Should().ThrowAsync<ArgumentNullException>();
+        Assert.ThrowsAsync<ArgumentNullException>(async () => await action());
     }
 
     #endregion

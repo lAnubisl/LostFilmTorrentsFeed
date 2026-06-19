@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests;
+namespace LostFilmMonitoring.BLL.Tests;
 
 [ExcludeFromCodeCoverage]
 public class ConfigurationTests
@@ -21,10 +21,10 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        service.BaseUID.Should().BeEquivalentTo("BASELINKUID");
-        service.BaseUSESS.Should().BeEquivalentTo("BASEFEEDCOOKIE");
-        service.BaseUrl.Should().BeEquivalentTo("BASEURL");
-        service.GetTorrentAnnounceList("USERID").Should().BeEquivalentTo(["#1USERID", "#2USERID", "#3USERID"]);
+        Assert.That(service.BaseUID, Is.EqualTo("BASELINKUID"));
+        Assert.That(service.BaseUSESS, Is.EqualTo("BASEFEEDCOOKIE"));
+        Assert.That(service.BaseUrl, Is.EqualTo("BASEURL"));
+        Assert.That(service.GetTorrentAnnounceList("USERID"), Is.EqualTo(["#1USERID", "#2USERID", "#3USERID"]));
     }
 
     [Test]
@@ -37,7 +37,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        service.GetTorrentAnnounceList(null!).Should().BeEquivalentTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]);
+        Assert.That(service.GetTorrentAnnounceList(null!), Is.EqualTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]));
     }
 
     [Test]
@@ -51,7 +51,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         
         var action = () => GetService();
-        action.Should().Throw<Exception>().WithMessage("Environment variable 'BASEURL' is not defined.");
+        Assert.That(Assert.Catch<Exception>(() => action())!.Message, Is.EqualTo("Environment variable 'BASEURL' is not defined."));
     }
 
     [Test]
@@ -65,7 +65,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
 
         var action = () => GetService();
-        action.Should().Throw<Exception>().WithMessage("Environment variable 'BASEFEEDCOOKIE' is not defined.");
+        Assert.That(Assert.Catch<Exception>(() => action())!.Message, Is.EqualTo("Environment variable 'BASEFEEDCOOKIE' is not defined."));
     }
 
     [Test]
@@ -79,7 +79,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
 
         var action = () => GetService();
-        action.Should().Throw<Exception>().WithMessage("Environment variable 'BASELINKUID' is not defined.");
+        Assert.That(Assert.Catch<Exception>(() => action())!.Message, Is.EqualTo("Environment variable 'BASELINKUID' is not defined."));
     }
 
     [Test]
@@ -93,7 +93,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
 
         var action = () => GetService();
-        action.Should().Throw<Exception>().WithMessage("Environment variable 'TORRENTTRACKERS' is not defined.");
+        Assert.That(Assert.Catch<Exception>(() => action())!.Message, Is.EqualTo("Environment variable 'TORRENTTRACKERS' is not defined."));
     }
 
     private Configuration GetService() => new (providerMock!.Object);

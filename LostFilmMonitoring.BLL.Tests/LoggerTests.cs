@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.BLL.Tests;
+namespace LostFilmMonitoring.BLL.Tests;
 
 [ExcludeFromCodeCoverage]
 public class LoggerTests
@@ -18,7 +18,7 @@ public class LoggerTests
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new Logger(null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("loggerFactory");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("loggerFactory"));
     }
 
     [Test]

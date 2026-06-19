@@ -2,7 +2,7 @@
 
 ## Testing Framework
 
-- NUnit + Moq + FluentAssertions
+- NUnit + Moq
 - All test classes marked `[ExcludeFromCodeCoverage]`
 
 ## Test Structure
@@ -32,7 +32,7 @@ internal class MyCommandTests
         var result = await command.ExecuteAsync(request);
         
         // Assert
-        result.Should().NotBeNull();
+        Assert.That(result, Is.Not.Null);
         dal.Verify(x => x.Method(...), Times.Once);
     }
 }
@@ -50,8 +50,8 @@ internal class MyCommandTests
 // Verify DAO calls
 dal.Verify(x => x.SaveAsync(It.IsAny<User>()), Times.Once);
 
-// FluentAssertions
-result.Should().NotBeNull();
-result.UserId.Should().NotBeNullOrEmpty();
-result.IsSuccess.Should().BeTrue();
+// NUnit assertions
+Assert.That(result, Is.Not.Null);
+Assert.That(result.UserId, Is.Not.Null.And.Not.Empty);
+Assert.That(result.IsSuccess, Is.True);
 ```

@@ -78,7 +78,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -93,7 +93,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("rssFeed");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("rssFeed"));
     }
 
     [Test]
@@ -108,7 +108,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("dal");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("dal"));
     }
 
     [Test]
@@ -123,7 +123,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("configuration");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("configuration"));
     }
 
     [Test]
@@ -138,7 +138,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("modelPersister");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("modelPersister"));
     }
 
     [Test]
@@ -153,7 +153,7 @@ public class UpdateFeedsCommandTests
             null!,
             this.downloadCoverImagesCommand!.Object,
             this.torrentFileHelper!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("client");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("client"));
     }
 
     [Test]
@@ -168,7 +168,7 @@ public class UpdateFeedsCommandTests
             this.lostFilmClient!.Object,
             this.downloadCoverImagesCommand!.Object,
             null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("torrentFileHelper");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("torrentFileHelper"));
     }
 
     [Test]
@@ -295,16 +295,16 @@ public class UpdateFeedsCommandTests
         await command.ExecuteAsync();
 
         // Verify series is saved with initial empty ID
-        savedSeries.Should().Contain(x => x.Id == Guid.Empty);
+        Assert.That(savedSeries.Any(x => x.Id == Guid.Empty), Is.True);
         // Verify series is saved with final properties
-        savedSeries.Should().Contain(x => 
+        Assert.That(savedSeries.Any(x => 
             x.Id == newSeriesId
          && x.Name == "Флэш (The Flash)"
          && x.LastEpisodeName == "Флэш (The Flash). Падение смерти (S08E13) "
          && x.LastEpisode == new DateTime(2022, 5, 21, 20, 58, 00, DateTimeKind.Utc)
          && x.LastEpisodeTorrentLink1080 == "http://n.tracktor.site/rssdownloader.php?id=51438"
          && x.LastEpisodeTorrentLinkMP4 == "http://n.tracktor.site/rssdownloader.php?id=51439"
-         && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437");
+         && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437"), Is.True);
     }
 
     [Test]
@@ -810,7 +810,7 @@ public class UpdateFeedsCommandTests
     private void SetupTorrentFile(string torrentId)
     {
         var torrentFileStream = typeof(UpdateFeedsCommandTests).Assembly.GetManifestResourceStream("LostFilmMonitoring.BLL.Tests.51439.torrent");
-        torrentFileStream.Should().NotBeNull();
+        Assert.That(torrentFileStream, Is.Not.Null);
         var torrentFileResponse = new Mock<ITorrentFileResponse>(); 
         torrentFileResponse.Setup(x => x.FileName).Returns("Флэш (The Flash). Падение смерти (S08E13) [MP4].torrent");
         torrentFileResponse.Setup(x => x.Content).Returns(torrentFileStream);

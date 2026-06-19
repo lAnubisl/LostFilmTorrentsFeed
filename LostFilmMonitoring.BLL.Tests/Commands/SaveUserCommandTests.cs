@@ -22,28 +22,28 @@ internal class SaveUserCommandTests
     public void Constructor_should_throw_exception_when_userDao_null()
     {
         var action = () => new SaveUserCommand(null!, this.logger!.Object, this.persister!.Object, this.feedDao!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("userDao");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("userDao"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
         var action = () => new SaveUserCommand(this.userDao!.Object, null!, this.persister!.Object, this.feedDao!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_persister_null()
     {
         var action = () => new SaveUserCommand(this.userDao!.Object, this.logger!.Object, null!, this.feedDao!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("persister");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("persister"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_feedDao_null()
     {
         var action = () => new SaveUserCommand(this.userDao!.Object, this.logger!.Object, this.persister!.Object, null!);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("feedDao");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("feedDao"));
     }
 
     [Test]
@@ -51,7 +51,7 @@ internal class SaveUserCommandTests
     {
         this.logger!.Setup(x => x.CreateScope(It.IsAny<string>())).Returns((null as Common.ILogger)!);
         var action = () => new SaveUserCommand(this.userDao!.Object, this.logger.Object, this.persister!.Object, this.feedDao!.Object);
-        action.Should().Throw<ArgumentNullException>().Which.ParamName.Should().Be("logger");
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
@@ -59,10 +59,10 @@ internal class SaveUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(null);
-        response.UserId.Should().BeNull();
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = "model", Value = ErrorMessages.RequestNull });
+        Assert.That(response.UserId, Is.Null);
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, "model", ErrorMessages.RequestNull);
     }
 
     [Test]
@@ -70,10 +70,10 @@ internal class SaveUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new EditUserRequestModel());
-        response.UserId.Should().BeNull();
-        response.ValidationResult.Should().NotBeNull();
-        response.ValidationResult.IsValid.Should().BeFalse();
-        response.ValidationResult.Errors.Should().ContainSingle().Which.Should().BeEquivalentTo(new { Key = nameof(EditUserRequestModel.TrackerId), Value = string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)) });
+        Assert.That(response.UserId, Is.Null);
+        Assert.That(response.ValidationResult, Is.Not.Null);
+        Assert.That(response.ValidationResult.IsValid, Is.False);
+        TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(EditUserRequestModel.TrackerId), string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)));
     }
 
     [Test]
@@ -82,7 +82,7 @@ internal class SaveUserCommandTests
         var trackerIdValue = "TrackerId";
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = null, TrackerId = trackerIdValue });
-        response.UserId.Should().NotBeNull();
+        Assert.That(response.UserId, Is.Not.Null);
     }
 
     [Test]
@@ -92,7 +92,7 @@ internal class SaveUserCommandTests
         var userIdValue = "UserId";
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new EditUserRequestModel() { UserId = userIdValue, TrackerId = trackerIdValue });
-        response.UserId.Should().Be(userIdValue);
+        Assert.That(response.UserId, Is.EqualTo(userIdValue));
     }
 
     [Test]

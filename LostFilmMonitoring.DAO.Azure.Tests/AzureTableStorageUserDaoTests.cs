@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
+namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<AzureTableStorageUserDao>
@@ -10,7 +10,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>([]));
         var result = await GetDao().LoadAsync();
-        result.Should().Equal([]);
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Setup(x => x.QueryAsync<UserTableEntity>(null as string, null, null, default))
             .Returns(new TestAsyncPageable<UserTableEntity>(users));
         var result = await GetDao().LoadAsync();
-        result.Should().BeEquivalentTo(expected);
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .Throws(new RequestFailedException(404, "ResourceNotFound", "ResourceNotFound", null));
 
         var result = await GetDao().LoadAsync("UserId");
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -71,9 +71,9 @@ public class AzureTableStorageUserDaoTests : AzureTableStorageDaoTestsBase<Azure
             .ReturnsAsync(new TestResponse<UserTableEntity>(userTableEntity));
 
         var result = await GetDao().LoadAsync("UserId");
-        (result is { Id: var id, TrackerId: var trackerId } &&
+        Assert.That(result is { Id: var id, TrackerId: var trackerId } &&
             id == userTableEntity.RowKey &&
-            trackerId == userTableEntity.TrackerId).Should().BeTrue();
+            trackerId == userTableEntity.TrackerId, Is.True);
     }
 
     protected override AzureTableStorageUserDao GetDao()

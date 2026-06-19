@@ -16,8 +16,8 @@ internal class TorrentFileHelperTests
     {
         using var stream = GetTorrentStream();
         var result = this.helper.Parse(stream);
-        result.Should().NotBeNull();
-        result.Should().BeAssignableTo<IParsedTorrent>();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Is.AssignableTo<IParsedTorrent>());
     }
 
     [Test]
@@ -25,7 +25,7 @@ internal class TorrentFileHelperTests
     {
         using var stream = GetTorrentStream();
         var result = this.helper.Parse(stream);
-        result.DisplayName.Should().Be("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4");
+        Assert.That(result.DisplayName, Is.EqualTo("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4"));
     }
 
     [Test]
@@ -33,7 +33,7 @@ internal class TorrentFileHelperTests
     {
         using var stream = GetTorrentStream();
         this.helper.Parse(stream);
-        stream.Position.Should().Be(0);
+        Assert.That(stream.Position, Is.EqualTo(0));
     }
 
     [Test]
@@ -42,7 +42,7 @@ internal class TorrentFileHelperTests
         using var stream = GetTorrentStream();
         var result = this.helper.Parse(stream);
         var torrentFile = result.ToTorrentFile(["http://tracker.example.com/announce"]);
-        torrentFile.Should().NotBeNull();
+        Assert.That(torrentFile, Is.Not.Null);
     }
 
     [Test]
@@ -51,7 +51,7 @@ internal class TorrentFileHelperTests
         using var stream = GetTorrentStream();
         var parsedTorrent = this.helper.Parse(stream);
         var torrentFile = parsedTorrent.ToTorrentFile(["http://tracker.example.com/announce"]);
-        torrentFile.FileName.Should().Be("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4");
+        Assert.That(torrentFile.FileName, Is.EqualTo("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4"));
     }
 
     [Test]
@@ -60,7 +60,7 @@ internal class TorrentFileHelperTests
         using var stream = GetTorrentStream();
         var parsedTorrent = this.helper.Parse(stream);
         var torrentFile = parsedTorrent.ToTorrentFile(["http://tracker.example.com/announce"]);
-        torrentFile.Stream.Length.Should().BeGreaterThan(0);
+        Assert.That(torrentFile.Stream.Length, Is.GreaterThan(0));
     }
 
     [Test]
@@ -76,8 +76,8 @@ internal class TorrentFileHelperTests
         using var resultStream = torrentFile.Stream;
         using var reader = new StreamReader(resultStream);
         var content = reader.ReadToEnd();
-        content.Should().Contain(announce1);
-        content.Should().Contain(announce2);
+        Assert.That(content, Does.Contain(announce1));
+        Assert.That(content, Does.Contain(announce2));
     }
 
     [Test]
@@ -95,8 +95,8 @@ internal class TorrentFileHelperTests
             results.Add(torrentFile);
         });
 
-        results.Should().HaveCount(10);
-        results.Should().AllSatisfy(f => f.FileName.Should().Be("The.Flash.S08E13.720p.rus.LostFilm.TV.mp4"));
+        Assert.That(results, Has.Count.EqualTo(10));
+        Assert.That(results.All(f => f.FileName == "The.Flash.S08E13.720p.rus.LostFilm.TV.mp4"), Is.True);
     }
 
     private static Stream GetTorrentStream()

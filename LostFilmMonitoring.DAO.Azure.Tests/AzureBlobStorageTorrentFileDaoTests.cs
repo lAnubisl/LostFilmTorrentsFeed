@@ -1,4 +1,4 @@
-﻿namespace LostFilmMonitoring.DAO.Azure.Tests;
+namespace LostFilmMonitoring.DAO.Azure.Tests;
 
 [ExcludeFromCodeCoverage]
 public class AzureBlobStorageTorrentFileDaoTests
@@ -32,7 +32,7 @@ public class AzureBlobStorageTorrentFileDaoTests
         this.azureBlobStorageClient.Setup(x => x.DownloadAsync("basetorrents", $"{torrentId}.torrent")).ReturnsAsync(null as Stream);
         var result = await dao.LoadBaseFileAsync(torrentId);
         this.azureBlobStorageClient.Verify(x => x.DownloadAsync("basetorrents", $"{torrentId}.torrent"), Times.Once);
-        result.Should().BeNull();
+        Assert.That(result, Is.Null);
     }
 
     [Test]
@@ -43,8 +43,8 @@ public class AzureBlobStorageTorrentFileDaoTests
         this.azureBlobStorageClient.Setup(x => x.DownloadAsync("basetorrents", $"{torrentId}.torrent")).ReturnsAsync(new MemoryStream());
         var result = await dao.LoadBaseFileAsync(torrentId);
         this.azureBlobStorageClient.Verify(x => x.DownloadAsync("basetorrents", $"{torrentId}.torrent"), Times.Once);
-        result.Should().NotBeNull();
-        string.Equals(result!.FileName, $"{torrentId}.torrent").Should().BeTrue();
+        Assert.That(result, Is.Not.Null);
+        Assert.That(string.Equals(result!.FileName, $"{torrentId}.torrent"), Is.True);
     }
     
     [Test]

@@ -1,10 +1,9 @@
-﻿global using NUnit.Framework;
+global using NUnit.Framework;
 global using Moq;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Reflection;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Blobs.Models;
-global using FluentAssertions;
 global using Azure;
 global using Azure.Core;
 global using Azure.Data.Tables;
