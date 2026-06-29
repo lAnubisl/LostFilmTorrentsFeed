@@ -5,6 +5,7 @@
 /// </summary>
 public abstract class BaseAzureTableStorageDao
 {
+    private const string TableStorageType = "Azure Table Storage";
     private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.TableStorage);
     private readonly TableClient tableClient;
 
@@ -78,13 +79,13 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryExecuteAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Table Storage");
+            activity?.SetTag("Type", TableStorageType);
             await func(this.tableClient);
         }
         catch (Exception ex)
         {
             this.Logger.Log(ex);
-            throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
+            throw new ExternalServiceUnavailableException($"{TableStorageType} is not accessible", ex);
         }
     }
 
@@ -101,7 +102,7 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryGetEntityAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Table Storage");
+            activity?.SetTag("Type", TableStorageType);
             return await func(this.tableClient);
         }
         catch (RequestFailedException ex)
@@ -111,12 +112,12 @@ public abstract class BaseAzureTableStorageDao
                 return null;
             }
 
-            throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
+            throw new ExternalServiceUnavailableException($"{TableStorageType} is not accessible", ex);
         }
         catch (Exception ex)
         {
             this.Logger.Log(ex);
-            throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
+            throw new ExternalServiceUnavailableException($"{TableStorageType} is not accessible", ex);
         }
     }
 
@@ -131,13 +132,13 @@ public abstract class BaseAzureTableStorageDao
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.TryCountAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Table Storage");
+            activity?.SetTag("Type", TableStorageType);
             return await func(this.tableClient);
         }
         catch (Exception ex)
         {
             this.Logger.Log(ex);
-            throw new ExternalServiceUnavailableException("Azure Table Storage is not accessible", ex);
+            throw new ExternalServiceUnavailableException($"{TableStorageType} is not accessible", ex);
         }
     }
 
@@ -145,7 +146,7 @@ public abstract class BaseAzureTableStorageDao
         where TSource : class
     {
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.IterateInnerAsync", ActivityKind.Client);
-        activity?.SetTag("Type", "Azure Table Storage");
+        activity?.SetTag("Type", TableStorageType);
         var result = new List<TResult>();
         await foreach (var item in items)
         {
@@ -159,7 +160,7 @@ public abstract class BaseAzureTableStorageDao
         where TSource : class
     {
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.TableStorage}.CountInnerAsync", ActivityKind.Client);
-        activity?.SetTag("Type", "Azure Table Storage");
+        activity?.SetTag("Type", TableStorageType);
         int result = 0;
         await foreach (var item in items)
         {
