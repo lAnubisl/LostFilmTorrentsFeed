@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
 
       - name: Fix SonarQube issues
-        uses: lAnubisl/SonarQubeIssuesAIResolutionAction@main
+        uses: lAnubisl/SonarQubeIssuesAIResolutionAction@aa5d95823d0dadd21b8acafb1d4da20c6130617e
         with:
           sonar_host_url: https://sonarcloud.io
           sonar_project_key: lAnubisl_LostFilmTorrentsFeed
