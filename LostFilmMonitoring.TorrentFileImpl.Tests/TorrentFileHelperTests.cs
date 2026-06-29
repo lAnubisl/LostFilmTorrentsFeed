@@ -33,7 +33,7 @@ internal class TorrentFileHelperTests
     {
         using var stream = GetTorrentStream();
         this.helper.Parse(stream);
-        Assert.That(stream.Position, Is.EqualTo(0));
+        Assert.That(stream.Position, Is.Zero);
     }
 
     [Test]

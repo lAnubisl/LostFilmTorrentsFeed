@@ -23,8 +23,11 @@ public class FeedItemResponseTests
             </item>");
         ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
-        Assert.That(ok, Is.True);
-        Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
+        Assert.Multiple(() =>
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
+        });
     }
 
     [Test]
@@ -45,8 +48,11 @@ public class FeedItemResponseTests
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
-            Assert.That(ok, Is.False);
-            Assert.That(feedItemResponse, Is.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(ok, Is.False);
+                Assert.That(feedItemResponse, Is.Null);
+            });
         }
         else
         {

@@ -75,9 +75,12 @@ public class AzureBlobStorageClientTests
         // Ensure there is no UTF-8 BOM at the start
         if (bytes.Length >= 3)
         {
-            Assert.That(bytes[0], Is.Not.EqualTo((byte)0xEF));
-            Assert.That(bytes[1], Is.Not.EqualTo((byte)0xBB));
-            Assert.That(bytes[2], Is.Not.EqualTo((byte)0xBF));
+            Assert.Multiple(() =>
+            {
+                Assert.That(bytes[0], Is.Not.EqualTo((byte)0xEF));
+                Assert.That(bytes[1], Is.Not.EqualTo((byte)0xBB));
+                Assert.That(bytes[2], Is.Not.EqualTo((byte)0xBF));
+            });
         }
     }
 
