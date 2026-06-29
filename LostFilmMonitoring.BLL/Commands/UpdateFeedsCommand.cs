@@ -20,33 +20,19 @@ public class UpdateFeedsCommand : ICommand
     /// <summary>
     /// Initializes a new instance of the <see cref="UpdateFeedsCommand"/> class.
     /// </summary>
-    /// <param name="logger">Logger.</param>
-    /// <param name="rssFeed">ReteOrgRssFeed.</param>
-    /// <param name="dal">dal.</param>
-    /// <param name="configuration">IConfiguration.</param>
-    /// <param name="modelPersister">modelPersister.</param>
-    /// <param name="client">client.</param>
-    /// <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
-    /// <param name="torrentFileHelper">torrentFileHelper.</param>
-    public UpdateFeedsCommand(
-        ILogger logger,
-        IRssFeed rssFeed,
-        IDal dal,
-        IConfiguration configuration,
-        IModelPersister modelPersister,
-        ILostFilmClient client,
-        ICommand<Series> downloadCoverImagesCommand,
-        ITorrentFileHelper torrentFileHelper)
+    /// <param name="dependencies">The dependencies container.</param>
+    public UpdateFeedsCommand(UpdateFeedsCommandDependencies dependencies)
     {
-        this.logger = logger != null ? logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(logger));
-        this.dal = dal ?? throw new ArgumentNullException(nameof(dal));
-        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        this.rssFeed = rssFeed ?? throw new ArgumentNullException(nameof(rssFeed));
-        this.modelPersister = modelPersister ?? throw new ArgumentNullException(nameof(modelPersister));
-        this.client = client ?? throw new ArgumentNullException(nameof(client));
-        this.torrentFileHelper = torrentFileHelper ?? throw new ArgumentNullException(nameof(torrentFileHelper));
-        this.updateUserFeedCommand = new UpdateUserFeedCommand(logger, dal, configuration);
-        this.downloadCoverImagesCommand = downloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(downloadCoverImagesCommand));
+        ArgumentNullException.ThrowIfNull(dependencies);
+        this.logger = dependencies.Logger != null ? dependencies.Logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(dependencies.Logger));
+        this.dal = dependencies.Dal ?? throw new ArgumentNullException(nameof(dependencies.Dal));
+        this.configuration = dependencies.Configuration ?? throw new ArgumentNullException(nameof(dependencies.Configuration));
+        this.rssFeed = dependencies.RssFeed ?? throw new ArgumentNullException(nameof(dependencies.RssFeed));
+        this.modelPersister = dependencies.ModelPersister ?? throw new ArgumentNullException(nameof(dependencies.ModelPersister));
+        this.client = dependencies.Client ?? throw new ArgumentNullException(nameof(dependencies.Client));
+        this.torrentFileHelper = dependencies.TorrentFileHelper ?? throw new ArgumentNullException(nameof(dependencies.TorrentFileHelper));
+        this.downloadCoverImagesCommand = dependencies.DownloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(dependencies.DownloadCoverImagesCommand));
+        this.updateUserFeedCommand = new UpdateUserFeedCommand(dependencies.Logger, dependencies.Dal, dependencies.Configuration);
     }
 
     /// <inheritdoc/>

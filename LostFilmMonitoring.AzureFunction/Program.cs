@@ -42,15 +42,17 @@ public static class Program
         services.AddHttpClient();
         services.AddTransient<ICommand<DAO.Interfaces.DomainModels.Series>>(sp => new DownloadCoverImageCommand(sp.GetService<Common.ILogger>()!, sp.GetService<IFileSystem>()!, sp.GetService<ITmdbClient>()!));
         services.AddTransient(sp =>
-            new UpdateFeedsCommand(
-                sp.GetService<Common.ILogger>() !,
-                sp.GetService<IRssFeed>() !,
-                sp.GetService<IDal>() !,
-                sp.GetService<IConfiguration>() !,
-                sp.GetService<IModelPersister>() !,
-                sp.GetService<ILostFilmClient>() !,
-                sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!,
-                sp.GetService<ITorrentFileHelper>()!));
+            new UpdateFeedsCommand(new UpdateFeedsCommandDependencies
+            {
+                Logger = sp.GetService<Common.ILogger>()!,
+                RssFeed = sp.GetService<IRssFeed>()!,
+                Dal = sp.GetService<IDal>()!,
+                Configuration = sp.GetService<IConfiguration>()!,
+                ModelPersister = sp.GetService<IModelPersister>()!,
+                Client = sp.GetService<ILostFilmClient>()!,
+                DownloadCoverImagesCommand = sp.GetService<ICommand<DAO.Interfaces.DomainModels.Series>>()!,
+                TorrentFileHelper = sp.GetService<ITorrentFileHelper>()!,
+            }));
         services.AddTransient(sp =>
             new DownloadCoverImagesCommand(
                 sp.GetService<Common.ILogger>() !,

@@ -23,15 +23,22 @@ public class UpdateFeedsCommandTests
 
     private UpdateFeedsCommand CreateCommand()
     {
-        return new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            this.configuration!.Object,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
+        return new UpdateFeedsCommand(this.CreateDependencies());
+    }
+
+    private UpdateFeedsCommandDependencies CreateDependencies()
+    {
+        return new UpdateFeedsCommandDependencies
+        {
+            Logger = this.logger!.Object,
+            RssFeed = this.rssFeed!.Object,
+            Dal = this.dal!.Object,
+            Configuration = this.configuration!.Object,
+            ModelPersister = this.persister!.Object,
+            Client = this.lostFilmClient!.Object,
+            DownloadCoverImagesCommand = this.downloadCoverImagesCommand!.Object,
+            TorrentFileHelper = this.torrentFileHelper!.Object,
+        };
     }
 
     [SetUp]
@@ -69,106 +76,64 @@ public class UpdateFeedsCommandTests
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            null!,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            this.configuration!.Object,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
+        var dependencies = this.CreateDependencies();
+        dependencies.Logger = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Logger)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_rssFeed_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            null!,
-            this.dal!.Object,
-            this.configuration!.Object,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("rssFeed"));
+        var dependencies = this.CreateDependencies();
+        dependencies.RssFeed = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.RssFeed)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_dal_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            null!,
-            this.configuration!.Object,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("dal"));
+        var dependencies = this.CreateDependencies();
+        dependencies.Dal = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Dal)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_configuration_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            null!,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("configuration"));
+        var dependencies = this.CreateDependencies();
+        dependencies.Configuration = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Configuration)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_persister_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            this.configuration!.Object,
-            null!,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("modelPersister"));
+        var dependencies = this.CreateDependencies();
+        dependencies.ModelPersister = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.ModelPersister)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_lostfilmclient_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            this.configuration!.Object,
-            this.persister!.Object,
-            null!,
-            this.downloadCoverImagesCommand!.Object,
-            this.torrentFileHelper!.Object);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("client"));
+        var dependencies = this.CreateDependencies();
+        dependencies.Client = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Client)));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_torrentFileHelper_null()
     {
-        var action = () => new UpdateFeedsCommand(
-            this.logger!.Object,
-            this.rssFeed!.Object,
-            this.dal!.Object,
-            this.configuration!.Object,
-            this.persister!.Object,
-            this.lostFilmClient!.Object,
-            this.downloadCoverImagesCommand!.Object,
-            null!);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("torrentFileHelper"));
+        var dependencies = this.CreateDependencies();
+        dependencies.TorrentFileHelper = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.TorrentFileHelper)));
     }
 
     [Test]

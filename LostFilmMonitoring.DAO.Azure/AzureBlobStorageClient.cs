@@ -5,6 +5,7 @@
 /// </summary>
 public class AzureBlobStorageClient : IAzureBlobStorageClient
 {
+    private const string BlobStorageType = "Azure Blob Storage";
     private static readonly ActivitySource ActivitySource = new (ActivitySourceNames.BlobStorage);
     private readonly BlobServiceClient blobServiceClient;
     private readonly ILogger logger;
@@ -55,7 +56,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         await sw.FlushAsync();
         ms.Position = 0;
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
-        activity?.SetTag("Type", "Azure Blob Storage");
+        activity?.SetTag("Type", BlobStorageType);
         await this.UploadAsync(containerName, fileName, ms, contentType, cacheControl);
     }
 
@@ -84,7 +85,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     {
         this.logger.Info($"Call: {nameof(this.DownloadStringAsync)}('{containerName}', '{fileName}')");
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadStringAsync", ActivityKind.Client);
-        activity?.SetTag("Type", "Azure Blob Storage");
+        activity?.SetTag("Type", BlobStorageType);
         using var stream = await this.DownloadAsync(containerName, fileName);
         if (stream == null)
         {
@@ -103,7 +104,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         {
             BlobClient blobClient = this.GetBlobClient(containerName, fileName);
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DeleteAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Blob Storage");
+            activity?.SetTag("Type", BlobStorageType);
             await blobClient.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound")
@@ -133,7 +134,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         {
             BlobClient blobClient = this.GetBlobClient(containerName, fileName);
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.ExistsAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Blob Storage");
+            activity?.SetTag("Type", BlobStorageType);
             return await blobClient.ExistsAsync(this.cancellationToken);
         }
         catch (Exception ex)
@@ -180,7 +181,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         };
 
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.SetHttpHeadersAsync", ActivityKind.Client);
-        activity?.SetTag("Type", "Azure Blob Storage");
+        activity?.SetTag("Type", BlobStorageType);
         await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
     }
 
@@ -189,7 +190,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Blob Storage");
+            activity?.SetTag("Type", BlobStorageType);
             await this.blobServiceClient.CreateBlobContainerAsync(containerName);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
@@ -210,7 +211,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Blob Storage");
+            activity?.SetTag("Type", BlobStorageType);
             await blobClient.UploadAsync(
                 content,
                 new BlobUploadOptions
@@ -246,7 +247,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         {
             MemoryStream ms = new ();
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadToAsync", ActivityKind.Client);
-            activity?.SetTag("Type", "Azure Blob Storage");
+            activity?.SetTag("Type", BlobStorageType);
             await blobClient.DownloadToAsync(ms, this.cancellationToken);
             ms.Position = 0;
             return ms;
