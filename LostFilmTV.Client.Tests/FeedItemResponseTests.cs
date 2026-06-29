@@ -23,11 +23,11 @@ public class FeedItemResponseTests
             </item>");
         ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(ok, Is.True);
             Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
-        });
+        }
     }
 
     [Test]
@@ -48,16 +48,19 @@ public class FeedItemResponseTests
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(ok, Is.False);
                 Assert.That(feedItemResponse, Is.Null);
-            });
+            }
         }
         else
         {
-            Assert.That(ok, Is.True);
-            Assert.That(feedItemResponse!.SeriesName, Is.EqualTo(expected));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(ok, Is.True);
+                Assert.That(feedItemResponse!.SeriesName, Is.EqualTo(expected));
+            }
         }
     }
 

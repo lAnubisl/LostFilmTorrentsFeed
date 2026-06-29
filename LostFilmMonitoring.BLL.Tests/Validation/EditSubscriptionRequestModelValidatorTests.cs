@@ -97,11 +97,11 @@ public class EditSubscriptionRequestModelValidatorTests
         this.seriesDao!.Setup(x => x.LoadAsync()).ReturnsAsync([testSeries]);
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "11111111-1111-1111-1111-111111111111", Quality = "SD" }] });
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsValid, Is.True);
             Assert.That(result.Errors, Is.Empty);
-        });
+        }
     }
 
     private EditSubscriptionRequestModelValidator GetService() => new(
