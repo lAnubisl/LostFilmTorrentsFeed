@@ -149,21 +149,59 @@
             Update all feeds.
             </summary>
         </member>
-        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.Common.ILogger,LostFilmMonitoring.BLL.Interfaces.IRssFeed,LostFilmMonitoring.DAO.Interfaces.IDal,LostFilmMonitoring.Common.IConfiguration,LostFilmMonitoring.BLL.Interfaces.IModelPersister,LostFilmMonitoring.BLL.Interfaces.ILostFilmClient,LostFilmMonitoring.BLL.Commands.ICommand{LostFilmMonitoring.DAO.Interfaces.DomainModels.Series},LostFilmMonitoring.BLL.Interfaces.ITorrentFileHelper)">
+        <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.#ctor(LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies)">
             <summary>
             Initializes a new instance of the <see cref="T:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand"/> class.
             </summary>
-            <param name="logger">Logger.</param>
-            <param name="rssFeed">ReteOrgRssFeed.</param>
-            <param name="dal">dal.</param>
-            <param name="configuration">IConfiguration.</param>
-            <param name="modelPersister">modelPersister.</param>
-            <param name="client">client.</param>
-            <param name="downloadCoverImagesCommand">downloadCoverImagesCommand.</param>
-            <param name="torrentFileHelper">torrentFileHelper.</param>
+            <param name="dependencies">The dependencies container.</param>
         </member>
         <member name="M:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommand.ExecuteAsync">
             <inheritdoc/>
+        </member>
+        <member name="T:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies">
+            <summary>
+            Encapsulates all dependencies required by UpdateFeedsCommand to reduce constructor parameter count.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.Logger">
+            <summary>
+            Gets or sets the logger instance.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.RssFeed">
+            <summary>
+            Gets or sets the RSS feed loader.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.Dal">
+            <summary>
+            Gets or sets the data access layer.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.Configuration">
+            <summary>
+            Gets or sets the configuration provider.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.ModelPersister">
+            <summary>
+            Gets or sets the model persister.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.Client">
+            <summary>
+            Gets or sets the LostFilm client.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.TorrentFileHelper">
+            <summary>
+            Gets or sets the torrent file helper.
+            </summary>
+        </member>
+        <member name="P:LostFilmMonitoring.BLL.Commands.UpdateFeedsCommandDependencies.DownloadCoverImagesCommand">
+            <summary>
+            Gets or sets the command for downloading cover images.
+            </summary>
         </member>
         <member name="T:LostFilmMonitoring.BLL.Commands.UpdateUserFeedCommand">
             <summary>
