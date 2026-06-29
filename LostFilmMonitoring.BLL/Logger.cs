@@ -32,25 +32,67 @@ public class Logger : Common.ILogger
     }
 
     /// <inheritdoc/>
-    public void Debug(string message) => this.logger.LogDebug(this.WrapMessage(message));
+    public void Debug(string message)
+    {
+        if (this.logger.IsEnabled(LogLevel.Debug))
+        {
+            this.logger.LogDebug(this.WrapMessage(message));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Error(string message) => this.logger.LogError(this.WrapMessage(message));
+    public void Error(string message)
+    {
+        if (this.logger.IsEnabled(LogLevel.Error))
+        {
+            this.logger.LogError(this.WrapMessage(message));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Fatal(string message) => this.logger.LogCritical(this.WrapMessage(message));
+    public void Fatal(string message)
+    {
+        if (this.logger.IsEnabled(LogLevel.Critical))
+        {
+            this.logger.LogCritical(this.WrapMessage(message));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Info(string message) => this.logger.LogInformation(this.WrapMessage(message));
+    public void Info(string message)
+    {
+        if (this.logger.IsEnabled(LogLevel.Information))
+        {
+            this.logger.LogInformation(this.WrapMessage(message));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Log(Exception ex) => this.logger.LogCritical(ex, this.WrapMessage("Exception occurred."));
+    public void Log(Exception ex)
+    {
+        if (this.logger.IsEnabled(LogLevel.Critical))
+        {
+            this.logger.LogCritical(ex, this.WrapMessage("Exception occurred."));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Log(string message, Exception ex) => this.logger.LogCritical(ex, this.WrapMessage(message));
+    public void Log(string message, Exception ex)
+    {
+        if (this.logger.IsEnabled(LogLevel.Critical))
+        {
+            this.logger.LogCritical(ex, this.WrapMessage(message));
+        }
+    }
 
     /// <inheritdoc/>
-    public void Warning(string message) => this.logger.LogWarning(this.WrapMessage(message));
+    public void Warning(string message)
+    {
+        if (this.logger.IsEnabled(LogLevel.Warning))
+        {
+            this.logger.LogWarning(this.WrapMessage(message));
+        }
+    }
 
     private void SetScope(string name)
     {

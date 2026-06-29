@@ -5,16 +5,19 @@
 /// </summary>
 public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
 {
-    private const string RssUrl = "https://insearch.site/rssdd.xml";
+    private readonly string rssUrl;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReteOrgRssFeed"/> class.
     /// </summary>
     /// <param name="logger">Logger.</param>
     /// <param name="httpClientFactory">httpClientFactory.</param>
-    public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory)
+    /// <param name="configuration">Configuration provider.</param>
+    public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         : base(logger?.CreateScope(nameof(ReteOrgRssFeed)) ?? throw new ArgumentNullException(nameof(logger)), httpClientFactory)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+        this.rssUrl = configuration.RssFeedUrl;
     }
 
     /// <summary>
@@ -27,7 +30,7 @@ public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
         string rss = string.Empty;
         try
         {
-            rss = await this.DownloadRssTextAsync(RssUrl);
+            rss = await this.DownloadRssTextAsync(this.rssUrl);
         }
         catch (RemoteServiceUnavailableException)
         {

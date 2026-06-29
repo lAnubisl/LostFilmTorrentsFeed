@@ -7,6 +7,7 @@ public class ReteOrgRssFeedTests
 {
     private Mock<IHttpClientFactory> httpClientFactory;
     private Mock<ILogger> logger;
+    private Mock<IConfiguration> configuration;
     private MockHttpMessageHandler mockHttp;
 
     [SetUp]
@@ -15,6 +16,8 @@ public class ReteOrgRssFeedTests
         this.httpClientFactory = new();
         this.logger = new();
         this.logger.Setup(l => l.CreateScope(It.IsAny<string>())).Returns(this.logger.Object);
+        this.configuration = new();
+        this.configuration.Setup(c => c.RssFeedUrl).Returns("https://insearch.site/rssdd.xml");
         this.mockHttp = new();
         this.httpClientFactory.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(new HttpClient(mockHttp));
     }
@@ -22,22 +25,29 @@ public class ReteOrgRssFeedTests
     [Test]
     public void Constructor_should_throw_exception_when_logger_null()
     {
-        var action = () => new ReteOrgRssFeed(null!, this.httpClientFactory.Object);
+        var action = () => new ReteOrgRssFeed(null!, this.httpClientFactory.Object, this.configuration.Object);
         Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_logger_createScope_null()
     {
-        var action = () => new ReteOrgRssFeed(new Mock<ILogger>().Object, this.httpClientFactory.Object);
+        var action = () => new ReteOrgRssFeed(new Mock<ILogger>().Object, this.httpClientFactory.Object, this.configuration.Object);
         Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("logger"));
     }
 
     [Test]
     public void Constructor_should_throw_exception_when_httpClientFactory_null()
     {
-        var action = () => new ReteOrgRssFeed(this.logger.Object, null!);
+        var action = () => new ReteOrgRssFeed(this.logger.Object, null!, this.configuration.Object);
         Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("httpClientFactory"));
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_configuration_null()
+    {
+        var action = () => new ReteOrgRssFeed(this.logger.Object, this.httpClientFactory.Object, null!);
+        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo("configuration"));
     }
 
     [Test]
@@ -133,5 +143,5 @@ public class ReteOrgRssFeedTests
         Assert.That(result!.First().Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236&source=test"));
     }
 
-    private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object);
+    private ReteOrgRssFeed GetService() => new(this.logger.Object, this.httpClientFactory.Object, this.configuration.Object);
 }

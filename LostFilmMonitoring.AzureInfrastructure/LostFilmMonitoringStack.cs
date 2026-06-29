@@ -447,6 +447,7 @@ public class LostFilmMonitoringStack : Pulumi.Stack
                     { EnvironmentVariables.BaseLinkUID, config.RequireSecret("baselinkuid") },
                     { EnvironmentVariables.TorrentTrackers, config.Require("torrenttrackers") },
                     { EnvironmentVariables.TmdbApiKey, config.RequireSecret("tmdbapikey") },
+                    { EnvironmentVariables.RssFeedUrl, config.Require("rssfeedurl") }
                 }),
                 Cors = new Azure.Web.Inputs.CorsSettingsArgs
                 {

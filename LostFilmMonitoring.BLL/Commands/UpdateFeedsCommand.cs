@@ -31,7 +31,7 @@ public class UpdateFeedsCommand : ICommand
         this.modelPersister = dependencies.ModelPersister ?? throw new ArgumentNullException(nameof(dependencies.ModelPersister));
         this.client = dependencies.Client ?? throw new ArgumentNullException(nameof(dependencies.Client));
         this.torrentFileHelper = dependencies.TorrentFileHelper ?? throw new ArgumentNullException(nameof(dependencies.TorrentFileHelper));
-        this.downloadCoverImagesCommand = dependencies.DownloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(dependencies.DownloadCoverImagesCommand));
+        this.downloadCoverImagesCommand = dependencies.DownloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(dependencies));
         this.updateUserFeedCommand = new UpdateUserFeedCommand(dependencies.Logger, dependencies.Dal, dependencies.Configuration);
     }
 

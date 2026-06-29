@@ -3,8 +3,7 @@
 /// <summary>
 /// Generic exception that covers all communication issues to external services.
 /// </summary>
-[Serializable]
-public sealed class ExternalServiceUnavailableException : Exception, ISerializable
+public sealed class ExternalServiceUnavailableException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
@@ -16,6 +15,18 @@ public sealed class ExternalServiceUnavailableException : Exception, ISerializab
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
+    /// </summary>
+    /// <param name="message">Message that describes what happened.</param>
+    public ExternalServiceUnavailableException(string message)
+        : base(message)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
+    /// </summary>
     private ExternalServiceUnavailableException()
     {
     }

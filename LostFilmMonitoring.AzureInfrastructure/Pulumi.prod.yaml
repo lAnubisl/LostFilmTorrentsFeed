@@ -1,6 +1,7 @@
 config:
   LostFilmMonitoring.AzureInfrastructure:location: westeurope
   LostFilmMonitoring.AzureInfrastructure:baseurl: https://datalostfilmfeed.byalex.dev
+  LostFilmMonitoring.AzureInfrastructure:rssfeedurl: https://insearch.site/rssdd.xml
   LostFilmMonitoring.AzureInfrastructure:torrenttrackers: http://bt.tracktor.in/tracker.php/{0}/announce,http://bt99.tracktor.in/tracker.php/{0}/announce,http://bt0.tracktor.in/tracker.php/{0}/announce,http://user5.newtrack.info/tracker.php/{0}/announce,http://user1.newtrack.info/tracker.php/{0}/announce
   LostFilmMonitoring.AzureInfrastructure:imagesdirectory: images
   LostFilmMonitoring.AzureInfrastructure:torrentsdirectory: torrentfiles

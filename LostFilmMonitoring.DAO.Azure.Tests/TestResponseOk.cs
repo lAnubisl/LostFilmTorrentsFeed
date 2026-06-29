@@ -12,7 +12,7 @@ public class TestResponseOk : Response
 
     public override void Dispose()
     {
-        // No unmanaged resources to dispose in this test stub.
+        GC.SuppressFinalize(this);
     }
 
     protected override bool ContainsHeader(string name)

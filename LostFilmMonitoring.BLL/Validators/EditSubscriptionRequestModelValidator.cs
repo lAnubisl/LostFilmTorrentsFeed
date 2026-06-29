@@ -43,7 +43,7 @@ public class EditSubscriptionRequestModelValidator : IValidator<EditSubscription
 
             if (!IsIn(item.Quality, Quality.SD, Quality.H1080, Quality.H720))
             {
-                result.SetError(nameof(item.Quality), string.Format(ErrorMessages.ShouldBeIn, nameof(item.Quality), string.Join(", ", [Quality.SD, Quality.H1080, Quality.H720])));
+                result.SetError(nameof(item.Quality), string.Format(ErrorMessages.ShouldBeIn, nameof(item.Quality), string.Join(", ", Quality.SD, Quality.H1080, Quality.H720)));
                 return result;
             }
 

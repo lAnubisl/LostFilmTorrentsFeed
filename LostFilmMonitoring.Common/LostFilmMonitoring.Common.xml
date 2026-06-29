@@ -182,6 +182,11 @@
             List of torrent trackers.
             </summary>
         </member>
+        <member name="F:LostFilmMonitoring.Common.EnvironmentVariables.RssFeedUrl">
+            <summary>
+            RSS Feed URL.
+            </summary>
+        </member>
         <member name="T:LostFilmMonitoring.Common.IConfiguration">
             <summary>
             Configuration.
@@ -204,6 +209,12 @@
             Gets base url where website is hosted.
             </summary>
             <returns>Base url where website is hosted.</returns>
+        </member>
+        <member name="P:LostFilmMonitoring.Common.IConfiguration.RssFeedUrl">
+            <summary>
+            Gets the RSS feed URL.
+            </summary>
+            <returns>The RSS feed URL.</returns>
         </member>
         <member name="M:LostFilmMonitoring.Common.IConfiguration.GetTorrentAnnounceList(System.String)">
             <summary>

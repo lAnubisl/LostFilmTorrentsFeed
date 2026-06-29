@@ -24,6 +24,12 @@ public interface IConfiguration
     string BaseUrl { get; }
 
     /// <summary>
+    /// Gets the RSS feed URL.
+    /// </summary>
+    /// <returns>The RSS feed URL.</returns>
+    string RssFeedUrl { get; }
+
+    /// <summary>
     /// Get list of torrent trackers for torrent file.
     /// </summary>
     /// <param name="link_uid">Torrent tracker user identifier.</param>
