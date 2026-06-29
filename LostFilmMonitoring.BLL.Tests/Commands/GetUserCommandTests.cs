@@ -87,10 +87,13 @@ internal class GetUserCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, testTrackerIdValue));
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = "123" });
-        Assert.That(response.TrackerId, Is.EqualTo(testTrackerIdValue));
-        Assert.That(response.ValidationResult, Is.Not.Null);
-        Assert.That(response.ValidationResult.IsValid, Is.True);
-        Assert.That(response.ValidationResult.Errors.Count, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response.TrackerId, Is.EqualTo(testTrackerIdValue));
+            Assert.That(response.ValidationResult, Is.Not.Null);
+            Assert.That(response.ValidationResult.IsValid, Is.True);
+            Assert.That(response.ValidationResult.Errors, Has.Count.EqualTo(0));
+        }
     }
 
     private GetUserCommand CreateCommand() => new(this.userDao!.Object, this.logger!.Object);
