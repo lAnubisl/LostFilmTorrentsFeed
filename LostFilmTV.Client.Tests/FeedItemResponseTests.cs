@@ -23,8 +23,11 @@ public class FeedItemResponseTests
             </item>");
         ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
-        Assert.That(ok, Is.True);
-        Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.TorrentId, Is.EqualTo(expected));
+        }
     }
 
     [Test]
@@ -45,13 +48,19 @@ public class FeedItemResponseTests
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
-            Assert.That(ok, Is.False);
-            Assert.That(feedItemResponse, Is.Null);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(ok, Is.False);
+                Assert.That(feedItemResponse, Is.Null);
+            }
         }
         else
         {
-            Assert.That(ok, Is.True);
-            Assert.That(feedItemResponse!.SeriesName, Is.EqualTo(expected));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(ok, Is.True);
+                Assert.That(feedItemResponse!.SeriesName, Is.EqualTo(expected));
+            }
         }
     }
 
@@ -73,13 +82,19 @@ public class FeedItemResponseTests
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
-            Assert.That(ok, Is.False);
-            Assert.That(feedItemResponse, Is.Null);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(ok, Is.False);
+                Assert.That(feedItemResponse, Is.Null);
+            }
         }
         else
         {
-            Assert.That(ok, Is.True);
-            Assert.That(feedItemResponse!.EpisodeName, Is.EqualTo(expected));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(ok, Is.True);
+                Assert.That(feedItemResponse!.EpisodeName, Is.EqualTo(expected));
+            }
         }
     }
 
@@ -106,13 +121,19 @@ public class FeedItemResponseTests
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
         if (expected == null)
         {
-            Assert.That(ok, Is.False);
-            Assert.That(feedItemResponse, Is.Null);
+           using (Assert.EnterMultipleScope())
+           {
+               Assert.That(ok, Is.False);
+               Assert.That(feedItemResponse, Is.Null);
+           }
         }
         else
         {
-            Assert.That(ok, Is.True);
-            Assert.That(feedItemResponse!.Quality, Is.EqualTo(expected));
+           using (Assert.EnterMultipleScope())
+           {
+               Assert.That(ok, Is.True);
+               Assert.That(feedItemResponse!.Quality, Is.EqualTo(expected));
+           }
         }
     }
 
@@ -121,7 +142,7 @@ public class FeedItemResponseTests
     {
         var title ="Внешние сферы (Outer Range). Неведомое (S01E07) [MP4]";
         var el = XElement.Parse(
-           @$"<item>
+          @$"<item>
                     <title>{title}</title>
                     <category>[MP4]</category>
                     <pubDate>Sat, 21 May 2022 20:58:00 +0000</pubDate>
@@ -129,8 +150,11 @@ public class FeedItemResponseTests
                 </item>");
         ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
-        Assert.That(ok, Is.True);
-        Assert.That(feedItemResponse!.ToString(), Is.EqualTo(title));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ok, Is.True);
+            Assert.That(feedItemResponse!.ToString(), Is.EqualTo(title));
+        }
     }
 
     [Test]
@@ -144,9 +168,10 @@ public class FeedItemResponseTests
                     <link>http://n.tracktor.site/rssdownloader.php?id=51236</link>
                 </item>");
         ReteOrgFeedItemResponse item;
-        ReteOrgFeedItemResponse.TryParseFromXElement(element, out item);
+        var ok = ReteOrgFeedItemResponse.TryParseFromXElement(element, out item);
         using (Assert.EnterMultipleScope())
         {
+            Assert.That(ok, Is.True);
             Assert.That(item.Title, Is.EqualTo("Братья Харди (The Hardy Boys). Неожиданное возвращение (S02E10) [1080p]"));
             Assert.That(item.Link, Is.EqualTo("http://n.tracktor.site/rssdownloader.php?id=51236"));
             Assert.That(item.PublishDate, Is.EqualTo("Mon, 09 May 2022 20:27:53 +0000"));
@@ -284,8 +309,11 @@ public class FeedItemResponseTests
                 </item>");
         ReteOrgFeedItemResponse feedItemResponse;
         var ok = ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse);
-        Assert.That(ok, Is.False);
-        Assert.That(feedItemResponse, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ok, Is.False);
+            Assert.That(feedItemResponse, Is.Null);
+        }
     }
 
     [Test]
@@ -325,10 +353,13 @@ public class FeedItemResponseTests
 
         ReteOrgFeedItemResponse feedItemResponse = null;
         Assert.DoesNotThrow(() => ReteOrgFeedItemResponse.TryParseFromXElement(el, out feedItemResponse));
-        Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo("Братья Харди"));
-        Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo("The Hardy Boys"));
-        Assert.That(feedItemResponse.EpisodeName, Is.EqualTo("Неожиданное возвращение"));
-        Assert.That(feedItemResponse.Quality, Is.EqualTo("1080"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(feedItemResponse.SeriesNameRu, Is.EqualTo("Братья Харди"));
+            Assert.That(feedItemResponse.SeriesNameEn, Is.EqualTo("The Hardy Boys"));
+            Assert.That(feedItemResponse.EpisodeName, Is.EqualTo("Неожиданное возвращение"));
+            Assert.That(feedItemResponse.Quality, Is.EqualTo("1080"));
+        }
     }
 
     [Test]

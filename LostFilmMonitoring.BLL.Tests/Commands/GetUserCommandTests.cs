@@ -41,10 +41,13 @@ internal class GetUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(null);
-        Assert.That(response.TrackerId, Is.Null);
-        Assert.That(response.ValidationResult, Is.Not.Null);
-        Assert.That(response.ValidationResult.IsValid, Is.False);
-        TestAssert.HasSingleError(response.ValidationResult.Errors, "model", ErrorMessages.RequestNull);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response.TrackerId, Is.Null);
+            Assert.That(response.ValidationResult, Is.Not.Null);
+            Assert.That(response.ValidationResult.IsValid, Is.False);
+            TestAssert.HasSingleError(response.ValidationResult.Errors, "model", ErrorMessages.RequestNull);
+        }
     }
 
     [Test]
@@ -52,10 +55,13 @@ internal class GetUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel());
-        Assert.That(response.TrackerId, Is.Null);
-        Assert.That(response.ValidationResult, Is.Not.Null);
-        Assert.That(response.ValidationResult.IsValid, Is.False);
-        TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response.TrackerId, Is.Null);
+            Assert.That(response.ValidationResult, Is.Not.Null);
+            Assert.That(response.ValidationResult.IsValid, Is.False);
+            TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.FieldEmpty, nameof(GetUserRequestModel.UserId)));
+        }
     }
 
     [Test]
@@ -65,10 +71,13 @@ internal class GetUserCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(null as User);
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = testUserIdValue });
-        Assert.That(response.TrackerId, Is.Null);
-        Assert.That(response.ValidationResult, Is.Not.Null);
-        Assert.That(response.ValidationResult.IsValid, Is.False);
-        TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response.TrackerId, Is.Null);
+            Assert.That(response.ValidationResult, Is.Not.Null);
+            Assert.That(response.ValidationResult.IsValid, Is.False);
+            TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(GetUserRequestModel.UserId), string.Format(ErrorMessages.UserDoesNotExist, nameof(GetUserRequestModel.UserId), testUserIdValue));
+        }
     }
 
     [Test]
@@ -78,10 +87,13 @@ internal class GetUserCommandTests
         this.userDao!.Setup(x => x.LoadAsync(It.IsAny<string>())).ReturnsAsync(new User(string.Empty, testTrackerIdValue));
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new GetUserRequestModel { UserId = "123" });
-        Assert.That(response.TrackerId, Is.EqualTo(testTrackerIdValue));
-        Assert.That(response.ValidationResult, Is.Not.Null);
-        Assert.That(response.ValidationResult.IsValid, Is.True);
-        Assert.That(response.ValidationResult.Errors.Count, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(response.TrackerId, Is.EqualTo(testTrackerIdValue));
+            Assert.That(response.ValidationResult, Is.Not.Null);
+            Assert.That(response.ValidationResult.IsValid, Is.True);
+            Assert.That(response.ValidationResult.Errors, Has.Count.EqualTo(0));
+        }
     }
 
     private GetUserCommand CreateCommand() => new(this.userDao!.Object, this.logger!.Object);

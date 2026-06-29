@@ -295,16 +295,19 @@ public class UpdateFeedsCommandTests
         await command.ExecuteAsync();
 
         // Verify series is saved with initial empty ID
-        Assert.That(savedSeries.Any(x => x.Id == Guid.Empty), Is.True);
-        // Verify series is saved with final properties
-        Assert.That(savedSeries.Any(x => 
-            x.Id == newSeriesId
-         && x.Name == "Флэш (The Flash)"
-         && x.LastEpisodeName == "Флэш (The Flash). Падение смерти (S08E13) "
-         && x.LastEpisode == new DateTime(2022, 5, 21, 20, 58, 00, DateTimeKind.Utc)
-         && x.LastEpisodeTorrentLink1080 == "http://n.tracktor.site/rssdownloader.php?id=51438"
-         && x.LastEpisodeTorrentLinkMP4 == "http://n.tracktor.site/rssdownloader.php?id=51439"
-         && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437"), Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(savedSeries.Any(x => x.Id == Guid.Empty), Is.True);
+            // Verify series is saved with final properties
+            Assert.That(savedSeries.Any(x => 
+                x.Id == newSeriesId
+             && x.Name == "Флэш (The Flash)"
+             && x.LastEpisodeName == "Флэш (The Flash). Падение смерти (S08E13) "
+             && x.LastEpisode == new DateTime(2022, 5, 21, 20, 58, 00, DateTimeKind.Utc)
+             && x.LastEpisodeTorrentLink1080 == "http://n.tracktor.site/rssdownloader.php?id=51438"
+             && x.LastEpisodeTorrentLinkMP4 == "http://n.tracktor.site/rssdownloader.php?id=51439"
+             && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437"), Is.True);
+        }
     }
 
     [Test]
