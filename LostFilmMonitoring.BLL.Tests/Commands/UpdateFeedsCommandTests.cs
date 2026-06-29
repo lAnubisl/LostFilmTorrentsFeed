@@ -295,7 +295,7 @@ public class UpdateFeedsCommandTests
         await command.ExecuteAsync();
 
         // Verify series is saved with initial empty ID
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(savedSeries.Any(x => x.Id == Guid.Empty), Is.True);
             // Verify series is saved with final properties
@@ -307,7 +307,7 @@ public class UpdateFeedsCommandTests
              && x.LastEpisodeTorrentLink1080 == "http://n.tracktor.site/rssdownloader.php?id=51438"
              && x.LastEpisodeTorrentLinkMP4 == "http://n.tracktor.site/rssdownloader.php?id=51439"
              && x.LastEpisodeTorrentLinkSD == "http://n.tracktor.site/rssdownloader.php?id=51437"), Is.True);
-        });
+        }
     }
 
     [Test]

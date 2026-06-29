@@ -73,13 +73,13 @@ internal class SaveUserCommandTests
     {
         var command = CreateCommand();
         var response = await command.ExecuteAsync(new EditUserRequestModel());
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(response.UserId, Is.Null);
             Assert.That(response.ValidationResult, Is.Not.Null);
             Assert.That(response.ValidationResult.IsValid, Is.False);
             TestAssert.HasSingleError(response.ValidationResult.Errors, nameof(EditUserRequestModel.TrackerId), string.Format(ErrorMessages.FieldEmpty, nameof(EditUserRequestModel.TrackerId)));
-        });
+        }
     }
 
     [Test]

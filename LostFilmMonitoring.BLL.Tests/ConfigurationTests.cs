@@ -21,13 +21,13 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
         var service = GetService();
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(service.BaseUID, Is.EqualTo("BASELINKUID"));
             Assert.That(service.BaseUSESS, Is.EqualTo("BASEFEEDCOOKIE"));
             Assert.That(service.BaseUrl, Is.EqualTo("BASEURL"));
             Assert.That(service.GetTorrentAnnounceList("USERID"), Is.EqualTo(["#1USERID", "#2USERID", "#3USERID"]));
-        });
+        }
     }
 
     [Test]
