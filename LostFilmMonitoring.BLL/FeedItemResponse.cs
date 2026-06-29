@@ -90,4 +90,118 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
 
         return string.Compare(this.Title, that.Title, StringComparison.OrdinalIgnoreCase);
     }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is not FeedItemResponse other)
+        {
+            return false;
+        }
+
+        return this.PublishDateParsed == other.PublishDateParsed
+            && string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.PublishDateParsed, this.Title?.ToLowerInvariant());
+    }
+
+    /// <summary>
+    /// Determines whether two specified instances are equal.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is equal to right; otherwise, false.</returns>
+    public static bool operator ==(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.Equals(right);
+    }
+
+    /// <summary>
+    /// Determines whether two specified instances are not equal.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is not equal to right; otherwise, false.</returns>
+    public static bool operator !=(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        return !(left == right);
+    }
+
+    /// <summary>
+    /// Determines whether one specified instance is less than another specified instance.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is less than right; otherwise, false.</returns>
+    public static bool operator <(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.CompareTo(right) < 0;
+    }
+
+    /// <summary>
+    /// Determines whether one specified instance is less than or equal to another specified instance.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is less than or equal to right; otherwise, false.</returns>
+    public static bool operator <=(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.CompareTo(right) <= 0;
+    }
+
+    /// <summary>
+    /// Determines whether one specified instance is greater than another specified instance.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is greater than right; otherwise, false.</returns>
+    public static bool operator >(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.CompareTo(right) > 0;
+    }
+
+    /// <summary>
+    /// Determines whether one specified instance is greater than or equal to another specified instance.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>true if left is greater than or equal to right; otherwise, false.</returns>
+    public static bool operator >=(FeedItemResponse? left, FeedItemResponse? right)
+    {
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.CompareTo(right) >= 0;
+    }
 }

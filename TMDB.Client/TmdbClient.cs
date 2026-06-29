@@ -57,7 +57,7 @@ public class TmdbClient : ITmdbClient
             }
 
             // We need to get config before requesting image bytes, otherwise it won't work.
-            var config = await this.client.GetConfigAsync();
+            await this.client.GetConfigAsync();
             var imageBytes = await this.client.GetImageBytesAsync("w185", poster.FilePath);
             this.logger.Info($"Image downloaded: {originalName}");
             return new MemoryStream(imageBytes);

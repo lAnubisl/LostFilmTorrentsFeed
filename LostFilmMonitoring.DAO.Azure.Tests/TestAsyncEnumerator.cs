@@ -3,19 +3,21 @@
 [ExcludeFromCodeCoverage]
 public class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
 {
-    private readonly IEnumerable<T> values;
+    private readonly T[] values;
     private readonly IEnumerator<T> enumerator;
     
     public TestAsyncEnumerator(T[] values)
     {
         this.values = values;
-        this.enumerator = this.values.GetEnumerator();
+        this.enumerator = ((IEnumerable<T>)this.values).GetEnumerator();
     }
     
     public T Current => enumerator.Current;
 
     public ValueTask DisposeAsync()
     {
+        this.enumerator?.Dispose();
+        GC.SuppressFinalize(this);
         return new ValueTask();
     }
 

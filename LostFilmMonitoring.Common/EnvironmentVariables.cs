@@ -39,4 +39,9 @@ public static class EnvironmentVariables
     /// List of torrent trackers.
     /// </summary>
     public static readonly string TorrentTrackers = "TORRENTTRACKERS";
+
+    /// <summary>
+    /// RSS Feed URL.
+    /// </summary>
+    public static readonly string RssFeedUrl = "RSS_FEED_URL";
 }

@@ -335,12 +335,12 @@ public class FeedItemResponseTests
         watch.Stop();
 
         // Should complete quickly (well under the 100ms timeout)
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(watch.ElapsedMilliseconds, Is.LessThan(50), "Regex should complete quickly on malformed input");
             Assert.That(ok, Is.False);
             Assert.That(feedItemResponse, Is.Null, "Malformed input should result in null feedItemResponse");
-        });
+        }
     }
 
     [Test]

@@ -24,14 +24,14 @@ public class UpdateFeedsCommand : ICommand
     public UpdateFeedsCommand(UpdateFeedsCommandDependencies dependencies)
     {
         ArgumentNullException.ThrowIfNull(dependencies);
-        this.logger = dependencies.Logger != null ? dependencies.Logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(dependencies.Logger));
-        this.dal = dependencies.Dal ?? throw new ArgumentNullException(nameof(dependencies.Dal));
-        this.configuration = dependencies.Configuration ?? throw new ArgumentNullException(nameof(dependencies.Configuration));
-        this.rssFeed = dependencies.RssFeed ?? throw new ArgumentNullException(nameof(dependencies.RssFeed));
-        this.modelPersister = dependencies.ModelPersister ?? throw new ArgumentNullException(nameof(dependencies.ModelPersister));
-        this.client = dependencies.Client ?? throw new ArgumentNullException(nameof(dependencies.Client));
-        this.torrentFileHelper = dependencies.TorrentFileHelper ?? throw new ArgumentNullException(nameof(dependencies.TorrentFileHelper));
-        this.downloadCoverImagesCommand = dependencies.DownloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(dependencies.DownloadCoverImagesCommand));
+        this.logger = dependencies.Logger != null ? dependencies.Logger.CreateScope(nameof(UpdateFeedsCommand)) : throw new ArgumentNullException(nameof(dependencies));
+        this.dal = dependencies.Dal ?? throw new ArgumentNullException(nameof(dependencies));
+        this.configuration = dependencies.Configuration ?? throw new ArgumentNullException(nameof(dependencies));
+        this.rssFeed = dependencies.RssFeed ?? throw new ArgumentNullException(nameof(dependencies));
+        this.modelPersister = dependencies.ModelPersister ?? throw new ArgumentNullException(nameof(dependencies));
+        this.client = dependencies.Client ?? throw new ArgumentNullException(nameof(dependencies));
+        this.torrentFileHelper = dependencies.TorrentFileHelper ?? throw new ArgumentNullException(nameof(dependencies));
+        this.downloadCoverImagesCommand = dependencies.DownloadCoverImagesCommand ?? throw new ArgumentNullException(nameof(dependencies));
         this.updateUserFeedCommand = new UpdateUserFeedCommand(dependencies.Logger, dependencies.Dal, dependencies.Configuration);
     }
 

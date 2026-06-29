@@ -117,22 +117,13 @@ public class SaveSubscriptionCommand : ICommand<EditSubscriptionRequestModel, Ed
     private async Task<IDictionary<Guid, string>> LoadSeriesIdToNameAsync()
     {
         var allSeries = await this.dal.Series.LoadAsync();
-        var result = new Dictionary<Guid, string>();
         if (allSeries == null)
         {
             this.logger.Error("No series found. Cannot load series ID to name dictionary.");
-            return result;
+            return new Dictionary<Guid, string>();
         }
 
-        foreach (var series in allSeries)
-        {
-            if (!result.TryAdd(series.Id, series.Name))
-            {
-                this.logger.Error($"Series ID '{series.Id}' already exists in the dictionary. Cannot load series ID to name dictionary.");
-            }
-        }
-
-        return result;
+        return allSeries.ToDictionary(x => x.Id, x => x.Name);
     }
 
     private Task UpdatePresentationModelAsync(string userId, SubscriptionItem[] selectedSubscriptions)

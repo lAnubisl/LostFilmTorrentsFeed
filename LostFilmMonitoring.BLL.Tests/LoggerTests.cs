@@ -12,6 +12,7 @@ public class LoggerTests
         loggerMock = new();
         loggerFactoryMock = new();
         loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(loggerMock.Object);
+        loggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
     }
 
     [Test]
