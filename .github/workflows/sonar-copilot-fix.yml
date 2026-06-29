@@ -1,0 +1,39 @@
+name: Fix SonarQube issues with Copilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_issues:
+        description: Maximum issues to fix
+        default: "10"
+      dry_run:
+        description: Generate prompt without changing code
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix SonarQube issues
+        uses: lAnubisl/SonarQubeIssuesAIResolutionAction@main
+        with:
+          sonar_host_url: https://sonarcloud.io
+          sonar_project_key: lAnubisl_LostFilmTorrentsFeed
+          sonar_branch: master
+          max_issues: ${{ inputs.max_issues }}
+          validation_command: dotnet test
+          dry_run: ${{ inputs.dry_run }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          COPILOT_CLI_TOKEN: ${{ secrets.COPILOT_CLI_TOKEN }}
+          GH_CLI_TOKEN: ${{ github.token }}
