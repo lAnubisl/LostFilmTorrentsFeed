@@ -122,9 +122,12 @@ public class DownloadCoverImagesCommandTests
 
         await command.ExecuteAsync();
 
-        Assert.That(callOrder, Has.Count.EqualTo(2));
-        Assert.That(callOrder[0], Is.EqualTo(series1));
-        Assert.That(callOrder[1], Is.EqualTo(series2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(callOrder, Has.Count.EqualTo(2));
+            Assert.That(callOrder[0], Is.EqualTo(series1));
+            Assert.That(callOrder[1], Is.EqualTo(series2));
+        });
     }
 
     [Test]
