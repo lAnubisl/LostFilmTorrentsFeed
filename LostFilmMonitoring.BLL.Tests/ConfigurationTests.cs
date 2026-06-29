@@ -20,12 +20,15 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns("#1{0},#2{0},#3{0}");
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
+        providerMock!.Setup(x => x.GetValue("RSS_FEED_URL")).Returns("RSS_FEED_URL");
         var service = GetService();
         using (Assert.EnterMultipleScope())
         {
             Assert.That(service.BaseUID, Is.EqualTo("BASELINKUID"));
             Assert.That(service.BaseUSESS, Is.EqualTo("BASEFEEDCOOKIE"));
             Assert.That(service.BaseUrl, Is.EqualTo("BASEURL"));
+            Assert.That(service.RssFeedUrl, Is.EqualTo("RSS_FEED_URL"));
+            Assert.That(service.RssFeedUrl, Is.EqualTo("RSS_FEED_URL"));
             Assert.That(service.GetTorrentAnnounceList("USERID"), Is.EqualTo(["#1USERID", "#2USERID", "#3USERID"]));
         }
     }
@@ -39,6 +42,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns("#1{0},#2{0},#3{0}");
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
+        providerMock!.Setup(x => x.GetValue("RSS_FEED_URL")).Returns("RSS_FEED_URL");
         var service = GetService();
         Assert.That(service.GetTorrentAnnounceList(null!), Is.EqualTo(["#1BASELINKUID", "#2BASELINKUID", "#3BASELINKUID"]));
     }
@@ -94,6 +98,7 @@ public class ConfigurationTests
         providerMock!.Setup(x => x.GetValue("TORRENTTRACKERS")).Returns(null as string);
         providerMock!.Setup(x => x.GetValue("IMAGESDIRECTORY")).Returns("IMAGESDIRECTORY");
         providerMock!.Setup(x => x.GetValue("TORRENTSDIRECTORY")).Returns("TORRENTSDIRECTORY");
+        providerMock!.Setup(x => x.GetValue("RSS_FEED_URL")).Returns("RSS_FEED_URL");
 
         var action = () => GetService();
         Assert.That(Assert.Catch<Exception>(() => action())!.Message, Is.EqualTo("Environment variable 'TORRENTTRACKERS' is not defined."));
