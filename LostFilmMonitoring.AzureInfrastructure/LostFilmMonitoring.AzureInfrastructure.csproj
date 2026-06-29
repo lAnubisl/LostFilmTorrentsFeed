@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry" Version="1.15.3" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
     <PackageReference Include="Pulumi" Version="3.106.2" />
     <PackageReference Include="Pulumi.AzureNative" Version="3.19.0" />
     <PackageReference Include="Pulumi.Cloudflare" Version="6.17.0" />

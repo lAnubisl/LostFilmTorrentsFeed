@@ -1,12 +1,10 @@
 ﻿namespace LostFilmTV.Client.Exceptions;
 
 using System;
-using System.Runtime.Serialization;
 
 /// <summary>
 /// RemoteServiceUnavailableException.
 /// </summary>
-[Serializable]
 public class RemoteServiceUnavailableException : Exception
 {
     /// <summary>
@@ -34,16 +32,6 @@ public class RemoteServiceUnavailableException : Exception
     /// <param name="innerException">Actual exception occurred.</param>
     public RemoteServiceUnavailableException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RemoteServiceUnavailableException"/> class.
-    /// </summary>
-    /// <param name="info">The SerializationInfo object.</param>
-    /// <param name="context">The StreamingContext object.</param>
-    protected RemoteServiceUnavailableException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

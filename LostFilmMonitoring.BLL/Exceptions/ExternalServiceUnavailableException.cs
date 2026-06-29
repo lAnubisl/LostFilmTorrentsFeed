@@ -1,11 +1,8 @@
 ﻿namespace LostFilmMonitoring.BLL.Exceptions;
 
-using System.Runtime.Serialization;
-
 /// <summary>
 /// Generic exception that covers all communication issues to external services.
 /// </summary>
-[Serializable]
 public sealed class ExternalServiceUnavailableException : Exception
 {
     /// <summary>
@@ -31,16 +28,6 @@ public sealed class ExternalServiceUnavailableException : Exception
     /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
     /// </summary>
     private ExternalServiceUnavailableException()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExternalServiceUnavailableException"/> class.
-    /// </summary>
-    /// <param name="info">The SerializationInfo object.</param>
-    /// <param name="context">The StreamingContext object.</param>
-    private ExternalServiceUnavailableException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

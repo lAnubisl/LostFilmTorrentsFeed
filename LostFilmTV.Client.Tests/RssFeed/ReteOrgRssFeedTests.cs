@@ -7,7 +7,7 @@ public class ReteOrgRssFeedTests
 {
     private Mock<IHttpClientFactory> httpClientFactory;
     private Mock<ILogger> logger;
-    private Mock<Common.IConfiguration> configuration;
+    private Mock<IConfiguration> configuration;
     private MockHttpMessageHandler mockHttp;
 
     [SetUp]

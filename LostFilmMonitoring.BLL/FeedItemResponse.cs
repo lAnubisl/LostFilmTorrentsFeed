@@ -70,45 +70,6 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
     /// </summary>
     public string? TorrentId { get; set; }
 
-    /// <inheritdoc/>
-    int IComparable<FeedItemResponse>.CompareTo(FeedItemResponse? that)
-    {
-        if (that == null)
-        {
-            return 1;
-        }
-
-        if (this.PublishDateParsed < that.PublishDateParsed)
-        {
-            return 1;
-        }
-
-        if (this.PublishDateParsed > that.PublishDateParsed)
-        {
-            return -1;
-        }
-
-        return string.Compare(this.Title, that.Title, StringComparison.OrdinalIgnoreCase);
-    }
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not FeedItemResponse other)
-        {
-            return false;
-        }
-
-        return this.PublishDateParsed == other.PublishDateParsed
-            && string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase);
-    }
-
-    /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(this.PublishDateParsed, this.Title?.ToLowerInvariant());
-    }
-
     /// <summary>
     /// Determines whether two specified instances are equal.
     /// </summary>
@@ -154,7 +115,7 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
             return false;
         }
 
-        return left.CompareTo(right) < 0;
+        return ((IComparable<FeedItemResponse>)left).CompareTo(right) < 0;
     }
 
     /// <summary>
@@ -170,7 +131,7 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
             return false;
         }
 
-        return left.CompareTo(right) <= 0;
+        return ((IComparable<FeedItemResponse>)left).CompareTo(right) <= 0;
     }
 
     /// <summary>
@@ -186,7 +147,7 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
             return false;
         }
 
-        return left.CompareTo(right) > 0;
+        return ((IComparable<FeedItemResponse>)left).CompareTo(right) > 0;
     }
 
     /// <summary>
@@ -202,6 +163,45 @@ public class FeedItemResponse : IComparable<FeedItemResponse>
             return false;
         }
 
-        return left.CompareTo(right) >= 0;
+        return ((IComparable<FeedItemResponse>)left).CompareTo(right) >= 0;
+    }
+
+    /// <inheritdoc/>
+    int IComparable<FeedItemResponse>.CompareTo(FeedItemResponse? that)
+    {
+        if (that == null)
+        {
+            return 1;
+        }
+
+        if (this.PublishDateParsed < that.PublishDateParsed)
+        {
+            return 1;
+        }
+
+        if (this.PublishDateParsed > that.PublishDateParsed)
+        {
+            return -1;
+        }
+
+        return string.Compare(this.Title, that.Title, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is not FeedItemResponse other)
+        {
+            return false;
+        }
+
+        return this.PublishDateParsed == other.PublishDateParsed
+            && string.Equals(this.Title, other.Title, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.PublishDateParsed, this.Title?.ToLowerInvariant());
     }
 }

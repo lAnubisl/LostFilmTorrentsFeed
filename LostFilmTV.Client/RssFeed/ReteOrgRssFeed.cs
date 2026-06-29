@@ -13,7 +13,7 @@ public class ReteOrgRssFeed : BaseRssFeed, IRssFeed
     /// <param name="logger">Logger.</param>
     /// <param name="httpClientFactory">httpClientFactory.</param>
     /// <param name="configuration">Configuration provider.</param>
-    public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory, Common.IConfiguration configuration)
+    public ReteOrgRssFeed(ILogger logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
         : base(logger?.CreateScope(nameof(ReteOrgRssFeed)) ?? throw new ArgumentNullException(nameof(logger)), httpClientFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
