@@ -275,8 +275,8 @@ public sealed class ReteOrgFeedItemResponse : FeedItemResponse
         }
 
         // Quality must be wrapped in square brackets, e.g. [MP4] or [1080p].
-        if (!remainder.StartsWith("[", StringComparison.InvariantCulture) ||
-            !remainder.EndsWith("]", StringComparison.InvariantCulture))
+        if (!remainder.StartsWith('[') ||
+            !remainder.EndsWith(']'))
         {
             return false;
         }
