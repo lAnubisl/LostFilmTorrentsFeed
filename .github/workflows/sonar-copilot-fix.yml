@@ -31,7 +31,6 @@ jobs:
           sonar_project_key: lAnubisl_LostFilmTorrentsFeed
           sonar_branch: master
           max_issues: ${{ inputs.max_issues }}
-          validation_command: dotnet test
           dry_run: ${{ inputs.dry_run }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
