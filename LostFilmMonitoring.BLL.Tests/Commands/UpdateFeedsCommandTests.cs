@@ -79,7 +79,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.Logger = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Logger)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.Logger)));
     }
 
     [Test]
@@ -88,7 +91,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.RssFeed = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.RssFeed)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.RssFeed)));
     }
 
     [Test]
@@ -97,7 +103,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.Dal = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Dal)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.Dal)));
     }
 
     [Test]
@@ -106,7 +115,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.Configuration = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Configuration)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.Configuration)));
     }
 
     [Test]
@@ -115,7 +127,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.ModelPersister = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.ModelPersister)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.ModelPersister)));
     }
 
     [Test]
@@ -124,7 +139,10 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.Client = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.Client)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.Client)));
     }
 
     [Test]
@@ -133,7 +151,22 @@ public class UpdateFeedsCommandTests
         var dependencies = this.CreateDependencies();
         dependencies.TorrentFileHelper = null!;
         var action = () => new UpdateFeedsCommand(dependencies);
-        Assert.That(Assert.Throws<ArgumentNullException>(() => action()), Has.Property(nameof(ArgumentNullException.ParamName)).EqualTo(nameof(UpdateFeedsCommandDependencies.TorrentFileHelper)));
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.TorrentFileHelper)));
+    }
+
+    [Test]
+    public void Constructor_should_throw_exception_when_downloadCoverImagesCommand_null()
+    {
+        var dependencies = this.CreateDependencies();
+        dependencies.DownloadCoverImagesCommand = null!;
+        var action = () => new UpdateFeedsCommand(dependencies);
+        Assert.That(
+            Assert.Throws<ArgumentException>(() => action()),
+            Has.Property(nameof(ArgumentException.ParamName)).EqualTo(nameof(dependencies))
+                .And.Message.Contains(nameof(UpdateFeedsCommandDependencies.DownloadCoverImagesCommand)));
     }
 
     [Test]
