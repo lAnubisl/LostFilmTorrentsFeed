@@ -62,100 +62,6 @@ public class FeedItem : IComparable<FeedItem>
     public DateTime PublishDateParsed { get; set; }
 
     /// <summary>
-    /// For user torrent feed item returns file name.
-    /// </summary>
-    /// <param name="userId">User Id.</param>
-    /// <returns>File name.</returns>
-    public string? GetUserFileName(string userId)
-    {
-        if (string.IsNullOrEmpty(this.Link))
-        {
-            return null;
-        }
-
-        var index = this.Link.IndexOf(userId, StringComparison.OrdinalIgnoreCase);
-        if (index < 0)
-        {
-            return null;
-        }
-
-        var subStr = this.Link[(index + userId.Length) ..];
-        if (subStr.Length == 0)
-        {
-            return null;
-        }
-
-        var fileName = subStr[1..];
-        if (!fileName.EndsWith(".torrent"))
-        {
-            return null;
-        }
-
-        return fileName;
-    }
-
-    /// <inheritdoc/>
-    public int CompareTo(FeedItem? other)
-    {
-        if (other == null)
-        {
-            return -1;
-        }
-
-        if (this.PublishDateParsed < other.PublishDateParsed)
-        {
-            return 1;
-        }
-
-        if (this.PublishDateParsed > other.PublishDateParsed)
-        {
-            return -1;
-        }
-
-        if (this.Title == null)
-        {
-            return 1;
-        }
-
-        return string.CompareOrdinal(this.Title, other.Title);
-    }
-
-    /// <inheritdoc/>
-    public override bool Equals(object? obj)
-    {
-        if (obj is not FeedItem other)
-        {
-            return false;
-        }
-
-        return string.Equals(this.Title, other.Title)
-            && string.Equals(this.Link, other.Link);
-    }
-
-    /// <inheritdoc/>
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(this.Title, this.Link);
-    }
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return this.Title ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Converts an instance to a XElement.
-    /// </summary>
-    /// <returns>XElement.</returns>
-    public XElement ToXElement()
-        => new (
-            "item",
-            new XElement("title", this.Title),
-            new XElement("link", this.Link),
-            new XElement("pubDate", this.PublishDateParsed.ToString(XmlDateFormat)));
-
-    /// <summary>
     /// Overloads the == operator.
     /// </summary>
     /// <param name="left">Left operand.</param>
@@ -250,4 +156,98 @@ public class FeedItem : IComparable<FeedItem>
 
         return left.CompareTo(right) <= 0;
     }
+
+    /// <summary>
+    /// For user torrent feed item returns file name.
+    /// </summary>
+    /// <param name="userId">User Id.</param>
+    /// <returns>File name.</returns>
+    public string? GetUserFileName(string userId)
+    {
+        if (string.IsNullOrEmpty(this.Link))
+        {
+            return null;
+        }
+
+        var index = this.Link.IndexOf(userId, StringComparison.OrdinalIgnoreCase);
+        if (index < 0)
+        {
+            return null;
+        }
+
+        var subStr = this.Link[(index + userId.Length) ..];
+        if (subStr.Length == 0)
+        {
+            return null;
+        }
+
+        var fileName = subStr[1..];
+        if (!fileName.EndsWith(".torrent"))
+        {
+            return null;
+        }
+
+        return fileName;
+    }
+
+    /// <inheritdoc/>
+    public int CompareTo(FeedItem? other)
+    {
+        if (other == null)
+        {
+            return -1;
+        }
+
+        if (this.PublishDateParsed < other.PublishDateParsed)
+        {
+            return 1;
+        }
+
+        if (this.PublishDateParsed > other.PublishDateParsed)
+        {
+            return -1;
+        }
+
+        if (this.Title == null)
+        {
+            return 1;
+        }
+
+        return string.CompareOrdinal(this.Title, other.Title);
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        if (obj is not FeedItem other)
+        {
+            return false;
+        }
+
+        return string.Equals(this.Title, other.Title)
+            && string.Equals(this.Link, other.Link);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.Title, this.Link);
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return this.Title ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Converts an instance to a XElement.
+    /// </summary>
+    /// <returns>XElement.</returns>
+    public XElement ToXElement()
+        => new (
+            "item",
+            new XElement("title", this.Title),
+            new XElement("link", this.Link),
+            new XElement("pubDate", this.PublishDateParsed.ToString(XmlDateFormat)));
 }

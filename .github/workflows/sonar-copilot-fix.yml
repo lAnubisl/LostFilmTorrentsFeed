@@ -29,6 +29,9 @@ jobs:
           sonar_branch: master
           max_issues: ${{ inputs.max_issues }}
           copilot_allow_all_tools: true
+          copilot_extra_instructions: |
+            Make sure `dotnet build` command reports no errors or failures after the fixes (otherwise fix them).
+            Make sure `dotnet test` command reports no errors or failures after the fixes (otherwise fix them).
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           COPILOT_CLI_TOKEN: ${{ secrets.COPILOT_CLI_TOKEN }}
