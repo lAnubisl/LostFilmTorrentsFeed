@@ -62,6 +62,102 @@ public class FeedItem : IComparable<FeedItem>
     public DateTime PublishDateParsed { get; set; }
 
     /// <summary>
+    /// Overloads the == operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if both operands are equal; otherwise, false.</returns>
+    public static bool operator ==(FeedItem? left, FeedItem? right)
+    {
+        if (left is null && right is null)
+        {
+            return true;
+        }
+
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.Equals(right);
+    }
+
+    /// <summary>
+    /// Overloads the != operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if operands are not equal; otherwise, false.</returns>
+    public static bool operator !=(FeedItem? left, FeedItem? right)
+    {
+        return !(left == right);
+    }
+
+    /// <summary>
+    /// Overloads the &lt; operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if left is less than right; otherwise, false.</returns>
+    public static bool operator <(FeedItem? left, FeedItem? right)
+    {
+        if (left is null)
+        {
+            return right is not null;
+        }
+
+        return left.CompareTo(right) > 0;
+    }
+
+    /// <summary>
+    /// Overloads the &lt;= operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
+    public static bool operator <=(FeedItem? left, FeedItem? right)
+    {
+        if (left is null)
+        {
+            return true;
+        }
+
+        return left.CompareTo(right) >= 0;
+    }
+
+    /// <summary>
+    /// Overloads the &gt; operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if left is greater than right; otherwise, false.</returns>
+    public static bool operator >(FeedItem? left, FeedItem? right)
+    {
+        if (left is null)
+        {
+            return false;
+        }
+
+        return left.CompareTo(right) < 0;
+    }
+
+    /// <summary>
+    /// Overloads the &gt;= operator.
+    /// </summary>
+    /// <param name="left">Left operand.</param>
+    /// <param name="right">Right operand.</param>
+    /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
+    public static bool operator >=(FeedItem? left, FeedItem? right)
+    {
+        if (left is null)
+        {
+            return right is null;
+        }
+
+        return left.CompareTo(right) <= 0;
+    }
+
+    /// <summary>
     /// For user torrent feed item returns file name.
     /// </summary>
     /// <param name="userId">User Id.</param>
