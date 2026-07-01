@@ -83,7 +83,7 @@ public static class Extensions
             return null;
         }
 
-        return new (
+        return new Series(
             Guid.Empty,
             feedItem.SeriesName,
             feedItem.PublishDateParsed,
@@ -91,12 +91,13 @@ public static class Extensions
             ParseLink(feedItem, Quality.SD),
             ParseLink(feedItem, Quality.H720),
             ParseLink(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H720),
-            ParseSeasonNumber(feedItem, Quality.SD),
-            ParseEpisodeNumber(feedItem, Quality.H1080),
-            ParseEpisodeNumber(feedItem, Quality.H720),
-            ParseEpisodeNumber(feedItem, Quality.SD));
+            new QualityEpisodeInfoCollection(
+                ParseSeasonNumber(feedItem, Quality.H1080),
+                ParseEpisodeNumber(feedItem, Quality.H1080),
+                ParseSeasonNumber(feedItem, Quality.H720),
+                ParseEpisodeNumber(feedItem, Quality.H720),
+                ParseSeasonNumber(feedItem, Quality.SD),
+                ParseEpisodeNumber(feedItem, Quality.SD)));
     }
 
     /// <summary>
