@@ -110,12 +110,13 @@ internal static class Mapper
             entity.LastEpisodeTorrentLinkSD,
             entity.LastEpisodeTorrentLinkMP4,
             entity.LastEpisodeTorrentLink1080,
-            entity.SeasonNumber1080,
-            entity.SeasonNumberMP4,
-            entity.SeasonNumberSD,
-            entity.EpisodeNumber1080,
-            entity.EpisodeNumberMP4,
-            entity.EpisodeNumberSD);
+            new QualityEpisodeInfoCollection(
+                entity.SeasonNumber1080,
+                entity.EpisodeNumber1080,
+                entity.SeasonNumberMP4,
+                entity.EpisodeNumberMP4,
+                entity.SeasonNumberSD,
+                entity.EpisodeNumberSD));
 
     /// <summary>
     /// Map <see cref="UserTableEntity"/> to <see cref="User"/>.

@@ -602,8 +602,7 @@ public class UpdateFeedsCommandTests
                 null,
                 "http://n.tracktor.site/rssdownloader.php?id=51440",
                 null,
-                8, 8, 8,
-                14, 14, 14)
+                new QualityEpisodeInfoCollection(8,8,8, 14,14,14))
         ]);
 
         SetupTorrentFile("51439");
