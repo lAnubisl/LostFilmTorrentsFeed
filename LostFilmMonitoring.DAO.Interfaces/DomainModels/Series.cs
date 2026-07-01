@@ -54,7 +54,7 @@ public class Series
         string? linkSD,
         string? linkMP4,
         string? link1080,
-        QualityEpisodeInfoCollection? qualityEpisodeInfos = null)
+        QualityEpisodeInfoCollection? qualityEpisodeInfos)
     {
         this.Id = id;
         this.Name = name;
@@ -71,54 +71,6 @@ public class Series
         this.Q1080SeasonNumber = qualityEpisodeInfos.Q1080?.SeasonNumber;
         this.QMP4SeasonNumber = qualityEpisodeInfos.QMP4?.SeasonNumber;
         this.QSDSeasonNumber = qualityEpisodeInfos.QSD?.SeasonNumber;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Series"/> class (for backward compatibility).
-    /// </summary>
-    /// <param name="id">Series id.</param>
-    /// <param name="name">Series name.</param>
-    /// <param name="lastEposide">Last episode date.</param>
-    /// <param name="lastEpisodeName">Last episode name.</param>
-    /// <param name="linkSD">Link to torrent file SD.</param>
-    /// <param name="linkMP4">Link to torrent file MP4.</param>
-    /// <param name="link1080">Link to torrent file 1080.</param>
-    /// <param name="q1080SeasonNumber">Season number for last episode of quality 1080p.</param>
-    /// <param name="qMP4SeasonNumber">Season number for last episode of quality 720p.</param>
-    /// <param name="qSDSeasonNumber">Season number for last episode of quality SD.</param>
-    /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
-    /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
-    /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
-    internal Series(
-        Guid id,
-        string name,
-        DateTime lastEposide,
-        string lastEpisodeName,
-        string? linkSD,
-        string? linkMP4,
-        string? link1080,
-        int? q1080SeasonNumber,
-        int? qMP4SeasonNumber,
-        int? qSDSeasonNumber,
-        int? q1080EpisodeNumber,
-        int? qMP4EpisodeNumber,
-        int? qSDEpisodeNumber)
-        : this(
-            id,
-            name,
-            lastEposide,
-            lastEpisodeName,
-            linkSD,
-            linkMP4,
-            link1080,
-            new QualityEpisodeInfoCollection(
-                q1080SeasonNumber,
-                q1080EpisodeNumber,
-                qMP4SeasonNumber,
-                qMP4EpisodeNumber,
-                qSDSeasonNumber,
-                qSDEpisodeNumber))
-    {
     }
 
     /// <summary>
