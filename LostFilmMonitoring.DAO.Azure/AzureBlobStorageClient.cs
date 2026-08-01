@@ -52,8 +52,8 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.UploadAsync)}('{containerName}', '{fileName}', string content)");
         using Stream ms = new MemoryStream();
         using StreamWriter sw = new (ms, new System.Text.UTF8Encoding(false));
-        await sw.WriteAsync(content);
-        await sw.FlushAsync();
+        await sw.WriteAsync(content).WaitAsync(this.cancellationToken);
+        await sw.FlushAsync().WaitAsync(this.cancellationToken);
         ms.Position = 0;
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
         activity?.SetTag("Type", BlobStorageType);
@@ -93,7 +93,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         }
 
         using StreamReader streamReader = new (stream, Encoding.UTF8);
-        return await streamReader.ReadToEndAsync();
+        return await streamReader.ReadToEndAsync().WaitAsync(this.cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -105,7 +105,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
             BlobClient blobClient = this.GetBlobClient(containerName, fileName);
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DeleteAsync", ActivityKind.Client);
             activity?.SetTag("Type", BlobStorageType);
-            await blobClient.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots);
+            await blobClient.DeleteAsync(DeleteSnapshotsOption.IncludeSnapshots, conditions: null, cancellationToken: this.cancellationToken);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound")
         {
@@ -167,7 +167,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         Response<BlobProperties>? properties = null;
         using (var getPropertiesActivity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client))
         {
-            properties = await blobClient.GetPropertiesAsync();
+            properties = await blobClient.GetPropertiesAsync(cancellationToken: this.cancellationToken);
         }
 
         var httpHeaders = new BlobHttpHeaders
@@ -191,7 +191,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client);
             activity?.SetTag("Type", BlobStorageType);
-            await this.blobServiceClient.CreateBlobContainerAsync(containerName);
+            await this.blobServiceClient.CreateBlobContainerAsync(containerName, cancellationToken: this.cancellationToken);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
         {
@@ -223,7 +223,8 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
                         ContentType = contentType,
                     },
                     Conditions = null,
-                });
+                },
+                this.cancellationToken);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
         {
