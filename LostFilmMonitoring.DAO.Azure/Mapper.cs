@@ -102,20 +102,26 @@ internal static class Mapper
     /// <param name="entity">Instance of <see cref="SeriesTableEntity"/>.</param>
     /// <returns>Instance of <see cref="Series"/>.</returns>
     internal static Series Map(SeriesTableEntity entity)
-        => new (
+    {
+        var series = new Series(
             entity.Id,
             entity.Name,
             entity.LastEpisode,
             entity.LastEpisodeName,
             entity.LastEpisodeTorrentLinkSD,
             entity.LastEpisodeTorrentLinkMP4,
-            entity.LastEpisodeTorrentLink1080,
+            entity.LastEpisodeTorrentLink1080);
+
+        series.SetQualityNumbers(
             entity.SeasonNumber1080,
             entity.SeasonNumberMP4,
             entity.SeasonNumberSD,
             entity.EpisodeNumber1080,
             entity.EpisodeNumberMP4,
             entity.EpisodeNumberSD);
+
+        return series;
+    }
 
     /// <summary>
     /// Map <see cref="UserTableEntity"/> to <see cref="User"/>.

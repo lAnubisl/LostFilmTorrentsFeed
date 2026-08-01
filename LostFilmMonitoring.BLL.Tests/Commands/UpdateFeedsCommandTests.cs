@@ -592,19 +592,17 @@ public class UpdateFeedsCommandTests
         this.episodeDao!.Setup(x => x.ExistsAsync("Флэш (The Flash)", 8, 13, "MP4")).ReturnsAsync(false);
 
         // There is such series in the system already
-        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(
-        [
-            new Series(
-                Guid.NewGuid(),
-                "Флэш (The Flash)",
-                new DateTime(2022, 5, 22, 20, 15, 0, DateTimeKind.Utc),
-                "Флэш (The Flash). Падение смерти (S08E14) ",
-                null,
-                "http://n.tracktor.site/rssdownloader.php?id=51440",
-                null,
-                8, 8, 8,
-                14, 14, 14)
-        ]);
+        var existingSeries = new Series(
+            Guid.NewGuid(),
+            "Флэш (The Flash)",
+            new DateTime(2022, 5, 22, 20, 15, 0, DateTimeKind.Utc),
+            "Флэш (The Flash). Падение смерти (S08E14) ",
+            null,
+            "http://n.tracktor.site/rssdownloader.php?id=51440",
+            null);
+        existingSeries.SetQualityNumbers(8, 8, 8, 14, 14, 14);
+
+        this.seriesDAO!.Setup(x => x.LoadAsync()).ReturnsAsync(new[] { existingSeries });
 
         SetupTorrentFile("51439");
         
