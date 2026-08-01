@@ -45,7 +45,7 @@ public class UpdateUserFeedCommand : ICommand<UpdateUserFeedCommandRequestModel>
         }
 
         this.logger.Info($"Call: {nameof(this.ExecuteAsync)}({model.FeedResponseItem}, {model.UserId})");
-        await this.UpdateSubscribedUserAsync(model.FeedResponseItem!, model.Torrent!, model.UserId!);
+        await this.UpdateSubscribedUserAsync(model.FeedResponseItem, model.Torrent, model.UserId);
     }
 
     private async Task<bool> UpdateSubscribedUserAsync(FeedItemResponse feedResponseItem, IParsedTorrent torrent, string userId)
