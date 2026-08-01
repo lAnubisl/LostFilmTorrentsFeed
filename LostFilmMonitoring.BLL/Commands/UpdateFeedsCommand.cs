@@ -99,7 +99,7 @@ public class UpdateFeedsCommand : ICommand
     }
 
     private Task<bool> EpisodeAlreadyExistAsync(Episode episode)
-        => this.dal.Episode.ExistsAsync(episode!.SeriesName, episode.SeasonNumber, episode.EpisodeNumber, episode.Quality);
+        => this.dal.Episode.ExistsAsync(episode.SeriesName, episode.SeasonNumber, episode.EpisodeNumber, episode.Quality);
 
     private async Task<bool> ProcessFeedItemAsync(FeedItemResponse feedItem, Dictionary<string, Series> series)
     {
