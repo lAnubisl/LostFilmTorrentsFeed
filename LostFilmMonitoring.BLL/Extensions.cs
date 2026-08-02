@@ -88,15 +88,9 @@ public static class Extensions
             feedItem.SeriesName,
             feedItem.PublishDateParsed,
             $"{feedItem.SeriesName}. {feedItem.EpisodeName} (S{feedItem.SeasonNumber:D2}E{feedItem.EpisodeNumber:D2}) ",
-            ParseLink(feedItem, Quality.SD),
-            ParseLink(feedItem, Quality.H720),
-            ParseLink(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H1080),
-            ParseSeasonNumber(feedItem, Quality.H720),
-            ParseSeasonNumber(feedItem, Quality.SD),
-            ParseEpisodeNumber(feedItem, Quality.H1080),
-            ParseEpisodeNumber(feedItem, Quality.H720),
-            ParseEpisodeNumber(feedItem, Quality.SD));
+            ParseQualityInfo(feedItem, Quality.SD),
+            ParseQualityInfo(feedItem, Quality.H720),
+            ParseQualityInfo(feedItem, Quality.H1080));
     }
 
     /// <summary>
@@ -138,6 +132,12 @@ public static class Extensions
 
     private static string? ParseLink(FeedItemResponse feedItem, string quality)
         => feedItem.Quality == quality ? feedItem.Link : null;
+
+    private static SeriesQualityInfo ParseQualityInfo(FeedItemResponse feedItem, string quality)
+        => new (
+            ParseLink(feedItem, quality),
+            ParseSeasonNumber(feedItem, quality),
+            ParseEpisodeNumber(feedItem, quality));
 
     private static int? ParseEpisodeNumber(FeedItemResponse feedItem, string quality)
         => feedItem.Quality == quality ? feedItem.EpisodeNumber : null;

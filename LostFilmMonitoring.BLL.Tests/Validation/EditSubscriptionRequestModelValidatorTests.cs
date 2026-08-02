@@ -93,7 +93,8 @@ public class EditSubscriptionRequestModelValidatorTests
     [Test]
     public async Task ValidateAsync_should_return_success()
     {
-        var testSeries = new Series(Guid.Parse("11111111-1111-1111-1111-111111111111"), string.Empty, DateTime.UtcNow, string.Empty, null, null, null, null, null, null, null, null, null);
+        var emptyQualityInfo = new SeriesQualityInfo(null, null, null);
+        var testSeries = new Series(Guid.Parse("11111111-1111-1111-1111-111111111111"), string.Empty, DateTime.UtcNow, string.Empty, emptyQualityInfo, emptyQualityInfo, emptyQualityInfo);
         this.seriesDao!.Setup(x => x.LoadAsync()).ReturnsAsync([testSeries]);
         this.userDao!.Setup(x => x.LoadAsync("userId")).ReturnsAsync(new User(string.Empty, string.Empty));
         var result = await GetService().ValidateAsync(new EditSubscriptionRequestModel() { UserId = "userId", Items = [new SubscriptionItem() { SeriesId = "11111111-1111-1111-1111-111111111111", Quality = "SD" }] });

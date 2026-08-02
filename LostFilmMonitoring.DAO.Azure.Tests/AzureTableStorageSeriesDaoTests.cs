@@ -18,9 +18,9 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             "Name",
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",
-            "linkSD",
-            "linkMP4",
-            "link1080p");
+            new SeriesQualityInfo("linkSD", null, null),
+            new SeriesQualityInfo("linkMP4", null, null),
+            new SeriesQualityInfo("link1080p", null, null));
 
         await GetDao().DeleteAsync(series);
         tableClient!.Verify(x => x.DeleteEntityAsync(series.Name, series.Name, default, default), Times.Once);
@@ -36,9 +36,9 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             originalName,
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",
-            "linkSD",
-            "linkMP4",
-            "link1080p");
+            new SeriesQualityInfo("linkSD", null, null),
+            new SeriesQualityInfo("linkMP4", null, null),
+            new SeriesQualityInfo("link1080p", null, null));
 
         await GetDao().DeleteAsync(series);
         tableClient!.Verify(x => x.DeleteEntityAsync(escapedName, escapedName, default, default), Times.Once);
@@ -115,9 +115,9 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
             "Name",
             new DateTime(2022, 07, 08, 11, 06, 00, DateTimeKind.Utc),
             "LastEpisodeName",
-            "linkSD",
-            "linkMP4",
-            "link1080p");
+            new SeriesQualityInfo("linkSD", 1, 2),
+            new SeriesQualityInfo("linkMP4", 3, 4),
+            new SeriesQualityInfo("link1080p", 5, 6));
         await GetDao().SaveAsync(series);
         tableClient!.Verify(x => x.UpsertEntityAsync(
             It.Is<SeriesTableEntity>(x => 
@@ -127,6 +127,12 @@ public class AzureTableStorageSeriesDaoTests : AzureTableStorageDaoTestsBase<Azu
                 && x.LastEpisodeTorrentLink1080 == series.LastEpisodeTorrentLink1080
                 && x.LastEpisodeTorrentLinkMP4 == series.LastEpisodeTorrentLinkMP4
                 && x.LastEpisodeTorrentLinkSD == series.LastEpisodeTorrentLinkSD
+                && x.SeasonNumberSD == series.QSDSeasonNumber
+                && x.EpisodeNumberSD == series.QSDEpisodeNumber
+                && x.SeasonNumberMP4 == series.QMP4SeasonNumber
+                && x.EpisodeNumberMP4 == series.QMP4EpisodeNumber
+                && x.SeasonNumber1080 == series.Q1080SeasonNumber
+                && x.EpisodeNumber1080 == series.Q1080EpisodeNumber
             ),
             TableUpdateMode.Merge,
             default), Times.Once);

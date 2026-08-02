@@ -213,9 +213,9 @@ public class DownloadCoverImagesCommandTests
             name,
             DateTime.UtcNow,
             "Test Episode",
-            "http://link.sd",
-            "http://link.mp4",
-            "http://link.1080");
+            new SeriesQualityInfo("http://link.sd", null, null),
+            new SeriesQualityInfo("http://link.mp4", null, null),
+            new SeriesQualityInfo("http://link.1080", null, null));
     }
 
     #endregion

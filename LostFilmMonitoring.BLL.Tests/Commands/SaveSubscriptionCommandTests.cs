@@ -277,9 +277,9 @@ internal class SaveSubscriptionCommandTests
                     "Series#1",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#1_Title",
-                    "http://tracktor.in/rssdownloader.php?id=51439",
-                    "http://tracktor.in/rssdownloader.php?id=51439",
-                    "http://tracktor.in/rssdownloader.php?id=51439")
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null),
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null),
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null))
             },
             {
                 "Series#2",
@@ -288,9 +288,9 @@ internal class SaveSubscriptionCommandTests
                     "Series#2",
                     new DateTime(2022, 5, 24, 8, 34, 11, DateTimeKind.Utc),
                     "Series#2_Title",
-                    "http://tracktor.in/rssdownloader.php?id=51439",
-                    "http://tracktor.in/rssdownloader.php?id=51439",
-                    "http://tracktor.in/rssdownloader.php?id=51439")
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null),
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null),
+                    new SeriesQualityInfo("http://tracktor.in/rssdownloader.php?id=51439", null, null))
             },
         };
 

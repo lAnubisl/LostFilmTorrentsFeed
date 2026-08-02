@@ -12,78 +12,31 @@ public class Series
     /// <param name="name">Series name.</param>
     /// <param name="lastEposide">Last episode date.</param>
     /// <param name="lastEpisodeName">Last episode name.</param>
-    /// <param name="linkSD">Link to torrent file SD.</param>
-    /// <param name="linkMP4">Link to torrent file MP4.</param>
-    /// <param name="link1080">Link to torrent file 1080.</param>
+    /// <param name="sd">Information about the last SD episode.</param>
+    /// <param name="mp4">Information about the last MP4 episode.</param>
+    /// <param name="q1080">Information about the last 1080p episode.</param>
     public Series(
         Guid id,
         string name,
         DateTime lastEposide,
         string lastEpisodeName,
-        string? linkSD,
-        string? linkMP4,
-        string? link1080)
-        : this(
-            id,
-            name,
-            lastEposide,
-            lastEpisodeName,
-            linkSD,
-            linkMP4,
-            link1080,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Series"/> class.
-    /// </summary>
-    /// <param name="id">Series id.</param>
-    /// <param name="name">Series name.</param>
-    /// <param name="lastEposide">Last episode date.</param>
-    /// <param name="lastEpisodeName">Last episode name.</param>
-    /// <param name="linkSD">Link to torrent file SD.</param>
-    /// <param name="linkMP4">Link to torrent file MP4.</param>
-    /// <param name="link1080">Link to torrent file 1080.</param>
-    /// <param name="q1080SeasonNumber">Season number for last episode of quality 1080p.</param>
-    /// <param name="qMP4SeasonNumber">Season number for last episode of quality 720p.</param>
-    /// <param name="qSDSeasonNumber">Season number for last episode of quality SD.</param>
-    /// <param name="q1080EpisodeNumber">Episode number for last episode of quality 1080p.</param>
-    /// <param name="qMP4EpisodeNumber">Episode number for last episode of quality 720p.</param>
-    /// <param name="qSDEpisodeNumber">Episode number for last episode of quality SD.</param>
-    public Series(
-        Guid id,
-        string name,
-        DateTime lastEposide,
-        string lastEpisodeName,
-        string? linkSD,
-        string? linkMP4,
-        string? link1080,
-        int? q1080SeasonNumber,
-        int? qMP4SeasonNumber,
-        int? qSDSeasonNumber,
-        int? q1080EpisodeNumber,
-        int? qMP4EpisodeNumber,
-        int? qSDEpisodeNumber)
+        SeriesQualityInfo sd,
+        SeriesQualityInfo mp4,
+        SeriesQualityInfo q1080)
     {
         this.Id = id;
         this.Name = name;
         this.LastEpisode = lastEposide;
         this.LastEpisodeName = lastEpisodeName;
-        this.LastEpisodeTorrentLinkSD = linkSD;
-        this.LastEpisodeTorrentLinkMP4 = linkMP4;
-        this.LastEpisodeTorrentLink1080 = link1080;
-        this.Q1080EpisodeNumber = q1080EpisodeNumber;
-        this.QMP4EpisodeNumber = qMP4EpisodeNumber;
-        this.QSDEpisodeNumber = qSDEpisodeNumber;
-        this.Q1080SeasonNumber = q1080SeasonNumber;
-        this.QMP4SeasonNumber = qMP4SeasonNumber;
-        this.QSDSeasonNumber = qSDSeasonNumber;
+        this.LastEpisodeTorrentLinkSD = sd.Link;
+        this.LastEpisodeTorrentLinkMP4 = mp4.Link;
+        this.LastEpisodeTorrentLink1080 = q1080.Link;
+        this.Q1080EpisodeNumber = q1080.EpisodeNumber;
+        this.QMP4EpisodeNumber = mp4.EpisodeNumber;
+        this.QSDEpisodeNumber = sd.EpisodeNumber;
+        this.Q1080SeasonNumber = q1080.SeasonNumber;
+        this.QMP4SeasonNumber = mp4.SeasonNumber;
+        this.QSDSeasonNumber = sd.SeasonNumber;
     }
 
     /// <summary>

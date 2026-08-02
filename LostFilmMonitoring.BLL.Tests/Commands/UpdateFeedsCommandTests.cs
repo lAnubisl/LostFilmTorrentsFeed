@@ -281,9 +281,9 @@ public class UpdateFeedsCommandTests
                 series.Name,
                 series.LastEpisode,
                 series.LastEpisodeName,
-                series.LastEpisodeTorrentLinkSD,
-                series.LastEpisodeTorrentLinkMP4,
-                series.LastEpisodeTorrentLink1080)))
+                new SeriesQualityInfo(series.LastEpisodeTorrentLinkSD, series.QSDSeasonNumber, series.QSDEpisodeNumber),
+                new SeriesQualityInfo(series.LastEpisodeTorrentLinkMP4, series.QMP4SeasonNumber, series.QMP4EpisodeNumber),
+                new SeriesQualityInfo(series.LastEpisodeTorrentLink1080, series.Q1080SeasonNumber, series.Q1080EpisodeNumber))))
             .ReturnsAsync(newSeriesId);
 
         SetupTorrentFile("51439");
@@ -376,9 +376,9 @@ public class UpdateFeedsCommandTests
                 "Флэш (The Flash)",
                 new DateTime(2022, 1, 1, 1, 1, 1, DateTimeKind.Utc),
                 "Флэш (The Flash). Предыдущая серия (S08E12) ",
-                "http://n.tracktor.site/rssdownloader.php?id=51436",
-                "http://n.tracktor.site/rssdownloader.php?id=51435",
-                "http://n.tracktor.site/rssdownloader.php?id=51434")
+                new SeriesQualityInfo("http://n.tracktor.site/rssdownloader.php?id=51436", null, null),
+                new SeriesQualityInfo("http://n.tracktor.site/rssdownloader.php?id=51435", null, null),
+                new SeriesQualityInfo("http://n.tracktor.site/rssdownloader.php?id=51434", null, null))
         ]);
 
         SetupTorrentFile("51439");
@@ -599,11 +599,9 @@ public class UpdateFeedsCommandTests
                 "Флэш (The Flash)",
                 new DateTime(2022, 5, 22, 20, 15, 0, DateTimeKind.Utc),
                 "Флэш (The Flash). Падение смерти (S08E14) ",
-                null,
-                "http://n.tracktor.site/rssdownloader.php?id=51440",
-                null,
-                8, 8, 8,
-                14, 14, 14)
+                new SeriesQualityInfo(null, 8, 14),
+                new SeriesQualityInfo("http://n.tracktor.site/rssdownloader.php?id=51440", 8, 14),
+                new SeriesQualityInfo(null, 8, 14))
         ]);
 
         SetupTorrentFile("51439");
