@@ -57,7 +57,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         ms.Position = 0;
         using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.UploadAsync", ActivityKind.Client);
         activity?.SetTag("Type", BlobStorageType);
-        await this.UploadAsync(containerName, fileName, ms, contentType, cacheControl);
+        await this.UploadInnerAsync(containerName, fileName, ms, contentType, cacheControl, this.cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -66,7 +66,7 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         this.logger.Info($"Call: {nameof(this.DownloadAsync)}('{containerName}', '{fileName}')");
         try
         {
-            return await this.DownloadAsync(this.GetBlobClient(containerName, fileName));
+            return await this.DownloadAsync(this.GetBlobClient(containerName, fileName), this.cancellationToken);
         }
         catch (Exception ex)
         {
@@ -185,13 +185,13 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         await blobClient.SetHttpHeadersAsync(httpHeaders, cancellationToken: this.cancellationToken);
     }
 
-    private async Task CreateContainerAsync(string containerName)
+    private async Task CreateContainerAsync(string containerName, CancellationToken cancellationToken)
     {
         try
         {
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.CreateContainerAsync", ActivityKind.Client);
             activity?.SetTag("Type", BlobStorageType);
-            await this.blobServiceClient.CreateBlobContainerAsync(containerName, cancellationToken: this.cancellationToken);
+            await this.blobServiceClient.CreateBlobContainerAsync(containerName, cancellationToken: cancellationToken);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerAlreadyExists")
         {
@@ -199,7 +199,14 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
         }
     }
 
-    private async Task UploadInnerAsync(string containerName, string fileName, Stream content, string contentType, string cacheControl = "no-cache")
+    // Backwards-compatible wrapper that uses the instance token
+    private Task CreateContainerAsync(string containerName)
+        => this.CreateContainerAsync(containerName, this.cancellationToken);
+
+    private Task UploadInnerAsync(string containerName, string fileName, Stream content, string contentType, string cacheControl = "no-cache")
+        => this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl, this.cancellationToken);
+
+    private async Task UploadInnerAsync(string containerName, string fileName, Stream content, string contentType, string cacheControl, CancellationToken cancellationToken)
     {
         var blobClient = this.GetBlobClient(containerName, fileName);
 
@@ -224,12 +231,12 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
                     },
                     Conditions = null,
                 },
-                this.cancellationToken);
+                cancellationToken);
         }
         catch (RequestFailedException ex) when (ex.ErrorCode == "ContainerNotFound")
         {
-            await this.CreateContainerAsync(containerName);
-            await this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl);
+            await this.CreateContainerAsync(containerName, cancellationToken);
+            await this.UploadInnerAsync(containerName, fileName, content, contentType, cacheControl, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -242,14 +249,17 @@ public class AzureBlobStorageClient : IAzureBlobStorageClient
     private BlobClient GetBlobClient(string containerName, string fileName)
         => this.blobServiceClient.GetBlobContainerClient(containerName).GetBlobClient(fileName);
 
-    private async Task<Stream?> DownloadAsync(BlobClient blobClient)
+    private Task<Stream?> DownloadAsync(BlobClient blobClient)
+        => this.DownloadAsync(blobClient, this.cancellationToken);
+
+    private async Task<Stream?> DownloadAsync(BlobClient blobClient, CancellationToken cancellationToken)
     {
         try
         {
             MemoryStream ms = new ();
             using Activity? activity = ActivitySource.StartActivity($"{ActivitySourceNames.BlobStorage}.DownloadToAsync", ActivityKind.Client);
             activity?.SetTag("Type", BlobStorageType);
-            await blobClient.DownloadToAsync(ms, this.cancellationToken);
+            await blobClient.DownloadToAsync(ms, cancellationToken);
             ms.Position = 0;
             return ms;
         }
