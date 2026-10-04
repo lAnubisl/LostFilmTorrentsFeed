@@ -171,7 +171,7 @@ public class DownloadCoverImagesCommandTests
             .ThrowsAsync(new InvalidOperationException("Download failed"));
 
         var action = async () => await command.ExecuteAsync();
-        Assert.ThrowsAsync<InvalidOperationException>(async () => await action());
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await action());
     }
 
     [Test]

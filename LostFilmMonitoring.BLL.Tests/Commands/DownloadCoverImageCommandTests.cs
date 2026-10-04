@@ -67,7 +67,7 @@ public class DownloadCoverImageCommandTests
     {
         var command = GetService();
         var action = async () => await command.ExecuteAsync(null!);
-        Assert.ThrowsAsync<ArgumentNullException>(async () => await action());
+        await Assert.ThrowsAsync<ArgumentNullException>(async () => await action());
     }
 
     #endregion
