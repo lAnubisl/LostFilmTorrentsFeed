@@ -29,7 +29,7 @@ public class AzureTableStorageEpisodeDaoTests : AzureTableStorageDaoTestsBase<Az
             .ThrowsAsync(new RequestFailedException(500, "Internal Server Error"));
         var action = async () => await GetDao().SaveAsync(episode);
         Assert.That(
-            Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action())!.Message,
+            (await Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action()))!.Message,
             Is.EqualTo("Azure Table Storage is not accessible"));
     }
 

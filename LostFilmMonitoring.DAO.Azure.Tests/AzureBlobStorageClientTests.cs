@@ -162,7 +162,7 @@ public class AzureBlobStorageClientTests
             .Setup(x => x.DownloadToAsync(It.IsAny<Stream>()))
             .ThrowsAsync(new Exception());
         var func = async () => { await azureBlobStorageClient.DownloadAsync("containerName", "fileName"); };
-        Assert.CatchAsync<Exception>(async () => await func());
+        await Assert.CatchAsync<Exception>(async () => await func());
     }
 
     [Test]
@@ -219,7 +219,7 @@ public class AzureBlobStorageClientTests
             .ThrowsAsync(new RequestFailedException(404, "BlobNotFound", "BlobNotFound", null));
 
         var action = () => GetClient().DeleteAsync(containerName, dirName, blobName);
-        Assert.DoesNotThrowAsync(async () => await action());
+        await Assert.DoesNotThrowAsync(async () => await action());
     }
 
     [Test]
@@ -230,7 +230,7 @@ public class AzureBlobStorageClientTests
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
         var action = () => GetClient().DeleteAsync(containerName, dirName, blobName);
-        Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
+        await Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
     }
 
     [Test]
@@ -252,7 +252,7 @@ public class AzureBlobStorageClientTests
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
         var action = () => GetClient().ExistsAsync(containerName, blobName);
-        Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
+        await Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
     }
 
     [Test]
@@ -271,14 +271,14 @@ public class AzureBlobStorageClientTests
             .ThrowsAsync(new RequestFailedException(400, "InvalidOperation", "InvalidOperation", null));
 
         var action = () => GetClient().SetCacheControlAsync(containerName, blobName, "cacheControl");
-        Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
+        await Assert.ThrowsAsync<ExternalServiceUnavailableException>(async () => await action());
     }
 
     [Test]
     public async Task UploadAsync_should_throw_exception_when_stream_null()
     {
         var action = () => GetClient().UploadAsync(containerName, blobName, null as Stream, "text/plain");
-        var exception = Assert.ThrowsAsync<ArgumentNullException>(async () => await action());
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () => await action());
         Assert.That(exception!.ParamName, Is.EqualTo("content"));
     }
 
