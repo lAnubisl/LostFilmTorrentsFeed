@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TMDbLib" Version="3.0.0" />
+    <PackageReference Include="TMDbLib" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
